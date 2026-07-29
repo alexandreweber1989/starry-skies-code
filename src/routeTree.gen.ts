@@ -13,6 +13,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRedesRouteImport } from './routes/_authenticated/redes'
+import { Route as AuthenticatedMesasRouteImport } from './routes/_authenticated/mesas'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedMinisteriosIndexRouteImport } from './routes/_authenticated/ministerios.index'
 import { Route as AuthenticatedMinisteriosSlugRouteImport } from './routes/_authenticated/ministerios.$slug'
@@ -34,6 +35,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthenticatedRedesRoute = AuthenticatedRedesRouteImport.update({
   id: '/redes',
   path: '/redes',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMesasRoute = AuthenticatedMesasRouteImport.update({
+  id: '/mesas',
+  path: '/mesas',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
@@ -58,6 +64,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/mesas': typeof AuthenticatedMesasRoute
   '/redes': typeof AuthenticatedRedesRoute
   '/ministerios/$slug': typeof AuthenticatedMinisteriosSlugRoute
   '/ministerios/': typeof AuthenticatedMinisteriosIndexRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/mesas': typeof AuthenticatedMesasRoute
   '/redes': typeof AuthenticatedRedesRoute
   '/ministerios/$slug': typeof AuthenticatedMinisteriosSlugRoute
   '/ministerios': typeof AuthenticatedMinisteriosIndexRoute
@@ -76,6 +84,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/mesas': typeof AuthenticatedMesasRoute
   '/_authenticated/redes': typeof AuthenticatedRedesRoute
   '/_authenticated/ministerios/$slug': typeof AuthenticatedMinisteriosSlugRoute
   '/_authenticated/ministerios/': typeof AuthenticatedMinisteriosIndexRoute
@@ -86,6 +95,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/dashboard'
+    | '/mesas'
     | '/redes'
     | '/ministerios/$slug'
     | '/ministerios/'
@@ -94,6 +104,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/dashboard'
+    | '/mesas'
     | '/redes'
     | '/ministerios/$slug'
     | '/ministerios'
@@ -103,6 +114,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/dashboard'
+    | '/_authenticated/mesas'
     | '/_authenticated/redes'
     | '/_authenticated/ministerios/$slug'
     | '/_authenticated/ministerios/'
@@ -144,6 +156,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRedesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/mesas': {
+      id: '/_authenticated/mesas'
+      path: '/mesas'
+      fullPath: '/mesas'
+      preLoaderRoute: typeof AuthenticatedMesasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -170,6 +189,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedMesasRoute: typeof AuthenticatedMesasRoute
   AuthenticatedRedesRoute: typeof AuthenticatedRedesRoute
   AuthenticatedMinisteriosSlugRoute: typeof AuthenticatedMinisteriosSlugRoute
   AuthenticatedMinisteriosIndexRoute: typeof AuthenticatedMinisteriosIndexRoute
@@ -177,6 +197,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedMesasRoute: AuthenticatedMesasRoute,
   AuthenticatedRedesRoute: AuthenticatedRedesRoute,
   AuthenticatedMinisteriosSlugRoute: AuthenticatedMinisteriosSlugRoute,
   AuthenticatedMinisteriosIndexRoute: AuthenticatedMinisteriosIndexRoute,
