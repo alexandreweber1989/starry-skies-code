@@ -1,0 +1,76 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { PageHeader, PageBody } from "@/components/app-shell";
+import { useAuth } from "@/lib/auth-context";
+import { ShieldCheck } from "lucide-react";
+
+export const Route = createFileRoute("/_authenticated/perfil")({
+  head: () => ({ meta: [{ title: "Meu perfil — IB Atos" }] }),
+  component: PerfilPage,
+});
+
+function PerfilPage() {
+  const { user, roles, isAdmin } = useAuth();
+  const { data: profile } = useQuery({
+    queryKey: ["profile", user?.id],
+    enabled: !!user?.id,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("profiles").select("*").eq("id", user!.id).maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const roleLabel: Record<string, string> = {
+    admin_geral: "Admin geral",
+    admin_ministerio: "Admin de ministério",
+    lider_mesa: "Líder de mesa",
+    membro: "Membro",
+  };
+
+  return (
+    <>
+      <PageHeader eyebrow="Sua conta" title="Meu perfil" description={profile?.full_name ?? user?.email ?? ""} />
+      <PageBody>
+        <div className="grid lg:grid-cols-2 gap-6">
+          <div className="border border-border bg-card p-8 rounded-sm space-y-4 text-sm">
+            <Row label="Nome" value={profile?.full_name} />
+            <Row label="E-mail" value={profile?.email ?? user?.email} />
+            <Row label="Telefone" value={profile?.phone} />
+            <Row label="Aniversário" value={profile?.birth_date} />
+            <Row label="Batizado" value={profile?.is_baptized ? "Sim" : "Não"} />
+          </div>
+          <div className="border border-border bg-card p-8 rounded-sm">
+            <div className="font-mono text-[10px] uppercase tracking-widest text-primary mb-4">Seus papéis</div>
+            {isAdmin && (
+              <div className="mb-4 flex items-center gap-2 text-primary">
+                <ShieldCheck className="h-4 w-4" />
+                <span className="font-serif text-lg">Admin geral</span>
+              </div>
+            )}
+            <ul className="space-y-2 text-sm">
+              {roles.map((r, i) => (
+                <li key={i} className="flex items-center justify-between border-b border-border pb-2">
+                  <span>{roleLabel[r.role] ?? r.role}</span>
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                    {r.ministry_id ? "ministério" : r.mesa_id ? "mesa" : "global"}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </PageBody>
+    </>
+  );
+}
+
+function Row({ label, value }: { label: string; value: any }) {
+  return (
+    <div className="flex items-baseline justify-between border-b border-border pb-3">
+      <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{label}</div>
+      <div>{value || <span className="text-muted-foreground">—</span>}</div>
+    </div>
+  );
+}
