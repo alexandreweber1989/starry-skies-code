@@ -13,6 +13,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRedesRouteImport } from './routes/_authenticated/redes'
+import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
 import { Route as AuthenticatedMesasRouteImport } from './routes/_authenticated/mesas'
 import { Route as AuthenticatedMembrosRouteImport } from './routes/_authenticated/membros'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -36,6 +37,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthenticatedRedesRoute = AuthenticatedRedesRouteImport.update({
   id: '/redes',
   path: '/redes',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPerfilRoute = AuthenticatedPerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedMesasRoute = AuthenticatedMesasRouteImport.update({
@@ -72,6 +78,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/membros': typeof AuthenticatedMembrosRoute
   '/mesas': typeof AuthenticatedMesasRoute
+  '/perfil': typeof AuthenticatedPerfilRoute
   '/redes': typeof AuthenticatedRedesRoute
   '/ministerios/$slug': typeof AuthenticatedMinisteriosSlugRoute
   '/ministerios/': typeof AuthenticatedMinisteriosIndexRoute
@@ -82,6 +89,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/membros': typeof AuthenticatedMembrosRoute
   '/mesas': typeof AuthenticatedMesasRoute
+  '/perfil': typeof AuthenticatedPerfilRoute
   '/redes': typeof AuthenticatedRedesRoute
   '/ministerios/$slug': typeof AuthenticatedMinisteriosSlugRoute
   '/ministerios': typeof AuthenticatedMinisteriosIndexRoute
@@ -94,6 +102,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/membros': typeof AuthenticatedMembrosRoute
   '/_authenticated/mesas': typeof AuthenticatedMesasRoute
+  '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
   '/_authenticated/redes': typeof AuthenticatedRedesRoute
   '/_authenticated/ministerios/$slug': typeof AuthenticatedMinisteriosSlugRoute
   '/_authenticated/ministerios/': typeof AuthenticatedMinisteriosIndexRoute
@@ -106,6 +115,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/membros'
     | '/mesas'
+    | '/perfil'
     | '/redes'
     | '/ministerios/$slug'
     | '/ministerios/'
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/membros'
     | '/mesas'
+    | '/perfil'
     | '/redes'
     | '/ministerios/$slug'
     | '/ministerios'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/membros'
     | '/_authenticated/mesas'
+    | '/_authenticated/perfil'
     | '/_authenticated/redes'
     | '/_authenticated/ministerios/$slug'
     | '/_authenticated/ministerios/'
@@ -166,6 +178,13 @@ declare module '@tanstack/react-router' {
       path: '/redes'
       fullPath: '/redes'
       preLoaderRoute: typeof AuthenticatedRedesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/perfil': {
+      id: '/_authenticated/perfil'
+      path: '/perfil'
+      fullPath: '/perfil'
+      preLoaderRoute: typeof AuthenticatedPerfilRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/mesas': {
@@ -210,6 +229,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedMembrosRoute: typeof AuthenticatedMembrosRoute
   AuthenticatedMesasRoute: typeof AuthenticatedMesasRoute
+  AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
   AuthenticatedRedesRoute: typeof AuthenticatedRedesRoute
   AuthenticatedMinisteriosSlugRoute: typeof AuthenticatedMinisteriosSlugRoute
   AuthenticatedMinisteriosIndexRoute: typeof AuthenticatedMinisteriosIndexRoute
@@ -219,6 +239,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedMembrosRoute: AuthenticatedMembrosRoute,
   AuthenticatedMesasRoute: AuthenticatedMesasRoute,
+  AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
   AuthenticatedRedesRoute: AuthenticatedRedesRoute,
   AuthenticatedMinisteriosSlugRoute: AuthenticatedMinisteriosSlugRoute,
   AuthenticatedMinisteriosIndexRoute: AuthenticatedMinisteriosIndexRoute,
@@ -235,3 +256,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
