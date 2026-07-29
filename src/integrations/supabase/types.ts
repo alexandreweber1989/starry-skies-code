@@ -14,16 +14,288 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      mesa_members: {
+        Row: {
+          id: string
+          joined_at: string
+          mesa_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          joined_at?: string
+          mesa_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          joined_at?: string
+          mesa_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mesa_members_mesa_id_fkey"
+            columns: ["mesa_id"]
+            isOneToOne: false
+            referencedRelation: "mesas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mesas: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          meeting_day: string | null
+          meeting_location: string | null
+          meeting_time: string | null
+          name: string
+          photo_url: string | null
+          rede_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          meeting_day?: string | null
+          meeting_location?: string | null
+          meeting_time?: string | null
+          name: string
+          photo_url?: string | null
+          rede_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          meeting_day?: string | null
+          meeting_location?: string | null
+          meeting_time?: string | null
+          name?: string
+          photo_url?: string | null
+          rede_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mesas_rede_id_fkey"
+            columns: ["rede_id"]
+            isOneToOne: false
+            referencedRelation: "redes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ministries: {
+        Row: {
+          color: string | null
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          is_active: boolean
+          meeting_info: string | null
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          meeting_info?: string | null
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          meeting_info?: string | null
+          name?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ministry_members: {
+        Row: {
+          function_name: string | null
+          id: string
+          joined_at: string
+          ministry_id: string
+          user_id: string
+        }
+        Insert: {
+          function_name?: string | null
+          id?: string
+          joined_at?: string
+          ministry_id: string
+          user_id: string
+        }
+        Update: {
+          function_name?: string | null
+          id?: string
+          joined_at?: string
+          ministry_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ministry_members_ministry_id_fkey"
+            columns: ["ministry_id"]
+            isOneToOne: false
+            referencedRelation: "ministries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          address: string | null
+          avatar_url: string | null
+          bio: string | null
+          birth_date: string | null
+          created_at: string
+          email: string | null
+          full_name: string
+          id: string
+          is_baptized: boolean | null
+          member_since: string | null
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          birth_date?: string | null
+          created_at?: string
+          email?: string | null
+          full_name: string
+          id: string
+          is_baptized?: boolean | null
+          member_since?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          birth_date?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string
+          id?: string
+          is_baptized?: boolean | null
+          member_since?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      redes: {
+        Row: {
+          color: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          slug: string
+          target_audience: string | null
+          updated_at: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          slug: string
+          target_audience?: string | null
+          updated_at?: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          slug?: string
+          target_audience?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          mesa_id: string | null
+          ministry_id: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mesa_id?: string | null
+          ministry_id?: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mesa_id?: string | null
+          ministry_id?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      claim_first_admin: { Args: { _user_id: string }; Returns: boolean }
+      has_mesa_role: {
+        Args: { _mesa_id: string; _user_id: string }
+        Returns: boolean
+      }
+      has_ministry_role: {
+        Args: { _ministry_id: string; _user_id: string }
+        Returns: boolean
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin_geral" | "admin_ministerio" | "lider_mesa" | "membro"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +422,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin_geral", "admin_ministerio", "lider_mesa", "membro"],
+    },
   },
 } as const
