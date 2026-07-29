@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedMinisteriosIndexRouteImport } from './routes/_authenticated/ministerios.index'
+import { Route as AuthenticatedMinisteriosSlugRouteImport } from './routes/_authenticated/ministerios.$slug'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -40,17 +41,25 @@ const AuthenticatedMinisteriosIndexRoute =
     path: '/ministerios/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedMinisteriosSlugRoute =
+  AuthenticatedMinisteriosSlugRouteImport.update({
+    id: '/ministerios/$slug',
+    path: '/ministerios/$slug',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/ministerios/$slug': typeof AuthenticatedMinisteriosSlugRoute
   '/ministerios/': typeof AuthenticatedMinisteriosIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/ministerios/$slug': typeof AuthenticatedMinisteriosSlugRoute
   '/ministerios': typeof AuthenticatedMinisteriosIndexRoute
 }
 export interface FileRoutesById {
@@ -59,19 +68,26 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/ministerios/$slug': typeof AuthenticatedMinisteriosSlugRoute
   '/_authenticated/ministerios/': typeof AuthenticatedMinisteriosIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/dashboard' | '/ministerios/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/ministerios/$slug'
+    | '/ministerios/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/dashboard' | '/ministerios'
+  to: '/' | '/auth' | '/dashboard' | '/ministerios/$slug' | '/ministerios'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/dashboard'
+    | '/_authenticated/ministerios/$slug'
     | '/_authenticated/ministerios/'
   fileRoutesById: FileRoutesById
 }
@@ -118,16 +134,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMinisteriosIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/ministerios/$slug': {
+      id: '/_authenticated/ministerios/$slug'
+      path: '/ministerios/$slug'
+      fullPath: '/ministerios/$slug'
+      preLoaderRoute: typeof AuthenticatedMinisteriosSlugRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedMinisteriosSlugRoute: typeof AuthenticatedMinisteriosSlugRoute
   AuthenticatedMinisteriosIndexRoute: typeof AuthenticatedMinisteriosIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedMinisteriosSlugRoute: AuthenticatedMinisteriosSlugRoute,
   AuthenticatedMinisteriosIndexRoute: AuthenticatedMinisteriosIndexRoute,
 }
 
