@@ -129,11 +129,30 @@ Igreja Batista Atos
 ```
 
 ## Papéis
-- **Admin (pastor/secretaria)** — tudo.
-- **Líder de ministério/rede** — gerencia seu ministério.
-- **Organizador de Mesa** — gerencia sua Mesa.
-- **Membro** — vê o que é seu, confirma escalas, participa dos grupos.
+- **Admin geral (pastor/secretaria)** — acesso total ao sistema.
+- **Admin de ministério** — um ou mais por ministério. Só ele pode editar o ministério, criar/editar escalas, publicar avisos, enviar mensagens "como admin" no grupo, aprovar solicitações (ex.: Mídia), moderar chat (Jovens/Ados). Um membro pode ser admin de vários ministérios ao mesmo tempo.
+- **Líder de Mesa** — admin da sua Mesa (edita a mesa, adiciona/remove membros, marca encontros, publica no mural da Mesa). Uma Mesa pode ter mais de um líder.
+- **Membro** — vê o que é seu, confirma escalas, participa dos grupos e da Mesa.
 - **Responsável Kids** — perfil especial só com QR de check-in/out dos filhos.
+
+Regra técnica: papéis ficam em tabela separada (`user_roles`) com escopo (`ministry_id` ou `mesa_id` quando aplicável), nunca no perfil — evita escalonamento de privilégio. Verificação via função `has_role(user, role, scope)` com `SECURITY DEFINER`.
+
+## Mesas (grupos de comunhão semanal)
+**Entendi:** Mesas são pequenos grupos que se reúnem durante a semana para comunhão. Cada Mesa tem líder(es) e membros. Todo membro da igreja idealmente pertence a uma Mesa. Além disso, Mesas existem **dentro das Redes** (Sabaoth para mulheres, Zadoque para homens) para eventos segmentados.
+
+**No sistema — cadastro completo de Mesa:**
+- Nome da Mesa, foto/identidade, descrição.
+- **Líder(es)** — recebem papel `mesa_leader` com escopo daquela Mesa.
+- **Membros da Mesa** — lista, com data de entrada.
+- **Encontros regulares:** dia da semana, horário e local padrão (ex.: "quarta 20h, casa do João").
+- **Encontros pontuais / avisos** publicados pelo líder.
+- **Mural interno da Mesa** (posts, fotos do encontro, pedidos de oração da Mesa).
+- **Presença nos encontros** (opcional — líder marca quem veio).
+- **Relatório semanal** curto que o líder envia (quantos presentes, visitantes, destaques).
+- **Vínculo com Rede:** ao criar a Mesa, opcionalmente vincula a uma Rede (Sabaoth / Zadoque / mista) — habilita os eventos por escopo descritos nas seções 4 e 5.
+- **Visibilidade:** membros da Mesa veem o interno; admin geral e líder da Rede vinculada também.
+
+Isso substitui e detalha o que estava só como "Mesas" no diagrama.
 
 ## Stack
 TanStack Start + React + Tailwind v4 · Lovable Cloud (Postgres + Auth + Storage) · RLS em tudo · integração Google Drive para Mídia · moderação de conteúdo com IA leve nos chats de Jovens/Adolescentes.
