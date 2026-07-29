@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRedesRouteImport } from './routes/_authenticated/redes'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedMinisteriosIndexRouteImport } from './routes/_authenticated/ministerios.index'
 import { Route as AuthenticatedMinisteriosSlugRouteImport } from './routes/_authenticated/ministerios.$slug'
@@ -29,6 +30,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRedesRoute = AuthenticatedRedesRouteImport.update({
+  id: '/redes',
+  path: '/redes',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
@@ -52,6 +58,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/redes': typeof AuthenticatedRedesRoute
   '/ministerios/$slug': typeof AuthenticatedMinisteriosSlugRoute
   '/ministerios/': typeof AuthenticatedMinisteriosIndexRoute
 }
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/redes': typeof AuthenticatedRedesRoute
   '/ministerios/$slug': typeof AuthenticatedMinisteriosSlugRoute
   '/ministerios': typeof AuthenticatedMinisteriosIndexRoute
 }
@@ -68,6 +76,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/redes': typeof AuthenticatedRedesRoute
   '/_authenticated/ministerios/$slug': typeof AuthenticatedMinisteriosSlugRoute
   '/_authenticated/ministerios/': typeof AuthenticatedMinisteriosIndexRoute
 }
@@ -77,16 +86,24 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/dashboard'
+    | '/redes'
     | '/ministerios/$slug'
     | '/ministerios/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/dashboard' | '/ministerios/$slug' | '/ministerios'
+  to:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/redes'
+    | '/ministerios/$slug'
+    | '/ministerios'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/dashboard'
+    | '/_authenticated/redes'
     | '/_authenticated/ministerios/$slug'
     | '/_authenticated/ministerios/'
   fileRoutesById: FileRoutesById
@@ -120,6 +137,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/redes': {
+      id: '/_authenticated/redes'
+      path: '/redes'
+      fullPath: '/redes'
+      preLoaderRoute: typeof AuthenticatedRedesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -146,12 +170,14 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedRedesRoute: typeof AuthenticatedRedesRoute
   AuthenticatedMinisteriosSlugRoute: typeof AuthenticatedMinisteriosSlugRoute
   AuthenticatedMinisteriosIndexRoute: typeof AuthenticatedMinisteriosIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedRedesRoute: AuthenticatedRedesRoute,
   AuthenticatedMinisteriosSlugRoute: AuthenticatedMinisteriosSlugRoute,
   AuthenticatedMinisteriosIndexRoute: AuthenticatedMinisteriosIndexRoute,
 }
