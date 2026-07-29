@@ -4,6 +4,46 @@ Antes de codar, aqui está o que entendi de cada ministério e como proponho est
 
 ---
 
+## Adendo — Livraria e Cantina (novos módulos)
+
+Dois módulos independentes (não são ministérios), acessíveis pelo menu principal, com admins próprios via novos papéis `admin_livraria` e `admin_cantina`.
+
+### Livraria
+
+Venda interna de livros, camisetas, garrafas, insumos etc. Pagamento **somente via PIX** (CNPJ da igreja). Retirada presencial.
+
+Fluxo de compra:
+1. Membro navega catálogo público (foto, nome, descrição, preço, estoque).
+2. Adiciona ao carrinho e finaliza pedido.
+3. Sistema gera **código de retirada** (ex.: `LIV-8FK2`) + mostra dados PIX (chave CNPJ, valor, copia-e-cola).
+4. Membro anexa comprovante no pedido.
+5. Admin da Livraria confirma pagamento manualmente → status "Pronto para retirada".
+6. No balcão, admin busca pelo código, marca "Entregue", estoque decrementa.
+
+Painel admin: CRUD de produtos, fila de pedidos por status, relatório simples (total do mês, mais vendido).
+
+Tabelas novas: `products`, `orders`, `order_items`.
+
+### Cantina
+
+Por hora, foco em **divulgação + reserva** (sem pagamento na plataforma).
+
+Fluxo:
+1. Admin publica o **cardápio do culto** (itens do dia com arte/foto, descrição, preço). Cardápio tem data/evento associado.
+2. Membro reserva pedido antes do culto ("2 brigadeiros + 1 café") — sem cobrança antecipada.
+3. Sistema gera código de retirada.
+4. Admin vê lista de reservas do culto com totais agregados (ex.: "18 brigadeiros no total") — ajuda produção por demanda.
+5. No balcão, admin marca como retirado/pago.
+6. Ao final, cardápio é arquivado.
+
+Painel admin: CRUD de itens reutilizáveis, criação de cardápio do culto, lista de reservas com agregados.
+
+Tabelas novas: `canteen_items`, `canteen_menus`, `canteen_menu_items`, `canteen_reservations`, `canteen_reservation_items`.
+
+Futuro: pagamento antecipado via PIX na plataforma, mesma lógica de código de retirada.
+
+---
+
 ## 1. Louvor
 **Entendi:** Instrumentos = violão, guitarra, baixo, bateria, teclado + vocais. Cada ministro que é escalado no domingo (ou evento) monta sua própria equipe, escolhe local e horário do ensaio, e define o repertório.
 
