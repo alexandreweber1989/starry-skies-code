@@ -91,9 +91,11 @@ function MembrosPage() {
     },
   });
 
+  /** Vínculos (ministérios, mesas, redes) de todos os membros, para colorir os cards. */
+  const { data: affiliations } = useAffiliations();
+
   const { data: roles } = useQuery({
     queryKey: ["all-roles"],
-    enabled: isAdmin,
     enabled: isAdmin,
     queryFn: async () => {
       const { data, error } = await supabase.from("user_roles").select("id, user_id, role");
