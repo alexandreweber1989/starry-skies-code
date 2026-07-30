@@ -4,7 +4,13 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 
-export type AppRole = "admin_geral" | "admin_ministerio" | "lider_mesa" | "membro";
+export type AppRole =
+  | "admin_geral"
+  | "admin_ministerio"
+  | "lider_mesa"
+  | "membro"
+  | "admin_livraria"
+  | "admin_cantina";
 
 export interface RoleRow {
   role: AppRole;
@@ -20,6 +26,8 @@ interface AuthState {
   isAdmin: boolean;
   isMinistryAdmin: (ministryId: string) => boolean;
   isMesaLeader: (mesaId: string) => boolean;
+  isLivrariaAdmin: boolean;
+  isCantinaAdmin: boolean;
   signOut: () => Promise<void>;
 }
 
@@ -84,6 +92,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isAdmin,
     isMinistryAdmin: (id) => isAdmin || roles.some((r) => r.role === "admin_ministerio" && r.ministry_id === id),
     isMesaLeader: (id) => isAdmin || roles.some((r) => r.role === "lider_mesa" && r.mesa_id === id),
+    isLivrariaAdmin: isAdmin || roles.some((r) => r.role === "admin_livraria"),
+    isCantinaAdmin: isAdmin || roles.some((r) => r.role === "admin_cantina"),
     signOut: async () => {
       await qc.cancelQueries();
       qc.clear();
