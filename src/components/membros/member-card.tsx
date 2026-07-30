@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
+import { affiliationStyle, type Affiliation } from "@/lib/vinculos";
 import {
   MEMBERSHIP_STATUS,
   ageFrom,
@@ -27,6 +28,7 @@ export function MemberCard({
   onOpen,
   onEdit,
   canEdit,
+  affiliations = [],
 }: {
   profile: Profile;
   index: number;
@@ -36,6 +38,7 @@ export function MemberCard({
   onOpen: () => void;
   onEdit: () => void;
   canEdit: boolean;
+  affiliations?: Affiliation[];
 }) {
   const [expanded, setExpanded] = useState(false);
   /** Ondas do clique: cada uma se remove sozinha ao terminar a animação. */
@@ -46,6 +49,20 @@ export function MemberCard({
   const isBirthday = birthdayThisMonth(profile.birth_date);
   const active = (profile.membership_status ?? "ativo") === "ativo";
   const phone = String(profile.phone ?? "").replace(/\D/g, "");
+  const ministries = affiliations.filter((a) => a.kind === "ministerio");
+  const groups = affiliations.filter((a) => a.kind !== "ministerio");
+  const engaged = affiliations.length > 0;
+  /** Faixa multicolorida com as cores de todos os vínculos do membro. */
+  const stripe = engaged
+    ? affiliations.length === 1
+      ? affiliations[0].color
+      : `linear-gradient(180deg, ${affiliations
+          .map(
+            (a, i) =>
+              `${a.color} ${(i / affiliations.length) * 100}%, ${a.color} ${((i + 1) / affiliations.length) * 100}%`,
+          )
+          .join(", ")})`
+    : undefined;
 
   /** Dispara feedback tátil-visual (onda + "punch") a partir do ponto clicado. */
   const burst = (e: ReactMouseEvent<HTMLElement>) => {
@@ -75,8 +92,17 @@ export function MemberCard({
         "group relative animate-fade-in cursor-pointer select-none overflow-hidden rounded-sm border bg-card p-4",
         "transition-all duration-300 hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         selected ? "border-primary ring-2 ring-primary/30" : "border-border hover:border-primary",
+        engaged && !selected && "shadow-sm",
         punch && "member-punch",
       )}
+      style={{
+        animationDelay: `${Math.min(index, 12) * 30}ms`,
+        ...(engaged
+          ? {
+              backgroundImage: `radial-gradient(120% 100% at 0% 0%, color-mix(in oklab, ${affiliations[0].color} 12%, transparent) 0%, transparent 60%)`,
+            }
+          : {}),
+      }}
     >
       {/* ondas de clique */}
       {ripples.map((r) => (
@@ -89,12 +115,15 @@ export function MemberCard({
         />
       ))}
 
-      {/* faixa de status que se acende ao passar o mouse */}
+      {/* faixa lateral: colorida pelos vínculos do membro, neutra se não tiver nenhum */}
       <span
+        aria-hidden
         className={cn(
-          "absolute left-0 top-0 h-full w-1 origin-top scale-y-0 transition-transform duration-300 group-hover:scale-y-100",
-          active ? "bg-primary" : "bg-muted-foreground",
+          "absolute left-0 top-0 h-full origin-top transition-all duration-300",
+          engaged ? "w-1.5 scale-y-100" : "w-1 scale-y-0 group-hover:scale-y-100",
+          !engaged && (active ? "bg-primary" : "bg-muted-foreground"),
         )}
+        style={engaged ? { background: stripe } : undefined}
       />
 
       {selectable && (
@@ -115,16 +144,62 @@ export function MemberCard({
             "grid size-12 shrink-0 place-items-center rounded-sm font-serif text-lg transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3",
             selected ? "bg-primary text-primary-foreground" : "bg-muted text-foreground",
           )}
+          style={
+            engaged && !selected
+              ? {
+                  boxShadow: `inset 0 0 0 2px ${affiliations[0].color}`,
+                  color: affiliations[0].color,
+                }
+              : undefined
+          }
         >
           {initialsOf(profile.full_name)}
         </span>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <p className="truncate font-medium leading-tight">{profile.full_name}</p>
           <p className="truncate text-xs text-muted-foreground">
             {profile.email ?? profile.phone ?? "Sem contato"}
           </p>
         </div>
+        {ministries.length > 0 && (
+          <span className="flex shrink-0 -space-x-1" aria-hidden>
+            {ministries.slice(0, 4).map((a, i) => (
+              <span
+                key={`${a.title}-${i}`}
+                title={a.title}
+                className="size-2.5 rounded-full ring-2 ring-card"
+                style={{ backgroundColor: a.color }}
+              />
+            ))}
+          </span>
+        )}
       </div>
+
+      {affiliations.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {ministries.map((a, i) => (
+            <span
+              key={`min-${a.title}-${i}`}
+              title={a.role ? `${a.title} · ${a.role}` : a.title}
+              style={affiliationStyle(a.color)}
+              className="inline-flex items-center gap-1 rounded-sm border px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-widest"
+            >
+              <span className="size-1.5 rounded-full" style={{ backgroundColor: a.color }} />
+              {a.label}
+            </span>
+          ))}
+          {groups.map((a, i) => (
+            <span
+              key={`grp-${a.title}-${i}`}
+              title={a.title}
+              style={affiliationStyle(a.color)}
+              className="inline-flex items-center gap-1 rounded-sm border border-dashed px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest"
+            >
+              {a.kind === "rede" ? "Rede" : "Mesa"} · {a.label}
+            </span>
+          ))}
+        </div>
+      )}
 
       <div className="mt-3 flex flex-wrap gap-1.5">
         <Badge variant={active ? "default" : "secondary"}>
