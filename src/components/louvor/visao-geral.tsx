@@ -49,8 +49,17 @@ function Kpi({ label, value, hint, icon: Icon }: { label: string; value: string 
   );
 }
 
+export function QueryError({ error }: { error: Error }) {
+  return (
+    <div className="border border-destructive/40 bg-destructive/5 rounded-sm p-6">
+      <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-destructive">Erro ao carregar</div>
+      <p className="text-sm text-muted-foreground mt-2">{error.message}</p>
+    </div>
+  );
+}
+
 export function VisaoGeral() {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["louvor-overview"],
     queryFn: async () => {
       const [schedules, teams, songs] = await Promise.all([
@@ -90,6 +99,8 @@ export function VisaoGeral() {
       .flatMap((s) => s.assignments.filter((a) => a.status !== "confirmado").map((a) => ({ ...a, schedule: s })));
     return { upcoming, next, peopleCount: people.size, coverage, maxCoverage, pending };
   }, [data]);
+
+  if (error) return <QueryError error={error as Error} />;
 
   if (isLoading || !stats || !data) {
     return (
