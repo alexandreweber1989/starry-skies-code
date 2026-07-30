@@ -18,6 +18,7 @@ import { Route as AuthenticatedMesasRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedMembrosRouteImport } from './routes/_authenticated/membros'
 import { Route as AuthenticatedLivrariaRouteImport } from './routes/_authenticated/livraria'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedCantinaRouteImport } from './routes/_authenticated/cantina'
 import { Route as AuthenticatedMinisteriosIndexRouteImport } from './routes/_authenticated/ministerios.index'
 import { Route as AuthenticatedMinisteriosSlugRouteImport } from './routes/_authenticated/ministerios.$slug'
 
@@ -65,6 +66,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCantinaRoute = AuthenticatedCantinaRouteImport.update({
+  id: '/cantina',
+  path: '/cantina',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedMinisteriosIndexRoute =
   AuthenticatedMinisteriosIndexRouteImport.update({
     id: '/ministerios/',
@@ -81,6 +87,7 @@ const AuthenticatedMinisteriosSlugRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/cantina': typeof AuthenticatedCantinaRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/livraria': typeof AuthenticatedLivrariaRoute
   '/membros': typeof AuthenticatedMembrosRoute
@@ -93,6 +100,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/cantina': typeof AuthenticatedCantinaRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/livraria': typeof AuthenticatedLivrariaRoute
   '/membros': typeof AuthenticatedMembrosRoute
@@ -107,6 +115,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/cantina': typeof AuthenticatedCantinaRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/livraria': typeof AuthenticatedLivrariaRoute
   '/_authenticated/membros': typeof AuthenticatedMembrosRoute
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/cantina'
     | '/dashboard'
     | '/livraria'
     | '/membros'
@@ -133,6 +143,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/cantina'
     | '/dashboard'
     | '/livraria'
     | '/membros'
@@ -146,6 +157,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/cantina'
     | '/_authenticated/dashboard'
     | '/_authenticated/livraria'
     | '/_authenticated/membros'
@@ -227,6 +239,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/cantina': {
+      id: '/_authenticated/cantina'
+      path: '/cantina'
+      fullPath: '/cantina'
+      preLoaderRoute: typeof AuthenticatedCantinaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/ministerios/': {
       id: '/_authenticated/ministerios/'
       path: '/ministerios'
@@ -245,6 +264,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedCantinaRoute: typeof AuthenticatedCantinaRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedLivrariaRoute: typeof AuthenticatedLivrariaRoute
   AuthenticatedMembrosRoute: typeof AuthenticatedMembrosRoute
@@ -256,6 +276,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedCantinaRoute: AuthenticatedCantinaRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedLivrariaRoute: AuthenticatedLivrariaRoute,
   AuthenticatedMembrosRoute: AuthenticatedMembrosRoute,
