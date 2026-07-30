@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { QueryError } from "./visao-geral";
 
 function useProfiles() {
   return useQuery({
@@ -151,7 +152,7 @@ export function Equipes() {
   const canManage = isMinistryAdmin(LOUVOR_MINISTRY_ID);
   const qc = useQueryClient();
 
-  const { data: teams } = useQuery({
+  const { data: teams, error } = useQuery({
     queryKey: ["worship-teams"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -175,6 +176,7 @@ export function Equipes() {
   return (
     <div className="space-y-6">
       {canManage && <TeamDialog />}
+      {error && <QueryError error={error as Error} />}
       <div className="grid lg:grid-cols-2 gap-4">
         {teams?.map((team: any) => (
           <div key={team.id} className="border border-border bg-card rounded-sm p-6">
