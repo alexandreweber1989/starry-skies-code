@@ -7,6 +7,8 @@ import { PageHeader, PageBody } from "@/components/app-shell";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth-context";
+import { MemberFormDialog } from "@/components/membros/member-form-dialog";
+import { MEMBERSHIP_STATUS, ageFrom, labelOf } from "@/lib/membros";
 
 const GRANTABLE = [
   { role: "admin_livraria" as const, label: "Livraria" },
@@ -20,14 +22,15 @@ export const Route = createFileRoute("/_authenticated/membros")({
 
 function MembrosPage() {
   const [q, setQ] = useState("");
-  const { isAdmin } = useAuth();
+  const [editing, setEditing] = useState<any | null>(null);
+  const { isAdmin, user } = useAuth();
   const qc = useQueryClient();
   const { data } = useQuery({
     queryKey: ["profiles"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, full_name, email, phone, avatar_url, member_since")
+        .select("*")
         .order("full_name");
       if (error) throw error;
       return data;
@@ -89,11 +92,14 @@ function MembrosPage() {
                 <th className="px-4 py-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Nome</th>
                 <th className="px-4 py-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">E-mail</th>
                 <th className="px-4 py-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Telefone</th>
+                <th className="px-4 py-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Idade</th>
+                <th className="px-4 py-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Situação</th>
                 {isAdmin && (
                   <th className="px-4 py-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
                     Administra
                   </th>
                 )}
+                <th className="px-4 py-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Ficha</th>
               </tr>
             </thead>
             <tbody>
@@ -102,6 +108,10 @@ function MembrosPage() {
                   <td className="px-4 py-3">{p.full_name}</td>
                   <td className="px-4 py-3 text-muted-foreground">{p.email}</td>
                   <td className="px-4 py-3 text-muted-foreground">{p.phone ?? "—"}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{ageFrom(p.birth_date) ?? "—"}</td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    {labelOf(MEMBERSHIP_STATUS, p.membership_status) ?? "—"}
+                  </td>
                   {isAdmin && (
                     <td className="px-4 py-3">
                       <div className="flex gap-1">
@@ -123,14 +133,29 @@ function MembrosPage() {
                       </div>
                     </td>
                   )}
+                  <td className="px-4 py-3">
+                    {(isAdmin || user?.id === p.id) ? (
+                      <Button size="sm" variant="outline" onClick={() => setEditing(p)}>
+                        Editar ficha
+                      </Button>
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
+                  </td>
                 </tr>
               ))}
               {filtered && filtered.length === 0 && (
-                <tr><td colSpan={isAdmin ? 4 : 3} className="px-4 py-6 text-center text-muted-foreground">Nenhum membro encontrado.</td></tr>
+                <tr><td colSpan={isAdmin ? 7 : 6} className="px-4 py-6 text-center text-muted-foreground">Nenhum membro encontrado.</td></tr>
               )}
             </tbody>
           </table>
         </div>
+        <MemberFormDialog
+          profile={editing}
+          open={!!editing}
+          onOpenChange={(v) => !v && setEditing(null)}
+          canEditMembership={isAdmin}
+        />
       </PageBody>
     </>
   );
