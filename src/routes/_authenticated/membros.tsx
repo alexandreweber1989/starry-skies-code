@@ -19,6 +19,7 @@ import {
 import { useAuth } from "@/lib/auth-context";
 import { MemberFormDialog } from "@/components/membros/member-form-dialog";
 import { MemberStats } from "@/components/membros/member-stats";
+import { MemberCard } from "@/components/membros/member-card";
 import { MemberDetailSheet } from "@/components/membros/member-detail-sheet";
 import {
   DEFAULT_FILTERS,
@@ -74,7 +75,7 @@ function MembrosPage() {
   const { isAdmin, user } = useAuth();
   const qc = useQueryClient();
   const [filters, setFilters] = useState<MemberFilters>(DEFAULT_FILTERS);
-  const [view, setView] = useState<"table" | "cards">("table");
+  const [view, setView] = useState<"table" | "cards">("cards");
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<string[]>([]);
   const [editing, setEditing] = useState<Profile | null>(null);
@@ -357,30 +358,21 @@ function MembrosPage() {
             </table>
           </div>
         ) : (
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {pageRows.map((p) => (
-              <button
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {pageRows.map((p, i) => (
+              <MemberCard
                 key={p.id}
-                onClick={() => setDetail(p)}
-                className="text-left border border-border bg-card rounded-sm p-4 hover:border-primary transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="size-11 rounded-sm bg-primary text-primary-foreground grid place-items-center font-serif">
-                    {initialsOf(p.full_name)}
-                  </span>
-                  <div className="min-w-0">
-                    <p className="font-medium truncate">{p.full_name}</p>
-                    <p className="text-xs text-muted-foreground truncate">{p.email ?? p.phone ?? "—"}</p>
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-1.5 mt-3">
-                  <Badge variant="outline">{labelOf(MEMBERSHIP_STATUS, p.membership_status ?? "ativo")}</Badge>
-                  {ageFrom(p.birth_date) !== null && (
-                    <Badge variant="secondary">{ageFrom(p.birth_date)} anos</Badge>
-                  )}
-                  {birthdayThisMonth(p.birth_date) && <Badge>Aniversário do mês</Badge>}
-                </div>
-              </button>
+                profile={p}
+                index={i}
+                selectable={isAdmin}
+                selected={selected.includes(p.id)}
+                onSelect={(v) =>
+                  setSelected((prev) => (v ? [...prev, p.id] : prev.filter((id) => id !== p.id)))
+                }
+                onOpen={() => setDetail(p)}
+                onEdit={() => setEditing(p)}
+                canEdit={canEdit(p)}
+              />
             ))}
             {pageRows.length === 0 && (
               <p className="text-muted-foreground col-span-full py-10 text-center">
