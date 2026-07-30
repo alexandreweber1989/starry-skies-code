@@ -16,6 +16,7 @@ import { Route as AuthenticatedRedesRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
 import { Route as AuthenticatedMesasRouteImport } from './routes/_authenticated/mesas'
 import { Route as AuthenticatedMembrosRouteImport } from './routes/_authenticated/membros'
+import { Route as AuthenticatedLivrariaRouteImport } from './routes/_authenticated/livraria'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedMinisteriosIndexRouteImport } from './routes/_authenticated/ministerios.index'
 import { Route as AuthenticatedMinisteriosSlugRouteImport } from './routes/_authenticated/ministerios.$slug'
@@ -54,6 +55,11 @@ const AuthenticatedMembrosRoute = AuthenticatedMembrosRouteImport.update({
   path: '/membros',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedLivrariaRoute = AuthenticatedLivrariaRouteImport.update({
+  id: '/livraria',
+  path: '/livraria',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -76,6 +82,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/livraria': typeof AuthenticatedLivrariaRoute
   '/membros': typeof AuthenticatedMembrosRoute
   '/mesas': typeof AuthenticatedMesasRoute
   '/perfil': typeof AuthenticatedPerfilRoute
@@ -87,6 +94,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/livraria': typeof AuthenticatedLivrariaRoute
   '/membros': typeof AuthenticatedMembrosRoute
   '/mesas': typeof AuthenticatedMesasRoute
   '/perfil': typeof AuthenticatedPerfilRoute
@@ -100,6 +108,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/livraria': typeof AuthenticatedLivrariaRoute
   '/_authenticated/membros': typeof AuthenticatedMembrosRoute
   '/_authenticated/mesas': typeof AuthenticatedMesasRoute
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
@@ -113,6 +122,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/dashboard'
+    | '/livraria'
     | '/membros'
     | '/mesas'
     | '/perfil'
@@ -124,6 +134,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/dashboard'
+    | '/livraria'
     | '/membros'
     | '/mesas'
     | '/perfil'
@@ -136,6 +147,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/dashboard'
+    | '/_authenticated/livraria'
     | '/_authenticated/membros'
     | '/_authenticated/mesas'
     | '/_authenticated/perfil'
@@ -201,6 +213,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMembrosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/livraria': {
+      id: '/_authenticated/livraria'
+      path: '/livraria'
+      fullPath: '/livraria'
+      preLoaderRoute: typeof AuthenticatedLivrariaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -227,6 +246,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedLivrariaRoute: typeof AuthenticatedLivrariaRoute
   AuthenticatedMembrosRoute: typeof AuthenticatedMembrosRoute
   AuthenticatedMesasRoute: typeof AuthenticatedMesasRoute
   AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
@@ -237,6 +257,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedLivrariaRoute: AuthenticatedLivrariaRoute,
   AuthenticatedMembrosRoute: AuthenticatedMembrosRoute,
   AuthenticatedMesasRoute: AuthenticatedMesasRoute,
   AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
