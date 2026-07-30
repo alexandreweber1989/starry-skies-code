@@ -1,39 +1,91 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, PageBody } from "@/components/app-shell";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/lib/auth-context";
 import { MemberFormDialog } from "@/components/membros/member-form-dialog";
-import { MEMBERSHIP_STATUS, ageFrom, labelOf } from "@/lib/membros";
+import { MemberStats } from "@/components/membros/member-stats";
+import { MemberDetailSheet } from "@/components/membros/member-detail-sheet";
+import {
+  DEFAULT_FILTERS,
+  MemberToolbar,
+  type MemberFilters,
+} from "@/components/membros/member-toolbar";
+import {
+  MEMBERSHIP_STATUS,
+  ageFrom,
+  birthdayThisMonth,
+  downloadCsv,
+  formatDateBR,
+  initialsOf,
+  labelOf,
+  matchesAgeBand,
+} from "@/lib/membros";
 
+type Profile = Record<string, any>;
+
+/** Papéis administrativos que o admin geral pode conceder pela tela de membros. */
 const GRANTABLE = [
   { role: "admin_livraria" as const, label: "Livraria" },
   { role: "admin_cantina" as const, label: "Cantina" },
+  { role: "admin_ministerio" as const, label: "Ministério" },
+  { role: "lider_mesa" as const, label: "Líder de mesa" },
+  { role: "admin_geral" as const, label: "Admin geral" },
 ];
 
+const PAGE_SIZE = 25;
+
 export const Route = createFileRoute("/_authenticated/membros")({
-  head: () => ({ meta: [{ title: "Membros — IB Atos" }] }),
+  head: () => ({
+    meta: [
+      { title: "Membros — Igreja Batista Atos" },
+      {
+        name: "description",
+        content:
+          "Gestão completa da membresia da Igreja Batista Atos: fichas, filtros, permissões e indicadores.",
+      },
+      { property: "og:title", content: "Membros — Igreja Batista Atos" },
+      {
+        property: "og:description",
+        content: "Cadastro, filtros e permissões da membresia da Igreja Batista Atos.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: MembrosPage,
 });
 
 function MembrosPage() {
-  const [q, setQ] = useState("");
-  const [editing, setEditing] = useState<any | null>(null);
   const { isAdmin, user } = useAuth();
   const qc = useQueryClient();
-  const { data } = useQuery({
+  const [filters, setFilters] = useState<MemberFilters>(DEFAULT_FILTERS);
+  const [view, setView] = useState<"table" | "cards">("table");
+  const [page, setPage] = useState(1);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [editing, setEditing] = useState<Profile | null>(null);
+  const [detail, setDetail] = useState<Profile | null>(null);
+
+  const { data, isLoading } = useQuery({
     queryKey: ["profiles"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .order("full_name");
+      const { data, error } = await supabase.from("profiles").select("*").order("full_name");
       if (error) throw error;
-      return data;
+      return data as Profile[];
     },
   });
 
@@ -54,7 +106,7 @@ function MembrosPage() {
       existingId,
     }: {
       userId: string;
-      role: "admin_livraria" | "admin_cantina";
+      role: (typeof GRANTABLE)[number]["role"];
       existingId?: string;
     }) => {
       const { error } = existingId
@@ -69,87 +121,306 @@ function MembrosPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const filtered = data?.filter((p) =>
-    !q.trim() ? true : (p.full_name ?? "").toLowerCase().includes(q.toLowerCase()) ||
-      (p.email ?? "").toLowerCase().includes(q.toLowerCase())
-  );
+  const bulkStatus = useMutation({
+    mutationFn: async (status: string) => {
+      if (!selected.length) throw new Error("Selecione ao menos um membro.");
+      const { error } = await supabase
+        .from("profiles")
+        .update({ membership_status: status } as never)
+        .in("id", selected);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Situação atualizada para os membros selecionados.");
+      setSelected([]);
+      qc.invalidateQueries({ queryKey: ["profiles"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const filtered = useMemo(() => {
+    const term = filters.q.trim().toLowerCase();
+    const rows = (data ?? []).filter((p) => {
+      const haystack = [p.full_name, p.email, p.phone, p.city].join(" ").toLowerCase();
+      if (term && !haystack.includes(term)) return false;
+      if (filters.status !== "all" && (p.membership_status ?? "ativo") !== filters.status) return false;
+      if (filters.gender !== "all" && p.gender !== filters.gender) return false;
+      if (!matchesAgeBand(p.birth_date, filters.age)) return false;
+      if (filters.baptized === "yes" && !p.is_baptized) return false;
+      if (filters.baptized === "no" && p.is_baptized) return false;
+      if (filters.birthday === "month" && !birthdayThisMonth(p.birth_date)) return false;
+      return true;
+    });
+    const byAge = (p: Profile) => ageFrom(p.birth_date) ?? 999;
+    return [...rows].sort((a, b) => {
+      if (filters.sort === "recent") return String(b.created_at).localeCompare(String(a.created_at));
+      if (filters.sort === "age_asc") return byAge(a) - byAge(b);
+      if (filters.sort === "age_desc") return byAge(b) - byAge(a);
+      return String(a.full_name ?? "").localeCompare(String(b.full_name ?? ""), "pt-BR");
+    });
+  }, [data, filters]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const current = Math.min(page, totalPages);
+  const pageRows = filtered.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE);
+  const allChecked = pageRows.length > 0 && pageRows.every((p) => selected.includes(p.id));
+
+  const canEdit = (p: Profile) => isAdmin || user?.id === p.id;
+
+  const exportCsv = () =>
+    downloadCsv(
+      `membros-ibatos-${new Date().toISOString().slice(0, 10)}.csv`,
+      filtered.map((p) => ({
+        Nome: p.full_name,
+        Email: p.email,
+        Telefone: p.phone,
+        Nascimento: formatDateBR(p.birth_date),
+        Idade: ageFrom(p.birth_date) ?? "",
+        Sexo: p.gender,
+        Situacao: labelOf(MEMBERSHIP_STATUS, p.membership_status) ?? "",
+        Batizado: p.is_baptized ? "Sim" : "Não",
+        Cidade: p.city,
+        MembroDesde: formatDateBR(p.member_since),
+      })),
+    );
 
   return (
     <>
       <PageHeader
         eyebrow="Corpo de Cristo"
         title="Membros"
-        description="Todos os irmãos e irmãs cadastrados na plataforma."
+        description="Gestão completa da membresia: fichas, filtros, permissões e indicadores."
       />
       <PageBody>
-        <div className="mb-6 max-w-md">
-          <Input placeholder="Buscar por nome ou e-mail..." value={q} onChange={(e) => setQ(e.target.value)} />
-        </div>
-        <div className="border border-border bg-card rounded-sm overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-muted/50">
-              <tr className="text-left">
-                <th className="px-4 py-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Nome</th>
-                <th className="px-4 py-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">E-mail</th>
-                <th className="px-4 py-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Telefone</th>
-                <th className="px-4 py-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Idade</th>
-                <th className="px-4 py-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Situação</th>
-                {isAdmin && (
-                  <th className="px-4 py-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                    Administra
-                  </th>
-                )}
-                <th className="px-4 py-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Ficha</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered?.map((p) => (
-                <tr key={p.id} className="border-t border-border">
-                  <td className="px-4 py-3">{p.full_name}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{p.email}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{p.phone ?? "—"}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{ageFrom(p.birth_date) ?? "—"}</td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {labelOf(MEMBERSHIP_STATUS, p.membership_status) ?? "—"}
-                  </td>
-                  {isAdmin && (
-                    <td className="px-4 py-3">
-                      <div className="flex gap-1">
-                        {GRANTABLE.map(({ role, label }) => {
-                          const existing = roles?.find((r) => r.user_id === p.id && r.role === role);
-                          return (
-                            <Button
-                              key={role}
-                              size="sm"
-                              variant={existing ? "default" : "outline"}
-                              onClick={() =>
-                                toggleRole.mutate({ userId: p.id, role, existingId: existing?.id })
-                              }
-                            >
-                              {label}
-                            </Button>
-                          );
-                        })}
-                      </div>
-                    </td>
-                  )}
-                  <td className="px-4 py-3">
-                    {(isAdmin || user?.id === p.id) ? (
-                      <Button size="sm" variant="outline" onClick={() => setEditing(p)}>
-                        Editar ficha
-                      </Button>
-                    ) : (
-                      <span className="text-muted-foreground">—</span>
-                    )}
-                  </td>
-                </tr>
+        <MemberStats members={(data ?? []) as any} />
+
+        <MemberToolbar
+          filters={filters}
+          onChange={(f) => {
+            setFilters(f);
+            setPage(1);
+          }}
+          onExport={exportCsv}
+          view={view}
+          onViewChange={setView}
+          count={filtered.length}
+        />
+
+        {isAdmin && selected.length > 0 && (
+          <div className="flex flex-wrap items-center gap-2 border border-border bg-muted/40 rounded-sm px-4 py-3 mb-4">
+            <span className="font-mono text-[10px] uppercase tracking-widest">
+              {selected.length} selecionado{selected.length === 1 ? "" : "s"}
+            </span>
+            <div className="flex flex-wrap gap-1 ml-auto">
+              {MEMBERSHIP_STATUS.map((s) => (
+                <Button
+                  key={s.value}
+                  size="sm"
+                  variant="outline"
+                  disabled={bulkStatus.isPending}
+                  onClick={() => bulkStatus.mutate(s.value)}
+                >
+                  {s.label}
+                </Button>
               ))}
-              {filtered && filtered.length === 0 && (
-                <tr><td colSpan={isAdmin ? 7 : 6} className="px-4 py-6 text-center text-muted-foreground">Nenhum membro encontrado.</td></tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              <Button size="sm" variant="ghost" onClick={() => setSelected([])}>
+                Limpar
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {isLoading ? (
+          <div className="space-y-2">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <Skeleton key={i} className="h-12 w-full" />
+            ))}
+          </div>
+        ) : view === "table" ? (
+          <div className="border border-border bg-card rounded-sm overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr className="text-left [&>th]:px-4 [&>th]:py-3 [&>th]:font-mono [&>th]:text-[10px] [&>th]:uppercase [&>th]:tracking-widest [&>th]:text-muted-foreground">
+                  {isAdmin && (
+                    <th className="w-10">
+                      <Checkbox
+                        checked={allChecked}
+                        onCheckedChange={(v) =>
+                          setSelected(
+                            v === true
+                              ? Array.from(new Set([...selected, ...pageRows.map((p) => p.id)]))
+                              : selected.filter((id) => !pageRows.some((p) => p.id === id)),
+                          )
+                        }
+                      />
+                    </th>
+                  )}
+                  <th>Membro</th>
+                  <th>Contato</th>
+                  <th>Idade</th>
+                  <th>Situação</th>
+                  {isAdmin && <th>Permissões</th>}
+                  <th className="text-right">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pageRows.map((p) => {
+                  const userRoles = roles?.filter((r) => r.user_id === p.id) ?? [];
+                  return (
+                    <tr key={p.id} className="border-t border-border hover:bg-muted/30 transition-colors">
+                      {isAdmin && (
+                        <td className="px-4 py-3">
+                          <Checkbox
+                            checked={selected.includes(p.id)}
+                            onCheckedChange={(v) =>
+                              setSelected((prev) =>
+                                v === true ? [...prev, p.id] : prev.filter((id) => id !== p.id),
+                              )
+                            }
+                          />
+                        </td>
+                      )}
+                      <td className="px-4 py-3">
+                        <button className="flex items-center gap-3 text-left" onClick={() => setDetail(p)}>
+                          <span className="size-9 rounded-sm bg-muted grid place-items-center font-mono text-xs shrink-0">
+                            {initialsOf(p.full_name)}
+                          </span>
+                          <span>
+                            <span className="block font-medium hover:underline">{p.full_name}</span>
+                            <span className="block text-xs text-muted-foreground">
+                              {p.city ?? "Cidade não informada"}
+                            </span>
+                          </span>
+                        </button>
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground">
+                        <span className="block">{p.email ?? "—"}</span>
+                        <span className="block text-xs">{p.phone ?? "—"}</span>
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground">{ageFrom(p.birth_date) ?? "—"}</td>
+                      <td className="px-4 py-3">
+                        <Badge variant={(p.membership_status ?? "ativo") === "ativo" ? "default" : "secondary"}>
+                          {labelOf(MEMBERSHIP_STATUS, p.membership_status ?? "ativo")}
+                        </Badge>
+                      </td>
+                      {isAdmin && (
+                        <td className="px-4 py-3">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button size="sm" variant="outline">
+                                {userRoles.filter((r) => r.role !== "membro").length || "—"} papel(is)
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start">
+                              <DropdownMenuLabel>Conceder acesso</DropdownMenuLabel>
+                              <DropdownMenuSeparator />
+                              {GRANTABLE.map(({ role, label }) => {
+                                const existing = userRoles.find((r) => r.role === role);
+                                return (
+                                  <DropdownMenuItem
+                                    key={role}
+                                    onSelect={(e) => {
+                                      e.preventDefault();
+                                      toggleRole.mutate({ userId: p.id, role, existingId: existing?.id });
+                                    }}
+                                  >
+                                    <span className="mr-2">{existing ? "✓" : "○"}</span>
+                                    {label}
+                                  </DropdownMenuItem>
+                                );
+                              })}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </td>
+                      )}
+                      <td className="px-4 py-3 text-right whitespace-nowrap">
+                        <Button size="sm" variant="ghost" onClick={() => setDetail(p)}>
+                          Ver
+                        </Button>
+                        {canEdit(p) && (
+                          <Button size="sm" variant="outline" onClick={() => setEditing(p)}>
+                            Editar
+                          </Button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+                {pageRows.length === 0 && (
+                  <tr>
+                    <td colSpan={isAdmin ? 7 : 5} className="px-4 py-10 text-center text-muted-foreground">
+                      Nenhum membro encontrado com esses filtros.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {pageRows.map((p) => (
+              <button
+                key={p.id}
+                onClick={() => setDetail(p)}
+                className="text-left border border-border bg-card rounded-sm p-4 hover:border-primary transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="size-11 rounded-sm bg-primary text-primary-foreground grid place-items-center font-serif">
+                    {initialsOf(p.full_name)}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="font-medium truncate">{p.full_name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{p.email ?? p.phone ?? "—"}</p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-1.5 mt-3">
+                  <Badge variant="outline">{labelOf(MEMBERSHIP_STATUS, p.membership_status ?? "ativo")}</Badge>
+                  {ageFrom(p.birth_date) !== null && (
+                    <Badge variant="secondary">{ageFrom(p.birth_date)} anos</Badge>
+                  )}
+                  {birthdayThisMonth(p.birth_date) && <Badge>Aniversário do mês</Badge>}
+                </div>
+              </button>
+            ))}
+            {pageRows.length === 0 && (
+              <p className="text-muted-foreground col-span-full py-10 text-center">
+                Nenhum membro encontrado com esses filtros.
+              </p>
+            )}
+          </div>
+        )}
+
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between mt-4">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+              Página {current} de {totalPages}
+            </span>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" disabled={current === 1} onClick={() => setPage(current - 1)}>
+                Anterior
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={current === totalPages}
+                onClick={() => setPage(current + 1)}
+              >
+                Próxima
+              </Button>
+            </div>
+          </div>
+        )}
+
+        <MemberDetailSheet
+          profile={detail}
+          open={!!detail}
+          onOpenChange={(v) => !v && setDetail(null)}
+          canSeeNotes={isAdmin || user?.id === detail?.id}
+          onEdit={() => {
+            if (detail && canEdit(detail)) setEditing(detail);
+            setDetail(null);
+          }}
+        />
         <MemberFormDialog
           profile={editing}
           open={!!editing}
