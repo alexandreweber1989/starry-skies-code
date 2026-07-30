@@ -15,6 +15,27 @@ export const WORSHIP_FUNCTIONS = [
   "Técnico de som",
 ] as const;
 
+/** Agrupamento das funções do louvor por naipe/família, usado na visão de banda. */
+export const FUNCTION_GROUPS: { id: string; label: string; functions: string[] }[] = [
+  { id: "vozes", label: "Vozes", functions: ["Ministro(a)", "Vocal", "Backing vocal"] },
+  { id: "cordas", label: "Cordas", functions: ["Violão", "Guitarra", "Baixo"] },
+  { id: "teclas", label: "Teclas", functions: ["Teclado"] },
+  { id: "ritmo", label: "Ritmo", functions: ["Bateria", "Percussão"] },
+  { id: "sopro", label: "Sopros", functions: ["Sopro"] },
+  { id: "tecnica", label: "Técnica", functions: ["Técnico de som"] },
+];
+
+/** Retorna o id do naipe de uma função (fallback: técnica). */
+export function functionGroupId(fn: string): string {
+  return FUNCTION_GROUPS.find((g) => g.functions.includes(fn))?.id ?? "tecnica";
+}
+
+/** Iniciais para avatares (máx. 2 letras). */
+export function initials(name: string): string {
+  const parts = name.trim().split(/\s+/);
+  return ((parts[0]?.[0] ?? "") + (parts.length > 1 ? parts[parts.length - 1][0] : "")).toUpperCase();
+}
+
 export const SONG_KEYS = [
   "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
   "Cm", "C#m", "Dm", "D#m", "Em", "Fm", "F#m", "Gm", "G#m", "Am", "A#m", "Bm",
