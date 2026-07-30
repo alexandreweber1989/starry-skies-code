@@ -7,13 +7,14 @@ import { ASSIGNMENT_STATUS, SCHEDULE_TYPE_LABELS, formatDate, formatTime } from 
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { QueryError } from "./visao-geral";
 
 export function MinhasEscalas() {
   const { user } = useAuth();
   const qc = useQueryClient();
   const [note, setNote] = useState<Record<string, string>>({});
 
-  const { data } = useQuery({
+  const { data, error } = useQuery({
     queryKey: ["my-worship-assignments", user?.id],
     enabled: Boolean(user?.id),
     queryFn: async () => {
@@ -43,6 +44,8 @@ export function MinhasEscalas() {
   });
 
   const sorted = [...(data ?? [])].sort((a, b) => a.schedule.event_date.localeCompare(b.schedule.event_date));
+
+  if (error) return <QueryError error={error as Error} />;
 
   if (sorted.length === 0) {
     return <p className="text-sm text-muted-foreground">Você não está escalado em nenhum culto ou ensaio no momento.</p>;
