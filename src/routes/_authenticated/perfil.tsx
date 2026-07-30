@@ -1,9 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, PageBody } from "@/components/app-shell";
 import { useAuth } from "@/lib/auth-context";
 import { ShieldCheck } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { MemberFormDialog } from "@/components/membros/member-form-dialog";
+import {
+  MARITAL_STATUS,
+  MEMBERSHIP_STATUS,
+  MEMBERSHIP_TYPES,
+  formatDateBR,
+  labelOf,
+} from "@/lib/membros";
 
 export const Route = createFileRoute("/_authenticated/perfil")({
   head: () => ({ meta: [{ title: "Meu perfil — IB Atos" }] }),
@@ -12,6 +22,7 @@ export const Route = createFileRoute("/_authenticated/perfil")({
 
 function PerfilPage() {
   const { user, roles, isAdmin } = useAuth();
+  const [editing, setEditing] = useState(false);
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
     enabled: !!user?.id,
@@ -33,13 +44,47 @@ function PerfilPage() {
     <>
       <PageHeader eyebrow="Sua conta" title="Meu perfil" description={profile?.full_name ?? user?.email ?? ""} />
       <PageBody>
+        <div className="mb-6">
+          <Button onClick={() => setEditing(true)}>Editar ficha completa</Button>
+        </div>
         <div className="grid lg:grid-cols-2 gap-6">
           <div className="border border-border bg-card p-8 rounded-sm space-y-4 text-sm">
+            <div className="font-mono text-[10px] uppercase tracking-widest text-primary">Dados pessoais</div>
             <Row label="Nome" value={profile?.full_name} />
             <Row label="E-mail" value={profile?.email ?? user?.email} />
             <Row label="Telefone" value={profile?.phone} />
-            <Row label="Aniversário" value={profile?.birth_date} />
+            <Row label="Aniversário" value={formatDateBR(profile?.birth_date)} />
+            <Row label="Estado civil" value={labelOf(MARITAL_STATUS, profile?.marital_status)} />
+            <Row label="Cônjuge" value={profile?.spouse_name} />
+            <Row label="Profissão" value={profile?.profession} />
+            <Row
+              label="Endereço"
+              value={
+                [profile?.street, profile?.street_number, profile?.neighborhood, profile?.city, profile?.state]
+                  .filter(Boolean)
+                  .join(", ") || null
+              }
+            />
+            <Row
+              label="Emergência"
+              value={
+                profile?.emergency_contact_name
+                  ? `${profile.emergency_contact_name} — ${profile.emergency_contact_phone ?? ""}`
+                  : null
+              }
+            />
+          </div>
+          <div className="border border-border bg-card p-8 rounded-sm space-y-4 text-sm">
+            <div className="font-mono text-[10px] uppercase tracking-widest text-primary">Vida cristã</div>
+            <Row label="Conversão" value={formatDateBR(profile?.conversion_date)} />
             <Row label="Batizado" value={profile?.is_baptized ? "Sim" : "Não"} />
+            <Row label="Data do batismo" value={formatDateBR(profile?.baptism_date)} />
+            <Row label="Membro desde" value={formatDateBR(profile?.member_since)} />
+            <Row label="Forma de entrada" value={labelOf(MEMBERSHIP_TYPES, profile?.membership_type)} />
+            <Row label="Situação" value={labelOf(MEMBERSHIP_STATUS, profile?.membership_status)} />
+            <Row label="Cursos" value={profile?.courses?.length ? profile.courses.join(", ") : null} />
+            <Row label="Dons" value={profile?.gifts} />
+            <Row label="Disponibilidade" value={profile?.availability} />
           </div>
           <div className="border border-border bg-card p-8 rounded-sm">
             <div className="font-mono text-[10px] uppercase tracking-widest text-primary mb-4">Seus papéis</div>
@@ -61,6 +106,12 @@ function PerfilPage() {
             </ul>
           </div>
         </div>
+        <MemberFormDialog
+          profile={profile ?? null}
+          open={editing}
+          onOpenChange={setEditing}
+          canEditMembership={isAdmin}
+        />
       </PageBody>
     </>
   );

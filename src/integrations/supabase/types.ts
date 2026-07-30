@@ -520,45 +520,153 @@ export type Database = {
       profiles: {
         Row: {
           address: string | null
+          allergies: string | null
+          availability: string | null
           avatar_url: string | null
+          baptism_church: string | null
+          baptism_date: string | null
           bio: string | null
           birth_date: string | null
+          blood_type: string | null
+          children_count: number
+          city: string | null
+          complement: string | null
+          conversion_date: string | null
+          courses: string[]
+          cpf: string | null
           created_at: string
+          education: string | null
           email: string | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          emergency_contact_relation: string | null
+          father_name: string | null
           full_name: string
+          gender: string | null
+          gifts: string | null
+          has_children: boolean
+          health_notes: string | null
           id: string
           is_baptized: boolean | null
+          marital_status: string | null
           member_since: string | null
+          membership_end_date: string | null
+          membership_status: string
+          membership_type: string | null
+          mother_name: string | null
+          neighborhood: string | null
+          notes: string | null
           phone: string | null
+          previous_church: string | null
+          profession: string | null
+          rg: string | null
+          spouse_name: string | null
+          state: string | null
+          street: string | null
+          street_number: string | null
           updated_at: string
+          wedding_date: string | null
+          zip_code: string | null
         }
         Insert: {
           address?: string | null
+          allergies?: string | null
+          availability?: string | null
           avatar_url?: string | null
+          baptism_church?: string | null
+          baptism_date?: string | null
           bio?: string | null
           birth_date?: string | null
+          blood_type?: string | null
+          children_count?: number
+          city?: string | null
+          complement?: string | null
+          conversion_date?: string | null
+          courses?: string[]
+          cpf?: string | null
           created_at?: string
+          education?: string | null
           email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          emergency_contact_relation?: string | null
+          father_name?: string | null
           full_name: string
+          gender?: string | null
+          gifts?: string | null
+          has_children?: boolean
+          health_notes?: string | null
           id: string
           is_baptized?: boolean | null
+          marital_status?: string | null
           member_since?: string | null
+          membership_end_date?: string | null
+          membership_status?: string
+          membership_type?: string | null
+          mother_name?: string | null
+          neighborhood?: string | null
+          notes?: string | null
           phone?: string | null
+          previous_church?: string | null
+          profession?: string | null
+          rg?: string | null
+          spouse_name?: string | null
+          state?: string | null
+          street?: string | null
+          street_number?: string | null
           updated_at?: string
+          wedding_date?: string | null
+          zip_code?: string | null
         }
         Update: {
           address?: string | null
+          allergies?: string | null
+          availability?: string | null
           avatar_url?: string | null
+          baptism_church?: string | null
+          baptism_date?: string | null
           bio?: string | null
           birth_date?: string | null
+          blood_type?: string | null
+          children_count?: number
+          city?: string | null
+          complement?: string | null
+          conversion_date?: string | null
+          courses?: string[]
+          cpf?: string | null
           created_at?: string
+          education?: string | null
           email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          emergency_contact_relation?: string | null
+          father_name?: string | null
           full_name?: string
+          gender?: string | null
+          gifts?: string | null
+          has_children?: boolean
+          health_notes?: string | null
           id?: string
           is_baptized?: boolean | null
+          marital_status?: string | null
           member_since?: string | null
+          membership_end_date?: string | null
+          membership_status?: string
+          membership_type?: string | null
+          mother_name?: string | null
+          neighborhood?: string | null
+          notes?: string | null
           phone?: string | null
+          previous_church?: string | null
+          profession?: string | null
+          rg?: string | null
+          spouse_name?: string | null
+          state?: string | null
+          street?: string | null
+          street_number?: string | null
           updated_at?: string
+          wedding_date?: string | null
+          zip_code?: string | null
         }
         Relationships: []
       }
