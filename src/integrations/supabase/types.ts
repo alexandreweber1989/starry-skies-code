@@ -775,6 +775,13 @@ export type Database = {
             referencedRelation: "worship_schedules"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "worship_schedule_assignments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       worship_schedules: {
@@ -987,6 +994,13 @@ export type Database = {
             columns: ["team_id"]
             isOneToOne: false
             referencedRelation: "worship_teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "worship_team_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
