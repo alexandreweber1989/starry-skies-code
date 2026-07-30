@@ -86,10 +86,13 @@ export function MemberDetailSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-xl overflow-y-auto">
-        <SheetHeader className="text-left">
+      <SheetContent
+        key={id}
+        className="ficha-sweep w-full sm:max-w-xl overflow-y-auto overflow-x-hidden"
+      >
+        <SheetHeader className="ficha-wipe text-left">
           <div className="flex items-center gap-4">
-            <div className="size-14 rounded-sm bg-primary text-primary-foreground grid place-items-center font-serif text-xl">
+            <div className="ficha-avatar size-14 rounded-sm bg-primary text-primary-foreground grid place-items-center font-serif text-xl">
               {initialsOf(profile.full_name)}
             </div>
             <div className="min-w-0">
@@ -97,7 +100,7 @@ export function MemberDetailSheet({
               <SheetDescription className="truncate">{profile.email ?? "Sem e-mail"}</SheetDescription>
             </div>
           </div>
-          <div className="flex flex-wrap gap-1.5 pt-3">
+          <div className="ficha-stagger flex flex-wrap gap-1.5 pt-3">
             <Badge variant="outline">
               {labelOf(MEMBERSHIP_STATUS, profile.membership_status) ?? "Sem situação"}
             </Badge>
@@ -111,7 +114,7 @@ export function MemberDetailSheet({
           </div>
         </SheetHeader>
 
-        <div className="space-y-6 py-6">
+        <div className="ficha-stagger space-y-6 py-6">
           <Block title="Contato">
             <Line label="Telefone" value={profile.phone} />
             <Line label="Nascimento" value={formatDateBR(profile.birth_date)} />

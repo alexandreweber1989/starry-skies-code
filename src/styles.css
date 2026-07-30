@@ -149,3 +149,103 @@
     color: var(--color-foreground);
   }
 }
+
+/* ---------------------------------------------------------------
+   Animações da ficha de membro
+   Objetivo: sinalizar com impacto que a ficha foi carregada,
+   sem custo de layout (apenas transform/opacity/clip-path).
+   --------------------------------------------------------------- */
+
+@keyframes member-punch {
+  0% { transform: scale(1); }
+  35% { transform: scale(0.95); }
+  70% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+@keyframes member-ripple {
+  0% { transform: scale(0); opacity: 0.35; }
+  100% { transform: scale(3.2); opacity: 0; }
+}
+
+@keyframes ficha-wipe {
+  0% { clip-path: inset(0 0 100% 0); opacity: 0; }
+  100% { clip-path: inset(0 0 0 0); opacity: 1; }
+}
+
+@keyframes ficha-sweep {
+  0% { transform: translateY(-110%) scaleY(1.4); opacity: 1; }
+  100% { transform: translateY(115%) scaleY(1.4); opacity: 0; }
+}
+
+@keyframes ficha-rise {
+  0% { transform: translateY(18px); opacity: 0; filter: blur(6px); }
+  100% { transform: translateY(0); opacity: 1; filter: blur(0); }
+}
+
+@keyframes ficha-avatar {
+  0% { transform: scale(0.4) rotate(-14deg); opacity: 0; }
+  60% { transform: scale(1.12) rotate(4deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+@layer utilities {
+  .member-punch {
+    animation: member-punch 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .member-ripple {
+    animation: member-ripple 620ms ease-out forwards;
+  }
+
+  /* Cortina que varre a ficha ao abrir */
+  .ficha-sweep::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 50;
+    pointer-events: none;
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      var(--color-foreground) 45%,
+      var(--color-foreground) 55%,
+      transparent
+    );
+    opacity: 0.16;
+    animation: ficha-sweep 700ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .ficha-wipe {
+    animation: ficha-wipe 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .ficha-avatar {
+    animation: ficha-avatar 620ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  /* Entrada em cascata dos blocos da ficha */
+  .ficha-stagger > * {
+    animation: ficha-rise 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .ficha-stagger > *:nth-child(1) { animation-delay: 60ms; }
+  .ficha-stagger > *:nth-child(2) { animation-delay: 110ms; }
+  .ficha-stagger > *:nth-child(3) { animation-delay: 160ms; }
+  .ficha-stagger > *:nth-child(4) { animation-delay: 210ms; }
+  .ficha-stagger > *:nth-child(5) { animation-delay: 260ms; }
+  .ficha-stagger > *:nth-child(6) { animation-delay: 310ms; }
+  .ficha-stagger > *:nth-child(7) { animation-delay: 360ms; }
+  .ficha-stagger > *:nth-child(8) { animation-delay: 410ms; }
+  .ficha-stagger > *:nth-child(n + 9) { animation-delay: 460ms; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .member-punch,
+  .member-ripple,
+  .ficha-wipe,
+  .ficha-avatar,
+  .ficha-sweep::after,
+  .ficha-stagger > * {
+    animation: none !important;
+  }
+}

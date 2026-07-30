@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -38,16 +38,32 @@ export function MemberCard({
   canEdit: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
+  /** Ondas do clique: cada uma se remove sozinha ao terminar a animação. */
+  const [ripples, setRipples] = useState<{ id: number; x: number; y: number }[]>([]);
+  const [punch, setPunch] = useState(false);
+  const rippleId = useRef(0);
   const age = ageFrom(profile.birth_date);
   const isBirthday = birthdayThisMonth(profile.birth_date);
   const active = (profile.membership_status ?? "ativo") === "ativo";
   const phone = String(profile.phone ?? "").replace(/\D/g, "");
 
+  /** Dispara feedback tátil-visual (onda + "punch") a partir do ponto clicado. */
+  const burst = (e: ReactMouseEvent<HTMLElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const id = ++rippleId.current;
+    setRipples((prev) => [...prev, { id, x: e.clientX - rect.left, y: e.clientY - rect.top }]);
+    setPunch(true);
+    window.setTimeout(() => setPunch(false), 340);
+  };
+
   return (
     <div
       role="button"
       tabIndex={0}
-      onClick={() => setExpanded((v) => !v)}
+      onClick={(e) => {
+        burst(e);
+        setExpanded((v) => !v);
+      }}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
@@ -59,8 +75,20 @@ export function MemberCard({
         "group relative animate-fade-in cursor-pointer select-none overflow-hidden rounded-sm border bg-card p-4",
         "transition-all duration-300 hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         selected ? "border-primary ring-2 ring-primary/30" : "border-border hover:border-primary",
+        punch && "member-punch",
       )}
     >
+      {/* ondas de clique */}
+      {ripples.map((r) => (
+        <span
+          key={r.id}
+          aria-hidden
+          onAnimationEnd={() => setRipples((prev) => prev.filter((p) => p.id !== r.id))}
+          style={{ left: r.x, top: r.y }}
+          className="member-ripple pointer-events-none absolute -ml-16 -mt-16 size-32 rounded-full bg-primary/40"
+        />
+      ))}
+
       {/* faixa de status que se acende ao passar o mouse */}
       <span
         className={cn(
@@ -135,7 +163,13 @@ export function MemberCard({
           </dl>
 
           <div className="mt-3 flex flex-wrap gap-2" onClick={(e) => e.stopPropagation()}>
-            <Button size="sm" onClick={onOpen}>
+            <Button
+              size="sm"
+              onClick={(e) => {
+                burst(e);
+                onOpen();
+              }}
+            >
               Ver ficha
             </Button>
             {canEdit && (
