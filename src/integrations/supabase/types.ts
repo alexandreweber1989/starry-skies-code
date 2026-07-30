@@ -14,6 +14,227 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          value: string | null
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value?: string | null
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: string | null
+        }
+        Relationships: []
+      }
+      canteen_items: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          name: string
+          price_cents: number
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          name: string
+          price_cents?: number
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          name?: string
+          price_cents?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      canteen_menu_items: {
+        Row: {
+          created_at: string
+          id: string
+          is_available: boolean
+          item_id: string
+          menu_id: string
+          price_cents: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_available?: boolean
+          item_id: string
+          menu_id: string
+          price_cents?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_available?: boolean
+          item_id?: string
+          menu_id?: string
+          price_cents?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "canteen_menu_items_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "canteen_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "canteen_menu_items_menu_id_fkey"
+            columns: ["menu_id"]
+            isOneToOne: false
+            referencedRelation: "canteen_menus"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      canteen_menus: {
+        Row: {
+          art_url: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          service_date: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          art_url?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          service_date: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          art_url?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          service_date?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      canteen_reservation_items: {
+        Row: {
+          created_at: string
+          id: string
+          item_id: string | null
+          item_name: string
+          quantity: number
+          reservation_id: string
+          unit_price_cents: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          item_id?: string | null
+          item_name: string
+          quantity?: number
+          reservation_id: string
+          unit_price_cents?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          item_id?: string | null
+          item_name?: string
+          quantity?: number
+          reservation_id?: string
+          unit_price_cents?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "canteen_reservation_items_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "canteen_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "canteen_reservation_items_reservation_id_fkey"
+            columns: ["reservation_id"]
+            isOneToOne: false
+            referencedRelation: "canteen_reservations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      canteen_reservations: {
+        Row: {
+          created_at: string
+          id: string
+          menu_id: string
+          notes: string | null
+          picked_up_at: string | null
+          pickup_code: string
+          status: string
+          total_cents: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          menu_id: string
+          notes?: string | null
+          picked_up_at?: string | null
+          pickup_code?: string
+          status?: string
+          total_cents?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          menu_id?: string
+          notes?: string | null
+          picked_up_at?: string | null
+          pickup_code?: string
+          status?: string
+          total_cents?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "canteen_reservations_menu_id_fkey"
+            columns: ["menu_id"]
+            isOneToOne: false
+            referencedRelation: "canteen_menus"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mesa_members: {
         Row: {
           id: string
@@ -164,6 +385,138 @@ export type Database = {
           },
         ]
       }
+      order_items: {
+        Row: {
+          created_at: string
+          id: string
+          order_id: string
+          product_id: string | null
+          product_name: string
+          quantity: number
+          unit_price_cents: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order_id: string
+          product_id?: string | null
+          product_name: string
+          quantity?: number
+          unit_price_cents?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order_id?: string
+          product_id?: string | null
+          product_name?: string
+          quantity?: number
+          unit_price_cents?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          confirmed_at: string | null
+          confirmed_by: string | null
+          created_at: string
+          delivered_at: string | null
+          id: string
+          notes: string | null
+          payment_proof_url: string | null
+          pickup_code: string
+          status: string
+          total_cents: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          id?: string
+          notes?: string | null
+          payment_proof_url?: string | null
+          pickup_code?: string
+          status?: string
+          total_cents?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          id?: string
+          notes?: string | null
+          payment_proof_url?: string | null
+          pickup_code?: string
+          status?: string
+          total_cents?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          name: string
+          price_cents: number
+          stock: number
+          track_stock: boolean
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          name: string
+          price_cents?: number
+          stock?: number
+          track_stock?: boolean
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          name?: string
+          price_cents?: number
+          stock?: number
+          track_stock?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           address: string | null
@@ -278,6 +631,7 @@ export type Database = {
     }
     Functions: {
       claim_first_admin: { Args: { _user_id: string }; Returns: boolean }
+      gen_pickup_code: { Args: { _prefix: string }; Returns: string }
       has_mesa_role: {
         Args: { _mesa_id: string; _user_id: string }
         Returns: boolean
@@ -293,9 +647,17 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_cantina_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_livraria_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      app_role: "admin_geral" | "admin_ministerio" | "lider_mesa" | "membro"
+      app_role:
+        | "admin_geral"
+        | "admin_ministerio"
+        | "lider_mesa"
+        | "membro"
+        | "admin_livraria"
+        | "admin_cantina"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -423,7 +785,14 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin_geral", "admin_ministerio", "lider_mesa", "membro"],
+      app_role: [
+        "admin_geral",
+        "admin_ministerio",
+        "lider_mesa",
+        "membro",
+        "admin_livraria",
+        "admin_cantina",
+      ],
     },
   },
 } as const
