@@ -87,7 +87,6 @@ export function MemberCard({
           setExpanded((v) => !v);
         }
       }}
-      style={{ animationDelay: `${Math.min(index, 12) * 30}ms` }}
       className={cn(
         "group relative animate-fade-in cursor-pointer select-none overflow-hidden rounded-sm border bg-card p-4",
         "transition-all duration-300 hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
