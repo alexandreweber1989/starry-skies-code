@@ -225,7 +225,11 @@ export function LivrariaAdminOrders() {
 
   const setStatus = useMutation({
     mutationFn: async ({ order, status }: { order: any; status: string }) => {
-      const patch: Record<string, unknown> = { status };
+      const patch: {
+        status: string;
+        confirmed_at?: string;
+        delivered_at?: string;
+      } = { status };
       if (status === "pago") patch.confirmed_at = new Date().toISOString();
       if (status === "entregue") patch.delivered_at = new Date().toISOString();
       const { error } = await supabase.from("orders").update(patch).eq("id", order.id);
