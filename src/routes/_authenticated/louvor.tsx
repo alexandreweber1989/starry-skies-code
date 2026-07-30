@@ -5,6 +5,8 @@ import { Repertorio } from "@/components/louvor/repertorio";
 import { Equipes } from "@/components/louvor/equipes";
 import { Escalas } from "@/components/louvor/escalas";
 import { MinhasEscalas } from "@/components/louvor/minhas-escalas";
+import { VisaoGeral } from "@/components/louvor/visao-geral";
+import { Elenco } from "@/components/louvor/elenco";
 
 export const Route = createFileRoute("/_authenticated/louvor")({
   head: () => ({
@@ -36,15 +38,19 @@ function LouvorPage() {
         description="Equipes montadas pelos ministros, escalas de culto e ensaio com confirmação de presença, e o banco de cifras da igreja com transposição de tom."
       />
       <PageBody>
-        <Tabs defaultValue="escalas">
-          <TabsList className="mb-8">
+        <Tabs defaultValue="visao">
+          <TabsList className="mb-8 flex-wrap h-auto">
+            <TabsTrigger value="visao">Visão geral</TabsTrigger>
             <TabsTrigger value="escalas">Escalas &amp; ensaios</TabsTrigger>
             <TabsTrigger value="minhas">Minhas escalas</TabsTrigger>
+            <TabsTrigger value="elenco">Banda</TabsTrigger>
             <TabsTrigger value="repertorio">Repertório</TabsTrigger>
             <TabsTrigger value="equipes">Equipes</TabsTrigger>
           </TabsList>
+          <TabsContent value="visao"><VisaoGeral /></TabsContent>
           <TabsContent value="escalas"><Escalas /></TabsContent>
           <TabsContent value="minhas"><MinhasEscalas /></TabsContent>
+          <TabsContent value="elenco"><Elenco /></TabsContent>
           <TabsContent value="repertorio"><Repertorio /></TabsContent>
           <TabsContent value="equipes"><Equipes /></TabsContent>
         </Tabs>
