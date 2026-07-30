@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScheduleDialog } from "./schedule-dialog";
 import { ScheduleDetail } from "./schedule-detail";
+import { QueryError } from "./visao-geral";
 
 export function Escalas() {
   const { isMinistryAdmin } = useAuth();
@@ -22,7 +23,7 @@ export function Escalas() {
   const [openId, setOpenId] = useState<string | null>(null);
   const qc = useQueryClient();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["worship-schedules"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -58,6 +59,8 @@ export function Escalas() {
     },
     onError: (e: Error) => toast.error(e.message),
   });
+
+  if (error) return <QueryError error={error as Error} />;
 
   if (isLoading) {
     return <div className="space-y-3">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-28 rounded-sm" />)}</div>;
