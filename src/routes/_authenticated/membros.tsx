@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/lib/auth-context";
+import { useAffiliations } from "@/lib/vinculos";
 import { MemberFormDialog } from "@/components/membros/member-form-dialog";
 import { MemberStats } from "@/components/membros/member-stats";
 import { MemberCard } from "@/components/membros/member-card";
@@ -372,6 +373,7 @@ function MembrosPage() {
                 onOpen={() => setDetail(p)}
                 onEdit={() => setEditing(p)}
                 canEdit={canEdit(p)}
+                affiliations={affiliations?.get(p.id) ?? []}
               />
             ))}
             {pageRows.length === 0 && (
