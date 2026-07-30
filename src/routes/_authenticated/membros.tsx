@@ -94,6 +94,7 @@ function MembrosPage() {
   const { data: roles } = useQuery({
     queryKey: ["all-roles"],
     enabled: isAdmin,
+    enabled: isAdmin,
     queryFn: async () => {
       const { data, error } = await supabase.from("user_roles").select("id, user_id, role");
       if (error) throw error;
