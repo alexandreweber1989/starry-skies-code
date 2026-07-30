@@ -9,6 +9,8 @@ import {
   LogOut,
   UserCircle,
   ShieldCheck,
+  BookOpen,
+  Coffee,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { useAuth } from "@/lib/auth-context";
@@ -20,6 +22,8 @@ const nav = [
   { to: "/redes", label: "Redes", icon: Network },
   { to: "/mesas", label: "Mesas", icon: UtensilsCrossed },
   { to: "/membros", label: "Membros", icon: Users },
+  { to: "/livraria", label: "Livraria", icon: BookOpen },
+  { to: "/cantina", label: "Cantina", icon: Coffee },
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
