@@ -11,6 +11,7 @@ import {
   ShieldCheck,
   BookOpen,
   Coffee,
+  Music,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { useAuth } from "@/lib/auth-context";
@@ -19,6 +20,7 @@ import { Button } from "@/components/ui/button";
 const nav = [
   { to: "/dashboard", label: "Painel", icon: LayoutDashboard },
   { to: "/ministerios", label: "Ministérios", icon: Sparkles },
+  { to: "/louvor", label: "Louvor", icon: Music },
   { to: "/redes", label: "Redes", icon: Network },
   { to: "/mesas", label: "Mesas", icon: UtensilsCrossed },
   { to: "/membros", label: "Membros", icon: Users },

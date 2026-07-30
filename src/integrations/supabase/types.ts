@@ -625,6 +625,305 @@ export type Database = {
         }
         Relationships: []
       }
+      worship_schedule_assignments: {
+        Row: {
+          created_at: string
+          function_name: string
+          id: string
+          responded_at: string | null
+          response_note: string | null
+          schedule_id: string
+          status: Database["public"]["Enums"]["worship_assignment_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          function_name: string
+          id?: string
+          responded_at?: string | null
+          response_note?: string | null
+          schedule_id: string
+          status?: Database["public"]["Enums"]["worship_assignment_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          function_name?: string
+          id?: string
+          responded_at?: string | null
+          response_note?: string | null
+          schedule_id?: string
+          status?: Database["public"]["Enums"]["worship_assignment_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "worship_schedule_assignments_schedule_id_fkey"
+            columns: ["schedule_id"]
+            isOneToOne: false
+            referencedRelation: "worship_schedules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      worship_schedules: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          event_date: string
+          id: string
+          location: string | null
+          ministry_id: string
+          notes: string | null
+          schedule_type: Database["public"]["Enums"]["worship_schedule_type"]
+          start_time: string | null
+          status: Database["public"]["Enums"]["worship_schedule_status"]
+          team_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          event_date: string
+          id?: string
+          location?: string | null
+          ministry_id?: string
+          notes?: string | null
+          schedule_type?: Database["public"]["Enums"]["worship_schedule_type"]
+          start_time?: string | null
+          status?: Database["public"]["Enums"]["worship_schedule_status"]
+          team_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          event_date?: string
+          id?: string
+          location?: string | null
+          ministry_id?: string
+          notes?: string | null
+          schedule_type?: Database["public"]["Enums"]["worship_schedule_type"]
+          start_time?: string | null
+          status?: Database["public"]["Enums"]["worship_schedule_status"]
+          team_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "worship_schedules_ministry_id_fkey"
+            columns: ["ministry_id"]
+            isOneToOne: false
+            referencedRelation: "ministries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "worship_schedules_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "worship_teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      worship_setlist_items: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          position: number
+          schedule_id: string
+          song_id: string
+          song_key: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          position?: number
+          schedule_id: string
+          song_id: string
+          song_key?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          position?: number
+          schedule_id?: string
+          song_id?: string
+          song_key?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "worship_setlist_items_schedule_id_fkey"
+            columns: ["schedule_id"]
+            isOneToOne: false
+            referencedRelation: "worship_schedules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "worship_setlist_items_song_id_fkey"
+            columns: ["song_id"]
+            isOneToOne: false
+            referencedRelation: "worship_songs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      worship_songs: {
+        Row: {
+          artist: string | null
+          bpm: number | null
+          chords: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          lyrics: string | null
+          ministry_id: string
+          notes: string | null
+          sheet_url: string | null
+          song_key: string | null
+          tags: string[]
+          tempo: string | null
+          theme: string | null
+          title: string
+          updated_at: string
+          youtube_url: string | null
+        }
+        Insert: {
+          artist?: string | null
+          bpm?: number | null
+          chords?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          lyrics?: string | null
+          ministry_id?: string
+          notes?: string | null
+          sheet_url?: string | null
+          song_key?: string | null
+          tags?: string[]
+          tempo?: string | null
+          theme?: string | null
+          title: string
+          updated_at?: string
+          youtube_url?: string | null
+        }
+        Update: {
+          artist?: string | null
+          bpm?: number | null
+          chords?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          lyrics?: string | null
+          ministry_id?: string
+          notes?: string | null
+          sheet_url?: string | null
+          song_key?: string | null
+          tags?: string[]
+          tempo?: string | null
+          theme?: string | null
+          title?: string
+          updated_at?: string
+          youtube_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "worship_songs_ministry_id_fkey"
+            columns: ["ministry_id"]
+            isOneToOne: false
+            referencedRelation: "ministries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      worship_team_members: {
+        Row: {
+          created_at: string
+          function_name: string
+          id: string
+          is_titular: boolean
+          team_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          function_name: string
+          id?: string
+          is_titular?: boolean
+          team_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          function_name?: string
+          id?: string
+          is_titular?: boolean
+          team_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "worship_team_members_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "worship_teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      worship_teams: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          minister_id: string | null
+          ministry_id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          minister_id?: string | null
+          ministry_id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          minister_id?: string | null
+          ministry_id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "worship_teams_ministry_id_fkey"
+            columns: ["ministry_id"]
+            isOneToOne: false
+            referencedRelation: "ministries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -658,6 +957,9 @@ export type Database = {
         | "membro"
         | "admin_livraria"
         | "admin_cantina"
+      worship_assignment_status: "pendente" | "confirmado" | "recusado"
+      worship_schedule_status: "rascunho" | "publicada" | "concluida"
+      worship_schedule_type: "culto" | "ensaio" | "evento"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -793,6 +1095,9 @@ export const Constants = {
         "admin_livraria",
         "admin_cantina",
       ],
+      worship_assignment_status: ["pendente", "confirmado", "recusado"],
+      worship_schedule_status: ["rascunho", "publicada", "concluida"],
+      worship_schedule_type: ["culto", "ensaio", "evento"],
     },
   },
 } as const
