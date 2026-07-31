@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, PageBody } from "@/components/app-shell";
@@ -23,6 +24,22 @@ export const Route = createFileRoute("/_authenticated/perfil")({
 function PerfilPage() {
   const { user, roles, isAdmin } = useAuth();
   const [editing, setEditing] = useState(false);
+
+  /** Assume a administração geral — a função só concede se ainda não existir admin. */
+  const claimAdmin = useMutation({
+    mutationFn: async () => {
+      if (!user?.id) throw new Error("Sessão não encontrada.");
+      const { data, error } = await supabase.rpc("claim_first_admin", { _user_id: user.id });
+      if (error) throw error;
+      if (!data) throw new Error("Já existe um administrador geral definido.");
+    },
+    onSuccess: () => {
+      toast.success("Você agora é admin geral. Recarregando permissões...");
+      window.location.reload();
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
     enabled: !!user?.id,
