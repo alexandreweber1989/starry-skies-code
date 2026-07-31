@@ -18,12 +18,13 @@ function MesasPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("mesas")
-        .select("*, rede:redes(name, target_audience)")
+        .select("*, rede:redes(name, target_audience), church:churches(name, city)")
         .order("name");
       if (error) throw error;
       return data;
     },
   });
+
 
   return (
     <>
