@@ -4,7 +4,7 @@ import { UtensilsCrossed } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, PageBody } from "@/components/app-shell";
 import { useAuth } from "@/lib/auth-context";
-import { MesaDialog, MesaMembersDialog } from "@/components/admin/mesa-dialog";
+import { MesaDialog, MesaMembersDialog, EditMesaButton } from "@/components/admin/mesa-dialog";
 
 export const Route = createFileRoute("/_authenticated/mesas")({
   head: () => ({ meta: [{ title: "Mesas — IB Atos" }] }),
@@ -49,8 +49,9 @@ function MesasPage() {
               <h3 className="font-serif text-2xl">{m.name}</h3>
               {m.description && <p className="mt-2 text-sm text-muted-foreground">{m.description}</p>}
               {(isAdmin || isMesaLeader(m.id)) && (
-                <div className="mt-4">
+                <div className="mt-4 flex flex-wrap items-center gap-2">
                   <MesaMembersDialog mesaId={m.id} mesaName={m.name} />
+                  {isAdmin && <EditMesaButton mesa={m} />}
                 </div>
               )}
               <div className="mt-6 pt-4 border-t border-border space-y-1 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">

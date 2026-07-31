@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Trash2, UserPlus } from "lucide-react";
+import { Pencil, Plus, Trash2, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfileOptions } from "@/lib/use-profiles";
@@ -33,16 +33,41 @@ import {
 
 const DAYS = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
 
-/** Criação de uma nova mesa vinculada a uma rede e a uma igreja (admin geral). */
-export function MesaDialog({ redeId, compact }: { redeId?: string; compact?: boolean }) {
+export interface MesaRecord {
+  id: string;
+  name: string;
+  rede_id?: string | null;
+  church_id?: string | null;
+  meeting_day?: string | null;
+  meeting_time?: string | null;
+  meeting_location?: string | null;
+  description?: string | null;
+}
+
+/**
+ * Criação e edição de mesas vinculadas a uma rede e a uma igreja (admin geral).
+ * Quando `mesa` é informado, o diálogo entra em modo de edição.
+ */
+export function MesaDialog({
+  redeId,
+  compact,
+  mesa,
+  trigger,
+}: {
+  redeId?: string;
+  compact?: boolean;
+  mesa?: MesaRecord;
+  trigger?: React.ReactNode;
+}) {
+  const isEdit = Boolean(mesa?.id);
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState("");
-  const [rede, setRede] = useState(redeId ?? "");
-  const [churchId, setChurchId] = useState("");
-  const [day, setDay] = useState("");
-  const [time, setTime] = useState("");
-  const [location, setLocation] = useState("");
-  const [description, setDescription] = useState("");
+  const [name, setName] = useState(mesa?.name ?? "");
+  const [rede, setRede] = useState(mesa?.rede_id ?? redeId ?? "");
+  const [churchId, setChurchId] = useState(mesa?.church_id ?? "");
+  const [day, setDay] = useState(mesa?.meeting_day ?? "");
+  const [time, setTime] = useState(mesa?.meeting_time ?? "");
+  const [location, setLocation] = useState(mesa?.meeting_location ?? "");
+  const [description, setDescription] = useState(mesa?.description ?? "");
   const qc = useQueryClient();
 
   const { data: redes } = useQuery({
@@ -54,11 +79,21 @@ export function MesaDialog({ redeId, compact }: { redeId?: string; compact?: boo
     },
   });
 
-  const create = useMutation({
+  function resetToInitial() {
+    setName(mesa?.name ?? "");
+    setRede(mesa?.rede_id ?? redeId ?? "");
+    setChurchId(mesa?.church_id ?? "");
+    setDay(mesa?.meeting_day ?? "");
+    setTime(mesa?.meeting_time ?? "");
+    setLocation(mesa?.meeting_location ?? "");
+    setDescription(mesa?.description ?? "");
+  }
+
+  const save = useMutation({
     mutationFn: async () => {
       if (name.trim().length < 3) throw new Error("Informe o nome da mesa.");
       if (!churchId) throw new Error("Selecione a igreja desta mesa.");
-      const { error } = await supabase.from("mesas").insert({
+      const payload = {
         name: name.trim(),
         rede_id: rede || redeId || null,
         church_id: churchId,
@@ -66,17 +101,22 @@ export function MesaDialog({ redeId, compact }: { redeId?: string; compact?: boo
         meeting_time: time || null,
         meeting_location: location.trim() || null,
         description: description.trim() || null,
-      });
+      };
+      const { error } = isEdit
+        ? await supabase.from("mesas").update(payload).eq("id", mesa!.id)
+        : await supabase.from("mesas").insert(payload);
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Mesa criada.");
+      toast.success(isEdit ? "Mesa atualizada." : "Mesa criada.");
       setOpen(false);
-      setName("");
-      setDay("");
-      setTime("");
-      setLocation("");
-      setDescription("");
+      if (!isEdit) {
+        setName("");
+        setDay("");
+        setTime("");
+        setLocation("");
+        setDescription("");
+      }
       void qc.invalidateQueries({ queryKey: ["mesas-full"] });
       void qc.invalidateQueries({ queryKey: ["mesas-by-rede"] });
     },
@@ -84,17 +124,25 @@ export function MesaDialog({ redeId, compact }: { redeId?: string; compact?: boo
   });
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(o) => {
+        setOpen(o);
+        if (o) resetToInitial();
+      }}
+    >
       <DialogTrigger asChild>
-        {compact ? (
-          <Button variant="outline" size="sm"><Plus className="h-4 w-4" /> Nova mesa nesta rede</Button>
-        ) : (
-          <Button><Plus className="h-4 w-4" /> Nova mesa</Button>
+        {trigger ?? (
+          compact ? (
+            <Button variant="outline" size="sm"><Plus className="h-4 w-4" /> Nova mesa nesta rede</Button>
+          ) : (
+            <Button><Plus className="h-4 w-4" /> Nova mesa</Button>
+          )
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="font-serif text-3xl">Nova mesa</DialogTitle>
+          <DialogTitle className="font-serif text-3xl">{isEdit ? "Editar mesa" : "Nova mesa"}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
@@ -104,7 +152,7 @@ export function MesaDialog({ redeId, compact }: { redeId?: string; compact?: boo
           <ChurchSelect value={churchId} onChange={setChurchId} />
           <div className="space-y-2">
             <Label>Rede</Label>
-            <Select value={rede} onValueChange={setRede} disabled={Boolean(redeId)}>
+            <Select value={rede} onValueChange={setRede} disabled={Boolean(redeId) && !isEdit}>
               <SelectTrigger><SelectValue placeholder="Selecione a rede" /></SelectTrigger>
               <SelectContent className="max-h-60">
                 {redes?.map((r) => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
@@ -135,14 +183,29 @@ export function MesaDialog({ redeId, compact }: { redeId?: string; compact?: boo
             <Label>Descrição</Label>
             <Textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)} />
           </div>
-          <Button className="w-full" disabled={create.isPending} onClick={() => create.mutate()}>
-            Criar mesa
+          <Button className="w-full" disabled={save.isPending} onClick={() => save.mutate()}>
+            {isEdit ? "Salvar alterações" : "Criar mesa"}
           </Button>
         </div>
       </DialogContent>
     </Dialog>
   );
 }
+
+/** Atalho de edição usado nas listagens de mesas. */
+export function EditMesaButton({ mesa }: { mesa: MesaRecord }) {
+  return (
+    <MesaDialog
+      mesa={mesa}
+      trigger={
+        <Button variant="ghost" size="icon" aria-label="Editar mesa">
+          <Pencil className="h-4 w-4" />
+        </Button>
+      }
+    />
+  );
+}
+
 
 /** Gerencia os integrantes de uma mesa: membros, líderes, apascentadores e pastores. */
 export function MesaMembersDialog({ mesaId, mesaName }: { mesaId: string; mesaName: string }) {
