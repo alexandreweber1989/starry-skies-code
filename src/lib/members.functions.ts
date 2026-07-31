@@ -3,6 +3,8 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const optionalText = z.string().trim().max(400).optional();
+/** Campos livres longos (dons, observações, testemunho) não podem ser truncados. */
+const optionalLongText = z.string().trim().max(2000).optional();
 const optionalDate = z
   .string()
   .trim()
