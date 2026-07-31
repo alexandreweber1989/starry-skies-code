@@ -43,7 +43,7 @@ function CantinaPage() {
             <TabsTrigger value="cardapio">Cardápio</TabsTrigger>
             <TabsTrigger value="reservas">Minhas reservas</TabsTrigger>
             {isCantinaAdmin && <TabsTrigger value="cardapios">Cardápios</TabsTrigger>}
-            {isCantinaAdmin && <TabsTrigger value="itens">Itens</TabsTrigger>}
+            {isCantinaAdmin && <TabsTrigger value="itens">Cadastrar itens</TabsTrigger>}
           </TabsList>
           <TabsContent value="cardapio">
             <CantinaMenus />
