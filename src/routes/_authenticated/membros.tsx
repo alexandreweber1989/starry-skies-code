@@ -19,7 +19,7 @@ import {
 import { useAuth } from "@/lib/auth-context";
 import { useAffiliations } from "@/lib/vinculos";
 import { MemberFormDialog } from "@/components/membros/member-form-dialog";
-import { NewMemberDialog } from "@/components/membros/new-member-dialog";
+import { MemberWizardDialog } from "@/components/membros/member-wizard-dialog";
 import { RequestMemberDialog } from "@/components/membros/request-member-dialog";
 import { MembershipRequestsPanel } from "@/components/membros/membership-requests-panel";
 import { deleteMemberAccount } from "@/lib/membership.functions";
@@ -217,7 +217,7 @@ function MembrosPage() {
         actions={
           <div className="flex flex-wrap gap-2">
             {canRequest && <RequestMemberDialog />}
-            {isAdmin && <NewMemberDialog />}
+            {isAdmin && <MemberWizardDialog />}
           </div>
         }
       />
