@@ -22,7 +22,7 @@ export const Route = createFileRoute("/")({
       { title: "Igreja Batista Atos" },
       { name: "description", content: "Plataforma da Igreja Batista Atos — ministérios, redes, mesas e comunidade em um só lugar." },
       { property: "og:title", content: "Igreja Batista Atos" },
-      { property: "og:description", content: "Plataforma oficial dos ministérios da Igreja Batista Atos." },
+      { property: "og:description", content: "Plataforma da Igreja Batista Atos — ministérios, redes, mesas e comunidade em um só lugar." },
     ],
   }),
   component: Landing,

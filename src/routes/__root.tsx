@@ -79,13 +79,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Igreja Batista Atos — Plataforma" },
-      { name: "description", content: "Plataforma oficial da Igreja Batista Atos: ministérios, redes, mesas e comunidade." },
+      { title: "Igreja Batista Atos" },
+      { name: "description", content: "Plataforma da Igreja Batista Atos — ministérios, redes, mesas e comunidade em um só lugar." },
       { name: "author", content: "Igreja Batista Atos" },
-      { property: "og:title", content: "Igreja Batista Atos — Plataforma" },
-      { property: "og:description", content: "Plataforma oficial da Igreja Batista Atos." },
+      { property: "og:title", content: "Igreja Batista Atos" },
+      { property: "og:description", content: "Plataforma da Igreja Batista Atos — ministérios, redes, mesas e comunidade em um só lugar." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Igreja Batista Atos" },
+      { name: "twitter:description", content: "Plataforma da Igreja Batista Atos — ministérios, redes, mesas e comunidade em um só lugar." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/6c5a2957-c7da-4e8a-9fe9-4e79d6a2fe6e/id-preview-7103e3f7--519a36d2-6c4e-4611-a052-6f92099a6321.lovable.app-1785495563909.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/6c5a2957-c7da-4e8a-9fe9-4e79d6a2fe6e/id-preview-7103e3f7--519a36d2-6c4e-4611-a052-6f92099a6321.lovable.app-1785495563909.png" },
     ],
     links: [
       {
