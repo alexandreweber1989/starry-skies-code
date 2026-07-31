@@ -114,9 +114,6 @@ function AgendaPage() {
     (!!e.ministry_id && isMinistryAdmin(e.ministry_id)) ||
     (!!e.mesa_id && isMesaLeader(e.mesa_id));
 
-  const canCreate =
-    isAdmin || roles.some((r) => r.role === "admin_ministerio" || r.role === "lider_mesa");
-
   const events = eventsQuery.data ?? [];
   const rsvps = rsvpQuery.data ?? [];
 
@@ -191,16 +188,14 @@ function AgendaPage() {
         title="Agenda da Igreja"
         description="Cultos, ensaios, encontros de rede e de mesa. Cada evento tem público definido e confirmação de presença."
         actions={
-          canCreate ? (
-            <Button
-              onClick={() => {
-                setEditing(null);
-                setFormOpen(true);
-              }}
-            >
-              <Plus className="h-4 w-4" /> Novo evento
-            </Button>
-          ) : undefined
+          <Button
+            onClick={() => {
+              setEditing(null);
+              setFormOpen(true);
+            }}
+          >
+            <Plus className="h-4 w-4" /> Novo evento
+          </Button>
         }
       />
       <PageBody>
@@ -264,7 +259,7 @@ function AgendaPage() {
             <PanelSection label="Agenda" title="Próximos eventos">
               {eventsQuery.isLoading
                 ? <EmptyLine>Carregando agenda...</EmptyLine>
-                : upcoming.length === 0 && canCreate ? (
+                : upcoming.length === 0 ? (
                     <div className="border border-dashed border-border p-8 text-center">
                       <p className="text-sm text-muted-foreground">
                         Nenhum evento futuro com esses filtros. Crie o primeiro compromisso da agenda.
