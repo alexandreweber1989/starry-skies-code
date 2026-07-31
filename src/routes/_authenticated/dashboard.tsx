@@ -127,10 +127,15 @@ function Dashboard() {
         }
       />
       <PageBody>
+        {/* Aviso de escala: cada escalado responde se vai poder participar. */}
+        <div className="mb-6">
+          <EscalaPendente />
+        </div>
         {/* Pendências de cadastro: aparecem primeiro para o admin resolver. */}
         <div className="mb-6">
           <MembershipRequestsPanel compact />
         </div>
+
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatTile
             label="Membros ativos"
