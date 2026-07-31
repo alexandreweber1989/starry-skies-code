@@ -4,6 +4,8 @@ import { Plus, Trash2, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfileOptions } from "@/lib/use-profiles";
+import { ChurchSelect } from "./church-select";
+
 import {
   CHURCH_FUNCTIONS,
   CHURCH_FUNCTION_LABEL,
