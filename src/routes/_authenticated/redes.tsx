@@ -4,7 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, PageBody } from "@/components/app-shell";
 import { useAuth } from "@/lib/auth-context";
 import { RedeDialog } from "@/components/admin/rede-dialog";
-import { MesaDialog } from "@/components/admin/mesa-dialog";
+import { MesaDialog, MesaMembersDialog } from "@/components/admin/mesa-dialog";
+import { RedeMembersDialog } from "@/components/admin/rede-members-dialog";
 
 export const Route = createFileRoute("/_authenticated/redes")({
   head: () => ({ meta: [{ title: "Redes — IB Atos" }] }),
