@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -30,6 +31,8 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [notes, setNotes] = useState("");
 
   useEffect(() => {
     if (user) navigate({ to: "/dashboard", replace: true });
@@ -45,20 +48,26 @@ function AuthPage() {
     navigate({ to: "/dashboard", replace: true });
   }
 
+  /**
+   * O acesso é restrito a membros da igreja: em vez de criar a conta na hora,
+   * registramos uma solicitação que fica pendente para o administrador aprovar.
+   */
   async function handleSignUp(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`,
-        data: { full_name: fullName },
-      },
+    const { error } = await supabase.from("membership_requests").insert({
+      full_name: fullName.trim().slice(0, 120),
+      email: email.trim().toLowerCase().slice(0, 255),
+      phone: phone.trim().slice(0, 30) || null,
+      notes: notes.trim().slice(0, 500) || null,
+      status: "pendente",
     });
     setLoading(false);
     if (error) return toast.error(error.message);
-    toast.success("Conta criada. Você já pode entrar.");
+    toast.success("Solicitação enviada. Um administrador vai avaliar seu cadastro.");
+    setFullName("");
+    setPhone("");
+    setNotes("");
     setMode("signin");
   }
 
@@ -106,7 +115,7 @@ function AuthPage() {
           <Tabs value={mode} onValueChange={(v) => setMode(v as "signin" | "signup")}>
             <TabsList className="grid grid-cols-2 w-full">
               <TabsTrigger value="signin">Entrar</TabsTrigger>
-              <TabsTrigger value="signup">Criar conta</TabsTrigger>
+              <TabsTrigger value="signup">Solicitar cadastro</TabsTrigger>
             </TabsList>
 
             <TabsContent value="signin">
@@ -127,6 +136,10 @@ function AuthPage() {
 
             <TabsContent value="signup">
               <form onSubmit={handleSignUp} className="space-y-4 mt-6">
+                <p className="text-xs text-muted-foreground">
+                  A plataforma é exclusiva para membros da Igreja Batista Atos. Envie sua
+                  solicitação: um administrador avalia e libera o acesso.
+                </p>
                 <div className="space-y-1.5">
                   <Label htmlFor="fn">Nome completo</Label>
                   <Input id="fn" required value={fullName} onChange={(e) => setFullName(e.target.value)} />
@@ -136,11 +149,21 @@ function AuthPage() {
                   <Input id="email2" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="password2">Senha</Label>
-                  <Input id="password2" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
+                  <Label htmlFor="phone2">Telefone</Label>
+                  <Input id="phone2" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="notes2">Seu vínculo com a igreja</Label>
+                  <Textarea
+                    id="notes2"
+                    rows={3}
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="Mesa, rede ou ministério que frequenta, quem pode confirmar…"
+                  />
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Criando..." : "Criar conta"}
+                  {loading ? "Enviando..." : "Solicitar cadastro"}
                 </Button>
               </form>
             </TabsContent>
@@ -157,7 +180,7 @@ function AuthPage() {
           </Button>
 
           <p className="mt-6 text-xs text-muted-foreground text-center">
-            O primeiro usuário a entrar se torna automaticamente Admin geral.
+            O acesso é liberado por um administrador. O primeiro usuário a entrar se torna Admin geral.
           </p>
         </div>
       </div>

@@ -20,6 +20,10 @@ import { useAuth } from "@/lib/auth-context";
 import { useAffiliations } from "@/lib/vinculos";
 import { MemberFormDialog } from "@/components/membros/member-form-dialog";
 import { NewMemberDialog } from "@/components/membros/new-member-dialog";
+import { RequestMemberDialog } from "@/components/membros/request-member-dialog";
+import { MembershipRequestsPanel } from "@/components/membros/membership-requests-panel";
+import { deleteMemberAccount } from "@/lib/membership.functions";
+import { useServerFn } from "@tanstack/react-start";
 import { MemberStats } from "@/components/membros/member-stats";
 import { MemberCard } from "@/components/membros/member-card";
 import { MemberDetailSheet } from "@/components/membros/member-detail-sheet";
@@ -74,7 +78,10 @@ export const Route = createFileRoute("/_authenticated/membros")({
 });
 
 function MembrosPage() {
-  const { isAdmin, user } = useAuth();
+  const { isAdmin, user, roles: myRoles } = useAuth();
+  const canRequest =
+    isAdmin || myRoles.some((r) => r.role === "admin_ministerio" || r.role === "lider_mesa");
+  const removeMember = useServerFn(deleteMemberAccount);
   const qc = useQueryClient();
   const [filters, setFilters] = useState<MemberFilters>(DEFAULT_FILTERS);
   const [view, setView] = useState<"table" | "cards">("cards");
@@ -144,6 +151,17 @@ function MembrosPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  /** Exclusão definitiva de um membro (conta + ficha), restrita ao admin geral. */
+  const removeMutation = useMutation({
+    mutationFn: async (userId: string) => removeMember({ data: { user_id: userId } }),
+    onSuccess: () => {
+      toast.success("Membro removido da plataforma.");
+      qc.invalidateQueries({ queryKey: ["profiles"] });
+      qc.invalidateQueries({ queryKey: ["profiles-min"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   const filtered = useMemo(() => {
     const term = filters.q.trim().toLowerCase();
     const rows = (data ?? []).filter((p) => {
@@ -196,9 +214,19 @@ function MembrosPage() {
         eyebrow="Corpo de Cristo"
         title="Membros"
         description="Gestão completa da membresia: fichas, filtros, permissões e indicadores."
-        actions={isAdmin ? <NewMemberDialog /> : undefined}
+        actions={
+          <div className="flex flex-wrap gap-2">
+            {canRequest && <RequestMemberDialog />}
+            {isAdmin && <NewMemberDialog />}
+          </div>
+        }
       />
       <PageBody>
+        {(isAdmin || canRequest) && (
+          <div className="mb-6">
+            <MembershipRequestsPanel />
+          </div>
+        )}
         <MemberStats members={(data ?? []) as any} />
 
         <MemberToolbar
@@ -347,6 +375,20 @@ function MembrosPage() {
                         {canEdit(p) && (
                           <Button size="sm" variant="outline" onClick={() => setEditing(p)}>
                             Editar
+                          </Button>
+                        )}
+                        {isAdmin && p.id !== user?.id && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="text-destructive"
+                            disabled={removeMutation.isPending}
+                            onClick={() => {
+                              if (window.confirm(`Excluir ${p.full_name} da plataforma?`))
+                                removeMutation.mutate(p.id);
+                            }}
+                          >
+                            Excluir
                           </Button>
                         )}
                       </td>
