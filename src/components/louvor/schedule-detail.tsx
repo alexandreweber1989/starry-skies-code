@@ -6,6 +6,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { ASSIGNMENT_STATUS, WORSHIP_FUNCTIONS, initials, relativeDays } from "@/lib/louvor";
 import { useMusicians, useSundayHistory } from "@/lib/use-worship";
 import { useProfileOptions } from "@/lib/use-profiles";
+import { useAuth } from "@/lib/auth-context";
+import { GrupoDomingo } from "./grupo-domingo";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
