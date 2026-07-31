@@ -1,28 +1,28 @@
 /** ID do ministério de Louvor (usado como escopo padrão do módulo). */
 export const LOUVOR_MINISTRY_ID = "7cc9c01b-b760-4dc7-985e-2e6e8505384b";
 
+/**
+ * Funções do louvor na ordem em que aparecem na escala.
+ * A escala é montada função por função (instrumento por instrumento).
+ */
 export const WORSHIP_FUNCTIONS = [
-  "Ministro(a)",
-  "Vocal",
-  "Backing vocal",
-  "Violão",
+  "Violão (ministro)",
+  "Backvocal",
+  "Teclado",
   "Guitarra",
   "Baixo",
-  "Teclado",
   "Bateria",
-  "Percussão",
-  "Sopro",
-  "Técnico de som",
 ] as const;
 
-/** Agrupamento das funções do louvor por naipe/família, usado na visão de banda. */
+export type WorshipFunction = (typeof WORSHIP_FUNCTIONS)[number];
+
+/** Agrupamento das funções do louvor por naipe/família. */
 export const FUNCTION_GROUPS: { id: string; label: string; functions: string[] }[] = [
-  { id: "vozes", label: "Vozes", functions: ["Ministro(a)", "Vocal", "Backing vocal"] },
-  { id: "cordas", label: "Cordas", functions: ["Violão", "Guitarra", "Baixo"] },
+  { id: "vozes", label: "Vozes", functions: ["Violão (ministro)", "Backvocal", "Vocal", "Ministro(a)", "Backing vocal"] },
+  { id: "cordas", label: "Cordas", functions: ["Guitarra", "Baixo", "Violão"] },
   { id: "teclas", label: "Teclas", functions: ["Teclado"] },
   { id: "ritmo", label: "Ritmo", functions: ["Bateria", "Percussão"] },
-  { id: "sopro", label: "Sopros", functions: ["Sopro"] },
-  { id: "tecnica", label: "Técnica", functions: ["Técnico de som"] },
+  { id: "tecnica", label: "Técnica", functions: ["Técnico de som", "Sopro"] },
 ];
 
 /** Retorna o id do naipe de uma função (fallback: técnica). */
@@ -75,6 +75,17 @@ export function formatDate(iso: string): string {
 
 export function formatTime(time: string | null): string {
   return time ? time.slice(0, 5) : "—";
+}
+
+/** Ex.: "há 12 dias" / "hoje" — usado no histórico de participação. */
+export function relativeDays(iso: string | null): string {
+  if (!iso) return "nunca participou";
+  const days = Math.floor((Date.now() - new Date(iso + "T12:00:00").getTime()) / 86_400_000);
+  if (days <= 0) return "hoje";
+  if (days === 1) return "ontem";
+  if (days < 30) return `há ${days} dias`;
+  const months = Math.floor(days / 30);
+  return months === 1 ? "há 1 mês" : `há ${months} meses`;
 }
 
 const SHARP = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];

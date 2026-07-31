@@ -1069,6 +1069,54 @@ export type Database = {
         }
         Relationships: []
       }
+      worship_musicians: {
+        Row: {
+          created_at: string
+          functions: string[]
+          id: string
+          is_active: boolean
+          ministry_id: string
+          notes: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          functions?: string[]
+          id?: string
+          is_active?: boolean
+          ministry_id?: string
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          functions?: string[]
+          id?: string
+          is_active?: boolean
+          ministry_id?: string
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "worship_musicians_ministry_id_fkey"
+            columns: ["ministry_id"]
+            isOneToOne: false
+            referencedRelation: "ministries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "worship_musicians_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       worship_schedule_assignments: {
         Row: {
           created_at: string

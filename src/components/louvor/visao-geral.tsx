@@ -29,7 +29,7 @@ interface ScheduleRow {
   start_time: string | null;
   location: string | null;
   status: string;
-  team: { name: string } | null;
+  team?: { name: string } | null;
   assignments: Assignment[];
   setlist: { id: string; position: number; song_key: string | null; song: { title: string; artist: string | null } | null }[];
 }
@@ -62,22 +62,22 @@ export function VisaoGeral() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["louvor-overview"],
     queryFn: async () => {
-      const [schedules, teams, songs] = await Promise.all([
+      const [schedules, musicians, songs] = await Promise.all([
         supabase
           .from("worship_schedules")
           .select(
-            "id, title, schedule_type, event_date, start_time, location, status, team:worship_teams(name), assignments:worship_schedule_assignments(id, function_name, status, profiles:profiles(full_name)), setlist:worship_setlist_items(id, position, song_key, song:worship_songs(title, artist))",
+            "id, title, schedule_type, event_date, start_time, location, status, assignments:worship_schedule_assignments(id, function_name, status, profiles:profiles(full_name)), setlist:worship_setlist_items(id, position, song_key, song:worship_songs(title, artist))",
           )
           .order("event_date", { ascending: true }),
-        supabase.from("worship_teams").select("id, name, members:worship_team_members(id, user_id, function_name)"),
+        supabase.from("worship_musicians").select("id, user_id, functions").eq("is_active", true),
         supabase.from("worship_songs").select("id", { count: "exact", head: true }).eq("is_active", true),
       ]);
       if (schedules.error) throw schedules.error;
-      if (teams.error) throw teams.error;
+      if (musicians.error) throw musicians.error;
       if (songs.error) throw songs.error;
       return {
         schedules: (schedules.data ?? []) as unknown as ScheduleRow[],
-        teams: (teams.data ?? []) as { id: string; name: string; members: { id: string; user_id: string; function_name: string }[] }[],
+        musicians: (musicians.data ?? []) as { id: string; user_id: string; functions: string[] }[],
         songCount: songs.count ?? 0,
       };
     },
@@ -88,16 +88,19 @@ export function VisaoGeral() {
     const today = new Date().toISOString().slice(0, 10);
     const upcoming = data.schedules.filter((s) => s.event_date >= today);
     const next = upcoming.find((s) => s.status !== "rascunho") ?? upcoming[0] ?? null;
-    const people = new Set(data.teams.flatMap((t) => t.members.map((m) => m.user_id)));
+    const people = new Set(data.musicians.map((m) => m.user_id));
+    const allFunctions = data.musicians.flatMap((m) => m.functions ?? []);
     const coverage = FUNCTION_GROUPS.map((g) => ({
       ...g,
-      count: data.teams.flatMap((t) => t.members).filter((m) => functionGroupId(m.function_name) === g.id).length,
+      count: allFunctions.filter((fn) => functionGroupId(fn) === g.id).length,
     }));
     const maxCoverage = Math.max(1, ...coverage.map((c) => c.count));
+    const functionsCovered = new Set(allFunctions).size;
     const pending = data.schedules
       .filter((s) => s.status === "publicada" && s.event_date >= today)
       .flatMap((s) => s.assignments.filter((a) => a.status !== "confirmado").map((a) => ({ ...a, schedule: s })));
-    return { upcoming, next, peopleCount: people.size, coverage, maxCoverage, pending };
+    return { upcoming, next, peopleCount: people.size, functionsCovered, coverage, maxCoverage, pending };
+
   }, [data]);
 
   if (error) return <QueryError error={error as Error} />;
@@ -121,8 +124,9 @@ export function VisaoGeral() {
   return (
     <div className="space-y-10">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Kpi label="Integrantes" value={stats.peopleCount} hint="pessoas nas equipes" icon={Users} />
-        <Kpi label="Equipes" value={data.teams.length} hint="escalas rotativas" icon={Users} />
+        <Kpi label="Integrantes" value={stats.peopleCount} hint="irmãos no elenco do louvor" icon={Users} />
+        <Kpi label="Funções" value={stats.functionsCovered} hint="instrumentos e vozes cobertos" icon={Users} />
+
         <Kpi label="Repertório" value={data.songCount} hint="músicas com cifra" icon={Music2} />
         <Kpi label="Agenda" value={stats.upcoming.length} hint="cultos e ensaios à frente" icon={CalendarDays} />
       </div>
@@ -131,7 +135,7 @@ export function VisaoGeral() {
         <section className="border border-border bg-card rounded-sm overflow-hidden">
           <div className="bg-foreground text-background p-6 sm:p-8">
             <div className="font-mono text-[10px] uppercase tracking-[0.3em] opacity-70">
-              Próxima {SCHEDULE_TYPE_LABELS[next.schedule_type]} · {next.team?.name ?? "Sem equipe"}
+              Próxima {SCHEDULE_TYPE_LABELS[next.schedule_type]}
             </div>
             <h3 className="font-serif text-4xl sm:text-6xl leading-[0.9] mt-2">{next.title}</h3>
             <div className="flex flex-wrap gap-5 mt-5 font-mono text-[11px] uppercase tracking-widest opacity-80">
