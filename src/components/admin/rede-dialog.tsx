@@ -3,8 +3,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { slugify } from "@/lib/use-profiles";
+import { slugify, useProfileOptions } from "@/lib/use-profiles";
 import { ChurchSelect } from "./church-select";
+import { MemberPicker } from "./member-picker";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,20 +26,37 @@ export function RedeDialog() {
   const [churchId, setChurchId] = useState("");
   const [audience, setAudience] = useState("");
   const [description, setDescription] = useState("");
+  const [leaders, setLeaders] = useState<string[]>([]);
+  const { data: profiles } = useProfileOptions();
   const qc = useQueryClient();
 
   const create = useMutation({
     mutationFn: async () => {
       if (name.trim().length < 3) throw new Error("Informe o nome da rede.");
       if (!churchId) throw new Error("Selecione a igreja desta rede.");
-      const { error } = await supabase.from("redes").insert({
-        name: name.trim(),
-        slug: slugify(name),
-        church_id: churchId,
-        target_audience: audience.trim() || null,
-        description: description.trim() || null,
-      });
+      const { data, error } = await supabase
+        .from("redes")
+        .insert({
+          name: name.trim(),
+          slug: slugify(name),
+          church_id: churchId,
+          target_audience: audience.trim() || null,
+          description: description.trim() || null,
+        })
+        .select("id")
+        .single();
       if (error) throw error;
+
+      // Responsáveis são opcionais: cada um entra com a função que já tem na igreja.
+      if (leaders.length > 0 && data?.id) {
+        const rows = leaders.map((userId) => {
+          const fn = profiles?.find((p) => p.id === userId)?.church_function;
+          const role = fn && fn !== "membro" ? fn : "lider";
+          return { rede_id: data.id, user_id: userId, role: role as never };
+        });
+        const { error: linkError } = await supabase.from("rede_members").insert(rows);
+        if (linkError) throw linkError;
+      }
     },
 
     onSuccess: () => {
@@ -47,12 +65,15 @@ export function RedeDialog() {
       setName("");
       setAudience("");
       setDescription("");
+      setLeaders([]);
       void qc.invalidateQueries({ queryKey: ["redes"] });
       void qc.invalidateQueries({ queryKey: ["redes-full"] });
+      void qc.invalidateQueries({ queryKey: ["rede-members-count"] });
 
     },
     onError: (e: Error) => toast.error(e.message),
   });
+
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -75,9 +96,22 @@ export function RedeDialog() {
             <Input value={audience} onChange={(e) => setAudience(e.target.value)} placeholder="18 a 29 anos" />
           </div>
           <div className="space-y-2">
+            <Label>
+              Responsáveis pela rede{" "}
+              <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                opcional
+              </span>
+            </Label>
+            <MemberPicker value={leaders} onChange={setLeaders} />
+            <p className="text-xs text-muted-foreground">
+              Pastores, apascentadores ou líderes já cadastrados em Membros.
+            </p>
+          </div>
+          <div className="space-y-2">
             <Label>Descrição</Label>
             <Textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)} />
           </div>
+
           <Button className="w-full" disabled={create.isPending} onClick={() => create.mutate()}>
             Criar rede
           </Button>
