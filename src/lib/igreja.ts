@@ -14,6 +14,47 @@ export const CHURCH_FUNCTION_LABEL: Record<string, string> = Object.fromEntries(
   CHURCH_FUNCTIONS.map((f) => [f.value, f.label]),
 );
 
+/** Descrição curta de cada função, usada nos cards selecionáveis do perfil. */
+export const CHURCH_FUNCTION_HINT: Record<string, string> = {
+  pastor: "Prefixo Pr. / Pra. antes do nome",
+  apascentador: "Prefixo Apasc. antes do nome",
+  lider: "Prefixo Líder antes do nome",
+  diacono: "Sem prefixo no nome",
+  obreiro: "Sem prefixo no nome",
+  membro: "Somente o nome completo",
+};
+
+/**
+ * Prefixo de tratamento conforme a função eclesiástica.
+ * Pastor varia por sexo (Pr. / Pra.); membro e demais funções ficam sem prefixo.
+ */
+export function churchFunctionPrefix(
+  churchFunction?: string | null,
+  gender?: string | null,
+): string | null {
+  switch (churchFunction) {
+    case "pastor":
+      return gender === "feminino" ? "Pra." : "Pr.";
+    case "apascentador":
+      return "Apasc.";
+    case "lider":
+      return "Líder";
+    default:
+      return null;
+  }
+}
+
+/** Nome completo já com o prefixo de tratamento (quando houver). */
+export function displayMemberName(
+  fullName?: string | null,
+  churchFunction?: string | null,
+  gender?: string | null,
+): string {
+  const name = (fullName ?? "").trim();
+  const prefix = churchFunctionPrefix(churchFunction, gender);
+  return prefix ? `${prefix} ${name}` : name;
+}
+
 /** Ordem de precedência para exibir liderança primeiro em listagens. */
 export function churchFunctionRank(value: string): number {
   const index = CHURCH_FUNCTIONS.findIndex((f) => f.value === value);
