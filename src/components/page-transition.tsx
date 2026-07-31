@@ -129,7 +129,7 @@ export function PageTransition({ children }: { children: ReactNode }) {
       // A cortina precisa ao menos terminar de fechar.
       const coverRemaining = Math.max(0, COVER_MS - elapsed);
       if (busy) {
-        raf = window.setTimeout(tick, 80);
+        raf = window.setTimeout(tick, 40);
         return;
       }
       settleTimer = window.setTimeout(reveal, coverRemaining + SETTLE_MS);

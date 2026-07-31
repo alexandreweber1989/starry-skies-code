@@ -575,7 +575,7 @@
 @layer utilities {
   /* Fase 1 — cortina fechando e segurando */
   .pt-phase-cover .pt-piece {
-    animation-duration: 620ms;
+    animation-duration: 300ms;
     animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
     animation-fill-mode: both;
   }
@@ -588,16 +588,16 @@
   .pt-phase-cover.pt-v-split .pt-piece:nth-child(2) { animation-name: pt-split-right-in; }
   .pt-phase-cover.pt-v-glitch .pt-piece { animation-name: pt-glitch-in; }
   .pt-phase-cover .pt-word {
-    animation: pt-word-in 460ms cubic-bezier(0.22, 1, 0.36, 1) 120ms both;
+    animation: pt-word-in 260ms cubic-bezier(0.22, 1, 0.36, 1) 40ms both;
   }
   .pt-phase-cover .pt-word-rule {
-    animation: pt-rule-in 520ms cubic-bezier(0.76, 0, 0.24, 1) 120ms both,
-      pt-loading 1200ms ease-in-out 700ms infinite;
+    animation: pt-rule-in 280ms cubic-bezier(0.76, 0, 0.24, 1) 40ms both,
+      pt-loading 900ms ease-in-out 400ms infinite;
   }
 
   /* Fase 2 — cortina abrindo, já com a página pronta */
   .pt-phase-reveal .pt-piece {
-    animation-duration: 620ms;
+    animation-duration: 320ms;
     animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
     animation-fill-mode: both;
   }
@@ -610,11 +610,12 @@
   .pt-phase-reveal.pt-v-split .pt-piece:nth-child(2) { animation-name: pt-split-right-out; }
   .pt-phase-reveal.pt-v-glitch .pt-piece { animation-name: pt-glitch-out; }
   .pt-phase-reveal .pt-word {
-    animation: pt-word-out 380ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: pt-word-out 200ms cubic-bezier(0.22, 1, 0.36, 1) both;
   }
   .pt-phase-reveal .pt-word-rule {
-    animation: pt-rule-out 380ms cubic-bezier(0.76, 0, 0.24, 1) both;
+    animation: pt-rule-out 200ms cubic-bezier(0.76, 0, 0.24, 1) both;
   }
+
 
   /* Origem de escala coerente na fase de fechamento */
   .pt-phase-cover.pt-v-cols .pt-piece { transform-origin: top; }
