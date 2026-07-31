@@ -101,7 +101,9 @@ export const createMemberAccount = createServerFn({ method: "POST" })
     // A ficha é criada aqui (upsert) para não depender de gatilho no schema auth:
     // sem isso, o update não encontrava linha e o membro nunca aparecia na lista.
     const extra = Object.fromEntries(
-      Object.entries(data.profile ?? {}).filter(([, v]) => v !== undefined && v !== ""),
+      Object.entries(data.profile ?? {}).filter(
+        ([, v]) => v !== undefined && v !== "" && !(Array.isArray(v) && v.length === 0),
+      ),
     );
     const { error: profileError } = await supabaseAdmin
       .from("profiles")
