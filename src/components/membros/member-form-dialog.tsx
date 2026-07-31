@@ -16,6 +16,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Field, Section, SelectField, TextField } from "./member-fields";
+import { FamilyLinksEditor } from "./family-links-editor";
 import {
   BLOOD_TYPES,
   COURSE_OPTIONS,
@@ -197,6 +198,12 @@ export function MemberFormDialog({
               />
             )}
           </Section>
+
+          {profile?.id && (
+            <Section title="Parentes cadastrados na igreja">
+              <FamilyLinksEditor personId={profile.id as string} canEdit={canEditMembership} />
+            </Section>
+          )}
 
           <Section title="Endereço">
             <TextField label="CEP" value={str("zip_code")} onChange={set("zip_code")} maxLength={9} />

@@ -11,6 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { FamilySummary } from "./family-summary";
 import {
   MARITAL_STATUS,
   MEMBERSHIP_STATUS,
@@ -138,6 +139,10 @@ export function MemberDetailSheet({
             <Line label="Filhos" value={profile.has_children ? `${profile.children_count ?? 0}` : null} />
             <Line label="Profissão" value={profile.profession} />
             <Line label="Escolaridade" value={profile.education} />
+          </Block>
+          <Separator />
+          <Block title="Família">
+            {id && <FamilySummary personId={id} enabled={open} />}
           </Block>
           <Separator />
           <Block title="Vida cristã">
