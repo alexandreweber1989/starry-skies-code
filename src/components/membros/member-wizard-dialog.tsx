@@ -7,9 +7,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { createMemberAccount } from "@/lib/members.functions";
 import {
   CHURCH_FUNCTIONS,
+  CHURCH_FUNCTION_HINT,
+  CHURCH_FUNCTION_LABEL,
   GENDERS,
   MARITAL_STATUS,
   MEMBERSHIP_TYPES,
+  displayMemberName,
   type ChurchFunction,
 } from "@/lib/igreja";
 import { BLOOD_TYPES, COURSE_OPTIONS, EDUCATION_LEVELS, MEMBERSHIP_STATUS } from "@/lib/membros";
@@ -29,7 +32,8 @@ interface WizardState {
   email: string;
   phone: string;
   password: string;
-  church_function: ChurchFunction;
+  /** Vazio força a escolha explícita do tipo de membro no assistente. */
+  church_function: ChurchFunction | "";
   church_id: string;
   gender: string;
   marital_status: string;
@@ -77,7 +81,7 @@ const EMPTY: WizardState = {
   email: "",
   phone: "",
   password: "",
-  church_function: "membro",
+  church_function: "",
   church_id: "",
   gender: "",
   marital_status: "",
@@ -268,17 +272,49 @@ export function MemberWizardDialog() {
       {
         id: "funcao",
         eyebrow: "Vida na igreja",
-        question: "Qual a função dessa pessoa na igreja?",
-        hint: "Pastores, apascentadores e líderes aparecem destacados nas redes e mesas.",
+        question: "Que tipo de membro essa pessoa é?",
+        hint: "Escolha obrigatória — define o prefixo do nome e o destaque em redes e mesas.",
+        valid: (s) => s.church_function !== "",
         render: (s, up) => (
-          <ChoiceGrid
-            options={CHURCH_FUNCTIONS}
-            value={s.church_function}
-            onChange={(v) => up({ church_function: v as ChurchFunction })}
-            columns={3}
-          />
+          <div className="space-y-4">
+            <div className="grid gap-3 sm:grid-cols-3">
+              {CHURCH_FUNCTIONS.map((f) => {
+                const active = s.church_function === f.value;
+                return (
+                  <button
+                    key={f.value}
+                    type="button"
+                    onClick={() => up({ church_function: f.value })}
+                    className={cn(
+                      "text-left border rounded-sm px-4 py-3 transition-colors",
+                      active
+                        ? "border-primary bg-primary/10"
+                        : "border-border bg-card hover:border-primary/50",
+                    )}
+                  >
+                    <span className="flex items-center justify-between gap-2 text-sm text-foreground">
+                      {f.label}
+                      {active && <Check className="h-4 w-4 text-primary" />}
+                    </span>
+                    <span className="mt-1 block text-xs text-muted-foreground">
+                      {CHURCH_FUNCTION_HINT[f.value] ?? "Sem prefixo no nome"}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            {s.church_function && s.full_name.trim() && (
+              <p className="text-sm text-muted-foreground">
+                Aparecerá como{" "}
+                <span className="text-foreground font-medium">
+                  {displayMemberName(s.full_name, s.church_function, s.gender)}
+                </span>
+              </p>
+            )}
+          </div>
         ),
       },
+
       {
         id: "igreja",
         eyebrow: "Vida na igreja",
@@ -601,6 +637,48 @@ export function MemberWizardDialog() {
           </div>
         ),
       },
+      {
+        id: "revisao",
+        eyebrow: "Conferência",
+        question: "Tudo certo para criar o cadastro?",
+        hint: "Revise os dados principais. Use Voltar para ajustar qualquer etapa.",
+        render: (s, up) => (
+          <div className="space-y-5">
+            <dl className="grid sm:grid-cols-2 gap-4 text-sm">
+              <div>
+                <dt className="text-muted-foreground text-xs uppercase tracking-wider">Nome</dt>
+                <dd className="text-foreground">
+                  {displayMemberName(s.full_name, s.church_function, s.gender) || "—"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground text-xs uppercase tracking-wider">Tipo de membro</dt>
+                <dd className="text-foreground">
+                  {s.church_function ? CHURCH_FUNCTION_LABEL[s.church_function] : "—"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground text-xs uppercase tracking-wider">E-mail</dt>
+                <dd className="text-foreground">{s.email || "—"}</dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground text-xs uppercase tracking-wider">Igreja</dt>
+                <dd className="text-foreground">
+                  {(churches ?? []).find((c: any) => c.id === s.church_id)?.name ?? "—"}
+                </dd>
+              </div>
+            </dl>
+            <Field label="Ajustar tipo de membro">
+              <ChoiceGrid
+                options={CHURCH_FUNCTIONS}
+                value={s.church_function}
+                onChange={(v) => up({ church_function: v as ChurchFunction })}
+                columns={3}
+              />
+            </Field>
+          </div>
+        ),
+      },
     ],
     [churches],
   );
@@ -619,7 +697,7 @@ export function MemberWizardDialog() {
           phone: state.phone.trim(),
           password: state.password,
           profile: {
-            church_function: state.church_function,
+            church_function: state.church_function || "membro",
             ...(state.church_id ? { church_id: state.church_id } : {}),
             gender: state.gender,
             marital_status: state.marital_status,
