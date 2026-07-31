@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { useRouterState } from "@tanstack/react-router";
+import { useIsFetching } from "@tanstack/react-query";
 
 const LABELS: Record<string, string> = {
   "/dashboard": "Painel",
@@ -10,6 +11,7 @@ const LABELS: Record<string, string> = {
   "/redes": "Redes",
   "/mesas": "Mesas",
   "/membros": "Membros",
+  "/igrejas": "Igrejas",
   "/livraria": "Livraria",
   "/cantina": "Cantina",
   "/perfil": "Perfil",
@@ -45,52 +47,124 @@ const ENTER_CLASS: Record<Variant, string> = {
   glitch: "pt-enter-glitch",
 };
 
-const DURATION = 950;
+/** Tempo da fase de cobertura (tela fechando). Espelha o CSS. */
+const COVER_MS = 620;
+/** Tempo da fase de revelação (tela abrindo). Espelha o CSS. */
+const REVEAL_MS = 720;
+/** Silêncio de rede exigido antes de revelar (evita piscar entre requisições). */
+const SETTLE_MS = 140;
+/** Teto de segurança: nunca segura a cortina além disso. */
+const MAX_HOLD_MS = 5000;
 
 function pickVariant(exclude?: Variant): Variant {
   const pool = VARIANTS.filter((v) => v !== exclude);
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
+interface Wipe {
+  id: number;
+  label: string;
+  variant: Variant;
+  phase: "cover" | "reveal";
+}
+
 /**
- * Transição editorial entre páginas. A cada navegação sorteia uma variante
- * diferente da anterior (persianas, grade, íris, corte ao meio, glitch),
- * revelando o nome da seção antes do conteúdo entrar.
+ * Transição editorial entre páginas, em duas fases:
+ * 1. "cover" — a cortina fecha e fica parada enquanto a rota e as consultas
+ *    da página ainda estão carregando;
+ * 2. "reveal" — só depois que tudo terminou (ou após o teto de segurança)
+ *    a cortina abre e o conteúdo entra.
+ *
+ * Assim a animação nunca termina antes da página estar pronta.
  */
 export function PageTransition({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const routerBusy = useRouterState({
+    select: (s) => s.status === "pending" || s.isLoading || s.isTransitioning,
+  });
+
+  const fetching = useIsFetching();
+  const busy = routerBusy || fetching > 0;
+
   const previous = useRef(pathname);
   const lastVariant = useRef<Variant | undefined>(undefined);
-  const [wipe, setWipe] = useState<
-    { id: number; label: string; variant: Variant } | null
-  >(null);
+  const [wipe, setWipe] = useState<Wipe | null>(null);
+  /** Muda a cada revelação para reiniciar a animação de entrada do conteúdo. */
+  const [revealKey, setRevealKey] = useState(pathname);
 
+  // Dispara a cortina ao mudar de rota.
   useEffect(() => {
     if (previous.current === pathname) return;
     previous.current = pathname;
     const variant = pickVariant(lastVariant.current);
     lastVariant.current = variant;
-    const id = Date.now();
-    setWipe({ id, label: labelFor(pathname), variant });
-    const timer = window.setTimeout(
-      () => setWipe((w) => (w && w.id === id ? null : w)),
-      DURATION,
-    );
-    return () => window.clearTimeout(timer);
+    setWipe({
+      id: Date.now(),
+      label: labelFor(pathname),
+      variant,
+      phase: "cover",
+    });
   }, [pathname]);
 
+  // Segura a cortina fechada até a página terminar de carregar.
+  useEffect(() => {
+    if (!wipe || wipe.phase !== "cover") return;
+    const id = wipe.id;
+    const startedAt = Date.now();
+    let settleTimer = 0;
+    let raf = 0;
+
+    const reveal = () => {
+      setWipe((w) => (w && w.id === id ? { ...w, phase: "reveal" } : w));
+      setRevealKey(`${pathname}-${id}`);
+    };
+
+    const tick = () => {
+      const elapsed = Date.now() - startedAt;
+      if (elapsed >= MAX_HOLD_MS) {
+        reveal();
+        return;
+      }
+      // A cortina precisa ao menos terminar de fechar.
+      const coverRemaining = Math.max(0, COVER_MS - elapsed);
+      if (busy) {
+        raf = window.setTimeout(tick, 80);
+        return;
+      }
+      settleTimer = window.setTimeout(reveal, coverRemaining + SETTLE_MS);
+    };
+
+    tick();
+    return () => {
+      window.clearTimeout(settleTimer);
+      window.clearTimeout(raf);
+    };
+  }, [wipe, busy, pathname]);
+
+  // Remove a cortina quando a revelação termina.
+  useEffect(() => {
+    if (!wipe || wipe.phase !== "reveal") return;
+    const id = wipe.id;
+    const timer = window.setTimeout(
+      () => setWipe((w) => (w && w.id === id ? null : w)),
+      REVEAL_MS,
+    );
+    return () => window.clearTimeout(timer);
+  }, [wipe]);
+
   const enterClass = wipe ? ENTER_CLASS[wipe.variant] : "pt-enter";
+  const covering = wipe?.phase === "cover";
 
   return (
     <div className="relative">
-      <div key={pathname} className={enterClass}>
+      <div key={revealKey} className={covering ? undefined : enterClass}>
         {children}
       </div>
 
       {wipe && (
         <div
           key={wipe.id}
-          className={`pt-overlay pt-v-${wipe.variant}`}
+          className={`pt-overlay pt-v-${wipe.variant} pt-phase-${wipe.phase}`}
           aria-hidden="true"
         >
           <div className="pt-pieces">
