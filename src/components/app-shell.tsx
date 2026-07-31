@@ -17,6 +17,7 @@ import {
 import type { ReactNode } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
+import { PageTransition } from "@/components/page-transition";
 
 const nav = [
   { to: "/dashboard", label: "Painel", icon: LayoutDashboard },
@@ -121,7 +122,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               );
             })}
           </nav>
-          <div>{children}</div>
+          <PageTransition>{children}</PageTransition>
         </main>
       </div>
     </div>
