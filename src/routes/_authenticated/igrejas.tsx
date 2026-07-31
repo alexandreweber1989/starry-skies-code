@@ -61,7 +61,7 @@ function IgrejasPage() {
       <PageHeader
         eyebrow="Uma família, várias casas"
         title="Igrejas"
-        description="Cadastre a sede e as congregações em outras cidades para vincular cada membro à sua casa."
+        description="Ponto de partida do cadastro: Igreja → Ministérios → Redes → Mesas → Pastores, Apascentadores e Líderes → Membros. Cada ministério, rede e mesa pertence a uma igreja."
         actions={isAdmin ? <ChurchDialog /> : undefined}
       />
       <PageBody>
