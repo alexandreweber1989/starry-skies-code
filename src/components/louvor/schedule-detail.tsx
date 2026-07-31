@@ -135,8 +135,15 @@ export function ScheduleDetail({ scheduleId, canManage }: { scheduleId: string; 
   }
 
   return (
-    <div className="grid lg:grid-cols-2 gap-8 border-t border-border pt-6 mt-6">
+    <div className="border-t border-border pt-6 mt-6 space-y-6">
+      {(canManage || isMinistro) && (
+        <div className="flex justify-end">
+          <GrupoDomingo scheduleId={scheduleId} />
+        </div>
+      )}
+      <div className="grid lg:grid-cols-2 gap-8">
       <div className="space-y-3">
+
         <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
           Escala por função
         </div>
