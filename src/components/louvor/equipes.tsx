@@ -190,7 +190,7 @@ export function Equipes() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("worship_teams")
-        .select("*, members:worship_team_members(id, function_name, is_titular, user_id, profiles:profiles!inner(full_name))")
+        .select("*, members:worship_team_members(id, function_name, is_titular, instruments, user_id, profiles:profiles!inner(full_name))")
         .order("name");
       if (error) throw error;
       return data;
