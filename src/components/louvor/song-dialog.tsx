@@ -138,10 +138,65 @@ export function SongDialog({ initial, trigger }: { initial: SongDraft; trigger: 
               <Input value={draft.youtube_url} onChange={(e) => setDraft({ ...draft, youtube_url: e.target.value })} />
             </div>
             <div className="space-y-2">
-              <Label>Link da partitura / PDF</Label>
-              <Input value={draft.sheet_url} onChange={(e) => setDraft({ ...draft, sheet_url: e.target.value })} />
+              <Label>Link do CifraClub / partitura</Label>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="https://www.cifraclub.com.br/..."
+                  value={draft.sheet_url}
+                  onChange={(e) => setDraft({ ...draft, sheet_url: e.target.value })}
+                />
+                {draft.sheet_url && (
+                  <a href={draft.sheet_url} target="_blank" rel="noreferrer">
+                    <Button type="button" variant="outline" size="icon" aria-label="Abrir link">
+                      <ExternalLink className="h-4 w-4" />
+                    </Button>
+                  </a>
+                )}
+              </div>
             </div>
           </div>
+
+          <div className="border border-border rounded-sm p-4 space-y-3 bg-muted/30">
+            <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+              Importar cifra
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Abra a página no CifraClub, copie a cifra e cole abaixo. O sistema separa letra e acordes,
+              detecta o tom e deixa tudo pronto para transposição.
+            </p>
+            <Textarea
+              rows={5}
+              className="font-mono text-xs"
+              placeholder="Cole aqui o conteúdo copiado da página da cifra"
+              value={paste}
+              onChange={(e) => setPaste(e.target.value)}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                if (!paste.trim()) {
+                  toast.error("Cole a cifra antes de importar.");
+                  return;
+                }
+                const parsed = parseChordSheet(paste);
+                setDraft((d) => ({
+                  ...d,
+                  title: d.title || parsed.title || "",
+                  artist: d.artist || parsed.artist || "",
+                  song_key: parsed.key && SONG_KEYS.includes(parsed.key as never) ? parsed.key : d.song_key,
+                  chords: parsed.chords,
+                  lyrics: parsed.lyrics,
+                }));
+                setPaste("");
+                toast.success("Cifra importada. Confira os campos abaixo.");
+              }}
+            >
+              <ClipboardPaste className="h-4 w-4" /> Importar para os campos
+            </Button>
+          </div>
+
           <div className="space-y-2">
             <Label>Cifra</Label>
             <Textarea
