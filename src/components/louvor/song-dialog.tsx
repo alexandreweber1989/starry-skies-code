@@ -48,7 +48,9 @@ export const emptySong: SongDraft = {
 export function SongDialog({ initial, trigger }: { initial: SongDraft; trigger: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState(initial);
+  const [paste, setPaste] = useState("");
   const qc = useQueryClient();
+
 
   const save = useMutation({
     mutationFn: async () => {
