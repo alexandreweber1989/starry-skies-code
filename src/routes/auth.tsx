@@ -30,6 +30,8 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [notes, setNotes] = useState("");
 
   useEffect(() => {
     if (user) navigate({ to: "/dashboard", replace: true });
