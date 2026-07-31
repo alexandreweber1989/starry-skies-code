@@ -637,6 +637,48 @@ export function MemberWizardDialog() {
           </div>
         ),
       },
+      {
+        id: "revisao",
+        eyebrow: "Conferência",
+        question: "Tudo certo para criar o cadastro?",
+        hint: "Revise os dados principais. Use Voltar para ajustar qualquer etapa.",
+        render: (s, up) => (
+          <div className="space-y-5">
+            <dl className="grid sm:grid-cols-2 gap-4 text-sm">
+              <div>
+                <dt className="text-muted-foreground text-xs uppercase tracking-wider">Nome</dt>
+                <dd className="text-foreground">
+                  {displayMemberName(s.full_name, s.church_function, s.gender) || "—"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground text-xs uppercase tracking-wider">Tipo de membro</dt>
+                <dd className="text-foreground">
+                  {s.church_function ? CHURCH_FUNCTION_LABEL[s.church_function] : "—"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground text-xs uppercase tracking-wider">E-mail</dt>
+                <dd className="text-foreground">{s.email || "—"}</dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground text-xs uppercase tracking-wider">Igreja</dt>
+                <dd className="text-foreground">
+                  {(churches ?? []).find((c: any) => c.id === s.church_id)?.name ?? "—"}
+                </dd>
+              </div>
+            </dl>
+            <Field label="Ajustar tipo de membro">
+              <ChoiceGrid
+                options={CHURCH_FUNCTIONS}
+                value={s.church_function}
+                onChange={(v) => up({ church_function: v as ChurchFunction })}
+                columns={3}
+              />
+            </Field>
+          </div>
+        ),
+      },
     ],
     [churches],
   );
