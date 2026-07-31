@@ -164,14 +164,14 @@ export function EventForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="evt-dialog max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="font-serif text-2xl">
+          <DialogTitle className="evt-title font-serif text-2xl">
             {event ? "Editar evento" : "Novo evento"}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-5">
+        <div className="evt-stagger space-y-5">
           <div className="space-y-2">
             <Label htmlFor="ev-title">Título</Label>
             <Input

@@ -189,6 +189,7 @@ function AgendaPage() {
         description="Cultos, ensaios, encontros de rede e de mesa. Cada evento tem público definido e confirmação de presença."
         actions={
           <Button
+            className="evt-cta"
             onClick={() => {
               setEditing(null);
               setFormOpen(true);
@@ -265,7 +266,7 @@ function AgendaPage() {
                         Nenhum evento futuro com esses filtros. Crie o primeiro compromisso da agenda.
                       </p>
                       <Button
-                        className="mt-4"
+                        className="evt-cta mt-4"
                         onClick={() => {
                           setEditing(null);
                           setFormOpen(true);
