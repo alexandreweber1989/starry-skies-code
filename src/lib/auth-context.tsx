@@ -60,26 +60,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setRoles([]);
       return;
     }
-    supabase
-      .from("user_roles")
-      .select("role, ministry_id, mesa_id")
-      .eq("user_id", session.user.id)
-      .then(({ data }) => {
-        const rows = (data ?? []) as RoleRow[];
-        setRoles(rows);
-        // Reivindica admin geral se ninguém for admin ainda
-        if (rows.length && !rows.some((r) => r.role === "admin_geral")) {
-          supabase.rpc("claim_first_admin", { _user_id: session.user.id }).then(({ data: claimed }) => {
-            if (claimed) {
-              supabase
-                .from("user_roles")
-                .select("role, ministry_id, mesa_id")
-                .eq("user_id", session.user.id)
-                .then(({ data: fresh }) => setRoles((fresh ?? []) as RoleRow[]));
-            }
-          });
-        }
-      });
+    let active = true;
+
+    const loadRoles = async () => {
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("role, ministry_id, mesa_id")
+        .eq("user_id", session.user.id);
+
+      if (!active) return;
+      if (error) {
+        console.error("Não foi possível carregar as permissões do usuário.", error);
+        setRoles([]);
+        return;
+      }
+      setRoles((data ?? []) as RoleRow[]);
+    };
+
+    void loadRoles();
+    window.addEventListener("focus", loadRoles);
+    return () => {
+      active = false;
+      window.removeEventListener("focus", loadRoles);
+    };
   }, [session?.user?.id]);
 
   const isAdmin = roles.some((r) => r.role === "admin_geral");
