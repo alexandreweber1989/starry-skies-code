@@ -104,6 +104,22 @@ function PerfilPage() {
                 </li>
               ))}
             </ul>
+            {!isAdmin && (
+              <div className="mt-6 pt-4 border-t border-border">
+                <p className="text-xs text-muted-foreground">
+                  Ainda não há administrador geral definido nesta plataforma. Se esta conta é a da
+                  liderança, assuma a administração para liberar os botões de criação em todas as páginas.
+                </p>
+                <Button
+                  className="mt-3"
+                  variant="outline"
+                  disabled={claimAdmin.isPending}
+                  onClick={() => claimAdmin.mutate()}
+                >
+                  <ShieldCheck className="h-4 w-4" /> Tornar-me admin geral
+                </Button>
+              </div>
+            )}
           </div>
         </div>
         <MemberFormDialog
