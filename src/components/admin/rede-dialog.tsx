@@ -20,6 +20,7 @@ import {
 export function RedeDialog() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
+  const [churchId, setChurchId] = useState("");
   const [audience, setAudience] = useState("");
   const [description, setDescription] = useState("");
   const qc = useQueryClient();
@@ -27,14 +28,17 @@ export function RedeDialog() {
   const create = useMutation({
     mutationFn: async () => {
       if (name.trim().length < 3) throw new Error("Informe o nome da rede.");
+      if (!churchId) throw new Error("Selecione a igreja desta rede.");
       const { error } = await supabase.from("redes").insert({
         name: name.trim(),
         slug: slugify(name),
+        church_id: churchId,
         target_audience: audience.trim() || null,
         description: description.trim() || null,
       });
       if (error) throw error;
     },
+
     onSuccess: () => {
       toast.success("Rede criada.");
       setOpen(false);
