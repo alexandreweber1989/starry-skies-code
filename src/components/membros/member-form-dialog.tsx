@@ -206,7 +206,18 @@ export function MemberFormDialog({
           )}
 
           <Section title="Endereço">
-            <TextField label="CEP" value={str("zip_code")} onChange={set("zip_code")} maxLength={9} />
+            <Field label="CEP">
+              <CepInput
+                value={str("zip_code")}
+                onChange={set("zip_code")}
+                onResolved={(a) => {
+                  if (a.street) set("street")(a.street);
+                  if (a.neighborhood) set("neighborhood")(a.neighborhood);
+                  if (a.city) set("city")(a.city);
+                  if (a.state) set("state")(a.state);
+                }}
+              />
+            </Field>
             <TextField label="Rua" value={str("street")} onChange={set("street")} />
             <TextField label="Número" value={str("street_number")} onChange={set("street_number")} maxLength={10} />
             <TextField label="Complemento" value={str("complement")} onChange={set("complement")} />
