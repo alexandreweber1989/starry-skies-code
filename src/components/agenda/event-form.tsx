@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { EventArt } from "@/components/agenda/event-art";
+import { ImagePlus, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -46,6 +48,7 @@ interface FormState {
   capacity: string;
   is_featured: boolean;
   status: EventStatus;
+  image_url: string;
 }
 
 const EMPTY: FormState = {
@@ -61,6 +64,7 @@ const EMPTY: FormState = {
   capacity: "",
   is_featured: false,
   status: "publicado",
+  image_url: "",
 };
 
 function fromEvent(e: ChurchEvent): FormState {
@@ -77,6 +81,7 @@ function fromEvent(e: ChurchEvent): FormState {
     capacity: e.capacity ? String(e.capacity) : "",
     is_featured: e.is_featured,
     status: e.status,
+    image_url: e.image_url ?? "",
   };
 }
 
@@ -92,6 +97,8 @@ export function EventForm({
 }) {
   const qc = useQueryClient();
   const [form, setForm] = useState<FormState>(EMPTY);
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (open) setForm(event ? fromEvent(event) : EMPTY);
@@ -116,6 +123,34 @@ export function EventForm({
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) =>
     setForm((f) => ({ ...f, [key]: value }));
 
+  /** Envia a arte criada pelo ministério de Mídia para o bucket privado. */
+  async function handleArtFile(file: File) {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Envie um arquivo de imagem (JPG, PNG ou WEBP).");
+      return;
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      toast.error("A arte deve ter no máximo 8 MB.");
+      return;
+    }
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+      const path = `${crypto.randomUUID()}.${ext}`;
+      const { error } = await supabase.storage
+        .from("event-arts")
+        .upload(path, file, { cacheControl: "3600", upsert: false });
+      if (error) throw error;
+      set("image_url", path);
+      toast.success("Arte enviada.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Falha ao enviar a arte.");
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  }
+
   const save = useMutation({
     mutationFn: async () => {
       if (!form.title.trim()) throw new Error("Informe o título do evento.");
@@ -139,6 +174,7 @@ export function EventForm({
         capacity: form.capacity ? Number(form.capacity) : null,
         is_featured: form.is_featured,
         status: form.status,
+        image_url: form.image_url.trim() || null,
       };
 
       if (event) {
