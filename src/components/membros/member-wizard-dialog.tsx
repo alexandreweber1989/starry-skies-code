@@ -272,17 +272,49 @@ export function MemberWizardDialog() {
       {
         id: "funcao",
         eyebrow: "Vida na igreja",
-        question: "Qual a função dessa pessoa na igreja?",
-        hint: "Pastores, apascentadores e líderes aparecem destacados nas redes e mesas.",
+        question: "Que tipo de membro essa pessoa é?",
+        hint: "Escolha obrigatória — define o prefixo do nome e o destaque em redes e mesas.",
+        valid: (s) => s.church_function !== "",
         render: (s, up) => (
-          <ChoiceGrid
-            options={CHURCH_FUNCTIONS}
-            value={s.church_function}
-            onChange={(v) => up({ church_function: v as ChurchFunction })}
-            columns={3}
-          />
+          <div className="space-y-4">
+            <div className="grid gap-3 sm:grid-cols-3">
+              {CHURCH_FUNCTIONS.map((f) => {
+                const active = s.church_function === f.value;
+                return (
+                  <button
+                    key={f.value}
+                    type="button"
+                    onClick={() => up({ church_function: f.value })}
+                    className={cn(
+                      "text-left border rounded-sm px-4 py-3 transition-colors",
+                      active
+                        ? "border-primary bg-primary/10"
+                        : "border-border bg-card hover:border-primary/50",
+                    )}
+                  >
+                    <span className="flex items-center justify-between gap-2 text-sm text-foreground">
+                      {f.label}
+                      {active && <Check className="h-4 w-4 text-primary" />}
+                    </span>
+                    <span className="mt-1 block text-xs text-muted-foreground">
+                      {CHURCH_FUNCTION_HINT[f.value] ?? "Sem prefixo no nome"}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            {s.church_function && s.full_name.trim() && (
+              <p className="text-sm text-muted-foreground">
+                Aparecerá como{" "}
+                <span className="text-foreground font-medium">
+                  {displayMemberName(s.full_name, s.church_function, s.gender)}
+                </span>
+              </p>
+            )}
+          </div>
         ),
       },
+
       {
         id: "igreja",
         eyebrow: "Vida na igreja",
