@@ -1,6 +1,7 @@
 import { MapPin, Clock, Users, Pencil, Trash2, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { EventArt } from "@/components/agenda/event-art";
 import {
   KIND_LABEL,
   RSVP_LABEL,
@@ -47,6 +48,15 @@ export function EventCard({
       )}
     >
       <div className="flex">
+        {event.image_url && (
+          <div className="hidden sm:block w-40 shrink-0 border-r border-border bg-muted/40 overflow-hidden">
+            <EventArt
+              value={event.image_url}
+              alt={`Arte de divulgação — ${event.title}`}
+              className="h-full transition-transform duration-500 group-hover:scale-105"
+            />
+          </div>
+        )}
         <div className="w-24 shrink-0 border-r border-border bg-muted/40 flex flex-col items-center justify-center py-6">
           <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
             {d.weekday}
