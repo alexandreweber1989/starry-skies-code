@@ -48,6 +48,8 @@ export function RedeDialog() {
       setAudience("");
       setDescription("");
       void qc.invalidateQueries({ queryKey: ["redes"] });
+      void qc.invalidateQueries({ queryKey: ["redes-full"] });
+
     },
     onError: (e: Error) => toast.error(e.message),
   });
