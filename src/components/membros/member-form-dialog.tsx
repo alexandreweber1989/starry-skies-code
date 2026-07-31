@@ -16,6 +16,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Field, Section, SelectField, TextField } from "./member-fields";
+import { ChurchFunctionCards } from "./church-function-cards";
 import { CepInput } from "@/components/ui/cep-input";
 import { FamilyLinksEditor } from "./family-links-editor";
 import {
