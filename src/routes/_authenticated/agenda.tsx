@@ -264,6 +264,22 @@ function AgendaPage() {
             <PanelSection label="Agenda" title="Próximos eventos">
               {eventsQuery.isLoading
                 ? <EmptyLine>Carregando agenda...</EmptyLine>
+                : upcoming.length === 0 && canCreate ? (
+                    <div className="border border-dashed border-border p-8 text-center">
+                      <p className="text-sm text-muted-foreground">
+                        Nenhum evento futuro com esses filtros. Crie o primeiro compromisso da agenda.
+                      </p>
+                      <Button
+                        className="mt-4"
+                        onClick={() => {
+                          setEditing(null);
+                          setFormOpen(true);
+                        }}
+                      >
+                        <Plus className="h-4 w-4" /> Novo evento
+                      </Button>
+                    </div>
+                  )
                 : renderList(upcoming, "Nenhum evento futuro com esses filtros.")}
             </PanelSection>
           </TabsContent>
