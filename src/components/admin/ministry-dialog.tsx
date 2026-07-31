@@ -71,6 +71,8 @@ export function MinistryDialog() {
             <Label>Nome</Label>
             <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ministério de Louvor" />
           </div>
+          <ChurchSelect value={churchId} onChange={setChurchId} />
+
           <div className="space-y-2">
             <Label>Descrição</Label>
             <Textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)} />
