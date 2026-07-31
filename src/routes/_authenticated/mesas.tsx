@@ -18,12 +18,13 @@ function MesasPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("mesas")
-        .select("*, rede:redes(name, target_audience)")
+        .select("*, rede:redes(name, target_audience), church:churches(name, city)")
         .order("name");
       if (error) throw error;
       return data;
     },
   });
+
 
   return (
     <>
@@ -55,7 +56,9 @@ function MesasPage() {
               <div className="mt-6 pt-4 border-t border-border space-y-1 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
                 <div>{m.meeting_day ?? "Dia a definir"} · {m.meeting_time ?? "—"}</div>
                 <div>{m.meeting_location ?? "Local a definir"}</div>
+                <div>{m.church?.name ?? "Igreja a definir"}</div>
               </div>
+
             </div>
           ))}
         </div>

@@ -4,6 +4,8 @@ import { Plus, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { slugify, useProfileOptions } from "@/lib/use-profiles";
+import { ChurchSelect } from "./church-select";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +29,7 @@ import {
 export function MinistryDialog() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
+  const [churchId, setChurchId] = useState("");
   const [description, setDescription] = useState("");
   const [meetingInfo, setMeetingInfo] = useState("");
   const qc = useQueryClient();
@@ -34,14 +37,17 @@ export function MinistryDialog() {
   const create = useMutation({
     mutationFn: async () => {
       if (name.trim().length < 3) throw new Error("Informe o nome do ministério.");
+      if (!churchId) throw new Error("Selecione a igreja deste ministério.");
       const { error } = await supabase.from("ministries").insert({
         name: name.trim(),
         slug: slugify(name),
+        church_id: churchId,
         description: description.trim() || null,
         meeting_info: meetingInfo.trim() || null,
       });
       if (error) throw error;
     },
+
     onSuccess: () => {
       toast.success("Ministério criado.");
       setOpen(false);
@@ -67,6 +73,8 @@ export function MinistryDialog() {
             <Label>Nome</Label>
             <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ministério de Louvor" />
           </div>
+          <ChurchSelect value={churchId} onChange={setChurchId} />
+
           <div className="space-y-2">
             <Label>Descrição</Label>
             <Textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)} />

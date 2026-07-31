@@ -4,6 +4,8 @@ import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { slugify } from "@/lib/use-profiles";
+import { ChurchSelect } from "./church-select";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +22,7 @@ import {
 export function RedeDialog() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
+  const [churchId, setChurchId] = useState("");
   const [audience, setAudience] = useState("");
   const [description, setDescription] = useState("");
   const qc = useQueryClient();
@@ -27,14 +30,17 @@ export function RedeDialog() {
   const create = useMutation({
     mutationFn: async () => {
       if (name.trim().length < 3) throw new Error("Informe o nome da rede.");
+      if (!churchId) throw new Error("Selecione a igreja desta rede.");
       const { error } = await supabase.from("redes").insert({
         name: name.trim(),
         slug: slugify(name),
+        church_id: churchId,
         target_audience: audience.trim() || null,
         description: description.trim() || null,
       });
       if (error) throw error;
     },
+
     onSuccess: () => {
       toast.success("Rede criada.");
       setOpen(false);
@@ -42,6 +48,8 @@ export function RedeDialog() {
       setAudience("");
       setDescription("");
       void qc.invalidateQueries({ queryKey: ["redes"] });
+      void qc.invalidateQueries({ queryKey: ["redes-full"] });
+
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -60,6 +68,8 @@ export function RedeDialog() {
             <Label>Nome</Label>
             <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Rede Jovens" />
           </div>
+          <ChurchSelect value={churchId} onChange={setChurchId} />
+
           <div className="space-y-2">
             <Label>Público-alvo</Label>
             <Input value={audience} onChange={(e) => setAudience(e.target.value)} placeholder="18 a 29 anos" />

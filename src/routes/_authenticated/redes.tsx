@@ -15,13 +15,17 @@ export const Route = createFileRoute("/_authenticated/redes")({
 function RedesPage() {
   const { isAdmin } = useAuth();
   const { data: redes } = useQuery({
-    queryKey: ["redes"],
+    queryKey: ["redes-full"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("redes").select("*").order("name");
+      const { data, error } = await supabase
+        .from("redes")
+        .select("*, church:churches(name, city)")
+        .order("name");
       if (error) throw error;
-      return data;
+      return data as any[];
     },
   });
+
 
   const { data: mesasByRede } = useQuery({
     queryKey: ["mesas-by-rede"],
@@ -60,14 +64,18 @@ function RedesPage() {
                 <div>
                   <div className="font-mono text-[11px] uppercase tracking-widest text-primary mb-2">
                     Rede {String(i + 1).padStart(2, "0")} · {r.target_audience}
+                    {r.church?.name ? ` · ${r.church.name}` : ""}
                   </div>
+
                   <h3 className="font-serif text-3xl">{r.name}</h3>
                   {r.description && <p className="mt-2 text-sm text-muted-foreground">{r.description}</p>}
                   {isAdmin && (
-                    <div className="mt-4">
+                    <div className="mt-4 flex flex-wrap gap-2">
                       <RedeMembersDialog redeId={r.id} redeName={r.name} />
+                      <MesaDialog redeId={r.id} compact />
                     </div>
                   )}
+
                 </div>
                 <div className="font-serif text-4xl text-muted-foreground">
                   {(mesasByRede?.[r.id]?.length ?? 0).toString().padStart(2, "0")}

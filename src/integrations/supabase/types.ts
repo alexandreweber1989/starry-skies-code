@@ -549,6 +549,7 @@ export type Database = {
       }
       mesas: {
         Row: {
+          church_id: string | null
           created_at: string
           description: string | null
           id: string
@@ -562,6 +563,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          church_id?: string | null
           created_at?: string
           description?: string | null
           id?: string
@@ -575,6 +577,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          church_id?: string | null
           created_at?: string
           description?: string | null
           id?: string
@@ -589,6 +592,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "mesas_church_id_fkey"
+            columns: ["church_id"]
+            isOneToOne: false
+            referencedRelation: "churches"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "mesas_rede_id_fkey"
             columns: ["rede_id"]
             isOneToOne: false
@@ -599,6 +609,7 @@ export type Database = {
       }
       ministries: {
         Row: {
+          church_id: string | null
           color: string | null
           created_at: string
           description: string | null
@@ -611,6 +622,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          church_id?: string | null
           color?: string | null
           created_at?: string
           description?: string | null
@@ -623,6 +635,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          church_id?: string | null
           color?: string | null
           created_at?: string
           description?: string | null
@@ -634,7 +647,15 @@ export type Database = {
           slug?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "ministries_church_id_fkey"
+            columns: ["church_id"]
+            isOneToOne: false
+            referencedRelation: "churches"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ministry_members: {
         Row: {
@@ -1008,6 +1029,7 @@ export type Database = {
       }
       redes: {
         Row: {
+          church_id: string | null
           color: string | null
           created_at: string
           description: string | null
@@ -1019,6 +1041,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          church_id?: string | null
           color?: string | null
           created_at?: string
           description?: string | null
@@ -1030,6 +1053,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          church_id?: string | null
           color?: string | null
           created_at?: string
           description?: string | null
@@ -1040,7 +1064,15 @@ export type Database = {
           target_audience?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "redes_church_id_fkey"
+            columns: ["church_id"]
+            isOneToOne: false
+            referencedRelation: "churches"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {

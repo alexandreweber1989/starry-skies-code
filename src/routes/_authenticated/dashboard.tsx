@@ -22,6 +22,8 @@ import { AgendaCultos } from "@/components/painel/agenda-cultos";
 import { Aniversariantes } from "@/components/painel/aniversariantes";
 import { Operacao } from "@/components/painel/operacao";
 import { MembershipRequestsPanel } from "@/components/membros/membership-requests-panel";
+import { EscalaPendente } from "@/components/painel/escala-pendente";
+
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -127,10 +129,15 @@ function Dashboard() {
         }
       />
       <PageBody>
+        {/* Aviso de escala: cada escalado responde se vai poder participar. */}
+        <div className="mb-6">
+          <EscalaPendente />
+        </div>
         {/* Pendências de cadastro: aparecem primeiro para o admin resolver. */}
         <div className="mb-6">
           <MembershipRequestsPanel compact />
         </div>
+
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatTile
             label="Membros ativos"
