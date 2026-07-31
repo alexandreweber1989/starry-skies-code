@@ -22,9 +22,12 @@ export interface ChurchDraft {
   id?: string;
   name: string;
   short_name: string;
+  zip_code: string;
   city: string;
   state: string;
   address: string;
+  street_number: string;
+  neighborhood: string;
   phone: string;
   email: string;
   lead_pastor: string;
@@ -36,9 +39,12 @@ export interface ChurchDraft {
 export const EMPTY_CHURCH: ChurchDraft = {
   name: "",
   short_name: "",
+  zip_code: "",
   city: "",
   state: "",
   address: "",
+  street_number: "",
+  neighborhood: "",
   phone: "",
   email: "",
   lead_pastor: "",
