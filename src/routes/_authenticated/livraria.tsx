@@ -42,7 +42,7 @@ function LivrariaPage() {
           <TabsList className="mb-8">
             <TabsTrigger value="catalogo">Catálogo</TabsTrigger>
             <TabsTrigger value="pedidos">Meus pedidos</TabsTrigger>
-            {isLivrariaAdmin && <TabsTrigger value="gestao">Gestão</TabsTrigger>}
+            {isLivrariaAdmin && <TabsTrigger value="gestao">Cadastrar produtos</TabsTrigger>}
             {isLivrariaAdmin && <TabsTrigger value="fila">Fila de pedidos</TabsTrigger>}
           </TabsList>
           <TabsContent value="catalogo">
