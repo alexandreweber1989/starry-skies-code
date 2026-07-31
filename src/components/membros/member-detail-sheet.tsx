@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { displayMemberName } from "@/lib/igreja";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -97,7 +98,7 @@ export function MemberDetailSheet({
               {initialsOf(profile.full_name)}
             </div>
             <div className="min-w-0">
-              <SheetTitle className="font-serif text-2xl truncate">{profile.full_name}</SheetTitle>
+              <SheetTitle className="font-serif text-2xl truncate">{displayMemberName(profile.full_name, profile.church_function, profile.gender)}</SheetTitle>
               <SheetDescription className="truncate">{profile.email ?? "Sem e-mail"}</SheetDescription>
             </div>
           </div>
