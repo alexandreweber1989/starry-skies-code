@@ -368,6 +368,54 @@ export type Database = {
           },
         ]
       }
+      family_links: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          note: string | null
+          person_id: string
+          relation: Database["public"]["Enums"]["family_relation"]
+          relative_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string | null
+          person_id: string
+          relation: Database["public"]["Enums"]["family_relation"]
+          relative_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string | null
+          person_id?: string
+          relation?: Database["public"]["Enums"]["family_relation"]
+          relative_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "family_links_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "family_links_relative_id_fkey"
+            columns: ["relative_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mesa_members: {
         Row: {
           id: string
@@ -1201,6 +1249,13 @@ export type Database = {
         }
         Returns: boolean
       }
+      inverse_family_relation: {
+        Args: {
+          _person_gender: string
+          _relation: Database["public"]["Enums"]["family_relation"]
+        }
+        Returns: Database["public"]["Enums"]["family_relation"]
+      }
       is_cantina_admin: { Args: { _user_id: string }; Returns: boolean }
       is_livraria_admin: { Args: { _user_id: string }; Returns: boolean }
     }
@@ -1221,6 +1276,15 @@ export type Database = {
         | "treinamento"
       event_scope: "igreja" | "ministerio" | "rede" | "mesa"
       event_status: "rascunho" | "publicado" | "cancelado" | "concluido"
+      family_relation:
+        | "conjuge"
+        | "filho"
+        | "pai"
+        | "mae"
+        | "irmao"
+        | "avo"
+        | "neto"
+        | "outro"
       rsvp_status: "vou" | "nao_vou" | "talvez"
       worship_assignment_status: "pendente" | "confirmado" | "recusado"
       worship_schedule_status: "rascunho" | "publicada" | "concluida"
@@ -1370,6 +1434,16 @@ export const Constants = {
       ],
       event_scope: ["igreja", "ministerio", "rede", "mesa"],
       event_status: ["rascunho", "publicado", "cancelado", "concluido"],
+      family_relation: [
+        "conjuge",
+        "filho",
+        "pai",
+        "mae",
+        "irmao",
+        "avo",
+        "neto",
+        "outro",
+      ],
       rsvp_status: ["vou", "nao_vou", "talvez"],
       worship_assignment_status: ["pendente", "confirmado", "recusado"],
       worship_schedule_status: ["rascunho", "publicada", "concluida"],
