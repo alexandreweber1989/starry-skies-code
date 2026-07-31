@@ -70,6 +70,12 @@ export function ScheduleDetail({ scheduleId, canManage }: { scheduleId: string; 
   });
 
   const assignments: AssignmentRow[] = detail?.assignments ?? [];
+  const { user } = useAuth();
+  /** O ministro escalado também pode montar o grupo do domingo. */
+  const isMinistro = assignments.some(
+    (a) => a.user_id === user?.id && a.function_name === "Violão (ministro)",
+  );
+
 
   const addAssignment = useMutation({
     mutationFn: async ({ userId, fn }: { userId: string; fn: string }) => {
