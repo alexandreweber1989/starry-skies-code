@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -114,7 +115,7 @@ function AuthPage() {
           <Tabs value={mode} onValueChange={(v) => setMode(v as "signin" | "signup")}>
             <TabsList className="grid grid-cols-2 w-full">
               <TabsTrigger value="signin">Entrar</TabsTrigger>
-              <TabsTrigger value="signup">Criar conta</TabsTrigger>
+              <TabsTrigger value="signup">Solicitar cadastro</TabsTrigger>
             </TabsList>
 
             <TabsContent value="signin">
@@ -179,7 +180,7 @@ function AuthPage() {
           </Button>
 
           <p className="mt-6 text-xs text-muted-foreground text-center">
-            O primeiro usuário a entrar se torna automaticamente Admin geral.
+            O acesso é liberado por um administrador. O primeiro usuário a entrar se torna Admin geral.
           </p>
         </div>
       </div>
