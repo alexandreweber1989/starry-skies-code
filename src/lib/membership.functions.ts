@@ -52,9 +52,16 @@ export const approveMembershipRequest = createServerFn({ method: "POST" })
 
     const { error: profileError } = await supabaseAdmin
       .from("profiles")
-      .update({ full_name: req.full_name, email: req.email, phone: req.phone ?? null })
-      .eq("id", userId);
+      .upsert(
+        { id: userId, full_name: req.full_name, email: req.email, phone: req.phone ?? null } as never,
+        { onConflict: "id" },
+      );
     if (profileError) throw new Error(profileError.message);
+
+    await supabaseAdmin
+      .from("user_roles")
+      .upsert({ user_id: userId, role: "membro" } as never, { onConflict: "user_id,role" });
+
 
     const { error: updError } = await supabaseAdmin
       .from("membership_requests")
