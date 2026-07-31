@@ -16,6 +16,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Field, Section, SelectField, TextField } from "./member-fields";
+import { ChurchFunctionCards } from "./church-function-cards";
 import { CepInput } from "@/components/ui/cep-input";
 import { FamilyLinksEditor } from "./family-links-editor";
 import {
@@ -131,6 +132,8 @@ export function MemberFormDialog({
         payload.membership_type = clean(form.membership_type);
         payload.membership_status = form.membership_status || "ativo";
         payload.membership_end_date = clean(form.membership_end_date);
+        // Função eclesiástica define o prefixo de tratamento (Pr., Pra., Apasc., Líder).
+        payload.church_function = form.church_function || "membro";
       }
 
       const { error } = await supabase.from("profiles").update(payload as never).eq("id", profile.id);
@@ -264,6 +267,14 @@ export function MemberFormDialog({
             <TextField label="Igreja de origem" value={str("previous_church")} onChange={set("previous_church")} />
             {canEditMembership && (
               <>
+                <Field label="Função na igreja" full>
+                  <ChurchFunctionCards
+                    value={str("church_function") || "membro"}
+                    onChange={(v) => set("church_function")(v)}
+                    gender={str("gender")}
+                    previewName={str("full_name")}
+                  />
+                </Field>
                 <SelectField
                   label="Forma de entrada"
                   value={str("membership_type")}

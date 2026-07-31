@@ -1,4 +1,5 @@
 import { useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
+import { displayMemberName } from "@/lib/igreja";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -155,7 +156,9 @@ export function MemberCard({
           {initialsOf(profile.full_name)}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="truncate font-medium leading-tight">{profile.full_name}</p>
+          <p className="truncate font-medium leading-tight">
+            {displayMemberName(profile.full_name, profile.church_function, profile.gender)}
+          </p>
           <p className="truncate text-xs text-muted-foreground">
             {profile.email ?? profile.phone ?? "Sem contato"}
           </p>
