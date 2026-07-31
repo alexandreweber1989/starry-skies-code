@@ -697,7 +697,7 @@ export function MemberWizardDialog() {
           phone: state.phone.trim(),
           password: state.password,
           profile: {
-            church_function: state.church_function,
+            church_function: state.church_function || "membro",
             ...(state.church_id ? { church_id: state.church_id } : {}),
             gender: state.gender,
             marital_status: state.marital_status,
