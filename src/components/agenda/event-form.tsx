@@ -327,6 +327,62 @@ export function EventForm({
             />
           </div>
 
+          <div className="space-y-2">
+            <Label>Arte de divulgação (Mídia)</Label>
+            <div className="border border-border rounded-sm p-4 flex flex-col sm:flex-row gap-4">
+              <div className="w-full sm:w-40 aspect-[4/5] shrink-0 border border-dashed border-border bg-muted/40 flex items-center justify-center overflow-hidden">
+                {form.image_url ? (
+                  <EventArt value={form.image_url} alt="Pré-visualização da arte" />
+                ) : (
+                  <ImagePlus className="h-6 w-6 text-muted-foreground" aria-hidden />
+                )}
+              </div>
+              <div className="flex-1 space-y-3">
+                <p className="text-xs text-muted-foreground">
+                  Envie o card criado pelo ministério de Mídia (JPG, PNG ou WEBP, até 8 MB) ou cole o
+                  link de uma arte já publicada.
+                </p>
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) void handleArtFile(file);
+                  }}
+                />
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={uploading}
+                    onClick={() => fileRef.current?.click()}
+                  >
+                    <ImagePlus className="h-3.5 w-3.5" />
+                    {uploading ? "Enviando..." : form.image_url ? "Trocar arte" : "Enviar arte"}
+                  </Button>
+                  {form.image_url && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => set("image_url", "")}
+                    >
+                      <X className="h-3.5 w-3.5" /> Remover
+                    </Button>
+                  )}
+                </div>
+                <Input
+                  value={form.image_url}
+                  onChange={(e) => set("image_url", e.target.value)}
+                  placeholder="ou cole https://..."
+                />
+              </div>
+            </div>
+          </div>
+
           <div className="grid sm:grid-cols-2 gap-4">
             <label className="flex items-center justify-between border border-border rounded-sm px-4 py-3">
               <span className="text-sm">Pedir confirmação</span>
