@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, PageBody } from "@/components/app-shell";
 import { ArrowUpRight } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
-import { MinistryDialog } from "@/components/admin/ministry-dialog";
+import { MinistryDialog, EditMinistryButton } from "@/components/admin/ministry-dialog";
 
 export const Route = createFileRoute("/_authenticated/ministerios/")({
   head: () => ({ meta: [{ title: "Ministérios — IB Atos" }] }),
@@ -37,13 +37,18 @@ function MinistriesPage() {
         {isLoading && <div className="text-muted-foreground">Carregando...</div>}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
           {data?.map((m, i) => (
+            <div key={m.id} className="relative">
+            {isAdmin && (
+              <div className="absolute right-3 top-3 z-10">
+                <EditMinistryButton ministry={m} />
+              </div>
+            )}
             <Link
-              key={m.id}
               to="/ministerios/$slug"
               params={{ slug: m.slug }}
               className="group border border-border bg-card rounded-sm p-6 hover:border-primary transition-colors"
             >
-              <div className="flex items-start justify-between mb-6">
+              <div className="flex items-start justify-between mb-6 pr-10">
                 <div
                   className="font-mono text-[11px] uppercase tracking-widest text-primary"
                 >
@@ -61,6 +66,7 @@ function MinistriesPage() {
                 </div>
               )}
             </Link>
+            </div>
           ))}
         </div>
       </PageBody>
