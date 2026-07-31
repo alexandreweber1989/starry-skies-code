@@ -66,6 +66,8 @@ export function RedeDialog() {
             <Label>Nome</Label>
             <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Rede Jovens" />
           </div>
+          <ChurchSelect value={churchId} onChange={setChurchId} />
+
           <div className="space-y-2">
             <Label>Público-alvo</Label>
             <Input value={audience} onChange={(e) => setAudience(e.target.value)} placeholder="18 a 29 anos" />
