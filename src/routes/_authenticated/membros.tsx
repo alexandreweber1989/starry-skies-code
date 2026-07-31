@@ -151,6 +151,17 @@ function MembrosPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  /** Exclusão definitiva de um membro (conta + ficha), restrita ao admin geral. */
+  const removeMutation = useMutation({
+    mutationFn: async (userId: string) => removeMember({ data: { user_id: userId } }),
+    onSuccess: () => {
+      toast.success("Membro removido da plataforma.");
+      qc.invalidateQueries({ queryKey: ["profiles"] });
+      qc.invalidateQueries({ queryKey: ["profiles-min"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   const filtered = useMemo(() => {
     const term = filters.q.trim().toLowerCase();
     const rows = (data ?? []).filter((p) => {
