@@ -7,9 +7,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { createMemberAccount } from "@/lib/members.functions";
 import {
   CHURCH_FUNCTIONS,
+  CHURCH_FUNCTION_HINT,
+  CHURCH_FUNCTION_LABEL,
   GENDERS,
   MARITAL_STATUS,
   MEMBERSHIP_TYPES,
+  displayMemberName,
   type ChurchFunction,
 } from "@/lib/igreja";
 import { BLOOD_TYPES, COURSE_OPTIONS, EDUCATION_LEVELS, MEMBERSHIP_STATUS } from "@/lib/membros";
@@ -29,7 +32,8 @@ interface WizardState {
   email: string;
   phone: string;
   password: string;
-  church_function: ChurchFunction;
+  /** Vazio força a escolha explícita do tipo de membro no assistente. */
+  church_function: ChurchFunction | "";
   church_id: string;
   gender: string;
   marital_status: string;
@@ -77,7 +81,7 @@ const EMPTY: WizardState = {
   email: "",
   phone: "",
   password: "",
-  church_function: "membro",
+  church_function: "",
   church_id: "",
   gender: "",
   marital_status: "",
