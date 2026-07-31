@@ -22,6 +22,8 @@ import { AgendaCultos } from "@/components/painel/agenda-cultos";
 import { Aniversariantes } from "@/components/painel/aniversariantes";
 import { Operacao } from "@/components/painel/operacao";
 import { MembershipRequestsPanel } from "@/components/membros/membership-requests-panel";
+import { EscalaPendente } from "@/components/painel/escala-pendente";
+
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
