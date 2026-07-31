@@ -362,11 +362,19 @@
   58% { transform: scaleX(1); transform-origin: right; }
   100% { transform: scaleX(0); transform-origin: right; }
 }
-@keyframes pt-tile {
-  0% { transform: scale(0); }
-  40% { transform: scale(1); }
-  60% { transform: scale(1); }
-  100% { transform: scale(0); }
+@keyframes pt-wave-up {
+  0% { transform: translateY(101%); }
+  34%, 62% { transform: translateY(0); }
+  100% { transform: translateY(-101%); }
+}
+@keyframes pt-wave-down {
+  0% { transform: translateY(-101%); }
+  34%, 62% { transform: translateY(0); }
+  100% { transform: translateY(101%); }
+}
+@keyframes pt-enter-wave {
+  0% { opacity: 0; transform: translateY(26px); clip-path: inset(14% 0 0 0); }
+  100% { opacity: 1; transform: none; clip-path: inset(0 0 0 0); }
 }
 @keyframes pt-iris {
   0% { clip-path: circle(0% at 50% 50%); }
@@ -442,15 +450,13 @@
   .pt-v-rows .pt-pieces { grid-template-rows: repeat(5, 1fr); }
   .pt-v-rows .pt-piece { animation-name: pt-row; animation-delay: calc(var(--i) * 55ms); }
 
-  /* Grade de blocos */
-  .pt-v-grid .pt-pieces {
-    grid-template-columns: repeat(6, 1fr);
-    grid-template-rows: repeat(4, 1fr);
+  /* Onda alternada (contra-fluxo) */
+  .pt-v-wave .pt-pieces { grid-template-columns: repeat(6, 1fr); }
+  .pt-v-wave .pt-piece {
+    animation-name: pt-wave-up;
+    animation-delay: calc(var(--i) * 28ms);
   }
-  .pt-v-grid .pt-piece {
-    animation-name: pt-tile;
-    animation-delay: calc(var(--i) * 22ms);
-  }
+  .pt-v-wave .pt-piece:nth-child(even) { animation-name: pt-wave-down; }
 
   /* Íris circular */
   .pt-v-iris .pt-piece {
@@ -513,6 +519,9 @@
   .pt-enter-glitch {
     animation: pt-enter-glitch 560ms cubic-bezier(0.22, 1, 0.36, 1) 230ms both;
   }
+  .pt-enter-wave {
+    animation: pt-enter-wave 640ms cubic-bezier(0.22, 1, 0.36, 1) 240ms both;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -521,7 +530,8 @@
   .pt-enter-rows,
   .pt-enter-scale,
   .pt-enter-split,
-  .pt-enter-glitch { animation: none !important; }
+  .pt-enter-glitch,
+  .pt-enter-wave { animation: none !important; }
   .evt-dialog,
   .evt-dialog::before,
   .evt-title,
