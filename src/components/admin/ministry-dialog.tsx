@@ -4,6 +4,8 @@ import { Plus, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { slugify, useProfileOptions } from "@/lib/use-profiles";
+import { ChurchSelect } from "./church-select";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
