@@ -64,10 +64,12 @@ function RedesPage() {
                   <h3 className="font-serif text-3xl">{r.name}</h3>
                   {r.description && <p className="mt-2 text-sm text-muted-foreground">{r.description}</p>}
                   {isAdmin && (
-                    <div className="mt-4">
+                    <div className="mt-4 flex flex-wrap gap-2">
                       <RedeMembersDialog redeId={r.id} redeName={r.name} />
+                      <MesaDialog redeId={r.id} compact />
                     </div>
                   )}
+
                 </div>
                 <div className="font-serif text-4xl text-muted-foreground">
                   {(mesasByRede?.[r.id]?.length ?? 0).toString().padStart(2, "0")}
