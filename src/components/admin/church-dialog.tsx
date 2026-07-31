@@ -22,9 +22,12 @@ export interface ChurchDraft {
   id?: string;
   name: string;
   short_name: string;
+  zip_code: string;
   city: string;
   state: string;
   address: string;
+  street_number: string;
+  neighborhood: string;
   phone: string;
   email: string;
   lead_pastor: string;
@@ -36,9 +39,12 @@ export interface ChurchDraft {
 export const EMPTY_CHURCH: ChurchDraft = {
   name: "",
   short_name: "",
+  zip_code: "",
   city: "",
   state: "",
   address: "",
+  street_number: "",
+  neighborhood: "",
   phone: "",
   email: "",
   lead_pastor: "",
@@ -57,7 +63,6 @@ export function ChurchDialog({
 }) {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<ChurchDraft>(initial);
-  const [cep, setCep] = useState("");
   const qc = useQueryClient();
 
   const save = useMutation({
@@ -66,9 +71,12 @@ export function ChurchDialog({
       const payload = {
         name: draft.name.trim(),
         short_name: draft.short_name.trim() || null,
+        zip_code: draft.zip_code.trim() || null,
         city: draft.city.trim() || null,
         state: draft.state.trim() || null,
         address: draft.address.trim() || null,
+        street_number: draft.street_number.trim() || null,
+        neighborhood: draft.neighborhood.trim() || null,
         phone: draft.phone.trim() || null,
         email: draft.email.trim() || null,
         lead_pastor: draft.lead_pastor.trim() || null,
@@ -158,12 +166,13 @@ export function ChurchDialog({
             <div className="space-y-2">
               <Label>CEP</Label>
               <CepInput
-                value={cep}
-                onChange={setCep}
+                value={draft.zip_code}
+                onChange={(v) => setDraft((d) => ({ ...d, zip_code: v }))}
                 onResolved={(a) =>
                   setDraft((d) => ({
                     ...d,
                     address: a.street || d.address,
+                    neighborhood: a.neighborhood || d.neighborhood,
                     city: a.city || d.city,
                     state: a.state || d.state,
                   }))
@@ -171,8 +180,25 @@ export function ChurchDialog({
               />
             </div>
             <div className="space-y-2">
-              <Label>Endereço</Label>
+              <Label>Endereço (rua)</Label>
               <Input value={draft.address} onChange={(e) => setDraft({ ...draft, address: e.target.value })} />
+            </div>
+          </div>
+          <div className="grid grid-cols-[120px_1fr] gap-4">
+            <div className="space-y-2">
+              <Label>Número</Label>
+              <Input
+                value={draft.street_number}
+                onChange={(e) => setDraft({ ...draft, street_number: e.target.value })}
+                placeholder="123"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Bairro</Label>
+              <Input
+                value={draft.neighborhood}
+                onChange={(e) => setDraft({ ...draft, neighborhood: e.target.value })}
+              />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -221,9 +247,12 @@ export function EditChurchButton({ church }: { church: any }) {
         id: church.id,
         name: church.name ?? "",
         short_name: church.short_name ?? "",
+        zip_code: church.zip_code ?? "",
         city: church.city ?? "",
         state: church.state ?? "",
         address: church.address ?? "",
+        street_number: church.street_number ?? "",
+        neighborhood: church.neighborhood ?? "",
         phone: church.phone ?? "",
         email: church.email ?? "",
         lead_pastor: church.lead_pastor ?? "",

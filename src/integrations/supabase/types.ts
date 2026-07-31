@@ -246,11 +246,14 @@ export type Database = {
           is_headquarters: boolean
           lead_pastor: string | null
           name: string
+          neighborhood: string | null
           notes: string | null
           phone: string | null
           short_name: string | null
           state: string | null
+          street_number: string | null
           updated_at: string
+          zip_code: string | null
         }
         Insert: {
           address?: string | null
@@ -262,11 +265,14 @@ export type Database = {
           is_headquarters?: boolean
           lead_pastor?: string | null
           name: string
+          neighborhood?: string | null
           notes?: string | null
           phone?: string | null
           short_name?: string | null
           state?: string | null
+          street_number?: string | null
           updated_at?: string
+          zip_code?: string | null
         }
         Update: {
           address?: string | null
@@ -278,11 +284,14 @@ export type Database = {
           is_headquarters?: boolean
           lead_pastor?: string | null
           name?: string
+          neighborhood?: string | null
           notes?: string | null
           phone?: string | null
           short_name?: string | null
           state?: string | null
+          street_number?: string | null
           updated_at?: string
+          zip_code?: string | null
         }
         Relationships: []
       }
