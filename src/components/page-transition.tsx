@@ -48,13 +48,14 @@ const ENTER_CLASS: Record<Variant, string> = {
 };
 
 /** Tempo da fase de cobertura (tela fechando). Espelha o CSS. */
-const COVER_MS = 620;
+const COVER_MS = 300;
 /** Tempo da fase de revelação (tela abrindo). Espelha o CSS. */
-const REVEAL_MS = 720;
+const REVEAL_MS = 340;
 /** Silêncio de rede exigido antes de revelar (evita piscar entre requisições). */
-const SETTLE_MS = 140;
+const SETTLE_MS = 50;
 /** Teto de segurança: nunca segura a cortina além disso. */
-const MAX_HOLD_MS = 5000;
+const MAX_HOLD_MS = 2500;
+
 
 function pickVariant(exclude?: Variant): Variant {
   const pool = VARIANTS.filter((v) => v !== exclude);
@@ -128,7 +129,7 @@ export function PageTransition({ children }: { children: ReactNode }) {
       // A cortina precisa ao menos terminar de fechar.
       const coverRemaining = Math.max(0, COVER_MS - elapsed);
       if (busy) {
-        raf = window.setTimeout(tick, 80);
+        raf = window.setTimeout(tick, 40);
         return;
       }
       settleTimer = window.setTimeout(reveal, coverRemaining + SETTLE_MS);
