@@ -31,11 +31,12 @@ import {
 
 const DAYS = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
 
-/** Criação de uma nova mesa vinculada a uma rede (admin geral). */
-export function MesaDialog({ redeId }: { redeId?: string }) {
+/** Criação de uma nova mesa vinculada a uma rede e a uma igreja (admin geral). */
+export function MesaDialog({ redeId, compact }: { redeId?: string; compact?: boolean }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [rede, setRede] = useState(redeId ?? "");
+  const [churchId, setChurchId] = useState("");
   const [day, setDay] = useState("");
   const [time, setTime] = useState("");
   const [location, setLocation] = useState("");
@@ -54,9 +55,11 @@ export function MesaDialog({ redeId }: { redeId?: string }) {
   const create = useMutation({
     mutationFn: async () => {
       if (name.trim().length < 3) throw new Error("Informe o nome da mesa.");
+      if (!churchId) throw new Error("Selecione a igreja desta mesa.");
       const { error } = await supabase.from("mesas").insert({
         name: name.trim(),
-        rede_id: rede || null,
+        rede_id: rede || redeId || null,
+        church_id: churchId,
         meeting_day: day || null,
         meeting_time: time || null,
         meeting_location: location.trim() || null,
@@ -81,7 +84,11 @@ export function MesaDialog({ redeId }: { redeId?: string }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button><Plus className="h-4 w-4" /> Nova mesa</Button>
+        {compact ? (
+          <Button variant="outline" size="sm"><Plus className="h-4 w-4" /> Nova mesa nesta rede</Button>
+        ) : (
+          <Button><Plus className="h-4 w-4" /> Nova mesa</Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
@@ -92,15 +99,17 @@ export function MesaDialog({ redeId }: { redeId?: string }) {
             <Label>Nome</Label>
             <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Mesa Betel" />
           </div>
+          <ChurchSelect value={churchId} onChange={setChurchId} />
           <div className="space-y-2">
             <Label>Rede</Label>
-            <Select value={rede} onValueChange={setRede}>
+            <Select value={rede} onValueChange={setRede} disabled={Boolean(redeId)}>
               <SelectTrigger><SelectValue placeholder="Selecione a rede" /></SelectTrigger>
               <SelectContent className="max-h-60">
                 {redes?.map((r) => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
+
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
               <Label>Dia</Label>
