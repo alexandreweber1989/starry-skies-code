@@ -135,6 +135,10 @@ function AuthPage() {
 
             <TabsContent value="signup">
               <form onSubmit={handleSignUp} className="space-y-4 mt-6">
+                <p className="text-xs text-muted-foreground">
+                  A plataforma é exclusiva para membros da Igreja Batista Atos. Envie sua
+                  solicitação: um administrador avalia e libera o acesso.
+                </p>
                 <div className="space-y-1.5">
                   <Label htmlFor="fn">Nome completo</Label>
                   <Input id="fn" required value={fullName} onChange={(e) => setFullName(e.target.value)} />
@@ -144,11 +148,21 @@ function AuthPage() {
                   <Input id="email2" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="password2">Senha</Label>
-                  <Input id="password2" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
+                  <Label htmlFor="phone2">Telefone</Label>
+                  <Input id="phone2" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="notes2">Seu vínculo com a igreja</Label>
+                  <Textarea
+                    id="notes2"
+                    rows={3}
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="Mesa, rede ou ministério que frequenta, quem pode confirmar…"
+                  />
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Criando..." : "Criar conta"}
+                  {loading ? "Enviando..." : "Solicitar cadastro"}
                 </Button>
               </form>
             </TabsContent>
