@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, PageBody } from "@/components/app-shell";
 import { ArrowUpRight } from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
+import { MinistryDialog } from "@/components/admin/ministry-dialog";
 
 export const Route = createFileRoute("/_authenticated/ministerios/")({
   head: () => ({ meta: [{ title: "Ministérios — IB Atos" }] }),

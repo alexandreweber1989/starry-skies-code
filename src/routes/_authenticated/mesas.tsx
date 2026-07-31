@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { UtensilsCrossed } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, PageBody } from "@/components/app-shell";
+import { useAuth } from "@/lib/auth-context";
+import { MesaDialog, MesaMembersDialog } from "@/components/admin/mesa-dialog";
 
 export const Route = createFileRoute("/_authenticated/mesas")({
   head: () => ({ meta: [{ title: "Mesas — IB Atos" }] }),
