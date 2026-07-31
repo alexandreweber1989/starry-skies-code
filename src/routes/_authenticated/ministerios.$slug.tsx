@@ -4,6 +4,7 @@ import { ArrowLeft, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, PageBody } from "@/components/app-shell";
 import { useAuth } from "@/lib/auth-context";
+import { MinistryMemberDialog } from "@/components/admin/ministry-dialog";
 
 export const Route = createFileRoute("/_authenticated/ministerios/$slug")({
   head: ({ params }) => ({ meta: [{ title: `${params.slug} — Ministério · IB Atos` }] }),
@@ -61,12 +62,17 @@ function MinistryDetail() {
       <PageBody>
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 border border-border bg-card p-8 rounded-sm">
-            <div className="font-mono text-[10px] uppercase tracking-widest text-primary mb-4">
-              Equipe
-            </div>
-            <div className="flex items-center gap-3 mb-6">
-              <Users className="h-5 w-5 text-muted-foreground" />
-              <div className="font-serif text-2xl">{members?.length ?? 0} servos</div>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <div className="font-mono text-[10px] uppercase tracking-widest text-primary mb-4">
+                  Equipe
+                </div>
+                <div className="flex items-center gap-3 mb-6">
+                  <Users className="h-5 w-5 text-muted-foreground" />
+                  <div className="font-serif text-2xl">{members?.length ?? 0} servos</div>
+                </div>
+              </div>
+              {canManage && <MinistryMemberDialog ministryId={ministry.id} />}
             </div>
             {members && members.length > 0 ? (
               <ul className="divide-y divide-border">
@@ -85,7 +91,8 @@ function MinistryDetail() {
               </ul>
             ) : (
               <p className="text-sm text-muted-foreground">
-                Nenhum servo cadastrado ainda. {canManage && "Você pode adicionar pela próxima fase."}
+                Nenhum servo cadastrado ainda.
+                {canManage && " Use o botão acima para adicionar."}
               </p>
             )}
           </div>
