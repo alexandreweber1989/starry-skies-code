@@ -49,7 +49,7 @@ export const Route = createFileRoute("/_authenticated/agenda")({
 
 function AgendaPage() {
   const qc = useQueryClient();
-  const { user, isAdmin, isMinistryAdmin, isMesaLeader } = useAuth();
+  const { user, roles, isAdmin, isMinistryAdmin, isMesaLeader } = useAuth();
 
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<ChurchEvent | null>(null);
@@ -115,10 +115,7 @@ function AgendaPage() {
     (!!e.mesa_id && isMesaLeader(e.mesa_id));
 
   const canCreate =
-    isAdmin ||
-    (useAuth().roles ?? []).some(
-      (r) => r.role === "admin_ministerio" || r.role === "lider_mesa",
-    );
+    isAdmin || roles.some((r) => r.role === "admin_ministerio" || r.role === "lider_mesa");
 
   const events = eventsQuery.data ?? [];
   const rsvps = rsvpQuery.data ?? [];
