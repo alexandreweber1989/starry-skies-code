@@ -92,11 +92,20 @@ export const createMemberAccount = createServerFn({ method: "POST" })
     if (!userId) throw new Error("Conta criada sem identificador.");
 
     // O gatilho handle_new_user já cria o perfil; aqui complementamos os dados.
+    const extra = Object.fromEntries(
+      Object.entries(data.profile ?? {}).filter(([, v]) => v !== undefined && v !== ""),
+    );
     const { error: profileError } = await supabaseAdmin
       .from("profiles")
-      .update({ full_name: data.full_name, email: data.email, phone: data.phone || null })
+      .update({
+        full_name: data.full_name,
+        email: data.email,
+        phone: data.phone || null,
+        ...extra,
+      })
       .eq("id", userId);
     if (profileError) throw new Error(profileError.message);
+
 
     return { id: userId };
   });
