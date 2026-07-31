@@ -3,8 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, PageBody } from "@/components/app-shell";
 import { useAuth } from "@/lib/auth-context";
-import { RedeDialog } from "@/components/admin/rede-dialog";
-import { MesaDialog, MesaMembersDialog } from "@/components/admin/mesa-dialog";
+import { RedeDialog, EditRedeButton } from "@/components/admin/rede-dialog";
+import { MesaDialog, MesaMembersDialog, EditMesaButton } from "@/components/admin/mesa-dialog";
 import { RedeMembersDialog } from "@/components/admin/rede-members-dialog";
 
 export const Route = createFileRoute("/_authenticated/redes")({
@@ -30,7 +30,7 @@ function RedesPage() {
   const { data: mesasByRede } = useQuery({
     queryKey: ["mesas-by-rede"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("mesas").select("id, name, rede_id, meeting_day, meeting_time");
+      const { data, error } = await supabase.from("mesas").select("*");
       if (error) throw error;
       const grouped: Record<string, typeof data> = {};
       for (const m of data ?? []) {
@@ -71,6 +71,7 @@ function RedesPage() {
                   {r.description && <p className="mt-2 text-sm text-muted-foreground">{r.description}</p>}
                   {isAdmin && (
                     <div className="mt-4 flex flex-wrap gap-2">
+                      <EditRedeButton rede={r} />
                       <RedeMembersDialog redeId={r.id} redeName={r.name} />
                       <MesaDialog redeId={r.id} compact />
                     </div>
@@ -91,6 +92,7 @@ function RedesPage() {
                         {m.meeting_day} · {m.meeting_time}
                       </div>
                       {isAdmin && <MesaMembersDialog mesaId={m.id} mesaName={m.name} />}
+                      {isAdmin && <EditMesaButton mesa={m} />}
                     </div>
                   </li>
                 ))}
