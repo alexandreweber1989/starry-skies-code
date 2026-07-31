@@ -45,20 +45,26 @@ function AuthPage() {
     navigate({ to: "/dashboard", replace: true });
   }
 
+  /**
+   * O acesso é restrito a membros da igreja: em vez de criar a conta na hora,
+   * registramos uma solicitação que fica pendente para o administrador aprovar.
+   */
   async function handleSignUp(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`,
-        data: { full_name: fullName },
-      },
+    const { error } = await supabase.from("membership_requests").insert({
+      full_name: fullName.trim().slice(0, 120),
+      email: email.trim().toLowerCase().slice(0, 255),
+      phone: phone.trim().slice(0, 30) || null,
+      notes: notes.trim().slice(0, 500) || null,
+      status: "pendente",
     });
     setLoading(false);
     if (error) return toast.error(error.message);
-    toast.success("Conta criada. Você já pode entrar.");
+    toast.success("Solicitação enviada. Um administrador vai avaliar seu cadastro.");
+    setFullName("");
+    setPhone("");
+    setNotes("");
     setMode("signin");
   }
 
