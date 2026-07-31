@@ -91,20 +91,30 @@ export const createMemberAccount = createServerFn({ method: "POST" })
     const userId = created.user?.id;
     if (!userId) throw new Error("Conta criada sem identificador.");
 
-    // O gatilho handle_new_user já cria o perfil; aqui complementamos os dados.
+    // A ficha é criada aqui (upsert) para não depender de gatilho no schema auth:
+    // sem isso, o update não encontrava linha e o membro nunca aparecia na lista.
     const extra = Object.fromEntries(
       Object.entries(data.profile ?? {}).filter(([, v]) => v !== undefined && v !== ""),
     );
     const { error: profileError } = await supabaseAdmin
       .from("profiles")
-      .update({
-        full_name: data.full_name,
-        email: data.email,
-        phone: data.phone || null,
-        ...extra,
-      })
-      .eq("id", userId);
+      .upsert(
+        {
+          id: userId,
+          full_name: data.full_name,
+          email: data.email,
+          phone: data.phone || null,
+          ...extra,
+        } as never,
+        { onConflict: "id" },
+      );
     if (profileError) throw new Error(profileError.message);
+
+    // Papel padrão de acesso à plataforma.
+    await supabaseAdmin
+      .from("user_roles")
+      .upsert({ user_id: userId, role: "membro" } as never, { onConflict: "user_id,role" });
+
 
 
     return { id: userId };
