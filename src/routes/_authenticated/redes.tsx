@@ -2,6 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, PageBody } from "@/components/app-shell";
+import { useAuth } from "@/lib/auth-context";
+import { RedeDialog } from "@/components/admin/rede-dialog";
+import { MesaDialog } from "@/components/admin/mesa-dialog";
 
 export const Route = createFileRoute("/_authenticated/redes")({
   head: () => ({ meta: [{ title: "Redes — IB Atos" }] }),
@@ -9,6 +12,7 @@ export const Route = createFileRoute("/_authenticated/redes")({
 });
 
 function RedesPage() {
+  const { isAdmin } = useAuth();
   const { data: redes } = useQuery({
     queryKey: ["redes"],
     queryFn: async () => {
@@ -38,6 +42,14 @@ function RedesPage() {
         eyebrow="Comunhão"
         title="Redes"
         description="As redes reúnem pessoas por afinidade e as organizam em Mesas — grupos semanais de comunhão."
+        actions={
+          isAdmin ? (
+            <>
+              <RedeDialog />
+              <MesaDialog />
+            </>
+          ) : undefined
+        }
       />
       <PageBody>
         <div className="space-y-8">

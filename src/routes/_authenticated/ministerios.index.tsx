@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, PageBody } from "@/components/app-shell";
 import { ArrowUpRight } from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
+import { MinistryDialog } from "@/components/admin/ministry-dialog";
 
 export const Route = createFileRoute("/_authenticated/ministerios/")({
   head: () => ({ meta: [{ title: "Ministérios — IB Atos" }] }),
@@ -10,6 +12,7 @@ export const Route = createFileRoute("/_authenticated/ministerios/")({
 });
 
 function MinistriesPage() {
+  const { isAdmin } = useAuth();
   const { data, isLoading } = useQuery({
     queryKey: ["ministries"],
     queryFn: async () => {
@@ -28,6 +31,7 @@ function MinistriesPage() {
         eyebrow="Corpo em serviço"
         title="Ministérios"
         description="Os nove ministérios da Igreja Batista Atos, cada um com sua vocação e seus servos."
+        actions={isAdmin ? <MinistryDialog /> : undefined}
       />
       <PageBody>
         {isLoading && <div className="text-muted-foreground">Carregando...</div>}
