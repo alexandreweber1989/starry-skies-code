@@ -3,6 +3,8 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const optionalText = z.string().trim().max(400).optional();
+/** Campos livres longos (dons, observações, testemunho) não podem ser truncados. */
+const optionalLongText = z.string().trim().max(2000).optional();
 const optionalDate = z
   .string()
   .trim()
@@ -46,17 +48,22 @@ const schema = z.object({
       baptism_church: optionalText,
       is_baptized: z.boolean().optional(),
       membership_type: optionalText,
+      membership_status: optionalText,
+      membership_end_date: optionalDate,
       previous_church: optionalText,
       member_since: optionalDate,
-      gifts: optionalText,
-      availability: optionalText,
+      father_name: optionalText,
+      mother_name: optionalText,
+      courses: z.array(z.string().trim().max(120)).max(30).optional(),
+      gifts: optionalLongText,
+      availability: optionalLongText,
       allergies: optionalText,
-      health_notes: optionalText,
+      health_notes: optionalLongText,
       blood_type: optionalText,
       has_children: z.boolean().optional(),
       children_count: z.number().int().min(0).max(30).optional(),
-      notes: optionalText,
-      bio: optionalText,
+      notes: optionalLongText,
+      bio: optionalLongText,
     })
     .partial()
     .optional(),
@@ -94,7 +101,9 @@ export const createMemberAccount = createServerFn({ method: "POST" })
     // A ficha é criada aqui (upsert) para não depender de gatilho no schema auth:
     // sem isso, o update não encontrava linha e o membro nunca aparecia na lista.
     const extra = Object.fromEntries(
-      Object.entries(data.profile ?? {}).filter(([, v]) => v !== undefined && v !== ""),
+      Object.entries(data.profile ?? {}).filter(
+        ([, v]) => v !== undefined && v !== "" && !(Array.isArray(v) && v.length === 0),
+      ),
     );
     const { error: profileError } = await supabaseAdmin
       .from("profiles")

@@ -12,6 +12,8 @@ import {
   MEMBERSHIP_TYPES,
   type ChurchFunction,
 } from "@/lib/igreja";
+import { BLOOD_TYPES, COURSE_OPTIONS, EDUCATION_LEVELS, MEMBERSHIP_STATUS } from "@/lib/membros";
+import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,7 +55,12 @@ interface WizardState {
   baptism_date: string;
   baptism_church: string;
   membership_type: string;
+  membership_status: string;
   previous_church: string;
+  father_name: string;
+  mother_name: string;
+  courses: string[];
+  bio: string;
   member_since: string;
   gifts: string;
   availability: string;
@@ -96,7 +103,12 @@ const EMPTY: WizardState = {
   baptism_date: "",
   baptism_church: "",
   membership_type: "",
+  membership_status: "ativo",
   previous_church: "",
+  father_name: "",
+  mother_name: "",
+  courses: [],
+  bio: "",
   member_since: "",
   gifts: "",
   availability: "",
@@ -340,8 +352,21 @@ export function MemberWizardDialog() {
             <Field label="Profissão">
               <Input value={s.profession} onChange={(e) => up({ profession: e.target.value })} />
             </Field>
-            <Field label="Escolaridade">
-              <Input value={s.education} onChange={(e) => up({ education: e.target.value })} />
+            <div className="sm:col-span-2">
+              <Field label="Escolaridade">
+                <ChoiceGrid
+                  options={EDUCATION_LEVELS.map((e) => ({ value: e, label: e }))}
+                  value={s.education}
+                  onChange={(v) => up({ education: v === s.education ? "" : v })}
+                  columns={3}
+                />
+              </Field>
+            </div>
+            <Field label="Nome do pai">
+              <Input value={s.father_name} onChange={(e) => up({ father_name: e.target.value })} />
+            </Field>
+            <Field label="Nome da mãe">
+              <Input value={s.mother_name} onChange={(e) => up({ mother_name: e.target.value })} />
             </Field>
           </div>
         ),
@@ -472,6 +497,49 @@ export function MemberWizardDialog() {
         ),
       },
       {
+        id: "status",
+        eyebrow: "Caminhada cristã",
+        question: "Qual é a situação dessa pessoa na membresia?",
+        hint: "Define como o membro aparece nas listas e nos indicadores da igreja.",
+        render: (s, up) => (
+          <ChoiceGrid
+            options={MEMBERSHIP_STATUS}
+            value={s.membership_status || "ativo"}
+            onChange={(v) => up({ membership_status: v })}
+            columns={3}
+          />
+        ),
+      },
+      {
+        id: "cursos",
+        eyebrow: "Formação",
+        question: "Quais cursos e encontros já concluiu?",
+        hint: "Opcional — marque quantos forem necessários.",
+        render: (s, up) => (
+          <div className="grid sm:grid-cols-2 gap-2">
+            {COURSE_OPTIONS.map((course) => {
+              const checked = s.courses.includes(course);
+              return (
+                <label key={course} className="flex items-center gap-2 text-sm">
+                  <Checkbox
+                    checked={checked}
+                    onCheckedChange={(v) =>
+                      up({
+                        courses:
+                          v === true
+                            ? [...s.courses, course]
+                            : s.courses.filter((c) => c !== course),
+                      })
+                    }
+                  />
+                  {course}
+                </label>
+              );
+            })}
+          </div>
+        ),
+      },
+      {
         id: "dons",
         eyebrow: "Serviço",
         question: "Dons, habilidades e disponibilidade",
@@ -498,7 +566,12 @@ export function MemberWizardDialog() {
                 <Input value={s.allergies} onChange={(e) => up({ allergies: e.target.value })} />
               </Field>
               <Field label="Tipo sanguíneo">
-                <Input value={s.blood_type} onChange={(e) => up({ blood_type: e.target.value })} />
+                <ChoiceGrid
+                  options={BLOOD_TYPES.map((b) => ({ value: b, label: b }))}
+                  value={s.blood_type}
+                  onChange={(v) => up({ blood_type: v === s.blood_type ? "" : v })}
+                  columns={3}
+                />
               </Field>
             </div>
             <Field label="Observações de saúde">
@@ -519,6 +592,9 @@ export function MemberWizardDialog() {
                 />
               </Field>
             )}
+            <Field label="Testemunho / bio">
+              <Textarea rows={3} value={s.bio} onChange={(e) => up({ bio: e.target.value })} />
+            </Field>
             <Field label="Observações gerais">
               <Textarea rows={3} value={s.notes} onChange={(e) => up({ notes: e.target.value })} />
             </Field>
@@ -569,6 +645,10 @@ export function MemberWizardDialog() {
             baptism_date: state.baptism_date,
             baptism_church: state.baptism_church,
             membership_type: state.membership_type,
+            membership_status: state.membership_status || "ativo",
+            father_name: state.father_name,
+            mother_name: state.mother_name,
+            courses: state.courses,
             previous_church: state.previous_church,
             member_since: state.member_since,
             gifts: state.gifts,
@@ -579,6 +659,7 @@ export function MemberWizardDialog() {
             has_children: state.has_children,
             children_count: Number(state.children_count) || 0,
             notes: state.notes,
+            bio: state.bio,
           },
         },
       }),
