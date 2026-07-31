@@ -6,6 +6,8 @@ export interface ProfileOption {
   full_name: string;
   /** Função eclesiástica (pastor, apascentador, líder...) para desambiguar homônimos. */
   church_function?: string | null;
+  /** Sexo: define Pr. ou Pra. no prefixo de tratamento. */
+  gender?: string | null;
 }
 
 /** Lista mínima de perfis para seletores de pessoas (nome + função na igreja). */
@@ -15,7 +17,7 @@ export function useProfileOptions() {
     queryFn: async (): Promise<ProfileOption[]> => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, full_name, church_function")
+        .select("id, full_name, church_function, gender")
         .order("full_name");
       if (error) throw error;
       return (data ?? []) as ProfileOption[];

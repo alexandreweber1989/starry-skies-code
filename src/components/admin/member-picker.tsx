@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Check, ChevronsUpDown, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useProfileOptions, type ProfileOption } from "@/lib/use-profiles";
-import { CHURCH_FUNCTION_LABEL } from "@/lib/igreja";
+import { CHURCH_FUNCTION_LABEL, displayMemberName } from "@/lib/igreja";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
@@ -82,7 +82,7 @@ export function MemberPicker({ value, onChange, placeholder = "Buscar por parte 
                           value.includes(p.id) ? "opacity-100" : "opacity-0",
                         )}
                       />
-                      <span className="truncate">{p.full_name}</span>
+                      <span className="truncate">{displayMemberName(p.full_name, p.church_function, p.gender)}</span>
                       {fn && (
                         <span className="ml-auto font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
                           {fn}
@@ -106,7 +106,7 @@ export function MemberPicker({ value, onChange, placeholder = "Buscar por parte 
                 key={p.id}
                 className="flex items-center gap-2 border border-border bg-muted/40 rounded-sm px-2 py-1 text-xs"
               >
-                <span>{p.full_name}</span>
+                <span>{displayMemberName(p.full_name, p.church_function, p.gender)}</span>
                 {fn && <span className="text-muted-foreground">· {fn}</span>}
                 <button
                   type="button"
