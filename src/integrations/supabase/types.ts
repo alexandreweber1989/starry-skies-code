@@ -235,6 +235,57 @@ export type Database = {
           },
         ]
       }
+      churches: {
+        Row: {
+          address: string | null
+          city: string | null
+          created_at: string
+          email: string | null
+          id: string
+          is_active: boolean
+          is_headquarters: boolean
+          lead_pastor: string | null
+          name: string
+          notes: string | null
+          phone: string | null
+          short_name: string | null
+          state: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          is_headquarters?: boolean
+          lead_pastor?: string | null
+          name: string
+          notes?: string | null
+          phone?: string | null
+          short_name?: string | null
+          state?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          is_headquarters?: boolean
+          lead_pastor?: string | null
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          short_name?: string | null
+          state?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       event_rsvps: {
         Row: {
           created_at: string
@@ -469,18 +520,21 @@ export type Database = {
           id: string
           joined_at: string
           mesa_id: string
+          role: Database["public"]["Enums"]["church_function"]
           user_id: string
         }
         Insert: {
           id?: string
           joined_at?: string
           mesa_id: string
+          role?: Database["public"]["Enums"]["church_function"]
           user_id: string
         }
         Update: {
           id?: string
           joined_at?: string
           mesa_id?: string
+          role?: Database["public"]["Enums"]["church_function"]
           user_id?: string
         }
         Relationships: [
@@ -758,6 +812,8 @@ export type Database = {
           birth_date: string | null
           blood_type: string | null
           children_count: number
+          church_function: Database["public"]["Enums"]["church_function"]
+          church_id: string | null
           city: string | null
           complement: string | null
           conversion_date: string | null
@@ -808,6 +864,8 @@ export type Database = {
           birth_date?: string | null
           blood_type?: string | null
           children_count?: number
+          church_function?: Database["public"]["Enums"]["church_function"]
+          church_id?: string | null
           city?: string | null
           complement?: string | null
           conversion_date?: string | null
@@ -858,6 +916,8 @@ export type Database = {
           birth_date?: string | null
           blood_type?: string | null
           children_count?: number
+          church_function?: Database["public"]["Enums"]["church_function"]
+          church_id?: string | null
           city?: string | null
           complement?: string | null
           conversion_date?: string | null
@@ -897,7 +957,54 @@ export type Database = {
           wedding_date?: string | null
           zip_code?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_church_id_fkey"
+            columns: ["church_id"]
+            isOneToOne: false
+            referencedRelation: "churches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rede_members: {
+        Row: {
+          created_at: string
+          id: string
+          rede_id: string
+          role: Database["public"]["Enums"]["church_function"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          rede_id: string
+          role?: Database["public"]["Enums"]["church_function"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          rede_id?: string
+          role?: Database["public"]["Enums"]["church_function"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rede_members_rede_id_fkey"
+            columns: ["rede_id"]
+            isOneToOne: false
+            referencedRelation: "redes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rede_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       redes: {
         Row: {
@@ -1197,6 +1304,7 @@ export type Database = {
           created_at: string
           function_name: string
           id: string
+          instruments: string[]
           is_titular: boolean
           team_id: string
           user_id: string
@@ -1205,6 +1313,7 @@ export type Database = {
           created_at?: string
           function_name: string
           id?: string
+          instruments?: string[]
           is_titular?: boolean
           team_id: string
           user_id: string
@@ -1213,6 +1322,7 @@ export type Database = {
           created_at?: string
           function_name?: string
           id?: string
+          instruments?: string[]
           is_titular?: boolean
           team_id?: string
           user_id?: string
@@ -1315,6 +1425,13 @@ export type Database = {
         | "membro"
         | "admin_livraria"
         | "admin_cantina"
+      church_function:
+        | "pastor"
+        | "apascentador"
+        | "lider"
+        | "diacono"
+        | "obreiro"
+        | "membro"
       event_kind:
         | "culto"
         | "ensaio"
@@ -1471,6 +1588,14 @@ export const Constants = {
         "membro",
         "admin_livraria",
         "admin_cantina",
+      ],
+      church_function: [
+        "pastor",
+        "apascentador",
+        "lider",
+        "diacono",
+        "obreiro",
+        "membro",
       ],
       event_kind: [
         "culto",
