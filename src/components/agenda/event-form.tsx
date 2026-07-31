@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { EventArt } from "@/components/agenda/event-art";
+import { ImagePlus, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -46,6 +48,7 @@ interface FormState {
   capacity: string;
   is_featured: boolean;
   status: EventStatus;
+  image_url: string;
 }
 
 const EMPTY: FormState = {
@@ -61,6 +64,7 @@ const EMPTY: FormState = {
   capacity: "",
   is_featured: false,
   status: "publicado",
+  image_url: "",
 };
 
 function fromEvent(e: ChurchEvent): FormState {
@@ -77,6 +81,7 @@ function fromEvent(e: ChurchEvent): FormState {
     capacity: e.capacity ? String(e.capacity) : "",
     is_featured: e.is_featured,
     status: e.status,
+    image_url: e.image_url ?? "",
   };
 }
 
@@ -92,6 +97,8 @@ export function EventForm({
 }) {
   const qc = useQueryClient();
   const [form, setForm] = useState<FormState>(EMPTY);
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (open) setForm(event ? fromEvent(event) : EMPTY);
@@ -116,6 +123,34 @@ export function EventForm({
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) =>
     setForm((f) => ({ ...f, [key]: value }));
 
+  /** Envia a arte criada pelo ministério de Mídia para o bucket privado. */
+  async function handleArtFile(file: File) {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Envie um arquivo de imagem (JPG, PNG ou WEBP).");
+      return;
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      toast.error("A arte deve ter no máximo 8 MB.");
+      return;
+    }
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+      const path = `${crypto.randomUUID()}.${ext}`;
+      const { error } = await supabase.storage
+        .from("event-arts")
+        .upload(path, file, { cacheControl: "3600", upsert: false });
+      if (error) throw error;
+      set("image_url", path);
+      toast.success("Arte enviada.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Falha ao enviar a arte.");
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  }
+
   const save = useMutation({
     mutationFn: async () => {
       if (!form.title.trim()) throw new Error("Informe o título do evento.");
@@ -139,6 +174,7 @@ export function EventForm({
         capacity: form.capacity ? Number(form.capacity) : null,
         is_featured: form.is_featured,
         status: form.status,
+        image_url: form.image_url.trim() || null,
       };
 
       if (event) {
@@ -289,6 +325,62 @@ export function EventForm({
               onChange={(e) => set("description", e.target.value)}
               placeholder="Detalhes, orientações e o que levar."
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Arte de divulgação (Mídia)</Label>
+            <div className="border border-border rounded-sm p-4 flex flex-col sm:flex-row gap-4">
+              <div className="w-full sm:w-40 aspect-[4/5] shrink-0 border border-dashed border-border bg-muted/40 flex items-center justify-center overflow-hidden">
+                {form.image_url ? (
+                  <EventArt value={form.image_url} alt="Pré-visualização da arte" />
+                ) : (
+                  <ImagePlus className="h-6 w-6 text-muted-foreground" aria-hidden />
+                )}
+              </div>
+              <div className="flex-1 space-y-3">
+                <p className="text-xs text-muted-foreground">
+                  Envie o card criado pelo ministério de Mídia (JPG, PNG ou WEBP, até 8 MB) ou cole o
+                  link de uma arte já publicada.
+                </p>
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) void handleArtFile(file);
+                  }}
+                />
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={uploading}
+                    onClick={() => fileRef.current?.click()}
+                  >
+                    <ImagePlus className="h-3.5 w-3.5" />
+                    {uploading ? "Enviando..." : form.image_url ? "Trocar arte" : "Enviar arte"}
+                  </Button>
+                  {form.image_url && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => set("image_url", "")}
+                    >
+                      <X className="h-3.5 w-3.5" /> Remover
+                    </Button>
+                  )}
+                </div>
+                <Input
+                  value={form.image_url}
+                  onChange={(e) => set("image_url", e.target.value)}
+                  placeholder="ou cole https://..."
+                />
+              </div>
+            </div>
           </div>
 
           <div className="grid sm:grid-cols-2 gap-4">
