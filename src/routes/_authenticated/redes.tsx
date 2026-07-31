@@ -12,6 +12,7 @@ export const Route = createFileRoute("/_authenticated/redes")({
 });
 
 function RedesPage() {
+  const { isAdmin } = useAuth();
   const { data: redes } = useQuery({
     queryKey: ["redes"],
     queryFn: async () => {
@@ -41,6 +42,14 @@ function RedesPage() {
         eyebrow="Comunhão"
         title="Redes"
         description="As redes reúnem pessoas por afinidade e as organizam em Mesas — grupos semanais de comunhão."
+        actions={
+          isAdmin ? (
+            <>
+              <RedeDialog />
+              <MesaDialog />
+            </>
+          ) : undefined
+        }
       />
       <PageBody>
         <div className="space-y-8">

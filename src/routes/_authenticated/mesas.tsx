@@ -12,6 +12,7 @@ export const Route = createFileRoute("/_authenticated/mesas")({
 });
 
 function MesasPage() {
+  const { isAdmin, isMesaLeader } = useAuth();
   const { data } = useQuery({
     queryKey: ["mesas-full"],
     queryFn: async () => {
@@ -30,6 +31,7 @@ function MesasPage() {
         eyebrow="Comunhão semanal"
         title="Mesas"
         description="Cada Mesa é um grupo de comunhão que se reúne durante a semana, sob a liderança de um casal ou líder da rede."
+        actions={isAdmin ? <MesaDialog /> : undefined}
       />
       <PageBody>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -45,6 +47,11 @@ function MesasPage() {
               </div>
               <h3 className="font-serif text-2xl">{m.name}</h3>
               {m.description && <p className="mt-2 text-sm text-muted-foreground">{m.description}</p>}
+              {(isAdmin || isMesaLeader(m.id)) && (
+                <div className="mt-4">
+                  <MesaMembersDialog mesaId={m.id} mesaName={m.name} />
+                </div>
+              )}
               <div className="mt-6 pt-4 border-t border-border space-y-1 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
                 <div>{m.meeting_day ?? "Dia a definir"} · {m.meeting_time ?? "—"}</div>
                 <div>{m.meeting_location ?? "Local a definir"}</div>

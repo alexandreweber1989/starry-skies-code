@@ -12,6 +12,7 @@ export const Route = createFileRoute("/_authenticated/ministerios/")({
 });
 
 function MinistriesPage() {
+  const { isAdmin } = useAuth();
   const { data, isLoading } = useQuery({
     queryKey: ["ministries"],
     queryFn: async () => {
@@ -30,6 +31,7 @@ function MinistriesPage() {
         eyebrow="Corpo em serviço"
         title="Ministérios"
         description="Os nove ministérios da Igreja Batista Atos, cada um com sua vocação e seus servos."
+        actions={isAdmin ? <MinistryDialog /> : undefined}
       />
       <PageBody>
         {isLoading && <div className="text-muted-foreground">Carregando...</div>}
