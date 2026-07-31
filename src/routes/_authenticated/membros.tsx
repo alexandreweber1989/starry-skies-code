@@ -214,9 +214,19 @@ function MembrosPage() {
         eyebrow="Corpo de Cristo"
         title="Membros"
         description="Gestão completa da membresia: fichas, filtros, permissões e indicadores."
-        actions={isAdmin ? <NewMemberDialog /> : undefined}
+        actions={
+          <div className="flex flex-wrap gap-2">
+            {canRequest && <RequestMemberDialog />}
+            {isAdmin && <NewMemberDialog />}
+          </div>
+        }
       />
       <PageBody>
+        {(isAdmin || canRequest) && (
+          <div className="mb-6">
+            <MembershipRequestsPanel />
+          </div>
+        )}
         <MemberStats members={(data ?? []) as any} />
 
         <MemberToolbar
