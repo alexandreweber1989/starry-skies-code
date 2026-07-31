@@ -15,6 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { CepInput } from "@/components/ui/cep-input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
@@ -351,7 +352,21 @@ export function MemberWizardDialog() {
         question: "Onde essa pessoa mora?",
         render: (s, up) => (
           <div className="grid sm:grid-cols-2 gap-4">
-            <Field label="CEP"><Input value={s.zip_code} onChange={(e) => up({ zip_code: e.target.value })} /></Field>
+            <Field label="CEP">
+              <CepInput
+                value={s.zip_code}
+                onChange={(v) => up({ zip_code: v })}
+                onResolved={(a) =>
+                  up({
+                    street: a.street || s.street,
+                    neighborhood: a.neighborhood || s.neighborhood,
+                    city: a.city || s.city,
+                    state: a.state || s.state,
+                    complement: s.complement || a.complement,
+                  })
+                }
+              />
+            </Field>
             <Field label="Rua"><Input value={s.street} onChange={(e) => up({ street: e.target.value })} /></Field>
             <Field label="Número">
               <Input value={s.street_number} onChange={(e) => up({ street_number: e.target.value })} />

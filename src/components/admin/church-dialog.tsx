@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { CepInput } from "@/components/ui/cep-input";
 import {
   Dialog,
   DialogContent,
@@ -56,6 +57,7 @@ export function ChurchDialog({
 }) {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<ChurchDraft>(initial);
+  const [cep, setCep] = useState("");
   const qc = useQueryClient();
 
   const save = useMutation({
@@ -152,9 +154,26 @@ export function ChurchDialog({
               />
             </div>
           </div>
-          <div className="space-y-2">
-            <Label>Endereço</Label>
-            <Input value={draft.address} onChange={(e) => setDraft({ ...draft, address: e.target.value })} />
+          <div className="grid grid-cols-[160px_1fr] gap-4">
+            <div className="space-y-2">
+              <Label>CEP</Label>
+              <CepInput
+                value={cep}
+                onChange={setCep}
+                onResolved={(a) =>
+                  setDraft((d) => ({
+                    ...d,
+                    address: a.street || d.address,
+                    city: a.city || d.city,
+                    state: a.state || d.state,
+                  }))
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Endereço</Label>
+              <Input value={draft.address} onChange={(e) => setDraft({ ...draft, address: e.target.value })} />
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
