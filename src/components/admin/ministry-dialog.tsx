@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, UserPlus } from "lucide-react";
+import { Pencil, Plus, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { slugify, useProfileOptions } from "@/lib/use-profiles";
@@ -25,48 +25,91 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-/** Criação de um novo ministério (admin geral). */
-export function MinistryDialog() {
+export interface MinistryRecord {
+  id: string;
+  name: string;
+  church_id?: string | null;
+  description?: string | null;
+  meeting_info?: string | null;
+}
+
+/**
+ * Criação e edição de ministérios (admin geral).
+ * Quando `ministry` é informado, o diálogo entra em modo de edição.
+ */
+export function MinistryDialog({
+  ministry,
+  trigger,
+}: {
+  ministry?: MinistryRecord;
+  trigger?: React.ReactNode;
+}) {
+  const isEdit = Boolean(ministry?.id);
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState("");
-  const [churchId, setChurchId] = useState("");
-  const [description, setDescription] = useState("");
-  const [meetingInfo, setMeetingInfo] = useState("");
+  const [name, setName] = useState(ministry?.name ?? "");
+  const [churchId, setChurchId] = useState(ministry?.church_id ?? "");
+  const [description, setDescription] = useState(ministry?.description ?? "");
+  const [meetingInfo, setMeetingInfo] = useState(ministry?.meeting_info ?? "");
   const qc = useQueryClient();
 
-  const create = useMutation({
+  function resetToInitial() {
+    setName(ministry?.name ?? "");
+    setChurchId(ministry?.church_id ?? "");
+    setDescription(ministry?.description ?? "");
+    setMeetingInfo(ministry?.meeting_info ?? "");
+  }
+
+  const save = useMutation({
     mutationFn: async () => {
       if (name.trim().length < 3) throw new Error("Informe o nome do ministério.");
       if (!churchId) throw new Error("Selecione a igreja deste ministério.");
-      const { error } = await supabase.from("ministries").insert({
+      const payload = {
         name: name.trim(),
         slug: slugify(name),
         church_id: churchId,
         description: description.trim() || null,
         meeting_info: meetingInfo.trim() || null,
-      });
+      };
+      const { error } = isEdit
+        ? await supabase.from("ministries").update(payload).eq("id", ministry!.id)
+        : await supabase.from("ministries").insert(payload);
       if (error) throw error;
     },
 
     onSuccess: () => {
-      toast.success("Ministério criado.");
+      toast.success(isEdit ? "Ministério atualizado." : "Ministério criado.");
       setOpen(false);
-      setName("");
-      setDescription("");
-      setMeetingInfo("");
+      if (!isEdit) {
+        setName("");
+        setDescription("");
+        setMeetingInfo("");
+      }
       void qc.invalidateQueries({ queryKey: ["ministries"] });
+      void qc.invalidateQueries({ queryKey: ["ministry"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(o) => {
+        setOpen(o);
+        if (o) resetToInitial();
+      }}
+    >
       <DialogTrigger asChild>
-        <Button><Plus className="h-4 w-4" /> Novo ministério</Button>
+        {trigger ?? (
+          <Button>
+            <Plus className="h-4 w-4" /> Novo ministério
+          </Button>
+        )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="font-serif text-3xl">Novo ministério</DialogTitle>
+          <DialogTitle className="font-serif text-3xl">
+            {isEdit ? "Editar ministério" : "Novo ministério"}
+          </DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
@@ -87,14 +130,29 @@ export function MinistryDialog() {
               placeholder="Sábados, 19h — Templo"
             />
           </div>
-          <Button className="w-full" disabled={create.isPending} onClick={() => create.mutate()}>
-            Criar ministério
+          <Button className="w-full" disabled={save.isPending} onClick={() => save.mutate()}>
+            {isEdit ? "Salvar alterações" : "Criar ministério"}
           </Button>
         </div>
       </DialogContent>
     </Dialog>
   );
 }
+
+/** Atalho de edição usado na listagem de ministérios. */
+export function EditMinistryButton({ ministry }: { ministry: MinistryRecord }) {
+  return (
+    <MinistryDialog
+      ministry={ministry}
+      trigger={
+        <Button variant="ghost" size="icon" aria-label="Editar ministério">
+          <Pencil className="h-4 w-4" />
+        </Button>
+      }
+    />
+  );
+}
+
 
 /** Adiciona um servo ao ministério, com função opcional. */
 export function MinistryMemberDialog({ ministryId }: { ministryId: string }) {
