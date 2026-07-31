@@ -127,12 +127,13 @@ export function MemberFormDialog({
         children_count: parsed.data.children_count,
         bio: clean(form.bio),
         notes: clean(form.notes),
-        church_function: form.church_function || "membro",
       };
       if (canEditMembership) {
         payload.membership_type = clean(form.membership_type);
         payload.membership_status = form.membership_status || "ativo";
         payload.membership_end_date = clean(form.membership_end_date);
+        // Função eclesiástica define o prefixo de tratamento (Pr., Pra., Apasc., Líder).
+        payload.church_function = form.church_function || "membro";
       }
 
       const { error } = await supabase.from("profiles").update(payload as never).eq("id", profile.id);
