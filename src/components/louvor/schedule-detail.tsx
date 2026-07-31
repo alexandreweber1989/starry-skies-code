@@ -290,6 +290,8 @@ export function ScheduleDetail({ scheduleId, canManage }: { scheduleId: string; 
           </div>
         )}
       </div>
+      </div>
     </div>
   );
+
 }
