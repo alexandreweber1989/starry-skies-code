@@ -249,3 +249,97 @@
     animation: none !important;
   }
 }
+
+/* ---- Animação de criação de evento (botão + diálogo) ---- */
+@keyframes evt-pop {
+  0% { transform: translate(-50%, -46%) scale(0.88) rotate(-1.2deg); opacity: 0; filter: blur(6px); }
+  55% { transform: translate(-50%, -50%) scale(1.03) rotate(0.4deg); opacity: 1; filter: blur(0); }
+  100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes evt-scanline {
+  0% { transform: translateY(-100%); opacity: 0.9; }
+  100% { transform: translateY(120%); opacity: 0; }
+}
+
+@keyframes evt-title-slice {
+  0% { clip-path: inset(0 100% 0 0); transform: translateX(-14px); }
+  100% { clip-path: inset(0 0 0 0); transform: translateX(0); }
+}
+
+@keyframes evt-rise {
+  0% { opacity: 0; transform: translateY(14px) scale(0.985); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes evt-ring {
+  0% { transform: scale(0.9); opacity: 0.55; }
+  100% { transform: scale(1.7); opacity: 0; }
+}
+
+@layer utilities {
+  .evt-dialog {
+    animation: evt-pop 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    overflow: hidden;
+  }
+  .evt-dialog::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 40;
+    pointer-events: none;
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      color-mix(in oklab, var(--color-foreground) 22%, transparent) 50%,
+      transparent
+    );
+    animation: evt-scanline 720ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .evt-title {
+    animation: evt-title-slice 620ms cubic-bezier(0.22, 1, 0.36, 1) 90ms both;
+  }
+
+  .evt-stagger > * {
+    animation: evt-rise 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .evt-stagger > *:nth-child(1) { animation-delay: 120ms; }
+  .evt-stagger > *:nth-child(2) { animation-delay: 175ms; }
+  .evt-stagger > *:nth-child(3) { animation-delay: 230ms; }
+  .evt-stagger > *:nth-child(4) { animation-delay: 285ms; }
+  .evt-stagger > *:nth-child(5) { animation-delay: 340ms; }
+  .evt-stagger > *:nth-child(6) { animation-delay: 395ms; }
+  .evt-stagger > *:nth-child(n + 7) { animation-delay: 450ms; }
+
+  /* Botão "Novo evento": anel que dispara ao clicar */
+  .evt-cta {
+    position: relative;
+    transition: transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .evt-cta:hover { transform: translateY(-2px); }
+  .evt-cta:active { transform: scale(0.94); }
+  .evt-cta::after {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border: 2px solid currentColor;
+    border-radius: inherit;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .evt-cta:active::after {
+    animation: evt-ring 520ms ease-out forwards;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .evt-dialog,
+  .evt-dialog::before,
+  .evt-title,
+  .evt-stagger > *,
+  .evt-cta::after {
+    animation: none !important;
+  }
+  .evt-cta:hover, .evt-cta:active { transform: none; }
+}
