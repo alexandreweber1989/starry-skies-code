@@ -79,9 +79,10 @@ interface Wipe {
  */
 export function PageTransition({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const routerBusy = useRouterState(
-    (s) => s.status === "pending" || s.isLoading || s.isTransitioning,
-  );
+  const routerBusy = useRouterState({
+    select: (s) => s.status === "pending" || s.isLoading || s.isTransitioning,
+  });
+
   const fetching = useIsFetching();
   const busy = routerBusy || fetching > 0;
 
