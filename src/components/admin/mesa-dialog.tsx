@@ -127,10 +127,11 @@ export function MesaDialog({ redeId }: { redeId?: string }) {
   );
 }
 
-/** Gerencia os integrantes de uma mesa (adicionar e remover). */
+/** Gerencia os integrantes de uma mesa: membros, líderes, apascentadores e pastores. */
 export function MesaMembersDialog({ mesaId, mesaName }: { mesaId: string; mesaName: string }) {
   const [open, setOpen] = useState(false);
   const [userId, setUserId] = useState("");
+  const [role, setRole] = useState<ChurchFunction>("membro");
   const { data: profiles } = useProfileOptions();
   const qc = useQueryClient();
 
@@ -140,17 +141,29 @@ export function MesaMembersDialog({ mesaId, mesaName }: { mesaId: string; mesaNa
     queryFn: async () => {
       const { data, error } = await supabase
         .from("mesa_members")
-        .select("id, user_id, profiles:profiles!inner(full_name)")
+        .select("id, user_id, role, profiles:profiles!inner(full_name)")
         .eq("mesa_id", mesaId);
       if (error) throw error;
-      return data as unknown as { id: string; user_id: string; profiles: { full_name: string } }[];
+      const rows = data as unknown as {
+        id: string;
+        user_id: string;
+        role: string;
+        profiles: { full_name: string };
+      }[];
+      return rows.sort(
+        (a, b) =>
+          churchFunctionRank(a.role) - churchFunctionRank(b.role) ||
+          a.profiles.full_name.localeCompare(b.profiles.full_name),
+      );
     },
   });
 
   const add = useMutation({
     mutationFn: async () => {
       if (!userId) throw new Error("Selecione a pessoa.");
-      const { error } = await supabase.from("mesa_members").insert({ mesa_id: mesaId, user_id: userId });
+      const { error } = await supabase
+        .from("mesa_members")
+        .insert({ mesa_id: mesaId, user_id: userId, role });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -158,6 +171,15 @@ export function MesaMembersDialog({ mesaId, mesaName }: { mesaId: string; mesaNa
       setUserId("");
       void qc.invalidateQueries({ queryKey: ["mesa-members", mesaId] });
     },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const changeRole = useMutation({
+    mutationFn: async ({ id, value }: { id: string; value: ChurchFunction }) => {
+      const { error } = await supabase.from("mesa_members").update({ role: value }).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ["mesa-members", mesaId] }),
     onError: (e: Error) => toast.error(e.message),
   });
 
@@ -175,30 +197,55 @@ export function MesaMembersDialog({ mesaId, mesaName }: { mesaId: string; mesaNa
       <DialogTrigger asChild>
         <Button variant="outline" size="sm"><UserPlus className="h-4 w-4" /> Integrantes</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-serif text-3xl">{mesaName}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
             <Label>Adicionar pessoa</Label>
-            <div className="flex gap-2">
+            <div className="grid sm:grid-cols-[1fr_auto] gap-2">
               <Select value={userId} onValueChange={setUserId}>
                 <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
                 <SelectContent className="max-h-60">
                   {profiles?.map((p) => <SelectItem key={p.id} value={p.id}>{p.full_name}</SelectItem>)}
                 </SelectContent>
               </Select>
-              <Button disabled={add.isPending} onClick={() => add.mutate()}>Adicionar</Button>
+              <Select value={role} onValueChange={(v) => setRole(v as ChurchFunction)}>
+                <SelectTrigger className="sm:w-44"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {CHURCH_FUNCTIONS.map((f) => (
+                    <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
+            <Button className="w-full" disabled={add.isPending} onClick={() => add.mutate()}>
+              Adicionar
+            </Button>
           </div>
           <ul className="divide-y divide-border">
             {members?.map((m) => (
-              <li key={m.id} className="py-2 flex items-center justify-between text-sm">
-                <span>{m.profiles?.full_name}</span>
-                <Button variant="ghost" size="icon" aria-label="Remover" onClick={() => remove.mutate(m.id)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+              <li key={m.id} className="py-2 flex items-center justify-between gap-2 text-sm">
+                <span className="min-w-0 truncate">{m.profiles?.full_name}</span>
+                <div className="flex items-center gap-2">
+                  <Select
+                    value={m.role}
+                    onValueChange={(v) => changeRole.mutate({ id: m.id, value: v as ChurchFunction })}
+                  >
+                    <SelectTrigger className="h-8 w-40 text-xs">
+                      <SelectValue>{CHURCH_FUNCTION_LABEL[m.role]}</SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CHURCH_FUNCTIONS.map((f) => (
+                        <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button variant="ghost" size="icon" aria-label="Remover" onClick={() => remove.mutate(m.id)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </li>
             ))}
             {members?.length === 0 && (
@@ -210,3 +257,4 @@ export function MesaMembersDialog({ mesaId, mesaName }: { mesaId: string; mesaNa
     </Dialog>
   );
 }
+
