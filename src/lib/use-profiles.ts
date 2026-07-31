@@ -4,16 +4,18 @@ import { supabase } from "@/integrations/supabase/client";
 export interface ProfileOption {
   id: string;
   full_name: string;
+  /** Função eclesiástica (pastor, apascentador, líder...) para desambiguar homônimos. */
+  church_function?: string | null;
 }
 
-/** Lista mínima de perfis para seletores de pessoas (nome + id). */
+/** Lista mínima de perfis para seletores de pessoas (nome + função na igreja). */
 export function useProfileOptions() {
   return useQuery({
     queryKey: ["profiles-min"],
     queryFn: async (): Promise<ProfileOption[]> => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, full_name")
+        .select("id, full_name, church_function")
         .order("full_name");
       if (error) throw error;
       return (data ?? []) as ProfileOption[];
