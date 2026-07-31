@@ -12,6 +12,7 @@ import {
   BookOpen,
   Coffee,
   Music,
+  CalendarDays,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { useAuth } from "@/lib/auth-context";
@@ -19,6 +20,7 @@ import { Button } from "@/components/ui/button";
 
 const nav = [
   { to: "/dashboard", label: "Painel", icon: LayoutDashboard },
+  { to: "/agenda", label: "Agenda", icon: CalendarDays },
   { to: "/ministerios", label: "Ministérios", icon: Sparkles },
   { to: "/louvor", label: "Louvor", icon: Music },
   { to: "/redes", label: "Redes", icon: Network },

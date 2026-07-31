@@ -235,6 +235,139 @@ export type Database = {
           },
         ]
       }
+      event_rsvps: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          note: string | null
+          status: Database["public"]["Enums"]["rsvp_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          note?: string | null
+          status?: Database["public"]["Enums"]["rsvp_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          note?: string | null
+          status?: Database["public"]["Enums"]["rsvp_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_rsvps_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_rsvps_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          capacity: number | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          ends_at: string | null
+          id: string
+          image_url: string | null
+          is_featured: boolean
+          kind: Database["public"]["Enums"]["event_kind"]
+          location: string | null
+          mesa_id: string | null
+          ministry_id: string | null
+          rede_id: string | null
+          requires_rsvp: boolean
+          scope: Database["public"]["Enums"]["event_scope"]
+          starts_at: string
+          status: Database["public"]["Enums"]["event_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          capacity?: number | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          ends_at?: string | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean
+          kind?: Database["public"]["Enums"]["event_kind"]
+          location?: string | null
+          mesa_id?: string | null
+          ministry_id?: string | null
+          rede_id?: string | null
+          requires_rsvp?: boolean
+          scope?: Database["public"]["Enums"]["event_scope"]
+          starts_at: string
+          status?: Database["public"]["Enums"]["event_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          capacity?: number | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          ends_at?: string | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean
+          kind?: Database["public"]["Enums"]["event_kind"]
+          location?: string | null
+          mesa_id?: string | null
+          ministry_id?: string | null
+          rede_id?: string | null
+          requires_rsvp?: boolean
+          scope?: Database["public"]["Enums"]["event_scope"]
+          starts_at?: string
+          status?: Database["public"]["Enums"]["event_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_mesa_id_fkey"
+            columns: ["mesa_id"]
+            isOneToOne: false
+            referencedRelation: "mesas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "events_ministry_id_fkey"
+            columns: ["ministry_id"]
+            isOneToOne: false
+            referencedRelation: "ministries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "events_rede_id_fkey"
+            columns: ["rede_id"]
+            isOneToOne: false
+            referencedRelation: "redes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mesa_members: {
         Row: {
           id: string
@@ -1079,6 +1212,16 @@ export type Database = {
         | "membro"
         | "admin_livraria"
         | "admin_cantina"
+      event_kind:
+        | "culto"
+        | "ensaio"
+        | "reuniao"
+        | "evento"
+        | "acao_social"
+        | "treinamento"
+      event_scope: "igreja" | "ministerio" | "rede" | "mesa"
+      event_status: "rascunho" | "publicado" | "cancelado" | "concluido"
+      rsvp_status: "vou" | "nao_vou" | "talvez"
       worship_assignment_status: "pendente" | "confirmado" | "recusado"
       worship_schedule_status: "rascunho" | "publicada" | "concluida"
       worship_schedule_type: "culto" | "ensaio" | "evento"
@@ -1217,6 +1360,17 @@ export const Constants = {
         "admin_livraria",
         "admin_cantina",
       ],
+      event_kind: [
+        "culto",
+        "ensaio",
+        "reuniao",
+        "evento",
+        "acao_social",
+        "treinamento",
+      ],
+      event_scope: ["igreja", "ministerio", "rede", "mesa"],
+      event_status: ["rascunho", "publicado", "cancelado", "concluido"],
+      rsvp_status: ["vou", "nao_vou", "talvez"],
       worship_assignment_status: ["pendente", "confirmado", "recusado"],
       worship_schedule_status: ["rascunho", "publicada", "concluida"],
       worship_schedule_type: ["culto", "ensaio", "evento"],
