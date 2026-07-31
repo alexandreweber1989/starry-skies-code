@@ -96,9 +96,22 @@ export function RedeDialog() {
             <Input value={audience} onChange={(e) => setAudience(e.target.value)} placeholder="18 a 29 anos" />
           </div>
           <div className="space-y-2">
+            <Label>
+              Responsáveis pela rede{" "}
+              <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                opcional
+              </span>
+            </Label>
+            <MemberPicker value={leaders} onChange={setLeaders} />
+            <p className="text-xs text-muted-foreground">
+              Pastores, apascentadores ou líderes já cadastrados em Membros.
+            </p>
+          </div>
+          <div className="space-y-2">
             <Label>Descrição</Label>
             <Textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)} />
           </div>
+
           <Button className="w-full" disabled={create.isPending} onClick={() => create.mutate()}>
             Criar rede
           </Button>
