@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,19 +17,9 @@ export function ScheduleDialog() {
   const [type, setType] = useState("culto");
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [time, setTime] = useState("19:00");
-  const [teamId, setTeamId] = useState("");
   const [location, setLocation] = useState("Templo");
   const [notes, setNotes] = useState("");
   const qc = useQueryClient();
-
-  const { data: teams } = useQuery({
-    queryKey: ["worship-teams-min"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("worship_teams").select("id, name").eq("is_active", true).order("name");
-      if (error) throw error;
-      return data;
-    },
-  });
 
   const create = useMutation({
     mutationFn: async () => {
@@ -39,7 +29,6 @@ export function ScheduleDialog() {
         schedule_type: type as "culto" | "ensaio" | "evento",
         event_date: date,
         start_time: time || null,
-        team_id: teamId || null,
         location: location || null,
         notes: notes || null,
         status: "rascunho",
@@ -70,25 +59,14 @@ export function ScheduleDialog() {
             <Label>Título</Label>
             <Input placeholder="Culto de Celebração — Domingo" value={title} onChange={(e) => setTitle(e.target.value)} />
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Tipo</Label>
-              <Select value={type} onValueChange={setType}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {Object.entries(SCHEDULE_TYPE_LABELS).map(([v, l]) => <SelectItem key={v} value={v}>{l}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>Equipe</Label>
-              <Select value={teamId} onValueChange={setTeamId}>
-                <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-                <SelectContent>
-                  {teams?.map((t) => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="space-y-2">
+            <Label>Tipo</Label>
+            <Select value={type} onValueChange={setType}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {Object.entries(SCHEDULE_TYPE_LABELS).map(([v, l]) => <SelectItem key={v} value={v}>{l}</SelectItem>)}
+              </SelectContent>
+            </Select>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">

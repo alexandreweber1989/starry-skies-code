@@ -28,7 +28,7 @@ export function Escalas() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("worship_schedules")
-        .select("*, team:worship_teams(name), assignments:worship_schedule_assignments(id, status)")
+        .select("*, assignments:worship_schedule_assignments(id, status)")
         .order("event_date", { ascending: false });
       if (error) throw error;
       return data;
@@ -79,7 +79,7 @@ export function Escalas() {
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                  {SCHEDULE_TYPE_LABELS[s.schedule_type]} · {formatDate(s.event_date)} · {s.team?.name ?? "Sem equipe"}
+                  {SCHEDULE_TYPE_LABELS[s.schedule_type]} · {formatDate(s.event_date)}
                 </div>
                 <h3 className="font-serif text-3xl leading-none mt-1">{s.title}</h3>
                 <div className="flex flex-wrap items-center gap-4 mt-3 text-sm text-muted-foreground">
