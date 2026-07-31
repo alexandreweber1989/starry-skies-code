@@ -92,21 +92,28 @@ function AddMemberDialog({ teamId }: { teamId: string }) {
   const [open, setOpen] = useState(false);
   const [userId, setUserId] = useState("");
   const [fn, setFn] = useState<string>(WORSHIP_FUNCTIONS[1]);
+  const [instruments, setInstruments] = useState<string[]>([]);
   const { data: profiles } = useProfiles();
   const qc = useQueryClient();
+
+  const toggleInstrument = (value: string) =>
+    setInstruments((prev) =>
+      prev.includes(value) ? prev.filter((i) => i !== value) : [...prev, value],
+    );
 
   const add = useMutation({
     mutationFn: async () => {
       if (!userId) throw new Error("Selecione a pessoa.");
       const { error } = await supabase
         .from("worship_team_members")
-        .insert({ team_id: teamId, user_id: userId, function_name: fn });
+        .insert({ team_id: teamId, user_id: userId, function_name: fn, instruments });
       if (error) throw error;
     },
     onSuccess: () => {
       toast.success("Integrante adicionado.");
       setOpen(false);
       setUserId("");
+      setInstruments([]);
       qc.invalidateQueries({ queryKey: ["worship-teams"] });
     },
     onError: (e: Error) => toast.error(e.message),
@@ -117,7 +124,7 @@ function AddMemberDialog({ teamId }: { teamId: string }) {
       <DialogTrigger asChild>
         <Button variant="outline" size="sm"><UserPlus className="h-4 w-4" /> Integrante</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-serif text-3xl">Adicionar integrante</DialogTitle>
         </DialogHeader>
@@ -132,7 +139,7 @@ function AddMemberDialog({ teamId }: { teamId: string }) {
             </Select>
           </div>
           <div className="space-y-2">
-            <Label>Função</Label>
+            <Label>Função principal</Label>
             <Select value={fn} onValueChange={setFn}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent className="max-h-60">
@@ -140,12 +147,38 @@ function AddMemberDialog({ teamId }: { teamId: string }) {
               </SelectContent>
             </Select>
           </div>
+          <div className="space-y-2">
+            <Label>Instrumentos e habilidades</Label>
+            <p className="text-xs text-muted-foreground">
+              Marque tudo o que a pessoa consegue cobrir nas escalas.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {WORSHIP_FUNCTIONS.map((f) => {
+                const active = instruments.includes(f);
+                return (
+                  <button
+                    key={f}
+                    type="button"
+                    onClick={() => toggleInstrument(f)}
+                    className={`px-3 py-1.5 rounded-sm border text-xs transition-colors ${
+                      active
+                        ? "border-primary bg-primary/10 text-foreground"
+                        : "border-border bg-card text-muted-foreground hover:border-primary/50"
+                    }`}
+                  >
+                    {f}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
           <Button className="w-full" disabled={add.isPending} onClick={() => add.mutate()}>Adicionar</Button>
         </div>
       </DialogContent>
     </Dialog>
   );
 }
+
 
 export function Equipes() {
   const { isMinistryAdmin } = useAuth();
@@ -157,7 +190,7 @@ export function Equipes() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("worship_teams")
-        .select("*, members:worship_team_members(id, function_name, is_titular, user_id, profiles:profiles!inner(full_name))")
+        .select("*, members:worship_team_members(id, function_name, is_titular, instruments, user_id, profiles:profiles!inner(full_name))")
         .order("name");
       if (error) throw error;
       return data;
@@ -193,11 +226,23 @@ export function Equipes() {
             <ul className="mt-5 divide-y divide-border">
               {(team.members ?? []).map((m: any) => (
                 <li key={m.id} className="py-2 flex items-center justify-between gap-3">
-                  <div>
+                  <div className="min-w-0">
                     <div className="text-sm">{m.profiles?.full_name}</div>
                     <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
                       {m.function_name}
                     </div>
+                    {(m.instruments ?? []).length > 0 && (
+                      <div className="mt-1 flex flex-wrap gap-1">
+                        {(m.instruments as string[]).map((i) => (
+                          <span
+                            key={i}
+                            className="px-2 py-0.5 rounded-sm bg-muted text-[10px] text-muted-foreground"
+                          >
+                            {i}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   {canManage && (
                     <Button variant="ghost" size="icon" aria-label="Remover" onClick={() => removeMember.mutate(m.id)}>

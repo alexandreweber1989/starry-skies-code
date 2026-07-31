@@ -4,7 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, PageBody } from "@/components/app-shell";
 import { useAuth } from "@/lib/auth-context";
 import { RedeDialog } from "@/components/admin/rede-dialog";
-import { MesaDialog } from "@/components/admin/mesa-dialog";
+import { MesaDialog, MesaMembersDialog } from "@/components/admin/mesa-dialog";
+import { RedeMembersDialog } from "@/components/admin/rede-members-dialog";
 
 export const Route = createFileRoute("/_authenticated/redes")({
   head: () => ({ meta: [{ title: "Redes — IB Atos" }] }),
@@ -62,6 +63,11 @@ function RedesPage() {
                   </div>
                   <h3 className="font-serif text-3xl">{r.name}</h3>
                   {r.description && <p className="mt-2 text-sm text-muted-foreground">{r.description}</p>}
+                  {isAdmin && (
+                    <div className="mt-4">
+                      <RedeMembersDialog redeId={r.id} redeName={r.name} />
+                    </div>
+                  )}
                 </div>
                 <div className="font-serif text-4xl text-muted-foreground">
                   {(mesasByRede?.[r.id]?.length ?? 0).toString().padStart(2, "0")}
@@ -70,10 +76,13 @@ function RedesPage() {
               </div>
               <ul className="divide-y divide-border">
                 {(mesasByRede?.[r.id] ?? []).map((m) => (
-                  <li key={m.id} className="px-6 py-3 flex items-center justify-between text-sm">
+                  <li key={m.id} className="px-6 py-3 flex items-center justify-between gap-3 text-sm">
                     <div className="font-serif text-lg">{m.name}</div>
-                    <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                      {m.meeting_day} · {m.meeting_time}
+                    <div className="flex items-center gap-3">
+                      <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                        {m.meeting_day} · {m.meeting_time}
+                      </div>
+                      {isAdmin && <MesaMembersDialog mesaId={m.id} mesaName={m.name} />}
                     </div>
                   </li>
                 ))}

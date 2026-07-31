@@ -18,6 +18,7 @@ import { Route as AuthenticatedMesasRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedMembrosRouteImport } from './routes/_authenticated/membros'
 import { Route as AuthenticatedLouvorRouteImport } from './routes/_authenticated/louvor'
 import { Route as AuthenticatedLivrariaRouteImport } from './routes/_authenticated/livraria'
+import { Route as AuthenticatedIgrejasRouteImport } from './routes/_authenticated/igrejas'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCantinaRouteImport } from './routes/_authenticated/cantina'
 import { Route as AuthenticatedAgendaRouteImport } from './routes/_authenticated/agenda'
@@ -68,6 +69,11 @@ const AuthenticatedLivrariaRoute = AuthenticatedLivrariaRouteImport.update({
   path: '/livraria',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedIgrejasRoute = AuthenticatedIgrejasRouteImport.update({
+  id: '/igrejas',
+  path: '/igrejas',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -102,6 +108,7 @@ export interface FileRoutesByFullPath {
   '/agenda': typeof AuthenticatedAgendaRoute
   '/cantina': typeof AuthenticatedCantinaRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/igrejas': typeof AuthenticatedIgrejasRoute
   '/livraria': typeof AuthenticatedLivrariaRoute
   '/louvor': typeof AuthenticatedLouvorRoute
   '/membros': typeof AuthenticatedMembrosRoute
@@ -117,6 +124,7 @@ export interface FileRoutesByTo {
   '/agenda': typeof AuthenticatedAgendaRoute
   '/cantina': typeof AuthenticatedCantinaRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/igrejas': typeof AuthenticatedIgrejasRoute
   '/livraria': typeof AuthenticatedLivrariaRoute
   '/louvor': typeof AuthenticatedLouvorRoute
   '/membros': typeof AuthenticatedMembrosRoute
@@ -134,6 +142,7 @@ export interface FileRoutesById {
   '/_authenticated/agenda': typeof AuthenticatedAgendaRoute
   '/_authenticated/cantina': typeof AuthenticatedCantinaRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/igrejas': typeof AuthenticatedIgrejasRoute
   '/_authenticated/livraria': typeof AuthenticatedLivrariaRoute
   '/_authenticated/louvor': typeof AuthenticatedLouvorRoute
   '/_authenticated/membros': typeof AuthenticatedMembrosRoute
@@ -151,6 +160,7 @@ export interface FileRouteTypes {
     | '/agenda'
     | '/cantina'
     | '/dashboard'
+    | '/igrejas'
     | '/livraria'
     | '/louvor'
     | '/membros'
@@ -166,6 +176,7 @@ export interface FileRouteTypes {
     | '/agenda'
     | '/cantina'
     | '/dashboard'
+    | '/igrejas'
     | '/livraria'
     | '/louvor'
     | '/membros'
@@ -182,6 +193,7 @@ export interface FileRouteTypes {
     | '/_authenticated/agenda'
     | '/_authenticated/cantina'
     | '/_authenticated/dashboard'
+    | '/_authenticated/igrejas'
     | '/_authenticated/livraria'
     | '/_authenticated/louvor'
     | '/_authenticated/membros'
@@ -263,6 +275,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLivrariaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/igrejas': {
+      id: '/_authenticated/igrejas'
+      path: '/igrejas'
+      fullPath: '/igrejas'
+      preLoaderRoute: typeof AuthenticatedIgrejasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -305,6 +324,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAgendaRoute: typeof AuthenticatedAgendaRoute
   AuthenticatedCantinaRoute: typeof AuthenticatedCantinaRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedIgrejasRoute: typeof AuthenticatedIgrejasRoute
   AuthenticatedLivrariaRoute: typeof AuthenticatedLivrariaRoute
   AuthenticatedLouvorRoute: typeof AuthenticatedLouvorRoute
   AuthenticatedMembrosRoute: typeof AuthenticatedMembrosRoute
@@ -319,6 +339,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAgendaRoute: AuthenticatedAgendaRoute,
   AuthenticatedCantinaRoute: AuthenticatedCantinaRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedIgrejasRoute: AuthenticatedIgrejasRoute,
   AuthenticatedLivrariaRoute: AuthenticatedLivrariaRoute,
   AuthenticatedLouvorRoute: AuthenticatedLouvorRoute,
   AuthenticatedMembrosRoute: AuthenticatedMembrosRoute,
