@@ -226,11 +226,23 @@ export function Equipes() {
             <ul className="mt-5 divide-y divide-border">
               {(team.members ?? []).map((m: any) => (
                 <li key={m.id} className="py-2 flex items-center justify-between gap-3">
-                  <div>
+                  <div className="min-w-0">
                     <div className="text-sm">{m.profiles?.full_name}</div>
                     <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
                       {m.function_name}
                     </div>
+                    {(m.instruments ?? []).length > 0 && (
+                      <div className="mt-1 flex flex-wrap gap-1">
+                        {(m.instruments as string[]).map((i) => (
+                          <span
+                            key={i}
+                            className="px-2 py-0.5 rounded-sm bg-muted text-[10px] text-muted-foreground"
+                          >
+                            {i}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   {canManage && (
                     <Button variant="ghost" size="icon" aria-label="Remover" onClick={() => removeMember.mutate(m.id)}>
