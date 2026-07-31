@@ -127,6 +127,7 @@ export function MemberFormDialog({
         children_count: parsed.data.children_count,
         bio: clean(form.bio),
         notes: clean(form.notes),
+        church_function: form.church_function || "membro",
       };
       if (canEditMembership) {
         payload.membership_type = clean(form.membership_type);
