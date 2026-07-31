@@ -49,7 +49,7 @@ export const Route = createFileRoute("/_authenticated/agenda")({
 
 function AgendaPage() {
   const qc = useQueryClient();
-  const { user, roles, isAdmin, isMinistryAdmin, isMesaLeader } = useAuth();
+  const { user, isAdmin, isMinistryAdmin, isMesaLeader } = useAuth();
 
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<ChurchEvent | null>(null);
