@@ -27,6 +27,7 @@ const nav = [
   { to: "/redes", label: "Redes", icon: Network },
   { to: "/mesas", label: "Mesas", icon: UtensilsCrossed },
   { to: "/membros", label: "Membros", icon: Users },
+  { to: "/igrejas", label: "Igrejas", icon: Church },
   { to: "/livraria", label: "Livraria", icon: BookOpen },
   { to: "/cantina", label: "Cantina", icon: Coffee },
 ] as const;
