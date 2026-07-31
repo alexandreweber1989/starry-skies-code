@@ -78,9 +78,9 @@ export const Route = createFileRoute("/_authenticated/membros")({
 });
 
 function MembrosPage() {
-  const { isAdmin, user, roles } = useAuth();
+  const { isAdmin, user, roles: myRoles } = useAuth();
   const canRequest =
-    isAdmin || roles.some((r) => r.role === "admin_ministerio" || r.role === "lider_mesa");
+    isAdmin || myRoles.some((r) => r.role === "admin_ministerio" || r.role === "lider_mesa");
   const removeMember = useServerFn(deleteMemberAccount);
   const qc = useQueryClient();
   const [filters, setFilters] = useState<MemberFilters>(DEFAULT_FILTERS);
