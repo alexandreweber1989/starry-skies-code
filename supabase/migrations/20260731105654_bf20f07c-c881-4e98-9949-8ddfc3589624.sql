@@ -1,0 +1,1 @@
+REVOKE ALL ON FUNCTION public.sync_family_link() FROM PUBLIC, anon, authenticated;
