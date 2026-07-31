@@ -23,14 +23,14 @@ function labelFor(pathname: string): string {
 }
 
 /** Variantes de transição disponíveis. */
-const VARIANTS = ["cols", "rows", "grid", "iris", "split", "glitch"] as const;
+const VARIANTS = ["cols", "rows", "wave", "iris", "split", "glitch"] as const;
 type Variant = (typeof VARIANTS)[number];
 
 /** Quantidade de peças e classe de entrada do conteúdo por variante. */
 const PIECES: Record<Variant, number> = {
   cols: 7,
   rows: 5,
-  grid: 24,
+  wave: 6,
   iris: 1,
   split: 2,
   glitch: 9,
@@ -39,7 +39,7 @@ const PIECES: Record<Variant, number> = {
 const ENTER_CLASS: Record<Variant, string> = {
   cols: "pt-enter",
   rows: "pt-enter-rows",
-  grid: "pt-enter-scale",
+  wave: "pt-enter-wave",
   iris: "pt-enter-scale",
   split: "pt-enter-split",
   glitch: "pt-enter-glitch",
