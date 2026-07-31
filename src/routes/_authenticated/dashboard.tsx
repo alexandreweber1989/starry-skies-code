@@ -1,96 +1,222 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
-import { Sparkles, Network, UtensilsCrossed, Users, ArrowUpRight } from "lucide-react";
+import {
+  Sparkles,
+  Network,
+  UtensilsCrossed,
+  Users,
+  Music,
+  CalendarDays,
+  BookOpen,
+  Coffee,
+  UserPlus,
+  ArrowUpRight,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, PageBody } from "@/components/app-shell";
 import { useAuth } from "@/lib/auth-context";
+import { todayISO, formatDateBR, relativeDayLabel } from "@/lib/painel";
+import { StatTile, PanelSection } from "@/components/painel/ui";
+import { MinhaSemana } from "@/components/painel/minha-semana";
+import { AgendaCultos } from "@/components/painel/agenda-cultos";
+import { Aniversariantes } from "@/components/painel/aniversariantes";
+import { Operacao } from "@/components/painel/operacao";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({ meta: [{ title: "Painel — IB Atos" }] }),
+  head: () => ({
+    meta: [
+      { title: "Painel — Igreja Batista Atos" },
+      {
+        name: "description",
+        content:
+          "Centro operacional da Igreja Batista Atos: agenda de cultos, escalas, membros, ministérios, livraria e cantina em um só lugar.",
+      },
+      { property: "og:title", content: "Painel — Igreja Batista Atos" },
+      {
+        property: "og:description",
+        content: "Agenda, escalas, membros e operação da igreja em um único painel.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: Dashboard,
 });
 
+const atalhos = [
+  { to: "/ministerios", label: "Ministérios", icon: Sparkles },
+  { to: "/louvor", label: "Louvor", icon: Music },
+  { to: "/redes", label: "Redes", icon: Network },
+  { to: "/mesas", label: "Mesas", icon: UtensilsCrossed },
+  { to: "/membros", label: "Membros", icon: Users },
+  { to: "/livraria", label: "Livraria", icon: BookOpen },
+  { to: "/cantina", label: "Cantina", icon: Coffee },
+  { to: "/perfil", label: "Meu perfil", icon: UserPlus },
+] as const;
+
 function Dashboard() {
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, isLivrariaAdmin, isCantinaAdmin } = useAuth();
+  const podeVerOperacao = isAdmin || isLivrariaAdmin || isCantinaAdmin;
+
   const { data } = useQuery({
     queryKey: ["dashboard-counts"],
     queryFn: async () => {
-      const [m, r, mesas, p] = await Promise.all([
-        supabase.from("ministries").select("id", { count: "exact", head: true }),
-        supabase.from("redes").select("id", { count: "exact", head: true }),
-        supabase.from("mesas").select("id", { count: "exact", head: true }),
-        supabase.from("profiles").select("id", { count: "exact", head: true }),
+      const hoje = todayISO();
+      const inicioMes = hoje.slice(0, 8) + "01";
+      const [m, r, mesas, ativos, novos, proximo, pendentes] = await Promise.all([
+        supabase.from("ministries").select("id", { count: "exact", head: true }).eq("is_active", true),
+        supabase.from("redes").select("id", { count: "exact", head: true }).eq("is_active", true),
+        supabase.from("mesas").select("id", { count: "exact", head: true }).eq("is_active", true),
+        supabase
+          .from("profiles")
+          .select("id", { count: "exact", head: true })
+          .eq("membership_status", "ativo"),
+        supabase
+          .from("profiles")
+          .select("id", { count: "exact", head: true })
+          .gte("created_at", `${inicioMes}T00:00:00Z`),
+        supabase
+          .from("worship_schedules")
+          .select("title, event_date, start_time, location")
+          .eq("status", "publicada")
+          .gte("event_date", hoje)
+          .order("event_date", { ascending: true })
+          .limit(1),
+        supabase
+          .from("worship_schedule_assignments")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "pendente"),
       ]);
       return {
         ministries: m.count ?? 0,
         redes: r.count ?? 0,
         mesas: mesas.count ?? 0,
-        profiles: p.count ?? 0,
+        ativos: ativos.count ?? 0,
+        novos: novos.count ?? 0,
+        pendentes: pendentes.count ?? 0,
+        proximo: (proximo.data ?? [])[0] as
+          | { title: string; event_date: string; start_time: string | null; location: string | null }
+          | undefined,
       };
     },
   });
 
-  const cards = [
-    { label: "Ministérios", value: data?.ministries ?? "—", to: "/ministerios", icon: Sparkles },
-    { label: "Redes", value: data?.redes ?? "—", to: "/redes", icon: Network },
-    { label: "Mesas", value: data?.mesas ?? "—", to: "/mesas", icon: UtensilsCrossed },
-    { label: "Membros", value: data?.profiles ?? "—", to: "/membros", icon: Users },
-  ] as const;
+  const nome = (user?.user_metadata?.full_name as string | undefined) ?? user?.email?.split("@")[0];
 
   return (
     <>
       <PageHeader
         eyebrow={isAdmin ? "Admin geral" : "Painel"}
-        title={`Olá, ${user?.user_metadata?.full_name ?? user?.email?.split("@")[0] ?? "irmão(ã)"}.`}
-        description="Este é o centro operacional da Igreja Batista Atos. A partir daqui você acessa ministérios, redes, mesas e membros."
+        title={`Olá, ${nome ?? "irmão(ã)"}.`}
+        description="Centro operacional da Igreja Batista Atos. Tudo que precisa de você hoje aparece primeiro."
+        actions={
+          data?.proximo ? (
+            <div className="border border-border rounded-sm px-4 py-3 bg-background">
+              <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
+                Próximo culto · {relativeDayLabel(data.proximo.event_date)}
+              </div>
+              <div className="font-serif text-lg mt-1 leading-none">{data.proximo.title}</div>
+              <div className="text-xs text-muted-foreground mt-1">
+                {formatDateBR(data.proximo.event_date, { day: "2-digit", month: "long" })}
+                {data.proximo.start_time ? ` · ${data.proximo.start_time.slice(0, 5)}` : ""}
+                {data.proximo.location ? ` · ${data.proximo.location}` : ""}
+              </div>
+            </div>
+          ) : undefined
+        }
       />
       <PageBody>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {cards.map((c) => (
-            <Link
-              key={c.label}
-              to={c.to}
-              className="group border border-border bg-card p-6 rounded-sm hover:border-primary transition-colors"
-            >
-              <div className="flex items-start justify-between">
-                <c.icon className="h-5 w-5 text-primary" />
-                <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-              </div>
-              <div className="font-serif text-4xl mt-6">{c.value}</div>
-              <div className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground mt-2">
-                {c.label}
-              </div>
-            </Link>
-          ))}
+          <StatTile
+            label="Membros ativos"
+            value={data?.ativos ?? "—"}
+            hint={data ? `${data.novos} novo(s) neste mês` : undefined}
+            icon={Users}
+            to="/membros"
+          />
+          <StatTile label="Ministérios" value={data?.ministries ?? "—"} icon={Sparkles} to="/ministerios" />
+          <StatTile label="Mesas ativas" value={data?.mesas ?? "—"} icon={UtensilsCrossed} to="/mesas" />
+          <StatTile
+            label="Escalas pendentes"
+            value={data?.pendentes ?? "—"}
+            hint="Aguardando confirmação"
+            icon={CalendarDays}
+            to="/louvor"
+          />
         </div>
 
-        <section className="mt-12 grid lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 border border-border bg-card p-8 rounded-sm">
-            <div className="font-mono text-[10px] uppercase tracking-widest text-primary mb-4">
-              O que vem por aí
-            </div>
-            <h2 className="font-serif text-2xl mb-4">Próximas fases da plataforma</h2>
-            <ul className="space-y-3 text-sm text-muted-foreground">
-              <li>• Escalas de louvor e mídia por evento</li>
-              <li>• Check-in seguro do Kids por QR Code</li>
-              <li>• Portal de notícias, avisos e eventos</li>
-              <li>• Rede social interna dos jovens e adolescentes</li>
-              <li>• Campanhas mensais do Atos de Amor</li>
-            </ul>
+        <div className="mt-6 grid lg:grid-cols-2 gap-6">
+          <MinhaSemana />
+          <AgendaCultos />
+        </div>
+
+        <div className="mt-6 grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <Aniversariantes />
           </div>
-          <div className="border border-border bg-sidebar text-sidebar-foreground p-8 rounded-sm">
-            <div className="font-mono text-[10px] uppercase tracking-widest text-sidebar-primary mb-4">
-              Nossa base
+          <div className="border border-border bg-sidebar text-sidebar-foreground p-8 rounded-sm flex flex-col justify-between">
+            <div>
+              <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-sidebar-primary mb-4">
+                Nossa base
+              </div>
+              <p className="font-serif text-xl leading-snug">
+                "E perseveravam na doutrina dos apóstolos, e na comunhão, e no partir do pão, e nas
+                orações."
+              </p>
             </div>
-            <p className="font-serif text-xl leading-snug">
-              "E perseveravam na doutrina dos apóstolos, e na comunhão, e no partir do pão, e nas orações."
-            </p>
-            <p className="font-mono text-[11px] uppercase tracking-widest text-sidebar-foreground/60 mt-4">
+            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-sidebar-foreground/60 mt-6">
               Atos 2:42
             </p>
           </div>
-        </section>
+        </div>
+
+        {podeVerOperacao && (
+          <div className="mt-6">
+            <Operacao />
+          </div>
+        )}
+
+        <div className="mt-6 grid lg:grid-cols-3 gap-6">
+          <PanelSection label="Navegação" title="Atalhos" className="lg:col-span-2">
+            <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-3">
+              {atalhos.map((a) => (
+                <Link
+                  key={a.to}
+                  to={a.to}
+                  className="group border border-border rounded-sm p-4 hover:border-primary transition-colors"
+                >
+                  <div className="flex items-start justify-between">
+                    <a.icon className="h-4 w-4 text-primary" />
+                    <ArrowUpRight className="h-3 w-3 text-muted-foreground group-hover:text-primary transition-colors" />
+                  </div>
+                  <div className="font-mono text-[10px] uppercase tracking-[0.18em] mt-6">
+                    {a.label}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </PanelSection>
+
+          <PanelSection label="Roadmap" title="Próximas fases">
+            <ol className="space-y-3 text-sm text-muted-foreground">
+              {[
+                "Kids — check-in seguro por QR Code",
+                "Mídia — biblioteca e central de solicitações",
+                "Redes e Mesas — eventos por escopo",
+                "Jovens e Adolescentes — feed moderado",
+                "Atos de Amor — campanhas mensais",
+                "Portal de notícias e avisos",
+              ].map((t, i) => (
+                <li key={t} className="flex gap-3">
+                  <span className="font-mono text-[10px] text-primary pt-1">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span>{t}</span>
+                </li>
+              ))}
+            </ol>
+          </PanelSection>
+        </div>
       </PageBody>
     </>
   );
