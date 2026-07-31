@@ -36,7 +36,7 @@ export function NewMemberDialog() {
       setEmail("");
       setPhone("");
       setPassword("");
-      void qc.invalidateQueries({ queryKey: ["members"] });
+      void qc.invalidateQueries({ queryKey: ["profiles"] });
       void qc.invalidateQueries({ queryKey: ["profiles-min"] });
     },
     onError: (e: Error) => toast.error(e.message),

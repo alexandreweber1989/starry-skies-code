@@ -19,6 +19,7 @@ import {
 import { useAuth } from "@/lib/auth-context";
 import { useAffiliations } from "@/lib/vinculos";
 import { MemberFormDialog } from "@/components/membros/member-form-dialog";
+import { NewMemberDialog } from "@/components/membros/new-member-dialog";
 import { MemberStats } from "@/components/membros/member-stats";
 import { MemberCard } from "@/components/membros/member-card";
 import { MemberDetailSheet } from "@/components/membros/member-detail-sheet";
@@ -195,6 +196,7 @@ function MembrosPage() {
         eyebrow="Corpo de Cristo"
         title="Membros"
         description="Gestão completa da membresia: fichas, filtros, permissões e indicadores."
+        actions={isAdmin ? <NewMemberDialog /> : undefined}
       />
       <PageBody>
         <MemberStats members={(data ?? []) as any} />
