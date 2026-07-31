@@ -15,13 +15,17 @@ export const Route = createFileRoute("/_authenticated/redes")({
 function RedesPage() {
   const { isAdmin } = useAuth();
   const { data: redes } = useQuery({
-    queryKey: ["redes"],
+    queryKey: ["redes-full"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("redes").select("*").order("name");
+      const { data, error } = await supabase
+        .from("redes")
+        .select("*, church:churches(name, city)")
+        .order("name");
       if (error) throw error;
-      return data;
+      return data as any[];
     },
   });
+
 
   const { data: mesasByRede } = useQuery({
     queryKey: ["mesas-by-rede"],
