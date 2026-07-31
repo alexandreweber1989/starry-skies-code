@@ -27,6 +27,7 @@ import {
 export function MinistryDialog() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
+  const [churchId, setChurchId] = useState("");
   const [description, setDescription] = useState("");
   const [meetingInfo, setMeetingInfo] = useState("");
   const qc = useQueryClient();
@@ -34,14 +35,17 @@ export function MinistryDialog() {
   const create = useMutation({
     mutationFn: async () => {
       if (name.trim().length < 3) throw new Error("Informe o nome do ministério.");
+      if (!churchId) throw new Error("Selecione a igreja deste ministério.");
       const { error } = await supabase.from("ministries").insert({
         name: name.trim(),
         slug: slugify(name),
+        church_id: churchId,
         description: description.trim() || null,
         meeting_info: meetingInfo.trim() || null,
       });
       if (error) throw error;
     },
+
     onSuccess: () => {
       toast.success("Ministério criado.");
       setOpen(false);
