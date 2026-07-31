@@ -267,6 +267,14 @@ export function MemberFormDialog({
             <TextField label="Igreja de origem" value={str("previous_church")} onChange={set("previous_church")} />
             {canEditMembership && (
               <>
+                <Field label="Função na igreja" full>
+                  <ChurchFunctionCards
+                    value={str("church_function") || "membro"}
+                    onChange={(v) => set("church_function")(v)}
+                    gender={str("gender")}
+                    previewName={str("full_name")}
+                  />
+                </Field>
                 <SelectField
                   label="Forma de entrada"
                   value={str("membership_type")}
