@@ -377,6 +377,20 @@ function MembrosPage() {
                             Editar
                           </Button>
                         )}
+                        {isAdmin && p.id !== user?.id && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="text-destructive"
+                            disabled={removeMutation.isPending}
+                            onClick={() => {
+                              if (window.confirm(`Excluir ${p.full_name} da plataforma?`))
+                                removeMutation.mutate(p.id);
+                            }}
+                          >
+                            Excluir
+                          </Button>
+                        )}
                       </td>
                     </tr>
                   );
