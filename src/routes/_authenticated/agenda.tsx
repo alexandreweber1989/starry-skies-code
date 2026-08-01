@@ -9,6 +9,7 @@ import { PageHeader, PageBody } from "@/components/app-shell";
 import { StatTile, PanelSection, EmptyLine } from "@/components/painel/ui";
 import { EventCard } from "@/components/agenda/event-card";
 import { EventForm } from "@/components/agenda/event-form";
+import { EventCalendar } from "@/components/agenda/event-calendar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
