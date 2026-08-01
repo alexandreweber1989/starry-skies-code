@@ -137,7 +137,15 @@ function KidsPage() {
               )}
             </TabsContent>
 
+            <TabsContent value="visitantes" className="mt-6">
+              <VisitorQueue
+                session={activeSession}
+                churchId={activeSession?.church_id ?? null}
+              />
+            </TabsContent>
+
             <TabsContent value="criancas" className="mt-6">
+
               {activeChildren.length === 0 ? (
                 <EmptyState
                   icon={Baby}
