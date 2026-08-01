@@ -10,7 +10,8 @@ export type AppRole =
   | "lider_mesa"
   | "membro"
   | "admin_livraria"
-  | "admin_cantina";
+  | "admin_cantina"
+  | "admin_kids";
 
 export interface RoleRow {
   role: AppRole;
@@ -28,6 +29,8 @@ interface AuthState {
   isMesaLeader: (mesaId: string) => boolean;
   isLivrariaAdmin: boolean;
   isCantinaAdmin: boolean;
+  /** Admin geral ou admin do Ministério Infantil. */
+  isKidsAdmin: boolean;
   signOut: () => Promise<void>;
 }
 
@@ -97,6 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isMesaLeader: (id) => isAdmin || roles.some((r) => r.role === "lider_mesa" && r.mesa_id === id),
     isLivrariaAdmin: isAdmin || roles.some((r) => r.role === "admin_livraria"),
     isCantinaAdmin: isAdmin || roles.some((r) => r.role === "admin_cantina"),
+    isKidsAdmin: isAdmin || roles.some((r) => r.role === "admin_kids"),
     signOut: async () => {
       await qc.cancelQueries();
       qc.clear();
