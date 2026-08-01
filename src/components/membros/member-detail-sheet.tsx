@@ -13,6 +13,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { FamilySummary } from "./family-summary";
+import { MemberCredentialsDialog } from "./credentials-dialog";
+import { useAuth } from "@/lib/auth-context";
 import {
   MARITAL_STATUS,
   MEMBERSHIP_STATUS,
