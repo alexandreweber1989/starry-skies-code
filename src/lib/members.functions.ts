@@ -180,3 +180,61 @@ export const updateMemberCredentials = createServerFn({ method: "POST" })
 
     return { ok: true };
   });
+
+/** Papéis de acesso administráveis pelo admin geral. */
+const ROLE_VALUES = [
+  "admin_geral",
+  "admin_livraria",
+  "admin_cantina",
+  "admin_kids",
+  "membro",
+] as const;
+
+const rolesSchema = z.object({
+  user_id: z.string().uuid(),
+  roles: z.array(z.enum(ROLE_VALUES)).max(ROLE_VALUES.length),
+});
+
+/**
+ * Define os papéis globais de um membro (somente admin geral).
+ * Papéis vinculados a ministério/mesa não são tocados aqui: eles dependem de
+ * um contexto (ministry_id/mesa_id) que é gerido nas próprias páginas.
+ */
+export const updateMemberRoles = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => rolesSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    const { data: isAdmin, error: roleError } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin_geral",
+    });
+    if (roleError) throw new Error("Não foi possível validar suas permissões.");
+    if (!isAdmin) throw new Error("Apenas o administrador geral pode alterar permissões.");
+    // Evita que o último admin remova o próprio acesso e trave a plataforma.
+    if (data.user_id === context.userId && !data.roles.includes("admin_geral")) {
+      throw new Error("Você não pode remover o seu próprio acesso de administrador geral.");
+    }
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { error: delError } = await supabaseAdmin
+      .from("user_roles")
+      .delete()
+      .eq("user_id", data.user_id)
+      .in("role", ROLE_VALUES as unknown as string[])
+      .is("ministry_id", null)
+      .is("mesa_id", null);
+    if (delError) throw new Error(delError.message);
+
+    if (data.roles.length > 0) {
+      const { error: insError } = await supabaseAdmin
+        .from("user_roles")
+        .upsert(
+          data.roles.map((role) => ({ user_id: data.user_id, role })) as never,
+          { onConflict: "user_id,role" },
+        );
+      if (insError) throw new Error(insError.message);
+    }
+
+    return { ok: true };
+  });
