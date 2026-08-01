@@ -476,6 +476,253 @@ export type Database = {
           },
         ]
       }
+      kids_checkins: {
+        Row: {
+          checked_in_at: string
+          checked_in_by: string | null
+          checked_out_at: string | null
+          checked_out_by: string | null
+          child_id: string
+          created_at: string
+          day_notes: string | null
+          dropped_by_name: string | null
+          id: string
+          picked_up_by_name: string | null
+          security_code: string
+          session_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          checked_in_at?: string
+          checked_in_by?: string | null
+          checked_out_at?: string | null
+          checked_out_by?: string | null
+          child_id: string
+          created_at?: string
+          day_notes?: string | null
+          dropped_by_name?: string | null
+          id?: string
+          picked_up_by_name?: string | null
+          security_code: string
+          session_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          checked_in_at?: string
+          checked_in_by?: string | null
+          checked_out_at?: string | null
+          checked_out_by?: string | null
+          child_id?: string
+          created_at?: string
+          day_notes?: string | null
+          dropped_by_name?: string | null
+          id?: string
+          picked_up_by_name?: string | null
+          security_code?: string
+          session_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kids_checkins_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "kids_children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kids_checkins_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "kids_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kids_children: {
+        Row: {
+          allergies: string | null
+          birth_date: string | null
+          can_leave_alone: boolean
+          church_id: string | null
+          classroom: string
+          created_at: string
+          created_by: string | null
+          full_name: string
+          gender: string | null
+          health_notes: string | null
+          id: string
+          is_active: boolean
+          nickname: string | null
+          notes: string | null
+          photo_consent: boolean
+          photo_url: string | null
+          special_needs: string | null
+          updated_at: string
+        }
+        Insert: {
+          allergies?: string | null
+          birth_date?: string | null
+          can_leave_alone?: boolean
+          church_id?: string | null
+          classroom?: string
+          created_at?: string
+          created_by?: string | null
+          full_name: string
+          gender?: string | null
+          health_notes?: string | null
+          id?: string
+          is_active?: boolean
+          nickname?: string | null
+          notes?: string | null
+          photo_consent?: boolean
+          photo_url?: string | null
+          special_needs?: string | null
+          updated_at?: string
+        }
+        Update: {
+          allergies?: string | null
+          birth_date?: string | null
+          can_leave_alone?: boolean
+          church_id?: string | null
+          classroom?: string
+          created_at?: string
+          created_by?: string | null
+          full_name?: string
+          gender?: string | null
+          health_notes?: string | null
+          id?: string
+          is_active?: boolean
+          nickname?: string | null
+          notes?: string | null
+          photo_consent?: boolean
+          photo_url?: string | null
+          special_needs?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kids_children_church_id_fkey"
+            columns: ["church_id"]
+            isOneToOne: false
+            referencedRelation: "churches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kids_guardians: {
+        Row: {
+          can_pickup: boolean
+          child_id: string
+          created_at: string
+          document: string | null
+          full_name: string
+          id: string
+          is_primary: boolean
+          notes: string | null
+          phone: string | null
+          profile_id: string | null
+          relation: string
+          updated_at: string
+        }
+        Insert: {
+          can_pickup?: boolean
+          child_id: string
+          created_at?: string
+          document?: string | null
+          full_name: string
+          id?: string
+          is_primary?: boolean
+          notes?: string | null
+          phone?: string | null
+          profile_id?: string | null
+          relation?: string
+          updated_at?: string
+        }
+        Update: {
+          can_pickup?: boolean
+          child_id?: string
+          created_at?: string
+          document?: string | null
+          full_name?: string
+          id?: string
+          is_primary?: boolean
+          notes?: string | null
+          phone?: string | null
+          profile_id?: string | null
+          relation?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kids_guardians_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "kids_children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kids_guardians_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kids_sessions: {
+        Row: {
+          church_id: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          notes: string | null
+          room: string | null
+          session_date: string
+          start_time: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          church_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          room?: string | null
+          session_date: string
+          start_time?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          church_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          room?: string | null
+          session_date?: string
+          start_time?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kids_sessions_church_id_fkey"
+            columns: ["church_id"]
+            isOneToOne: false
+            referencedRelation: "churches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       membership_requests: {
         Row: {
           created_at: string
@@ -1504,6 +1751,11 @@ export type Database = {
         Returns: Database["public"]["Enums"]["family_relation"]
       }
       is_cantina_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_guardian_of: {
+        Args: { _child_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_kids_admin: { Args: { _user_id: string }; Returns: boolean }
       is_livraria_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
@@ -1514,6 +1766,7 @@ export type Database = {
         | "membro"
         | "admin_livraria"
         | "admin_cantina"
+        | "admin_kids"
       church_function:
         | "pastor"
         | "apascentador"
@@ -1677,6 +1930,7 @@ export const Constants = {
         "membro",
         "admin_livraria",
         "admin_cantina",
+        "admin_kids",
       ],
       church_function: [
         "pastor",
