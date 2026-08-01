@@ -293,6 +293,20 @@ function AgendaPage() {
             </PanelSection>
           </TabsContent>
 
+          <TabsContent value="calendario" className="mt-6">
+            <PanelSection label="Visão do mês" title="Calendário da igreja">
+              <EventCalendar
+                events={filtered}
+                onSelect={(e) => {
+                  if (canManage(e)) {
+                    setEditing(e);
+                    setFormOpen(true);
+                  }
+                }}
+              />
+            </PanelSection>
+          </TabsContent>
+
           <TabsContent value="passados" className="mt-6">
             <PanelSection label="Histórico" title="Eventos realizados">
               {renderList(past, "Nenhum evento realizado ainda.")}
