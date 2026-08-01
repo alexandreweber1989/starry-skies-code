@@ -24,6 +24,7 @@ import {
 import { ChildDialog, EditChildButton } from "@/components/kids/child-dialog";
 import { SessionDialog, EditSessionButton } from "@/components/kids/session-dialog";
 import { CheckinBoard } from "@/components/kids/checkin-board";
+import { VisitorQueue } from "@/components/kids/visitor-queue";
 
 export const Route = createFileRoute("/_authenticated/kids")({
   head: () => ({
@@ -101,9 +102,11 @@ function KidsPage() {
           <Tabs defaultValue="checkin">
             <TabsList>
               <TabsTrigger value="checkin">Check-in do culto</TabsTrigger>
+              <TabsTrigger value="visitantes">Visitantes</TabsTrigger>
               <TabsTrigger value="criancas">Crianças ({activeChildren.length})</TabsTrigger>
               <TabsTrigger value="sessoes">Sessões</TabsTrigger>
             </TabsList>
+
 
             <TabsContent value="checkin" className="mt-6 space-y-6">
               {!activeSession ? (
@@ -134,7 +137,15 @@ function KidsPage() {
               )}
             </TabsContent>
 
+            <TabsContent value="visitantes" className="mt-6">
+              <VisitorQueue
+                session={activeSession}
+                churchId={activeSession?.church_id ?? null}
+              />
+            </TabsContent>
+
             <TabsContent value="criancas" className="mt-6">
+
               {activeChildren.length === 0 ? (
                 <EmptyState
                   icon={Baby}
