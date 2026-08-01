@@ -723,6 +723,99 @@ export type Database = {
           },
         ]
       }
+      kids_visitor_requests: {
+        Row: {
+          allergies: string | null
+          birth_date: string | null
+          child_full_name: string
+          child_id: string | null
+          child_nickname: string | null
+          church_id: string | null
+          classroom: string
+          created_at: string
+          gender: string | null
+          guardian_document: string | null
+          guardian_full_name: string
+          guardian_phone: string
+          guardian_relation: string
+          health_notes: string | null
+          id: string
+          notes: string | null
+          other_pickup: string | null
+          photo_consent: boolean
+          reviewed_at: string | null
+          reviewed_by: string | null
+          special_needs: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          allergies?: string | null
+          birth_date?: string | null
+          child_full_name: string
+          child_id?: string | null
+          child_nickname?: string | null
+          church_id?: string | null
+          classroom?: string
+          created_at?: string
+          gender?: string | null
+          guardian_document?: string | null
+          guardian_full_name: string
+          guardian_phone: string
+          guardian_relation?: string
+          health_notes?: string | null
+          id?: string
+          notes?: string | null
+          other_pickup?: string | null
+          photo_consent?: boolean
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          special_needs?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          allergies?: string | null
+          birth_date?: string | null
+          child_full_name?: string
+          child_id?: string | null
+          child_nickname?: string | null
+          church_id?: string | null
+          classroom?: string
+          created_at?: string
+          gender?: string | null
+          guardian_document?: string | null
+          guardian_full_name?: string
+          guardian_phone?: string
+          guardian_relation?: string
+          health_notes?: string | null
+          id?: string
+          notes?: string | null
+          other_pickup?: string | null
+          photo_consent?: boolean
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          special_needs?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kids_visitor_requests_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "kids_children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kids_visitor_requests_church_id_fkey"
+            columns: ["church_id"]
+            isOneToOne: false
+            referencedRelation: "churches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       membership_requests: {
         Row: {
           created_at: string
@@ -1757,6 +1850,13 @@ export type Database = {
       }
       is_kids_admin: { Args: { _user_id: string }; Returns: boolean }
       is_livraria_admin: { Args: { _user_id: string }; Returns: boolean }
+      kids_find_family_by_phone: {
+        Args: { _phone: string }
+        Returns: {
+          child_id: string
+          first_name: string
+        }[]
+      }
     }
     Enums: {
       app_role:
