@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { FamilySummary } from "./family-summary";
+import { MemberTimeline } from "./member-timeline";
 import { MemberCredentialsDialog } from "./credentials-dialog";
 import { useAuth } from "@/lib/auth-context";
 import {
@@ -161,6 +162,10 @@ export function MemberDetailSheet({
             />
             <Line label="Dons" value={profile.gifts} />
             <Line label="Disponibilidade" value={profile.availability} />
+          </Block>
+          <Separator />
+          <Block title="Caminhada na igreja">
+            {id && <MemberTimeline personId={id} enabled={open} />}
           </Block>
           <Separator />
           <Block title="Vínculos">
