@@ -259,7 +259,7 @@ export function MesaMembersDialog({ mesaId, mesaName }: { mesaId: string; mesaNa
     onSuccess: () => {
       toast.success("Integrante adicionado à mesa.");
       setUserId("");
-      void qc.invalidateQueries({ queryKey: ["mesa-members", mesaId] });
+      void qc.invalidateQueries({ queryKey: ["mesa-members", mesaId] }); void qc.invalidateQueries({ queryKey: ["group-stats"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -269,7 +269,7 @@ export function MesaMembersDialog({ mesaId, mesaName }: { mesaId: string; mesaNa
       const { error } = await supabase.from("mesa_members").update({ role: value }).eq("id", id);
       if (error) throw error;
     },
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ["mesa-members", mesaId] }),
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ["mesa-members", mesaId] }) void qc.invalidateQueries({ queryKey: ["group-stats"] });,
     onError: (e: Error) => toast.error(e.message),
   });
 
@@ -278,7 +278,7 @@ export function MesaMembersDialog({ mesaId, mesaName }: { mesaId: string; mesaNa
       const { error } = await supabase.from("mesa_members").delete().eq("id", id);
       if (error) throw error;
     },
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ["mesa-members", mesaId] }),
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ["mesa-members", mesaId] }) void qc.invalidateQueries({ queryKey: ["group-stats"] });,
     onError: (e: Error) => toast.error(e.message),
   });
 
