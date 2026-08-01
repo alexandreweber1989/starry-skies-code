@@ -177,10 +177,17 @@ export function MemberDetailSheet({
           )}
         </div>
 
-        <div className="flex gap-2 sticky bottom-0 bg-background py-4 border-t border-border">
-          <Button onClick={onEdit} className="flex-1">
+        <div className="flex flex-wrap gap-2 sticky bottom-0 bg-background py-4 border-t border-border">
+          <Button onClick={onEdit} className="flex-1 min-w-32">
             Editar ficha
           </Button>
+          {isAdmin && id && (
+            <MemberCredentialsDialog
+              userId={id}
+              currentEmail={profile.email}
+              fullName={profile.full_name}
+            />
+          )}
           {profile.phone && (
             <Button variant="outline" asChild>
               <a
