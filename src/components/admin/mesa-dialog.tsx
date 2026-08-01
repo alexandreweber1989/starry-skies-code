@@ -73,7 +73,10 @@ export function MesaDialog({
   const { data: redes } = useQuery({
     queryKey: ["redes"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("redes").select("id, name").order("name");
+      const { data, error } = await supabase
+        .from("redes")
+        .select("id, name, church_id")
+        .order("name");
       if (error) throw error;
       return data;
     },
