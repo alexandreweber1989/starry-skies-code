@@ -15,6 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { FamilySummary } from "./family-summary";
 import { MemberTimeline } from "./member-timeline";
 import { MemberCredentialsDialog } from "./credentials-dialog";
+import { MemberRolesDialog } from "./roles-dialog";
 import { useAuth } from "@/lib/auth-context";
 import {
   MARITAL_STATUS,
@@ -196,6 +197,7 @@ export function MemberDetailSheet({
               fullName={profile.full_name}
             />
           )}
+          {isAdmin && id && <MemberRolesDialog userId={id} fullName={profile.full_name} />}
           {profile.phone && (
             <Button variant="outline" asChild>
               <a

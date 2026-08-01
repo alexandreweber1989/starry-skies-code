@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { PageTransition } from "@/components/page-transition";
 import { GlobalSearch } from "@/components/global-search";
 import { NotificationsBell } from "@/components/notifications-bell";
+import { QuickActions } from "@/components/quick-actions";
 
 const nav = [
   { to: "/dashboard", label: "Painel", icon: LayoutDashboard },
@@ -137,6 +138,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </nav>
           <PageTransition>{children}</PageTransition>
         </main>
+        <QuickActions />
       </div>
     </div>
   );

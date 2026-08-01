@@ -5,6 +5,7 @@ import { useAuth } from "@/lib/auth-context";
 import { LivrariaCatalog } from "@/components/loja/livraria-catalog";
 import { LivrariaOrders } from "@/components/loja/livraria-orders";
 import { LivrariaAdminOrders, LivrariaAdminProducts } from "@/components/loja/livraria-admin";
+import { LivrariaEstoque } from "@/components/loja/estoque-demanda";
 
 export const Route = createFileRoute("/_authenticated/livraria")({
   head: () => ({
@@ -44,6 +45,7 @@ function LivrariaPage() {
             <TabsTrigger value="pedidos">Meus pedidos</TabsTrigger>
             {isLivrariaAdmin && <TabsTrigger value="gestao">Cadastrar produtos</TabsTrigger>}
             {isLivrariaAdmin && <TabsTrigger value="fila">Fila de pedidos</TabsTrigger>}
+            {isLivrariaAdmin && <TabsTrigger value="estoque">Estoque e demanda</TabsTrigger>}
           </TabsList>
           <TabsContent value="catalogo">
             <LivrariaCatalog />
@@ -59,6 +61,11 @@ function LivrariaPage() {
           {isLivrariaAdmin && (
             <TabsContent value="fila">
               <LivrariaAdminOrders />
+            </TabsContent>
+          )}
+          {isLivrariaAdmin && (
+            <TabsContent value="estoque">
+              <LivrariaEstoque />
             </TabsContent>
           )}
         </Tabs>

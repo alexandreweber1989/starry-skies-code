@@ -9,6 +9,7 @@ import { PageHeader, PageBody } from "@/components/app-shell";
 import { StatTile, PanelSection, EmptyLine } from "@/components/painel/ui";
 import { EventCard } from "@/components/agenda/event-card";
 import { EventForm } from "@/components/agenda/event-form";
+import { EventCalendar } from "@/components/agenda/event-calendar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -253,6 +254,7 @@ function AgendaPage() {
             <TabsTrigger value="proximos">Próximos</TabsTrigger>
             <TabsTrigger value="meus">Meus eventos</TabsTrigger>
             <TabsTrigger value="pendentes">Pendentes</TabsTrigger>
+            <TabsTrigger value="calendario">Calendário</TabsTrigger>
             <TabsTrigger value="passados">Realizados</TabsTrigger>
           </TabsList>
 
@@ -289,6 +291,20 @@ function AgendaPage() {
           <TabsContent value="pendentes" className="mt-6">
             <PanelSection label="Depende de você" title="Aguardando sua resposta">
               {renderList(pendingRsvp, "Tudo respondido. Nada pendente.")}
+            </PanelSection>
+          </TabsContent>
+
+          <TabsContent value="calendario" className="mt-6">
+            <PanelSection label="Visão do mês" title="Calendário da igreja">
+              <EventCalendar
+                events={filtered}
+                onSelect={(e) => {
+                  if (canManage(e)) {
+                    setEditing(e);
+                    setFormOpen(true);
+                  }
+                }}
+              />
             </PanelSection>
           </TabsContent>
 
