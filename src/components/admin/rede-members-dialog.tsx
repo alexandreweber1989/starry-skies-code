@@ -77,7 +77,10 @@ export function RedeMembersDialog({ redeId, redeName }: { redeId: string; redeNa
       const { error } = await supabase.from("rede_members").update({ role: value }).eq("id", id);
       if (error) throw error;
     },
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ["rede-members", redeId] }) void qc.invalidateQueries({ queryKey: ["group-stats"] });,
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["rede-members", redeId] });
+      void qc.invalidateQueries({ queryKey: ["group-stats"] });
+    },
     onError: (e: Error) => toast.error(e.message),
   });
 
