@@ -95,11 +95,16 @@ export function MesaDialog({
   const save = useMutation({
     mutationFn: async () => {
       if (name.trim().length < 3) throw new Error("Informe o nome da mesa.");
-      if (!churchId) throw new Error("Selecione a igreja desta mesa.");
+      const redeFinal = rede || redeId || null;
+      // A igreja é herdada da rede quando não for escolhida explicitamente,
+      // evitando que a criação de mesas dentro de uma rede seja bloqueada.
+      const inherited = redes?.find((r) => r.id === redeFinal)?.church_id ?? null;
+      const churchFinal = churchId || inherited;
+      if (!churchFinal) throw new Error("Selecione a igreja desta mesa.");
       const payload = {
         name: name.trim(),
-        rede_id: rede || redeId || null,
-        church_id: churchId,
+        rede_id: redeFinal,
+        church_id: churchFinal,
         meeting_day: day || null,
         meeting_time: time || null,
         meeting_location: location.trim() || null,
@@ -122,7 +127,11 @@ export function MesaDialog({
       }
       void qc.invalidateQueries({ queryKey: ["mesas-full"] });
       void qc.invalidateQueries({ queryKey: ["mesas-by-rede"] });
+      void qc.invalidateQueries({ queryKey: ["redes-full"] });
+      void qc.invalidateQueries({ queryKey: ["mesas"] });
     },
+    onError: (e: Error) => toast.error(e.message),
+  });
     onError: (e: Error) => toast.error(e.message),
   });
 
