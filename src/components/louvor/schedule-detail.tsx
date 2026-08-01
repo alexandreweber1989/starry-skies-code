@@ -8,6 +8,7 @@ import { useMusicians, useSundayHistory } from "@/lib/use-worship";
 import { useProfileOptions } from "@/lib/use-profiles";
 import { useAuth } from "@/lib/auth-context";
 import { GrupoDomingo } from "./grupo-domingo";
+import { StageMode } from "./stage-mode";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
