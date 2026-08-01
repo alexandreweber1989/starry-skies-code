@@ -221,7 +221,7 @@ export const updateMemberRoles = createServerFn({ method: "POST" })
       .from("user_roles")
       .delete()
       .eq("user_id", data.user_id)
-      .in("role", ROLE_VALUES as unknown as string[])
+      .in("role", [...ROLE_VALUES])
       .is("ministry_id", null)
       .is("mesa_id", null);
     if (delError) throw new Error(delError.message);
