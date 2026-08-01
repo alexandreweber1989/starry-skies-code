@@ -37,7 +37,7 @@ function MinistriesPage() {
         {isLoading && <div className="text-muted-foreground">Carregando...</div>}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
           {data?.map((m, i) => (
-            <div key={m.id} className="relative">
+            <div key={m.id} className="relative h-full">
             {isAdmin && (
               <div className="absolute right-3 top-3 z-10">
                 <EditMinistryButton ministry={m} />
