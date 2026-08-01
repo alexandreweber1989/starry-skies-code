@@ -132,8 +132,6 @@ export function MesaDialog({
     },
     onError: (e: Error) => toast.error(e.message),
   });
-    onError: (e: Error) => toast.error(e.message),
-  });
 
   return (
     <Dialog
