@@ -10,6 +10,7 @@ import {
   BookOpen,
   Coffee,
   UserPlus,
+  Baby,
   ArrowUpRight,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -52,6 +53,7 @@ const atalhos = [
   { to: "/redes", label: "Redes", icon: Network },
   { to: "/mesas", label: "Mesas", icon: UtensilsCrossed },
   { to: "/membros", label: "Membros", icon: Users },
+  { to: "/kids", label: "Kids", icon: Baby },
   { to: "/livraria", label: "Livraria", icon: BookOpen },
   { to: "/cantina", label: "Cantina", icon: Coffee },
   { to: "/perfil", label: "Meu perfil", icon: UserPlus },
