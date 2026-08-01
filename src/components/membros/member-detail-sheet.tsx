@@ -13,6 +13,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { FamilySummary } from "./family-summary";
+import { MemberCredentialsDialog } from "./credentials-dialog";
+import { useAuth } from "@/lib/auth-context";
 import {
   MARITAL_STATUS,
   MEMBERSHIP_STATUS,
@@ -61,6 +63,7 @@ export function MemberDetailSheet({
   canSeeNotes: boolean;
 }) {
   const id = profile?.id as string | undefined;
+  const { isAdmin } = useAuth();
 
   const { data: links } = useQuery({
     queryKey: ["member-links", id],
@@ -177,10 +180,17 @@ export function MemberDetailSheet({
           )}
         </div>
 
-        <div className="flex gap-2 sticky bottom-0 bg-background py-4 border-t border-border">
-          <Button onClick={onEdit} className="flex-1">
+        <div className="flex flex-wrap gap-2 sticky bottom-0 bg-background py-4 border-t border-border">
+          <Button onClick={onEdit} className="flex-1 min-w-32">
             Editar ficha
           </Button>
+          {isAdmin && id && (
+            <MemberCredentialsDialog
+              userId={id}
+              currentEmail={profile.email}
+              fullName={profile.full_name}
+            />
+          )}
           {profile.phone && (
             <Button variant="outline" asChild>
               <a

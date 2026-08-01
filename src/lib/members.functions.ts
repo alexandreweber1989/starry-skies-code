@@ -128,3 +128,55 @@ export const createMemberAccount = createServerFn({ method: "POST" })
 
     return { id: userId };
   });
+
+/** Entrada da atualização de credenciais (e-mail e/ou senha) de um membro. */
+const credentialsSchema = z
+  .object({
+    user_id: z.string().uuid(),
+    email: z.string().trim().email().max(255).optional(),
+    password: z.string().min(8).max(72).optional(),
+  })
+  .refine((v) => Boolean(v.email || v.password), {
+    message: "Informe um novo e-mail ou uma nova senha.",
+  });
+
+/**
+ * Atualiza e-mail e/ou senha de acesso de um membro (somente admin geral).
+ * A permissão é validada com o cliente autenticado do chamador antes de
+ * carregar o cliente privilegiado — nunca confiar no que vem do cliente.
+ */
+export const updateMemberCredentials = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => credentialsSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    const { data: isAdmin, error: roleError } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin_geral",
+    });
+    if (roleError) throw new Error("Não foi possível validar suas permissões.");
+    if (!isAdmin) throw new Error("Apenas o administrador geral pode alterar credenciais.");
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const payload: { email?: string; password?: string; email_confirm?: boolean } = {};
+    if (data.email) {
+      payload.email = data.email;
+      // Sem confirmação automática o membro ficaria sem acessar até validar o e-mail.
+      payload.email_confirm = true;
+    }
+    if (data.password) payload.password = data.password;
+
+    const { error } = await supabaseAdmin.auth.admin.updateUserById(data.user_id, payload);
+    if (error) throw new Error(error.message);
+
+    // Mantém a ficha em sincronia com o e-mail de acesso.
+    if (data.email) {
+      const { error: profileError } = await supabaseAdmin
+        .from("profiles")
+        .update({ email: data.email } as never)
+        .eq("id", data.user_id);
+      if (profileError) throw new Error(profileError.message);
+    }
+
+    return { ok: true };
+  });
