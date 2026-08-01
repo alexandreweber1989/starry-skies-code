@@ -253,6 +253,7 @@ function AgendaPage() {
             <TabsTrigger value="proximos">Próximos</TabsTrigger>
             <TabsTrigger value="meus">Meus eventos</TabsTrigger>
             <TabsTrigger value="pendentes">Pendentes</TabsTrigger>
+            <TabsTrigger value="calendario">Calendário</TabsTrigger>
             <TabsTrigger value="passados">Realizados</TabsTrigger>
           </TabsList>
 
