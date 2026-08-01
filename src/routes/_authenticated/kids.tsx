@@ -24,6 +24,7 @@ import {
 import { ChildDialog, EditChildButton } from "@/components/kids/child-dialog";
 import { SessionDialog, EditSessionButton } from "@/components/kids/session-dialog";
 import { CheckinBoard } from "@/components/kids/checkin-board";
+import { VisitorQueue } from "@/components/kids/visitor-queue";
 
 export const Route = createFileRoute("/_authenticated/kids")({
   head: () => ({
