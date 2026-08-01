@@ -105,10 +105,18 @@ export function AppShell({ children }: { children: ReactNode }) {
               <Church className="h-5 w-5 text-primary" />
               <span className="font-serif">IB Atos</span>
             </div>
-            <Button variant="ghost" size="sm" onClick={signOut}>
-              <LogOut className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-1">
+              <GlobalSearch />
+              <NotificationsBell />
+              <Button variant="ghost" size="sm" onClick={signOut}>
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </div>
           </header>
+          <div className="hidden lg:flex items-center justify-end gap-2 px-10 py-3 border-b border-border bg-card">
+            <GlobalSearch />
+            <NotificationsBell />
+          </div>
           <nav className="lg:hidden flex overflow-x-auto gap-1 px-2 py-2 border-b border-border bg-card">
             {nav.map((item) => {
               const active = pathname === item.to || pathname.startsWith(item.to + "/");
