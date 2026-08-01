@@ -66,7 +66,7 @@ export function RedeMembersDialog({ redeId, redeName }: { redeId: string; redeNa
     onSuccess: () => {
       toast.success("Pessoa adicionada à rede.");
       setUserId("");
-      void qc.invalidateQueries({ queryKey: ["rede-members", redeId] });
+      void qc.invalidateQueries({ queryKey: ["rede-members", redeId] }); void qc.invalidateQueries({ queryKey: ["group-stats"] });
       void qc.invalidateQueries({ queryKey: ["rede-members-count"] });
     },
     onError: (e: Error) => toast.error(e.message),
@@ -77,7 +77,10 @@ export function RedeMembersDialog({ redeId, redeName }: { redeId: string; redeNa
       const { error } = await supabase.from("rede_members").update({ role: value }).eq("id", id);
       if (error) throw error;
     },
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ["rede-members", redeId] }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["rede-members", redeId] });
+      void qc.invalidateQueries({ queryKey: ["group-stats"] });
+    },
     onError: (e: Error) => toast.error(e.message),
   });
 
@@ -87,7 +90,7 @@ export function RedeMembersDialog({ redeId, redeName }: { redeId: string; redeNa
       if (error) throw error;
     },
     onSuccess: () => {
-      void qc.invalidateQueries({ queryKey: ["rede-members", redeId] });
+      void qc.invalidateQueries({ queryKey: ["rede-members", redeId] }); void qc.invalidateQueries({ queryKey: ["group-stats"] });
       void qc.invalidateQueries({ queryKey: ["rede-members-count"] });
     },
     onError: (e: Error) => toast.error(e.message),
