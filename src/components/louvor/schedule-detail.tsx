@@ -8,6 +8,7 @@ import { useMusicians, useSundayHistory } from "@/lib/use-worship";
 import { useProfileOptions } from "@/lib/use-profiles";
 import { useAuth } from "@/lib/auth-context";
 import { GrupoDomingo } from "./grupo-domingo";
+import { StageMode } from "./stage-mode";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -145,11 +146,10 @@ export function ScheduleDetail({ scheduleId, canManage }: { scheduleId: string; 
 
   return (
     <div className="border-t border-border pt-6 mt-6 space-y-6">
-      {(canManage || isMinistro) && (
-        <div className="flex justify-end">
-          <GrupoDomingo scheduleId={scheduleId} />
-        </div>
-      )}
+      <div className="flex flex-wrap justify-end gap-2">
+        <StageMode setlist={setlist as any} />
+        {(canManage || isMinistro) && <GrupoDomingo scheduleId={scheduleId} />}
+      </div>
       <div className="grid lg:grid-cols-2 gap-8">
       <div className="space-y-3">
 
