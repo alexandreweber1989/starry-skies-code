@@ -10,7 +10,8 @@ export type AppRole =
   | "lider_mesa"
   | "membro"
   | "admin_livraria"
-  | "admin_cantina";
+  | "admin_cantina"
+  | "admin_kids";
 
 export interface RoleRow {
   role: AppRole;

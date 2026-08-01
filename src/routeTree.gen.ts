@@ -18,6 +18,7 @@ import { Route as AuthenticatedMesasRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedMembrosRouteImport } from './routes/_authenticated/membros'
 import { Route as AuthenticatedLouvorRouteImport } from './routes/_authenticated/louvor'
 import { Route as AuthenticatedLivrariaRouteImport } from './routes/_authenticated/livraria'
+import { Route as AuthenticatedKidsRouteImport } from './routes/_authenticated/kids'
 import { Route as AuthenticatedIgrejasRouteImport } from './routes/_authenticated/igrejas'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCantinaRouteImport } from './routes/_authenticated/cantina'
@@ -69,6 +70,11 @@ const AuthenticatedLivrariaRoute = AuthenticatedLivrariaRouteImport.update({
   path: '/livraria',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedKidsRoute = AuthenticatedKidsRouteImport.update({
+  id: '/kids',
+  path: '/kids',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedIgrejasRoute = AuthenticatedIgrejasRouteImport.update({
   id: '/igrejas',
   path: '/igrejas',
@@ -109,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/cantina': typeof AuthenticatedCantinaRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/igrejas': typeof AuthenticatedIgrejasRoute
+  '/kids': typeof AuthenticatedKidsRoute
   '/livraria': typeof AuthenticatedLivrariaRoute
   '/louvor': typeof AuthenticatedLouvorRoute
   '/membros': typeof AuthenticatedMembrosRoute
@@ -125,6 +132,7 @@ export interface FileRoutesByTo {
   '/cantina': typeof AuthenticatedCantinaRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/igrejas': typeof AuthenticatedIgrejasRoute
+  '/kids': typeof AuthenticatedKidsRoute
   '/livraria': typeof AuthenticatedLivrariaRoute
   '/louvor': typeof AuthenticatedLouvorRoute
   '/membros': typeof AuthenticatedMembrosRoute
@@ -143,6 +151,7 @@ export interface FileRoutesById {
   '/_authenticated/cantina': typeof AuthenticatedCantinaRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/igrejas': typeof AuthenticatedIgrejasRoute
+  '/_authenticated/kids': typeof AuthenticatedKidsRoute
   '/_authenticated/livraria': typeof AuthenticatedLivrariaRoute
   '/_authenticated/louvor': typeof AuthenticatedLouvorRoute
   '/_authenticated/membros': typeof AuthenticatedMembrosRoute
@@ -161,6 +170,7 @@ export interface FileRouteTypes {
     | '/cantina'
     | '/dashboard'
     | '/igrejas'
+    | '/kids'
     | '/livraria'
     | '/louvor'
     | '/membros'
@@ -177,6 +187,7 @@ export interface FileRouteTypes {
     | '/cantina'
     | '/dashboard'
     | '/igrejas'
+    | '/kids'
     | '/livraria'
     | '/louvor'
     | '/membros'
@@ -194,6 +205,7 @@ export interface FileRouteTypes {
     | '/_authenticated/cantina'
     | '/_authenticated/dashboard'
     | '/_authenticated/igrejas'
+    | '/_authenticated/kids'
     | '/_authenticated/livraria'
     | '/_authenticated/louvor'
     | '/_authenticated/membros'
@@ -275,6 +287,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLivrariaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/kids': {
+      id: '/_authenticated/kids'
+      path: '/kids'
+      fullPath: '/kids'
+      preLoaderRoute: typeof AuthenticatedKidsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/igrejas': {
       id: '/_authenticated/igrejas'
       path: '/igrejas'
@@ -325,6 +344,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCantinaRoute: typeof AuthenticatedCantinaRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedIgrejasRoute: typeof AuthenticatedIgrejasRoute
+  AuthenticatedKidsRoute: typeof AuthenticatedKidsRoute
   AuthenticatedLivrariaRoute: typeof AuthenticatedLivrariaRoute
   AuthenticatedLouvorRoute: typeof AuthenticatedLouvorRoute
   AuthenticatedMembrosRoute: typeof AuthenticatedMembrosRoute
@@ -340,6 +360,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCantinaRoute: AuthenticatedCantinaRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedIgrejasRoute: AuthenticatedIgrejasRoute,
+  AuthenticatedKidsRoute: AuthenticatedKidsRoute,
   AuthenticatedLivrariaRoute: AuthenticatedLivrariaRoute,
   AuthenticatedLouvorRoute: AuthenticatedLouvorRoute,
   AuthenticatedMembrosRoute: AuthenticatedMembrosRoute,
