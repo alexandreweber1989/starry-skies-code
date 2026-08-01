@@ -19,6 +19,8 @@ import type { ReactNode } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { PageTransition } from "@/components/page-transition";
+import { GlobalSearch } from "@/components/global-search";
+import { NotificationsBell } from "@/components/notifications-bell";
 
 const nav = [
   { to: "/dashboard", label: "Painel", icon: LayoutDashboard },
