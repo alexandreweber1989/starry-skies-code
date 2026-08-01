@@ -102,9 +102,11 @@ function KidsPage() {
           <Tabs defaultValue="checkin">
             <TabsList>
               <TabsTrigger value="checkin">Check-in do culto</TabsTrigger>
+              <TabsTrigger value="visitantes">Visitantes</TabsTrigger>
               <TabsTrigger value="criancas">Crianças ({activeChildren.length})</TabsTrigger>
               <TabsTrigger value="sessoes">Sessões</TabsTrigger>
             </TabsList>
+
 
             <TabsContent value="checkin" className="mt-6 space-y-6">
               {!activeSession ? (
