@@ -113,9 +113,7 @@ function Landing() {
                 <div className="bg-primary/5 border border-primary/10 rounded-lg p-5 max-w-xl">
                   <p className="text-sm font-medium text-primary uppercase tracking-wider mb-1">Próximo Passo:</p>
                   <p className="text-foreground font-serif text-lg leading-snug">
-                    Próximos passos sugeridos:
-                    <br /><br />
-                    • execute então esses blocos
+                    .
                   </p>
                 </div>
               </div>
