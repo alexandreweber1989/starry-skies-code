@@ -44,7 +44,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="grid min-h-screen lg:grid-cols-[280px_1fr]">
-        <aside className="hidden lg:flex flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border shadow-[1px_0_0_0_rgba(0,0,0,0.02)]">
+        <aside className="hidden lg:flex flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border">
           <div className="px-6 py-8 border-b border-sidebar-border">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-sm bg-sidebar-primary/20 flex items-center justify-center">
@@ -66,7 +66,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <Link
                   key={item.to}
                   to={item.to}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-none text-[11px] uppercase tracking-widest transition-all ${
+                  className={`flex items-center gap-3 px-3 py-2 rounded-sm text-sm transition-colors ${
                     active
                       ? "bg-sidebar-accent text-sidebar-accent-foreground"
                       : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"

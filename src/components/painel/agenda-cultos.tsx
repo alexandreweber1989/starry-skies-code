@@ -52,7 +52,7 @@ export function AgendaCultos() {
       <ol className="divide-y divide-border">
         {rows.map((s) => (
           <li key={s.id} className="flex flex-wrap items-center gap-4 py-4 first:pt-0 last:pb-0">
-            <div className="w-16 shrink-0 text-center border border-border rounded-none py-2 bg-muted/30">
+            <div className="w-16 shrink-0 text-center border border-border rounded-sm py-2">
               <div className="font-serif text-2xl leading-none">
                 {s.event_date.slice(8, 10)}
               </div>

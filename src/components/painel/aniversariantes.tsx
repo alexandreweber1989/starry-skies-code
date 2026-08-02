@@ -54,11 +54,11 @@ export function Aniversariantes() {
           return (
             <li
               key={p.id}
-              className={`flex items-center gap-3 border rounded-none p-3 transition-all hover:border-foreground/20 ${
-                hoje ? "border-primary bg-primary/5 shadow-none" : "border-border shadow-none"
+              className={`flex items-center gap-3 border rounded-sm p-3 ${
+                hoje ? "border-primary" : "border-border"
               }`}
             >
-              <Initials text={initialsOf(p.full_name)} className="rounded-none" />
+              <Initials text={initialsOf(p.full_name)} />
               <div className="min-w-0 flex-1">
                 <div className="text-sm truncate">{p.full_name}</div>
                 <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">

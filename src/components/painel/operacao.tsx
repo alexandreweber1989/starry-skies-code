@@ -76,7 +76,7 @@ export function Operacao() {
           {data?.pedidos.map((o) => (
             <li
               key={o.id}
-              className="flex items-center justify-between border border-border rounded-none px-3 py-2 hover:border-foreground/20 transition-all shadow-none"
+              className="flex items-center justify-between border border-border rounded-sm px-3 py-2"
             >
               <span className="font-mono text-xs tracking-wider flex items-center gap-2">
                 <BookOpen className="h-3 w-3 text-primary" />

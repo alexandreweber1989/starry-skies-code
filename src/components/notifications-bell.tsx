@@ -70,7 +70,7 @@ export function NotificationsBell() {
         <Button variant="ghost" size="sm" className="relative" aria-label="Notificações">
           <Bell className="h-4 w-4" />
           {total > 0 && (
-            <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-none bg-primary text-primary-foreground font-mono text-[9px] flex items-center justify-center border border-background">
+            <span className="absolute -top-0.5 -right-0.5 min-w-4 h-4 px-1 rounded-full bg-primary text-primary-foreground font-mono text-[10px] flex items-center justify-center">
               {total > 9 ? "9+" : total}
             </span>
           )}

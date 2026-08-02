@@ -60,7 +60,7 @@ function Landing() {
       <header className="border-b border-border sticky top-0 z-40 bg-background/85 backdrop-blur">
         <div className="max-w-7xl mx-auto px-6 lg:px-10 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="h-8 w-8 rounded-none bg-foreground text-background grid place-items-center">
+            <div className="h-8 w-8 rounded-md bg-foreground text-background grid place-items-center">
               <Church className="h-4 w-4" />
             </div>
             <div>
@@ -110,9 +110,9 @@ function Landing() {
                   uma igreja gerada no coração de um homem através da visão de Deus,
                   edificada sobre a rocha e família de famílias.
                 </p>
-                <div className="bg-primary/5 border border-primary/10 rounded-none p-5 max-w-xl">
+                <div className="bg-primary/5 border border-primary/10 rounded-lg p-5 max-w-xl">
                   <p className="text-sm font-medium text-primary uppercase tracking-wider mb-1">Próximo Passo:</p>
-                  <p className="text-foreground font-serif text-lg leading-snug italic">
+                  <p className="text-foreground font-serif text-lg leading-snug">
                     .
                   </p>
                 </div>

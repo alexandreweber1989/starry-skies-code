@@ -39,7 +39,7 @@ export function QuickActions() {
               to={action.to}
               onClick={() => setOpen(false)}
               style={{ animationDelay: `${i * 30}ms` }}
-              className="animate-in fade-in slide-in-from-bottom-2 flex items-center gap-2 rounded-none border border-border bg-card px-3 py-2 text-[10px] uppercase tracking-widest shadow-none hover:border-foreground transition-all"
+              className="animate-in fade-in slide-in-from-bottom-2 flex items-center gap-2 rounded-sm border border-border bg-card px-3 py-2 text-sm shadow-sm hover:border-foreground transition-colors"
             >
               <Icon className="h-4 w-4 text-primary" />
               {action.label}
@@ -51,7 +51,7 @@ export function QuickActions() {
         aria-label={open ? "Fechar ações rápidas" : "Abrir ações rápidas"}
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="h-12 w-12 grid place-items-center rounded-none bg-primary text-primary-foreground shadow-none hover:opacity-90 active:scale-95 transition-all"
+        className="h-12 w-12 grid place-items-center rounded-sm bg-primary text-primary-foreground shadow-lg hover:opacity-90 transition-opacity"
       >
         {open ? <X className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
       </button>
