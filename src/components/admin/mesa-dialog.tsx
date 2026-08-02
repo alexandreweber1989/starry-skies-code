@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Pencil, Plus, Trash2, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfileOptions } from "@/lib/use-profiles";
 import { ChurchSelect } from "./church-select";
+import { MemberPicker } from "./member-picker";
+
 
 import {
   CHURCH_FUNCTIONS,
@@ -68,6 +70,8 @@ export function MesaDialog({
   const [time, setTime] = useState(mesa?.meeting_time ?? "");
   const [location, setLocation] = useState(mesa?.meeting_location ?? "");
   const [description, setDescription] = useState(mesa?.description ?? "");
+  const [leaders, setLeaders] = useState<string[]>([]);
+  const { data: profiles } = useProfileOptions();
   const qc = useQueryClient();
 
   const { data: redes } = useQuery({
@@ -82,6 +86,24 @@ export function MesaDialog({
     },
   });
 
+  // Responsáveis atuais (funções diferentes de "membro") — só no modo edição.
+  const { data: currentLeaders } = useQuery({
+    queryKey: ["mesa-leaders", mesa?.id],
+    enabled: open && isEdit,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("mesa_members")
+        .select("user_id, role")
+        .eq("mesa_id", mesa!.id);
+      if (error) throw error;
+      return (data ?? []).filter((r) => r.role !== "membro").map((r) => r.user_id);
+    },
+  });
+
+  useEffect(() => {
+    if (open && isEdit && currentLeaders) setLeaders(currentLeaders);
+  }, [open, isEdit, currentLeaders]);
+
   function resetToInitial() {
     setName(mesa?.name ?? "");
     setRede(mesa?.rede_id ?? redeId ?? "");
@@ -90,6 +112,7 @@ export function MesaDialog({
     setTime(mesa?.meeting_time ?? "");
     setLocation(mesa?.meeting_location ?? "");
     setDescription(mesa?.description ?? "");
+    setLeaders(isEdit ? (currentLeaders ?? []) : []);
   }
 
   const save = useMutation({
@@ -110,10 +133,40 @@ export function MesaDialog({
         meeting_location: location.trim() || null,
         description: description.trim() || null,
       };
-      const { error } = isEdit
-        ? await supabase.from("mesas").update(payload).eq("id", mesa!.id)
-        : await supabase.from("mesas").insert(payload);
-      if (error) throw error;
+
+      let mesaId = mesa?.id;
+      if (isEdit) {
+        const { error } = await supabase.from("mesas").update(payload).eq("id", mesa!.id);
+        if (error) throw error;
+      } else {
+        const { data, error } = await supabase.from("mesas").insert(payload).select("id").single();
+        if (error) throw error;
+        mesaId = data?.id;
+      }
+      if (!mesaId) return;
+
+      // Sincroniza responsáveis: remove quem saiu, insere quem entrou.
+      const previous = isEdit ? (currentLeaders ?? []) : [];
+      const removed = previous.filter((id) => !leaders.includes(id));
+      const added = leaders.filter((id) => !previous.includes(id));
+
+      if (removed.length > 0) {
+        const { error } = await supabase
+          .from("mesa_members")
+          .delete()
+          .eq("mesa_id", mesaId)
+          .in("user_id", removed);
+        if (error) throw error;
+      }
+      if (added.length > 0) {
+        const rows = added.map((userId) => {
+          const fn = profiles?.find((p) => p.id === userId)?.church_function;
+          const role = fn && fn !== "membro" ? fn : "lider";
+          return { mesa_id: mesaId!, user_id: userId, role: role as never };
+        });
+        const { error } = await supabase.from("mesa_members").insert(rows);
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       toast.success(isEdit ? "Mesa atualizada." : "Mesa criada.");
@@ -124,11 +177,15 @@ export function MesaDialog({
         setTime("");
         setLocation("");
         setDescription("");
+        setLeaders([]);
       }
       void qc.invalidateQueries({ queryKey: ["mesas-full"] });
       void qc.invalidateQueries({ queryKey: ["mesas-by-rede"] });
       void qc.invalidateQueries({ queryKey: ["redes-full"] });
       void qc.invalidateQueries({ queryKey: ["mesas"] });
+      void qc.invalidateQueries({ queryKey: ["mesa-members", mesa?.id] });
+      void qc.invalidateQueries({ queryKey: ["mesa-leaders", mesa?.id] });
+      void qc.invalidateQueries({ queryKey: ["group-stats"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -169,6 +226,16 @@ export function MesaDialog({
               </SelectContent>
             </Select>
           </div>
+
+          <div className="space-y-2">
+            <Label>Responsáveis pela mesa</Label>
+            <MemberPicker value={leaders} onChange={setLeaders} />
+            <p className="text-xs text-muted-foreground">
+              Geralmente um casal. Selecione uma ou mais pessoas da lista de membros.
+            </p>
+          </div>
+
+
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
