@@ -26,7 +26,7 @@ export const CHURCH_FUNCTION_HINT: Record<string, string> = {
 
 /**
  * Prefixo de tratamento conforme a função eclesiástica.
- * Pastor varia por sexo (Pr. / Pra.); membro e demais funções ficam sem prefixo.
+ * Pastor varia por sexo (Pr. / Pra.); apascentador e líder têm prefixos fixos.
  */
 export function churchFunctionPrefix(
   churchFunction?: string | null,

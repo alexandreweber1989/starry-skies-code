@@ -76,9 +76,9 @@ export function MemberRolesDialog({ userId, fullName }: { userId: string; fullNa
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="font-serif text-2xl">Permissões de acesso</DialogTitle>
+          <DialogTitle className="font-serif text-2xl">Permissões e Liderança</DialogTitle>
           <DialogDescription>
-            Defina o que {fullName} pode administrar na plataforma.
+            Defina o nível de acesso e os grupos que {fullName} lidera.
           </DialogDescription>
         </DialogHeader>
 
