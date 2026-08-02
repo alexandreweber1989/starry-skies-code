@@ -227,6 +227,16 @@ export function MesaDialog({
             </Select>
           </div>
 
+          <div className="space-y-2">
+            <Label>Responsáveis pela mesa</Label>
+            <MemberPicker value={leaders} onChange={setLeaders} />
+            <p className="text-xs text-muted-foreground">
+              Geralmente um casal. Selecione uma ou mais pessoas da lista de membros.
+            </p>
+          </div>
+
+
+
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
               <Label>Dia</Label>
