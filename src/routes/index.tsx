@@ -104,12 +104,19 @@ function Landing() {
               sobre a rocha.
             </h1>
             <div className="mt-12 grid lg:grid-cols-12 gap-10 items-end">
-              <p className="lg:col-span-6 text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
-                Somos a <span className="text-foreground font-medium">Igreja Batista Atos</span> —
-                uma igreja gerada no coração de um homem através da visão de Deus,
-                que começou numa sala e numa Kombi branca, e hoje é família de famílias
-                edificada sobre cinco pilares.
-              </p>
+              <div className="lg:col-span-6 space-y-4">
+                <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
+                  Somos a <span className="text-foreground font-medium">Igreja Batista Atos</span> —
+                  uma igreja gerada no coração de um homem através da visão de Deus,
+                  edificada sobre a rocha e família de famílias.
+                </p>
+                <div className="bg-primary/5 border border-primary/10 rounded-lg p-5 max-w-xl">
+                  <p className="text-sm font-medium text-primary uppercase tracking-wider mb-1">Próximo Passo:</p>
+                  <p className="text-foreground font-serif text-lg leading-snug">
+                    Prosseguir com as melhorias no módulo Kids mantendo a identidade visual da landing page.
+                  </p>
+                </div>
+              </div>
               <div className="lg:col-span-6 flex flex-col items-start lg:items-end gap-6">
                 <div className="flex flex-wrap gap-3">
                   <Button asChild size="lg" className="rounded-full h-12 px-6">
