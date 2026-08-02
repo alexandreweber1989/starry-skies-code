@@ -1253,7 +1253,7 @@ export type Database = {
           gifts?: string | null
           has_children?: boolean
           health_notes?: string | null
-          id: string
+          id?: string
           is_baptized?: boolean | null
           marital_status?: string | null
           member_since?: string | null
