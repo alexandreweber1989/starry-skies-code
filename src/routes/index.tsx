@@ -115,11 +115,7 @@ function Landing() {
                   <p className="text-foreground font-serif text-lg leading-snug">
                     Próximos passos sugeridos:
                     <br /><br />
-                    • Iniciar a criação da tabela de crianças e responsáveis no banco de dados.
-                    <br /><br />
-                    • Desenvolver o componente de formulário para cadastro seguro de pais.
-                    <br /><br />
-                    • Configurar as políticas de RLS para garantir que apenas responsáveis vejam seus respectivos dependentes.
+                    • execute então esses blocos
                   </p>
                 </div>
               </div>
