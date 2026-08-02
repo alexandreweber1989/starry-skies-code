@@ -52,13 +52,35 @@ export function MinistryDialog({
   const [churchId, setChurchId] = useState(ministry?.church_id ?? "");
   const [description, setDescription] = useState(ministry?.description ?? "");
   const [meetingInfo, setMeetingInfo] = useState(ministry?.meeting_info ?? "");
+  const [leaders, setLeaders] = useState<string[]>([]);
   const qc = useQueryClient();
+
+  // Responsáveis atuais do ministério (função "Responsável") — só no modo edição.
+  const { data: currentLeaders } = useQuery({
+    queryKey: ["ministry-leaders", ministry?.id],
+    enabled: open && isEdit,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("ministry_members")
+        .select("user_id, function_name")
+        .eq("ministry_id", ministry!.id);
+      if (error) throw error;
+      return (data ?? [])
+        .filter((r) => (r.function_name ?? "").toLowerCase().startsWith("respons"))
+        .map((r) => r.user_id);
+    },
+  });
+
+  useEffect(() => {
+    if (open && isEdit && currentLeaders) setLeaders(currentLeaders);
+  }, [open, isEdit, currentLeaders]);
 
   function resetToInitial() {
     setName(ministry?.name ?? "");
     setChurchId(ministry?.church_id ?? "");
     setDescription(ministry?.description ?? "");
     setMeetingInfo(ministry?.meeting_info ?? "");
+    setLeaders(isEdit ? (currentLeaders ?? []) : []);
   }
 
   const save = useMutation({
@@ -72,10 +94,44 @@ export function MinistryDialog({
         description: description.trim() || null,
         meeting_info: meetingInfo.trim() || null,
       };
-      const { error } = isEdit
-        ? await supabase.from("ministries").update(payload).eq("id", ministry!.id)
-        : await supabase.from("ministries").insert(payload);
-      if (error) throw error;
+
+      let ministryId = ministry?.id;
+      if (isEdit) {
+        const { error } = await supabase.from("ministries").update(payload).eq("id", ministry!.id);
+        if (error) throw error;
+      } else {
+        const { data, error } = await supabase
+          .from("ministries")
+          .insert(payload)
+          .select("id")
+          .single();
+        if (error) throw error;
+        ministryId = data?.id;
+      }
+      if (!ministryId) return;
+
+      // Sincroniza responsáveis: remove quem saiu, insere quem entrou.
+      const previous = isEdit ? (currentLeaders ?? []) : [];
+      const removed = previous.filter((id) => !leaders.includes(id));
+      const added = leaders.filter((id) => !previous.includes(id));
+
+      if (removed.length > 0) {
+        const { error } = await supabase
+          .from("ministry_members")
+          .delete()
+          .eq("ministry_id", ministryId)
+          .in("user_id", removed);
+        if (error) throw error;
+      }
+      if (added.length > 0) {
+        const rows = added.map((userId) => ({
+          ministry_id: ministryId!,
+          user_id: userId,
+          function_name: "Responsável",
+        }));
+        const { error } = await supabase.from("ministry_members").insert(rows);
+        if (error) throw error;
+      }
     },
 
     onSuccess: () => {
@@ -85,9 +141,12 @@ export function MinistryDialog({
         setName("");
         setDescription("");
         setMeetingInfo("");
+        setLeaders([]);
       }
       void qc.invalidateQueries({ queryKey: ["ministries"] });
       void qc.invalidateQueries({ queryKey: ["ministry"] });
+      void qc.invalidateQueries({ queryKey: ["ministry-members", ministry?.id] });
+      void qc.invalidateQueries({ queryKey: ["ministry-leaders", ministry?.id] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
