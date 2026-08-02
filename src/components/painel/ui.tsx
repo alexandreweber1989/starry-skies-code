@@ -87,7 +87,7 @@ export function Initials({ text, className }: { text: string; className?: string
   return (
     <div
       className={cn(
-        "h-9 w-9 shrink-0 rounded-sm border border-border bg-muted flex items-center justify-center font-mono text-[11px] tracking-wider",
+        "h-9 w-9 shrink-0 rounded-none border border-border bg-muted flex items-center justify-center font-mono text-[11px] tracking-wider",
         className,
       )}
     >

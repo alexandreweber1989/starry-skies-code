@@ -74,7 +74,7 @@ export function MinhaSemana() {
         {proximas.map((a) => (
           <div
             key={a.id}
-            className="flex flex-wrap items-center justify-between gap-4 border border-border rounded-sm p-4"
+            className="flex flex-wrap items-center justify-between gap-4 border border-border rounded-none p-4 hover:border-foreground/20 transition-all shadow-none"
           >
             <div className="min-w-0">
               <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
