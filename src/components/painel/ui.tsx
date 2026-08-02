@@ -19,7 +19,7 @@ export function PanelSection({
   children: ReactNode;
 }) {
   return (
-    <section className={cn("border border-border bg-card rounded-sm", className)}>
+    <section className={cn("border border-border bg-card rounded-none shadow-none transition-all hover:border-foreground/20", className)}>
       <header className="flex flex-wrap items-end justify-between gap-3 px-6 pt-6 pb-4 border-b border-border">
         <div>
           <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
@@ -65,7 +65,7 @@ export function StatTile({
   );
 
   const base =
-    "group border border-border bg-card p-6 rounded-sm transition-colors block";
+    "group border border-border bg-card p-6 rounded-none transition-all block shadow-none";
 
   if (to) {
     return (
@@ -87,7 +87,7 @@ export function Initials({ text, className }: { text: string; className?: string
   return (
     <div
       className={cn(
-        "h-9 w-9 shrink-0 rounded-sm border border-border bg-muted flex items-center justify-center font-mono text-[11px] tracking-wider",
+        "h-9 w-9 shrink-0 rounded-none border border-border bg-muted flex items-center justify-center font-mono text-[11px] tracking-wider",
         className,
       )}
     >
