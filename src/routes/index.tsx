@@ -98,8 +98,10 @@ function Landing() {
               <span className="h-px w-10 bg-foreground/40" />
               Est. 2014 · Ponta Grossa / PR
             </div>
-            <h1 className="font-serif font-semibold tracking-[-0.03em] text-[8vw] md:text-[6vw] lg:text-[5rem] leading-[1.1] uppercase">
-              FOCAR NO MÓDULO DO KIDS PRA FAZER DAR CERTO A PLATAFORMA PARA OS PAIS CADASTRAREM E DEIXAREM SUAS CRIANÇAS NO KIDS
+            <h1 className="font-serif font-semibold tracking-[-0.03em] text-[15vw] md:text-[10vw] lg:text-[9rem] leading-[0.88] uppercase">
+              Uma casa <br />
+              <span className="italic font-normal">construída</span> <br />
+              sobre a rocha.
             </h1>
             <div className="mt-12 grid lg:grid-cols-12 gap-10 items-end">
               <p className="lg:col-span-6 text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
