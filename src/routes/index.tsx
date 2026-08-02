@@ -113,7 +113,13 @@ function Landing() {
                 <div className="bg-primary/5 border border-primary/10 rounded-lg p-5 max-w-xl">
                   <p className="text-sm font-medium text-primary uppercase tracking-wider mb-1">Próximo Passo:</p>
                   <p className="text-foreground font-serif text-lg leading-snug">
-                    siga para os próximos passos sugeridos
+                    Próximos passos sugeridos:
+                    <br /><br />
+                    • Mapear as funcionalidades prioritárias do módulo Kids (check-in/check-out).
+                    <br /><br />
+                    • Definir os critérios de segurança para o cadastro de responsáveis.
+                    <br /><br />
+                    • Iniciar a prototipação da interface de acompanhamento em tempo real para os pais.
                   </p>
                 </div>
               </div>
