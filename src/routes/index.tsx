@@ -113,7 +113,7 @@ function Landing() {
                 <div className="bg-primary/5 border border-primary/10 rounded-lg p-5 max-w-xl">
                   <p className="text-sm font-medium text-primary uppercase tracking-wider mb-1">Próximo Passo:</p>
                   <p className="text-foreground font-serif text-lg leading-snug">
-                    .
+                    preciso como admin ter acesso a tudo e edição também total do site
                   </p>
                 </div>
               </div>
