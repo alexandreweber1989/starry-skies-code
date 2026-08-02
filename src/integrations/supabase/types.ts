@@ -1208,6 +1208,9 @@ export type Database = {
           membership_end_date: string | null
           membership_status: string
           membership_type: string | null
+          ministerial_status:
+            | Database["public"]["Enums"]["ministerial_status"]
+            | null
           mother_name: string | null
           neighborhood: string | null
           notes: string | null
@@ -1260,6 +1263,9 @@ export type Database = {
           membership_end_date?: string | null
           membership_status?: string
           membership_type?: string | null
+          ministerial_status?:
+            | Database["public"]["Enums"]["ministerial_status"]
+            | null
           mother_name?: string | null
           neighborhood?: string | null
           notes?: string | null
@@ -1312,6 +1318,9 @@ export type Database = {
           membership_end_date?: string | null
           membership_status?: string
           membership_type?: string | null
+          ministerial_status?:
+            | Database["public"]["Enums"]["ministerial_status"]
+            | null
           mother_name?: string | null
           neighborhood?: string | null
           notes?: string | null
@@ -1892,6 +1901,7 @@ export type Database = {
         | "avo"
         | "neto"
         | "outro"
+      ministerial_status: "membro" | "lider" | "apasc" | "pra" | "pr"
       rsvp_status: "vou" | "nao_vou" | "talvez"
       worship_assignment_status: "pendente" | "confirmado" | "recusado"
       worship_schedule_status: "rascunho" | "publicada" | "concluida"
@@ -2060,6 +2070,7 @@ export const Constants = {
         "neto",
         "outro",
       ],
+      ministerial_status: ["membro", "lider", "apasc", "pra", "pr"],
       rsvp_status: ["vou", "nao_vou", "talvez"],
       worship_assignment_status: ["pendente", "confirmado", "recusado"],
       worship_schedule_status: ["rascunho", "publicada", "concluida"],

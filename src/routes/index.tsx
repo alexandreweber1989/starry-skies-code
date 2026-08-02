@@ -113,7 +113,7 @@ function Landing() {
                 <div className="bg-primary/5 border border-primary/10 rounded-lg p-5 max-w-xl">
                   <p className="text-sm font-medium text-primary uppercase tracking-wider mb-1">Próximo Passo:</p>
                   <p className="text-foreground font-serif text-lg leading-snug">
-                    o usuário alew123@gmail.com é usuário admin da plataforma inteira
+                    preciso modificar o status de membro desse pessoal, como promover a pastor ("Pr.") e pastora ("Pra."), Apascentador ("Apasc.") ou Apascentadora ("Apasc."), Líder ("Líder"). preciso cadastrar alguns membros com essas nomenclaturas que serão quem vai estar a frente de Mesas, Redes ou Ministérios
                   </p>
                 </div>
               </div>
