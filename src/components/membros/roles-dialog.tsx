@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck, Users } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { updateMemberRoles } from "@/lib/members.functions";
+import { updateMemberLeadership } from "@/lib/leadership.functions";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -15,6 +17,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { MultiSelect } from "@/components/ui/multi-select";
 
 type Role = "admin_geral" | "admin_livraria" | "admin_cantina" | "admin_kids" | "membro";
 
@@ -31,7 +34,56 @@ export function MemberRolesDialog({ userId, fullName }: { userId: string; fullNa
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<Role[]>([]);
   const qc = useQueryClient();
-  const save = useServerFn(updateMemberRoles);
+  const saveRoles = useServerFn(updateMemberRoles);
+  const saveLeadership = useServerFn(updateMemberLeadership);
+
+  const [ministries, setMinistries] = useState<string[]>([]);
+  const [redes, setRedes] = useState<string[]>([]);
+  const [mesas, setMesas] = useState<string[]>([]);
+
+  // Carrega grupos disponíveis
+  const { data: options } = useQuery({
+    queryKey: ["group-options"],
+    enabled: open,
+    queryFn: async () => {
+      const [m, r, me] = await Promise.all([
+        supabase.from("ministries").select("id, name").order("name"),
+        supabase.from("redes").select("id, name").order("name"),
+        supabase.from("mesas").select("id, name").order("name"),
+      ]);
+      return {
+        ministries: (m.data ?? []).map(x => ({ value: x.id, label: x.name })),
+        redes: (r.data ?? []).map(x => ({ value: x.id, label: x.name })),
+        mesas: (me.data ?? []).map(x => ({ value: x.id, label: x.name })),
+      };
+    }
+  });
+
+  // Carrega lideranças atuais
+  const { data: leadership } = useQuery({
+    queryKey: ["member-leadership", userId],
+    enabled: open,
+    queryFn: async () => {
+      const [m, r, me] = await Promise.all([
+        supabase.from("ministry_members").select("ministry_id").eq("user_id", userId),
+        supabase.from("rede_members").select("rede_id").eq("user_id", userId),
+        supabase.from("mesa_members").select("mesa_id").eq("user_id", userId),
+      ]);
+      return {
+        ministries: (m.data ?? []).map(x => x.ministry_id),
+        redes: (r.data ?? []).map(x => x.rede_id),
+        mesas: (me.data ?? []).map(x => x.mesa_id),
+      };
+    }
+  });
+
+  useEffect(() => {
+    if (leadership) {
+      setMinistries(leadership.ministries);
+      setRedes(leadership.redes);
+      setMesas(leadership.mesas);
+    }
+  }, [leadership]);
 
   const { data: current } = useQuery({
     queryKey: ["member-roles", userId],
@@ -54,10 +106,16 @@ export function MemberRolesDialog({ userId, fullName }: { userId: string; fullNa
   }, [current]);
 
   const mutation = useMutation({
-    mutationFn: async () => save({ data: { user_id: userId, roles: selected } }),
+    mutationFn: async () => {
+      await Promise.all([
+        saveRoles({ data: { user_id: userId, roles: selected } }),
+        saveLeadership({ data: { user_id: userId, ministries, redes, mesas } }),
+      ]);
+    },
     onSuccess: () => {
-      toast.success("Permissões atualizadas.");
+      toast.success("Permissões e lideranças atualizadas.");
       qc.invalidateQueries({ queryKey: ["member-roles", userId] });
+      qc.invalidateQueries({ queryKey: ["member-leadership", userId] });
       qc.invalidateQueries({ queryKey: ["member-links", userId] });
       setOpen(false);
     },
@@ -102,9 +160,48 @@ export function MemberRolesDialog({ userId, fullName }: { userId: string; fullNa
           })}
         </div>
 
-        <DialogFooter>
+        <div className="mt-6 border-t pt-6 space-y-4">
+          <div className="flex items-center gap-2 mb-2 text-primary">
+            <Users className="h-5 w-5" />
+            <h3 className="font-serif text-lg">Liderança de Grupos</h3>
+          </div>
+          
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Ministérios que lidera</Label>
+              <MultiSelect
+                options={options?.ministries ?? []}
+                value={ministries}
+                onValueChange={setMinistries}
+                placeholder="Selecione os ministérios..."
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Redes que lidera</Label>
+              <MultiSelect
+                options={options?.redes ?? []}
+                value={redes}
+                onValueChange={setRedes}
+                placeholder="Selecione as redes..."
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Mesas que lidera</Label>
+              <MultiSelect
+                options={options?.mesas ?? []}
+                value={mesas}
+                onValueChange={setMesas}
+                placeholder="Selecione as mesas..."
+              />
+            </div>
+          </div>
+        </div>
+
+        <DialogFooter className="mt-6">
           <Button onClick={() => mutation.mutate()} disabled={mutation.isPending}>
-            {mutation.isPending ? "Salvando..." : "Salvar permissões"}
+            {mutation.isPending ? "Salvando..." : "Salvar alterações"}
           </Button>
         </DialogFooter>
       </DialogContent>
