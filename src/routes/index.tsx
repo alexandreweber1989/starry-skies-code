@@ -113,7 +113,7 @@ function Landing() {
                 <div className="bg-primary/5 border border-primary/10 rounded-lg p-5 max-w-xl">
                   <p className="text-sm font-medium text-primary uppercase tracking-wider mb-1">Próximo Passo:</p>
                   <p className="text-foreground font-serif text-lg leading-snug">
-                    Prosseguir com as melhorias no módulo Kids mantendo a identidade visual da landing page.
+                    siga para os próximos passos sugeridos
                   </p>
                 </div>
               </div>
