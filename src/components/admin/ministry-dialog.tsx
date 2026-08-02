@@ -180,6 +180,16 @@ export function MinistryDialog({
           <ChurchSelect value={churchId} onChange={setChurchId} />
 
           <div className="space-y-2">
+            <Label>Responsáveis pelo ministério</Label>
+            <MemberPicker value={leaders} onChange={setLeaders} />
+            <p className="text-xs text-muted-foreground">
+              Geralmente um casal. Selecione uma ou mais pessoas da lista de membros.
+            </p>
+          </div>
+
+
+
+          <div className="space-y-2">
             <Label>Descrição</Label>
             <Textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)} />
           </div>
