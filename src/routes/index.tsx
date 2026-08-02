@@ -115,11 +115,11 @@ function Landing() {
                   <p className="text-foreground font-serif text-lg leading-snug">
                     Próximos passos sugeridos:
                     <br /><br />
-                    • Mapear as funcionalidades prioritárias do módulo Kids (check-in/check-out).
+                    • Iniciar a criação da tabela de crianças e responsáveis no banco de dados.
                     <br /><br />
-                    • Definir os critérios de segurança para o cadastro de responsáveis.
+                    • Desenvolver o componente de formulário para cadastro seguro de pais.
                     <br /><br />
-                    • Iniciar a prototipação da interface de acompanhamento em tempo real para os pais.
+                    • Configurar as políticas de RLS para garantir que apenas responsáveis vejam seus respectivos dependentes.
                   </p>
                 </div>
               </div>
