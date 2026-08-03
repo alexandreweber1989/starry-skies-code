@@ -10,12 +10,17 @@ import {
   CHURCH_FUNCTION_HINT,
   CHURCH_FUNCTION_LABEL,
   GENDERS,
-  MARITAL_STATUS,
-  MEMBERSHIP_TYPES,
   displayMemberName,
   type ChurchFunction,
 } from "@/lib/igreja";
-import { BLOOD_TYPES, COURSE_OPTIONS, EDUCATION_LEVELS, MEMBERSHIP_STATUS } from "@/lib/membros";
+import {
+  BLOOD_TYPES,
+  COURSE_OPTIONS,
+  EDUCATION_LEVELS,
+  MEMBERSHIP_STATUS,
+  MARITAL_STATUS,
+  MEMBERSHIP_TYPES,
+} from "@/lib/membros";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -622,6 +627,7 @@ export function MemberWizardDialog() {
                 <Input
                   type="number"
                   min={0}
+                  max={30}
                   className="max-w-[140px]"
                   value={s.children_count}
                   onChange={(e) => up({ children_count: e.target.value })}

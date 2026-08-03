@@ -106,7 +106,7 @@ function Dashboard() {
     },
   });
 
-  const nome = (user?.user_metadata?.full_name as string | undefined) ?? user?.email?.split("@")[0];
+  const nome = user?.user_metadata?.["full_name"] || user?.email?.split("@")[0];
 
   return (
     <>
