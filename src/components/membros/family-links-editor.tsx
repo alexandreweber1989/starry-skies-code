@@ -58,7 +58,7 @@ export function FamilyLinksEditor({ personId, canEdit }: { personId: string; can
       if (!selected) throw new Error("Escolha a pessoa que será vinculada.");
       const { error } = await supabase
         .from("family_links")
-        .insert({ person_id: personId, relative_id: selected.id, relation } as never);
+        .insert({ person_id: personId, relative_id: selected.id, relation } as any);
       if (error) throw error;
     },
     onSuccess: () => {

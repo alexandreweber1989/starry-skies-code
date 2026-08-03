@@ -114,7 +114,7 @@ export const createMemberAccount = createServerFn({ method: "POST" })
           email: data.email,
           phone: data.phone || null,
           ...extra,
-        },
+        } as any,
         { onConflict: "id" },
       );
     if (profileError) throw new Error(profileError.message);

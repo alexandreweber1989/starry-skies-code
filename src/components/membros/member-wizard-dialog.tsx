@@ -13,6 +13,8 @@ import {
   MARITAL_STATUS,
   MEMBERSHIP_TYPES,
   displayMemberName,
+  MARITAL_STATUS,
+  MEMBERSHIP_TYPES,
   type ChurchFunction,
 } from "@/lib/igreja";
 import { BLOOD_TYPES, COURSE_OPTIONS, EDUCATION_LEVELS, MEMBERSHIP_STATUS } from "@/lib/membros";
