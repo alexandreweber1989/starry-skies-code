@@ -94,11 +94,14 @@ function MembrosPage() {
   const { data, isLoading } = useQuery({
     queryKey: ["profiles"],
     queryFn: async () => {
+      // Se não for admin, vê apenas a si mesmo ou nada dependendo da política
+      // RLS cuidará do filtro no banco, mas mantemos o código limpo
       const { data, error } = await supabase.from("profiles").select("*").order("full_name");
       if (error) throw error;
       return data as Profile[];
     },
   });
+
 
   /** Vínculos (ministérios, mesas, redes) de todos os membros, para colorir os cards. */
   const { data: affiliations } = useAffiliations();
@@ -223,12 +226,13 @@ function MembrosPage() {
         }
       />
       <PageBody>
-        {(isAdmin || canRequest) && (
+        {isAdmin && (
           <div className="mb-6">
             <MembershipRequestsPanel />
           </div>
         )}
-        <MemberStats members={(data ?? []) as any} />
+        {isAdmin && <MemberStats members={(data ?? []) as any} />}
+
 
         <MemberToolbar
           filters={filters}
@@ -369,6 +373,7 @@ function MembrosPage() {
                           </DropdownMenu>
                         </td>
                       )}
+
                       <td className="px-4 py-3 text-right whitespace-nowrap">
                         <Button size="sm" variant="ghost" onClick={() => setDetail(p)}>
                           Ver
