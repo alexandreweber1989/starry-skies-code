@@ -22,23 +22,24 @@ interface LeaderRow {
  * Focado em facilitar o contato via WhatsApp para o liderado.
  */
 export function MeusLideres() {
-  const { user, isAdmin } = useAuth();
+  const { user } = useAuth();
 
   const { data: leaders, isLoading } = useQuery({
     queryKey: ["meus-lideres", user?.id],
     enabled: !!user?.id,
     queryFn: async () => {
+      if (!user?.id) return [];
+
       // 1. Buscar participações do usuário
       const [mins, redes, mesas] = await Promise.all([
-        supabase.from("ministry_members").select("ministry_id, ministries(name)").eq("user_id", user!.id),
-        supabase.from("rede_members").select("rede_id, redes(name)").eq("user_id", user!.id),
-        supabase.from("mesa_members").select("mesa_id, mesas(name)").eq("user_id", user!.id),
+        supabase.from("ministry_members").select("ministry_id, ministries(name)").eq("user_id", user.id),
+        supabase.from("rede_members").select("rede_id, redes(name)").eq("user_id", user.id),
+        supabase.from("mesa_members").select("mesa_id, mesas(name)").eq("user_id", user.id),
       ]);
 
-      const minIds = (mins.data ?? []).map((m: any) => m.ministry_id);
-      const redeIds = (redes.data ?? []).map((r: any) => r.rede_id);
-      const mesaIds = (mesas.data ?? []).map((m: any) => m.mesa_id);
-
+      const minIds = (mins.data ?? []).map((m: any) => m.ministry_id).filter(Boolean);
+      const redeIds = (redes.data ?? []).map((r: any) => r.rede_id).filter(Boolean);
+      const mesaIds = (mesas.data ?? []).map((m: any) => m.mesa_id).filter(Boolean);
 
       // 2. Buscar responsáveis desses grupos
       const results: LeaderRow[] = [];
@@ -128,13 +129,12 @@ export function MeusLideres() {
       ) : (
         <ul className="grid sm:grid-cols-2 gap-3">
           {leaders?.map((l) => {
-
             const phone = l.phone?.replace(/\D/g, "");
             const Icon = l.groupKind === "mesa" ? UtensilsCrossed : (l.groupKind === "rede" ? Compass : ShieldCheck);
             
             return (
               <li 
-                key={l.userId}
+                key={`${l.userId}-${l.groupName}`}
                 className="flex items-center gap-3 border border-border rounded-sm p-3 hover:bg-muted/30 transition-colors"
               >
                 <Initials text={initialsOf(l.name)} />
