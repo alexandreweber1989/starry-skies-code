@@ -115,8 +115,8 @@ export function MemberDetailSheet({
             {ageFrom(profile.birth_date) !== null && (
               <Badge variant="secondary">{ageFrom(profile.birth_date)} anos</Badge>
             )}
-            {links?.roles.map((r) => (
-              <Badge key={r}>{r.replace("admin_", "admin ").replace("_", " ")}</Badge>
+            {links?.roles.map((r, ri) => (
+              <Badge key={`${r}-${ri}`}>{r.replace("admin_", "admin ").replace("_", " ")}</Badge>
             ))}
           </div>
         </SheetHeader>

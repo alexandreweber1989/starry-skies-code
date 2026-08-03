@@ -622,6 +622,7 @@ export function MemberWizardDialog() {
                 <Input
                   type="number"
                   min={0}
+                  max={30}
                   className="max-w-[140px]"
                   value={s.children_count}
                   onChange={(e) => up({ children_count: e.target.value })}
