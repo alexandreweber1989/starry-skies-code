@@ -113,7 +113,8 @@ function Landing() {
                 <div className="bg-primary/5 border border-primary/10 rounded-lg p-5 max-w-xl">
                   <p className="text-sm font-medium text-primary uppercase tracking-wider mb-1">Próximos passos sugeridos:</p>
                   <ul className="text-foreground font-serif text-lg leading-snug space-y-2">
-                    <li>• realize todos os Try to fix para ajustar a página e seus erros</li>
+                    <li>• Iniciar a interface de check-in em tempo real para o módulo Kids.</li>
+                    <li>• Implementar notificações via WhatsApp para confirmação de retirada de crianças.</li>
                   </ul>
                 </div>
               </div>
