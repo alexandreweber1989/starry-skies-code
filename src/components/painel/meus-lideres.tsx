@@ -37,9 +37,9 @@ export function MeusLideres() {
         supabase.from("mesa_members").select("mesa_id, mesas(name)").eq("user_id", user.id),
       ]);
 
-      const minIds = (mins.data ?? []).map((m: any) => m.ministry_id).filter(Boolean);
-      const redeIds = (redes.data ?? []).map((r: any) => r.rede_id).filter(Boolean);
-      const mesaIds = (mesas.data ?? []).map((m: any) => m.mesa_id).filter(Boolean);
+      const minIds = (mins.data ?? []).map((m: any) => m.ministry_id).filter(Boolean) as string[];
+      const redeIds = (redes.data ?? []).map((r: any) => r.rede_id).filter(Boolean) as string[];
+      const mesaIds = (mesas.data ?? []).map((m: any) => m.mesa_id).filter(Boolean) as string[];
 
       // 2. Buscar responsáveis desses grupos
       const results: LeaderRow[] = [];
