@@ -113,7 +113,7 @@ function Landing() {
                 <div className="bg-primary/5 border border-primary/10 rounded-lg p-5 max-w-xl">
                   <p className="text-sm font-medium text-primary uppercase tracking-wider mb-1">Próximo Passo:</p>
                   <p className="text-foreground font-serif text-lg leading-snug">
-                    preciso que o Whatsapp de líderes sejam demonstrados de alguma forma para os seus liderados. Ao acessar o sistema o membro tem acesso somente ao que faz sentido pra ele. A tela para membros não pode mostrar tudo como por exemplo é mostrado para um membro que é líder de algum grupo ou como admin. Consegue criar um plano que ajuste isso por tipo de membro?
+                    inicie a modelagem das tabelas do módulo Kids
                   </p>
                 </div>
               </div>
