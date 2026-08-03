@@ -10,14 +10,17 @@ import {
   CHURCH_FUNCTION_HINT,
   CHURCH_FUNCTION_LABEL,
   GENDERS,
-  MARITAL_STATUS,
-  MEMBERSHIP_TYPES,
   displayMemberName,
-  MARITAL_STATUS,
-  MEMBERSHIP_TYPES,
   type ChurchFunction,
 } from "@/lib/igreja";
-import { BLOOD_TYPES, COURSE_OPTIONS, EDUCATION_LEVELS, MEMBERSHIP_STATUS } from "@/lib/membros";
+import {
+  BLOOD_TYPES,
+  COURSE_OPTIONS,
+  EDUCATION_LEVELS,
+  MEMBERSHIP_STATUS,
+  MARITAL_STATUS,
+  MEMBERSHIP_TYPES,
+} from "@/lib/membros";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
