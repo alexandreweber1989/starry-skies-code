@@ -126,7 +126,8 @@ export function MeusLideres() {
         <EmptyLine>Carregando contatos...</EmptyLine>
       ) : (
         <ul className="grid sm:grid-cols-2 gap-3">
-          {leaders.map((l) => {
+          {leaders?.map((l) => {
+
             const phone = l.phone?.replace(/\D/g, "");
             const Icon = l.groupKind === "mesa" ? UtensilsCrossed : (l.groupKind === "rede" ? Compass : ShieldCheck);
             
