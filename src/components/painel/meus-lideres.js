@@ -93,7 +93,42 @@ export function MeusLideres() {
     });
     if (!isLoading && (!leaders || leaders.length === 0))
         return null;
-    return (<PanelSection label="Apoio e Cuidado" title="Meus Líderes" className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+    return (
+      <PanelSection label="Apoio e Cuidado" title="Meus Líderes" className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+        {isLoading ? (
+          <EmptyLine>Carregando contatos...</EmptyLine>
+        ) : (
+          <ul className="grid sm:grid-cols-2 gap-3">
+            {leaders?.map((l) => {
+              const phone = l.phone?.replace(/\D/g, "");
+              const Icon = l.groupKind === "mesa" ? UtensilsCrossed : (l.groupKind === "rede" ? Compass : ShieldCheck);
+              return (
+                <li key={l.userId} className="flex items-center gap-3 border border-border rounded-sm p-3 hover:bg-muted/30 transition-colors">
+                  <Initials text={initialsOf(l.name)} />
+                  <div className="min-w-0 flex-1">
+                    <div className="text-sm font-medium truncate">{l.name}</div>
+                    <div className="flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-wider text-muted-foreground mt-0.5">
+                      <Icon className="size-3" />
+                      <span className="truncate">{l.groupName}</span>
+                    </div>
+                  </div>
+                  {phone && (
+                    <Button size="icon" variant="ghost" className="shrink-0" asChild>
+                      <a href={`https://wa.me/55${phone}`} target="_blank" rel="noreferrer" title={`Falar com ${l.name}`}>
+                        <MessageSquare className="size-4 text-primary" />
+                      </a>
+                    </Button>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+        <p className="text-[10px] text-muted-foreground mt-4 italic">
+          * Estes são os responsáveis pelos grupos que você participa.
+        </p>
+      </PanelSection>
+    );
       {isLoading ? (<EmptyLine>Carregando contatos...</EmptyLine>) : (<ul className="grid sm:grid-cols-2 gap-3">
           {leaders?.map((l) => {
                 const phone = l.phone?.replace(/\D/g, "");
