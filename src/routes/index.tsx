@@ -113,9 +113,7 @@ function Landing() {
                 <div className="bg-primary/5 border border-primary/10 rounded-lg p-5 max-w-xl">
                   <p className="text-sm font-medium text-primary uppercase tracking-wider mb-1">Próximos passos sugeridos:</p>
                   <ul className="text-foreground font-serif text-lg leading-snug space-y-2">
-                    <li>• Validar a criação de uma criança via console ou interface admin.</li>
-                    <li>• Iniciar o desenvolvimento do formulário de cadastro seguro para os pais.</li>
-                    <li>• Implementar a lógica de geração de QR Code para o check-in futuro.</li>
+                    <li>• realize todos os Try to fix para ajustar a página e seus erros</li>
                   </ul>
                 </div>
               </div>
