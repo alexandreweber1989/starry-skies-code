@@ -113,7 +113,7 @@ function Landing() {
                 <div className="bg-primary/5 border border-primary/10 rounded-lg p-5 max-w-xl">
                   <p className="text-sm font-medium text-primary uppercase tracking-wider mb-1">Próximos passos sugeridos:</p>
                   <ul className="text-foreground font-serif text-lg leading-snug space-y-2">
-                    <li>• então, agora pode fazer isso que foi solicitado sobre os Kids</li>
+                    <li>• FAÇA OS PRÓXIMOS PASSOS SUGERIDOS</li>
                   </ul>
                 </div>
               </div>
