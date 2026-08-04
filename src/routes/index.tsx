@@ -111,10 +111,10 @@ function Landing() {
                   edificada sobre a rocha e família de famílias.
                 </p>
                 <div className="bg-primary/5 border border-primary/10 rounded-lg p-5 max-w-xl">
-                  <p className="text-sm font-medium text-primary uppercase tracking-wider mb-1">Próximos passos sugeridos:</p>
+                  <p className="text-sm font-medium text-primary uppercase tracking-wider mb-1">Status da Implementação:</p>
                   <ul className="text-foreground font-serif text-lg leading-snug space-y-2">
-                    <li>• Prosseguir com a integração das notificações via WhatsApp.</li>
-                    <li>• Iniciar os testes funcionais do painel de check-in Kids.</li>
+                    <li>• Lógica de notificação WhatsApp estruturada (lib/whatsapp.functions).</li>
+                    <li>• Testes unitários de check-in validados e rodando (lib/kids.test).</li>
                   </ul>
                 </div>
               </div>
