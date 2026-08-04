@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/select";
 import { ChurchSelect } from "@/components/admin/church-select";
 import { KIDS_CLASSROOMS, suggestClassroom, type KidsChild } from "@/lib/kids";
+import { PhotoInput } from "@/components/kids/photo-input";
 import { GuardiansEditor, emptyGuardian, type GuardianDraft } from "@/components/kids/guardians-editor";
 
 interface ChildDialogProps {
@@ -247,14 +248,13 @@ export function ChildDialog({ child, trigger }: ChildDialogProps) {
               </Select>
             </div>
             <ChurchSelect value={form.church_id} onChange={(v) => set("church_id", v)} />
-            <div className="space-y-2">
-              <Label>Foto da criança (URL)</Label>
-              <Input
-                value={form.photo_url}
-                onChange={(e) => set("photo_url", e.target.value)}
-                placeholder="Link da imagem para conferência"
-              />
-            </div>
+            <PhotoInput
+              label="Foto da criança"
+              value={form.photo_url}
+              onChange={(v) => set("photo_url", v)}
+              folder="criancas"
+              variant="crianca"
+            />
           </div>
 
           <div className="grid sm:grid-cols-2 gap-3">
