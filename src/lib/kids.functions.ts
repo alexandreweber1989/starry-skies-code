@@ -7,7 +7,7 @@ export const getChildren = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     let query = supabaseAdmin.from("kids_children").select("*");
     if (data?.search) {
-      query = query.or(`name.ilike.%${data.search}%,nickname.ilike.%${data.search}%`);
+      query = query.or(`full_name.ilike.%${data.search}%,nickname.ilike.%${data.search}%`);
     }
     const { data: children, error } = await query;
     if (error) throw error;
@@ -18,47 +18,51 @@ export const checkinChild = createServerFn({ method: "POST" })
   .inputValidator(
     z.object({
       childId: z.string().uuid(),
-      sessionId: z.string().uuid().optional(),
-      guardianId: z.string().uuid().optional(),
-      classroom: z.string(),
+      sessionId: z.string().uuid(),
+      droppedByName: z.string().optional(),
+      securityCode: z.string(),
+      dayNotes: z.string().optional(),
     })
   )
   .handler(async ({ data }) => {
-    const { data: session, error } = await supabaseAdmin
-      .from("kids_sessions")
+    const { data: checkin, error } = await supabaseAdmin
+      .from("kids_checkins")
       .insert({
         child_id: data.childId,
-        checkin_at: new Date().toISOString(),
-        classroom: data.classroom,
-        guardian_in_id: data.guardianId,
+        session_id: data.sessionId,
+        dropped_by_name: data.droppedByName,
+        security_code: data.securityCode,
+        day_notes: data.dayNotes,
         status: "checked_in",
+        checked_in_at: new Date().toISOString(),
       })
       .select()
       .single();
 
     if (error) throw error;
-    return session;
+    return checkin;
   });
 
 export const checkoutChild = createServerFn({ method: "POST" })
   .inputValidator(
     z.object({
-      sessionId: z.string().uuid(),
-      guardianId: z.string().uuid().optional(),
+      checkinId: z.string().uuid(),
+      pickedUpByName: z.string().optional(),
+      guardianOutId: z.string().uuid().optional(),
     })
   )
   .handler(async ({ data }) => {
-    const { data: session, error } = await supabaseAdmin
-      .from("kids_sessions")
+    const { data: checkin, error } = await supabaseAdmin
+      .from("kids_checkins")
       .update({
-        checkout_at: new Date().toISOString(),
-        guardian_out_id: data.guardianId,
+        checked_out_at: new Date().toISOString(),
+        picked_up_by_name: data.pickedUpByName,
         status: "checked_out",
       })
-      .eq("id", data.sessionId)
+      .eq("id", data.checkinId)
       .select()
       .single();
 
     if (error) throw error;
-    return session;
+    return checkin;
   });
