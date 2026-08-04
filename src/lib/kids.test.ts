@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { checkinChild, checkoutChild } from './kids.functions';
+import { checkinChildHandler, checkoutChildHandler } from './kids.server';
 
 // Mock do supabaseAdmin
 vi.mock('@/integrations/supabase/client.server', () => ({
@@ -14,7 +14,7 @@ vi.mock('@/integrations/supabase/client.server', () => ({
   }
 }));
 
-describe('Módulo Kids - Fluxo de Check-in', () => {
+describe('Módulo Kids - Lógica de Servidor', () => {
   it('deve realizar check-in de uma criança corretamente', async () => {
     const mockData = {
       childId: '550e8400-e29b-41d4-a716-446655440000',
@@ -22,7 +22,7 @@ describe('Módulo Kids - Fluxo de Check-in', () => {
       securityCode: 'A1B2',
     };
     
-    const result = await checkinChild({ data: mockData });
+    const result = await checkinChildHandler(mockData);
     expect(result).toBeDefined();
     expect(result.id).toBe('mock-id');
   });
@@ -33,7 +33,7 @@ describe('Módulo Kids - Fluxo de Check-in', () => {
       pickedUpByName: 'Maria Silva',
     };
     
-    const result = await checkoutChild({ data: mockData });
+    const result = await checkoutChildHandler(mockData);
     expect(result).toBeDefined();
     expect(result.id).toBe('mock-id');
   });
