@@ -113,8 +113,8 @@ function Landing() {
                 <div className="bg-primary/5 border border-primary/10 rounded-lg p-5 max-w-xl">
                   <p className="text-sm font-medium text-primary uppercase tracking-wider mb-1">Status da Implementação:</p>
                   <ul className="text-foreground font-serif text-lg leading-snug space-y-2">
-                    <li>• Implementado envio de mensagens via link wa.me direto para os responsáveis, garantindo segurança contra banimentos.</li>
-                    <li>• Sistema de check-in e check-out validado com controle de código de segurança e notificações rápidas.</li>
+                    <li>• Segurança sem custo: Notificações WhatsApp via link wa.me e check-in digital.</li>
+                    <li>• Fluxo sem papel: Implementamos uma interface de conferência visual por código, eliminando a necessidade de impressoras e etiquetas físicas.</li>
                   </ul>
                 </div>
               </div>
