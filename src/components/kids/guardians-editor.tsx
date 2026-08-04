@@ -24,6 +24,7 @@ export interface GuardianDraft {
   is_primary: boolean;
   can_pickup: boolean;
   document: string;
+  photo_url: string;
 }
 
 export function emptyGuardian(): GuardianDraft {
@@ -35,6 +36,7 @@ export function emptyGuardian(): GuardianDraft {
     is_primary: false,
     can_pickup: true,
     document: "",
+    photo_url: "",
   };
 }
 
@@ -118,6 +120,14 @@ export function GuardiansEditor({ value, onChange }: GuardiansEditorProps) {
                 value={g.document}
                 onChange={(e) => update(index, { document: e.target.value })}
                 placeholder="Opcional"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs">Foto do responsável (URL)</Label>
+              <Input
+                value={g.photo_url}
+                onChange={(e) => update(index, { photo_url: e.target.value })}
+                placeholder="Link da imagem para conferência"
               />
             </div>
           </div>

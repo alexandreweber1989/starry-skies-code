@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ShieldCheck, LogOut, MessageSquare } from "lucide-react";
+import { ShieldCheck, LogOut, MessageSquare, User, UserSquare2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -38,7 +38,7 @@ export function CheckoutDialog({ checkin, childName }: CheckoutDialogProps) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("kids_guardians")
-        .select("id, full_name, phone, relation, can_pickup, is_primary")
+        .select("id, full_name, phone, relation, can_pickup, is_primary, photo_url")
         .eq("child_id", checkin.child_id)
         .order("is_primary", { ascending: false });
       if (error) throw error;
@@ -85,8 +85,15 @@ export function CheckoutDialog({ checkin, childName }: CheckoutDialogProps) {
           <DialogTitle className="flex items-center gap-2">
             <ShieldCheck className="h-5 w-5 text-primary" /> Retirada de {childName}
           </DialogTitle>
+          <div className="mt-2 flex items-center justify-center p-4">
+             {checkin.child_id && (
+               <div className="relative">
+                  <ChildPhoto childId={checkin.child_id} name={childName} />
+               </div>
+             )}
+          </div>
           <DialogDescription>
-            Confira o código impresso na etiqueta do responsável antes de liberar a criança.
+            Confira o código impresso na etiqueta ou a foto do responsável antes de liberar.
           </DialogDescription>
         </DialogHeader>
 
@@ -102,15 +109,32 @@ export function CheckoutDialog({ checkin, childName }: CheckoutDialogProps) {
             ) : (
               <ul className="space-y-1 text-sm">
                 {authorized.map((g) => (
-                  <li key={g.id} className="flex items-center justify-between gap-2">
-                    <button
-                      type="button"
-                      className="text-left hover:underline"
-                      onClick={() => setPickedBy(g.full_name)}
-                    >
-                      {g.full_name}
-                    </button>
-                    <div className="flex items-center gap-2">
+                  <li key={g.id} className="flex items-start justify-between gap-3 p-2 rounded-md hover:bg-muted/50 border border-transparent hover:border-border transition-all">
+                    <div className="flex gap-3 items-center">
+                      <div className="h-10 w-10 rounded-full overflow-hidden bg-muted flex-shrink-0 border border-border">
+                        {g.photo_url ? (
+                          <img src={g.photo_url} alt={g.full_name} className="h-full w-full object-cover" />
+                        ) : (
+                          <div className="h-full w-full grid place-items-center text-muted-foreground">
+                            <User className="h-5 w-5" />
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <button
+                          type="button"
+                          className="text-left font-medium text-sm block hover:underline"
+                          onClick={() => setPickedBy(g.full_name)}
+                        >
+                          {g.full_name}
+                        </button>
+                        <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                          {GUARDIAN_RELATION_LABEL[g.relation] ?? g.relation}
+                          {g.is_primary && " · Principal"}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1">
                       <span className="text-xs text-muted-foreground">
                         {GUARDIAN_RELATION_LABEL[g.relation] ?? g.relation}
                       </span>

@@ -247,6 +247,14 @@ export function ChildDialog({ child, trigger }: ChildDialogProps) {
               </Select>
             </div>
             <ChurchSelect value={form.church_id} onChange={(v) => set("church_id", v)} />
+            <div className="space-y-2">
+              <Label>Foto da criança (URL)</Label>
+              <Input
+                value={form.photo_url}
+                onChange={(e) => set("photo_url", e.target.value)}
+                placeholder="Link da imagem para conferência"
+              />
+            </div>
           </div>
 
           <div className="grid sm:grid-cols-2 gap-3">
