@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ShieldCheck, LogOut } from "lucide-react";
+import { ShieldCheck, LogOut, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -110,10 +110,30 @@ export function CheckoutDialog({ checkin, childName }: CheckoutDialogProps) {
                     >
                       {g.full_name}
                     </button>
-                    <span className="text-xs text-muted-foreground">
-                      {GUARDIAN_RELATION_LABEL[g.relation] ?? g.relation}
-                      {g.phone ? ` · ${g.phone}` : ""}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">
+                        {GUARDIAN_RELATION_LABEL[g.relation] ?? g.relation}
+                      </span>
+                      {g.phone && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 text-green-600 hover:text-green-700 hover:bg-green-50"
+                          asChild
+                        >
+                          <a
+                            href={`https://wa.me/${g.phone.replace(/\D/g, "")}?text=${encodeURIComponent(
+                              `Olá ${g.full_name}, estamos com a ${childName} aqui no Kids da Igreja Atos. Precisa de algo?`
+                            )}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="Enviar mensagem via WhatsApp"
+                          >
+                            <MessageSquare className="h-3.5 w-3.5" />
+                          </a>
+                        </Button>
+                      )}
+                    </div>
                   </li>
                 ))}
               </ul>

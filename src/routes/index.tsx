@@ -113,8 +113,8 @@ function Landing() {
                 <div className="bg-primary/5 border border-primary/10 rounded-lg p-5 max-w-xl">
                   <p className="text-sm font-medium text-primary uppercase tracking-wider mb-1">Status da Implementação:</p>
                   <ul className="text-foreground font-serif text-lg leading-snug space-y-2">
-                    <li>• Lógica de notificação WhatsApp estruturada (lib/whatsapp.functions).</li>
-                    <li>• Testes unitários de check-in validados e rodando (lib/kids.test).</li>
+                    <li>• Implementado envio de mensagens via link wa.me para maior segurança e controle dos líderes.</li>
+                    <li>• Sistema de check-in e check-out validado com controle de código de segurança.</li>
                   </ul>
                 </div>
               </div>
