@@ -46,6 +46,7 @@ interface ChildForm {
   notes: string;
   photo_consent: boolean;
   can_leave_alone: boolean;
+  photo_url: string;
   is_active: boolean;
 }
 
@@ -63,6 +64,7 @@ function initialForm(child?: KidsChild): ChildForm {
     notes: child?.notes ?? "",
     photo_consent: child?.photo_consent ?? false,
     can_leave_alone: child?.can_leave_alone ?? false,
+    photo_url: child?.photo_url ?? "",
     is_active: child?.is_active ?? true,
   };
 }
@@ -100,6 +102,7 @@ export function ChildDialog({ child, trigger }: ChildDialogProps) {
             is_primary: g.is_primary,
             can_pickup: g.can_pickup,
             document: g.document ?? "",
+            photo_url: g.photo_url ?? "",
           })),
         ),
       );
@@ -125,6 +128,7 @@ export function ChildDialog({ child, trigger }: ChildDialogProps) {
         special_needs: form.special_needs.trim() || null,
         notes: form.notes.trim() || null,
         photo_consent: form.photo_consent,
+        photo_url: form.photo_url.trim() || null,
         can_leave_alone: form.can_leave_alone,
         is_active: form.is_active,
       };
@@ -160,6 +164,7 @@ export function ChildDialog({ child, trigger }: ChildDialogProps) {
         is_primary: g.is_primary,
         can_pickup: g.can_pickup,
         document: g.document.trim() || null,
+        photo_url: g.photo_url.trim() || null,
       }));
       const { error: upError } = await supabase.from("kids_guardians").upsert(rows);
       if (upError) throw upError;
