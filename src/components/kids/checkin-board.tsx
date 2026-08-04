@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AlertTriangle, Check, Search, Sticker, User, Baby } from "lucide-react";
+import { AlertTriangle, Check, Search, Sticker } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,8 @@ import {
   type KidsSession,
 } from "@/lib/kids";
 import { CheckoutDialog } from "@/components/kids/checkout-dialog";
+import { CheckinQrDialog } from "@/components/kids/checkin-qr-dialog";
+import { KidsPhoto } from "@/components/kids/kids-photo";
 
 interface CheckinBoardProps {
   session: KidsSession;
@@ -99,15 +101,12 @@ export function CheckinBoard({ session, children }: CheckinBoardProps) {
             <li key={child.id} className="border border-border bg-card rounded-sm p-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex gap-4 min-w-0">
-                  <div className="h-12 w-12 rounded-lg overflow-hidden bg-muted flex-shrink-0 border border-border">
-                    {child.photo_url ? (
-                      <img src={child.photo_url} alt={child.full_name} className="h-full w-full object-cover" />
-                    ) : (
-                      <div className="h-full w-full grid place-items-center text-muted-foreground">
-                        <Baby className="h-6 w-6 opacity-30" />
-                      </div>
-                    )}
-                  </div>
+                  <KidsPhoto
+                    value={child.photo_url}
+                    alt={child.full_name}
+                    variant="crianca"
+                    className="h-12 w-12 rounded-lg shrink-0"
+                  />
                   <div className="min-w-0">
                     <h4 className="font-serif text-lg truncate">{childDisplayName(child)}</h4>
                   <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mt-1">
@@ -148,7 +147,10 @@ export function CheckinBoard({ session, children }: CheckinBoardProps) {
                   </Button>
                 )}
                 {checkin?.status === "presente" && (
-                  <CheckoutDialog checkin={checkin} childName={childDisplayName(child)} />
+                  <>
+                    <CheckoutDialog checkin={checkin} childName={childDisplayName(child)} />
+                    <CheckinQrDialog checkin={checkin} childName={childDisplayName(child)} />
+                  </>
                 )}
                 {checkin?.status === "retirada" && (
                   <Badge variant="secondary" className="gap-1">

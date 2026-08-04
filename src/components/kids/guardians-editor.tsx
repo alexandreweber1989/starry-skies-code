@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { GUARDIAN_RELATIONS } from "@/lib/kids";
+import { PhotoInput } from "@/components/kids/photo-input";
 import { useProfileOptions } from "@/lib/use-profiles";
 import { displayMemberName } from "@/lib/igreja";
 
@@ -122,14 +123,13 @@ export function GuardiansEditor({ value, onChange }: GuardiansEditorProps) {
                 placeholder="Opcional"
               />
             </div>
-            <div className="space-y-2">
-              <Label className="text-xs">Foto do responsável (URL)</Label>
-              <Input
-                value={g.photo_url}
-                onChange={(e) => update(index, { photo_url: e.target.value })}
-                placeholder="Link da imagem para conferência"
-              />
-            </div>
+            <PhotoInput
+              label="Foto do responsável"
+              value={g.photo_url}
+              onChange={(v) => update(index, { photo_url: v })}
+              folder="responsaveis"
+              variant="responsavel"
+            />
           </div>
 
           <div className="flex flex-wrap items-center gap-4">

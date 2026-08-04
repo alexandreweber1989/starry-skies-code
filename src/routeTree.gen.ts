@@ -26,6 +26,7 @@ import { Route as AuthenticatedCantinaRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedAgendaRouteImport } from './routes/_authenticated/agenda'
 import { Route as AuthenticatedMinisteriosIndexRouteImport } from './routes/_authenticated/ministerios.index'
 import { Route as AuthenticatedMinisteriosSlugRouteImport } from './routes/_authenticated/ministerios.$slug'
+import { Route as AuthenticatedKidsRetiradaCheckinIdRouteImport } from './routes/_authenticated/kids-retirada.$checkinId'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -113,6 +114,12 @@ const AuthenticatedMinisteriosSlugRoute =
     path: '/ministerios/$slug',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedKidsRetiradaCheckinIdRoute =
+  AuthenticatedKidsRetiradaCheckinIdRouteImport.update({
+    id: '/kids-retirada/$checkinId',
+    path: '/kids-retirada/$checkinId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -129,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/perfil': typeof AuthenticatedPerfilRoute
   '/redes': typeof AuthenticatedRedesRoute
   '/kids/visitante': typeof KidsVisitanteRoute
+  '/kids-retirada/$checkinId': typeof AuthenticatedKidsRetiradaCheckinIdRoute
   '/ministerios/$slug': typeof AuthenticatedMinisteriosSlugRoute
   '/ministerios/': typeof AuthenticatedMinisteriosIndexRoute
 }
@@ -147,6 +155,7 @@ export interface FileRoutesByTo {
   '/perfil': typeof AuthenticatedPerfilRoute
   '/redes': typeof AuthenticatedRedesRoute
   '/kids/visitante': typeof KidsVisitanteRoute
+  '/kids-retirada/$checkinId': typeof AuthenticatedKidsRetiradaCheckinIdRoute
   '/ministerios/$slug': typeof AuthenticatedMinisteriosSlugRoute
   '/ministerios': typeof AuthenticatedMinisteriosIndexRoute
 }
@@ -167,6 +176,7 @@ export interface FileRoutesById {
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
   '/_authenticated/redes': typeof AuthenticatedRedesRoute
   '/kids/visitante': typeof KidsVisitanteRoute
+  '/_authenticated/kids-retirada/$checkinId': typeof AuthenticatedKidsRetiradaCheckinIdRoute
   '/_authenticated/ministerios/$slug': typeof AuthenticatedMinisteriosSlugRoute
   '/_authenticated/ministerios/': typeof AuthenticatedMinisteriosIndexRoute
 }
@@ -187,6 +197,7 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/redes'
     | '/kids/visitante'
+    | '/kids-retirada/$checkinId'
     | '/ministerios/$slug'
     | '/ministerios/'
   fileRoutesByTo: FileRoutesByTo
@@ -205,6 +216,7 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/redes'
     | '/kids/visitante'
+    | '/kids-retirada/$checkinId'
     | '/ministerios/$slug'
     | '/ministerios'
   id:
@@ -224,6 +236,7 @@ export interface FileRouteTypes {
     | '/_authenticated/perfil'
     | '/_authenticated/redes'
     | '/kids/visitante'
+    | '/_authenticated/kids-retirada/$checkinId'
     | '/_authenticated/ministerios/$slug'
     | '/_authenticated/ministerios/'
   fileRoutesById: FileRoutesById
@@ -356,6 +369,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMinisteriosSlugRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/kids-retirada/$checkinId': {
+      id: '/_authenticated/kids-retirada/$checkinId'
+      path: '/kids-retirada/$checkinId'
+      fullPath: '/kids-retirada/$checkinId'
+      preLoaderRoute: typeof AuthenticatedKidsRetiradaCheckinIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -371,6 +391,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMesasRoute: typeof AuthenticatedMesasRoute
   AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
   AuthenticatedRedesRoute: typeof AuthenticatedRedesRoute
+  AuthenticatedKidsRetiradaCheckinIdRoute: typeof AuthenticatedKidsRetiradaCheckinIdRoute
   AuthenticatedMinisteriosSlugRoute: typeof AuthenticatedMinisteriosSlugRoute
   AuthenticatedMinisteriosIndexRoute: typeof AuthenticatedMinisteriosIndexRoute
 }
@@ -387,6 +408,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMesasRoute: AuthenticatedMesasRoute,
   AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
   AuthenticatedRedesRoute: AuthenticatedRedesRoute,
+  AuthenticatedKidsRetiradaCheckinIdRoute:
+    AuthenticatedKidsRetiradaCheckinIdRoute,
   AuthenticatedMinisteriosSlugRoute: AuthenticatedMinisteriosSlugRoute,
   AuthenticatedMinisteriosIndexRoute: AuthenticatedMinisteriosIndexRoute,
 }
