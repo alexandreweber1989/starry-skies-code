@@ -196,3 +196,29 @@ export function CheckoutDialog({ checkin, childName }: CheckoutDialogProps) {
     </Dialog>
   );
 }
+
+function ChildPhoto({ childId, name }: { childId: string; name: string }) {
+  const { data: child } = useQuery({
+    queryKey: ["kids-child-photo", childId],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("kids_children").select("photo_url").eq("id", childId).single();
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <div className="h-32 w-32 rounded-2xl overflow-hidden bg-muted border-2 border-primary/20 shadow-xl">
+        {child?.photo_url ? (
+          <img src={child.photo_url} alt={name} className="h-full w-full object-cover" />
+        ) : (
+          <div className="h-full w-full grid place-items-center text-muted-foreground">
+            <Baby className="h-12 w-12 opacity-20" />
+          </div>
+        )}
+      </div>
+      <span className="text-xs font-mono uppercase tracking-[0.2em] text-muted-foreground">Identificação da Criança</span>
+    </div>
+  );
+}
