@@ -113,8 +113,8 @@ function Landing() {
                 <div className="bg-primary/5 border border-primary/10 rounded-lg p-5 max-w-xl">
                   <p className="text-sm font-medium text-primary uppercase tracking-wider mb-1">Status da Implementação:</p>
                   <ul className="text-foreground font-serif text-lg leading-snug space-y-2">
-                    <li>• Segurança sem custo: Notificações WhatsApp via link wa.me e check-in digital.</li>
-                    <li>• Fluxo sem papel: Implementamos uma interface de conferência visual por código, eliminando a necessidade de impressoras e etiquetas físicas.</li>
+                    <li>• Segurança Visual: Registro de fotos de crianças e responsáveis para conferência no check-out, garantindo que quem retira é de fato autorizado.</li>
+                    <li>• Fluxo sem papel & Digital: Implementamos check-in com código de segurança e conferência visual, eliminando a necessidade de impressoras.</li>
                   </ul>
                 </div>
               </div>

@@ -49,6 +49,7 @@ export interface KidsChild {
   health_notes: string | null;
   special_needs: string | null;
   photo_consent: boolean;
+  photo_url: string | null;
   can_leave_alone: boolean;
   notes: string | null;
   is_active: boolean;
@@ -64,6 +65,7 @@ export interface KidsGuardian {
   is_primary: boolean;
   can_pickup: boolean;
   document: string | null;
+  photo_url: string | null;
 }
 
 export interface KidsSession {

@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AlertTriangle, Check, Search, Sticker } from "lucide-react";
+import { AlertTriangle, Check, Search, Sticker, User, Baby } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -98,11 +98,22 @@ export function CheckinBoard({ session, children }: CheckinBoardProps) {
           return (
             <li key={child.id} className="border border-border bg-card rounded-sm p-4">
               <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <h4 className="font-serif text-lg truncate">{childDisplayName(child)}</h4>
+                <div className="flex gap-4 min-w-0">
+                  <div className="h-12 w-12 rounded-lg overflow-hidden bg-muted flex-shrink-0 border border-border">
+                    {child.photo_url ? (
+                      <img src={child.photo_url} alt={child.full_name} className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="h-full w-full grid place-items-center text-muted-foreground">
+                        <Baby className="h-6 w-6 opacity-30" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <h4 className="font-serif text-lg truncate">{childDisplayName(child)}</h4>
                   <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mt-1">
                     {KIDS_CLASSROOM_LABEL[child.classroom] ?? child.classroom}
                     {age !== null ? ` · ${age} anos` : ""}
+                  </div>
                   </div>
                 </div>
                 {checkin && (
