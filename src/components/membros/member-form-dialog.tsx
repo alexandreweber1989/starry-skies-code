@@ -46,13 +46,13 @@ export function MemberFormDialog({
   profile,
   open,
   onOpenChange,
-  canEditMembership,
+  canEditMembership = false,
 }: {
   profile: MemberProfile | null;
   open: boolean;
   onOpenChange: (v: boolean) => void;
   /** Somente a administração define situação/forma de entrada na membresia. */
-  canEditMembership: boolean;
+  canEditMembership?: boolean;
 }) {
   const qc = useQueryClient();
   const [form, setForm] = useState<MemberProfile>(EMPTY);
