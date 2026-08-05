@@ -14,14 +14,16 @@ import {
   Music,
   CalendarDays,
   Baby,
+  Menu,
 } from "lucide-react";
-import type { ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { PageTransition } from "@/components/page-transition";
 import { GlobalSearch } from "@/components/global-search";
 import { NotificationsBell } from "@/components/notifications-bell";
 import { QuickActions } from "@/components/quick-actions";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const nav = [
   { to: "/dashboard", label: "Painel", icon: LayoutDashboard },
@@ -40,95 +42,130 @@ const nav = [
 export function AppShell({ children }: { children: ReactNode }) {
   const { user, isAdmin, signOut } = useAuth();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const sidebarContent = (
+    <div className="flex flex-col h-full bg-sidebar text-sidebar-foreground">
+      <div className="px-6 py-8 border-b border-sidebar-border">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-sm bg-sidebar-primary/20 flex items-center justify-center">
+            <Church className="h-5 w-5 text-sidebar-primary" />
+          </div>
+          <div>
+            <div className="font-serif text-lg leading-none">Igreja Batista</div>
+            <div className="font-mono text-xs uppercase tracking-widest text-sidebar-primary mt-1">
+              Atos
+            </div>
+          </div>
+        </div>
+      </div>
+      <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-sidebar-border/50">
+        {nav.map((item) => {
+          const active = pathname === item.to || pathname.startsWith(item.to + "/");
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.to}
+              to={item.to}
+              onClick={() => setMobileMenuOpen(false)}
+              className={`flex items-center gap-3 px-3 py-2 rounded-sm text-sm transition-all duration-200 ${
+                active
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium shadow-sm"
+                  : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground hover:translate-x-1"
+              }`}
+            >
+              <Icon className="h-4 w-4" />
+              {item.label}
+            </Link>
+          );
+        })}
+      </nav>
+      <div className="px-3 py-4 border-t border-sidebar-border space-y-1 bg-sidebar/50 backdrop-blur-sm">
+        <Link
+          to="/perfil"
+          onClick={() => setMobileMenuOpen(false)}
+          className="flex items-center gap-3 px-3 py-2 rounded-sm text-sm text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground group"
+        >
+          <UserCircle className="h-4 w-4 group-hover:scale-110 transition-transform" />
+          <div className="flex-1 min-w-0">
+            <div className="truncate font-medium">{user?.email}</div>
+            {isAdmin && (
+              <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-sidebar-primary mt-0.5 font-bold">
+                <ShieldCheck className="h-3 w-3" /> Admin geral
+              </div>
+            )}
+          </div>
+        </Link>
+        <button
+          onClick={() => {
+            setMobileMenuOpen(false);
+            signOut();
+          }}
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-sm text-sm text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground hover:text-destructive transition-colors group"
+        >
+          <LogOut className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+          Sair
+        </button>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground selection:bg-primary/20">
       <div className="grid min-h-screen lg:grid-cols-[280px_1fr]">
-        <aside className="hidden lg:flex flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border">
-          <div className="px-6 py-8 border-b border-sidebar-border">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-sm bg-sidebar-primary/20 flex items-center justify-center">
-                <Church className="h-5 w-5 text-sidebar-primary" />
-              </div>
-              <div>
-                <div className="font-serif text-lg leading-none">Igreja Batista</div>
-                <div className="font-mono text-xs uppercase tracking-widest text-sidebar-primary mt-1">
-                  Atos
-                </div>
-              </div>
-            </div>
-          </div>
-          <nav className="flex-1 px-3 py-6 space-y-1">
-            {nav.map((item) => {
-              const active = pathname === item.to || pathname.startsWith(item.to + "/");
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-sm text-sm transition-colors ${
-                    active
-                      ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                      : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
-                  }`}
-                >
-                  <Icon className="h-4 w-4" />
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
-          <div className="px-3 py-4 border-t border-sidebar-border space-y-1">
-            <Link
-              to="/perfil"
-              className="flex items-center gap-3 px-3 py-2 rounded-sm text-sm text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
-            >
-              <UserCircle className="h-4 w-4" />
-              <div className="flex-1 min-w-0">
-                <div className="truncate">{user?.email}</div>
-                {isAdmin && (
-                  <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-sidebar-primary mt-0.5">
-                    <ShieldCheck className="h-3 w-3" /> Admin geral
-                  </div>
-                )}
-              </div>
-            </Link>
-            <button
-              onClick={signOut}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-sm text-sm text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
-            >
-              <LogOut className="h-4 w-4" />
-              Sair
-            </button>
-          </div>
+        <aside className="hidden lg:flex flex-col border-r border-sidebar-border sticky top-0 h-screen overflow-hidden">
+          {sidebarContent}
         </aside>
-        <main className="min-w-0">
-          <header className="lg:hidden flex items-center justify-between px-4 py-3 border-b border-border bg-card">
-            <div className="flex items-center gap-2">
-              <Church className="h-5 w-5 text-primary" />
-              <span className="font-serif">IB Atos</span>
+
+        <main className="min-w-0 flex flex-col">
+          <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background/95 px-4 backdrop-blur-sm lg:px-10 transition-all duration-300">
+            <div className="flex items-center gap-2 lg:hidden">
+              <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-9 w-9">
+                    <Menu className="h-5 w-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="p-0 w-72">
+                  {sidebarContent}
+                </SheetContent>
+              </Sheet>
+              <div className="flex items-center gap-2">
+                <Church className="h-5 w-5 text-primary" />
+                <span className="font-serif font-bold text-sm tracking-tight">IB Atos</span>
+              </div>
             </div>
-            <div className="flex items-center gap-1">
+
+            <div className="hidden lg:block flex-1 max-w-xl">
               <GlobalSearch />
+            </div>
+
+            <div className="flex items-center gap-1 sm:gap-3">
+              <div className="lg:hidden">
+                <GlobalSearch />
+              </div>
+              <QuickActions />
               <NotificationsBell />
-              <Button variant="ghost" size="sm" onClick={signOut}>
-                <LogOut className="h-4 w-4" />
-              </Button>
+              <div className="hidden sm:block h-6 w-px bg-border mx-1" />
+              <div className="hidden sm:flex items-center gap-2">
+                 <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground/60">
+                   {user?.email?.split('@')[0]}
+                 </span>
+              </div>
             </div>
           </header>
-          <div className="hidden lg:flex items-center justify-end gap-2 px-10 py-3 border-b border-border bg-card">
-            <GlobalSearch />
-            <NotificationsBell />
-          </div>
-          <nav className="lg:hidden flex overflow-x-auto gap-1 px-2 py-2 border-b border-border bg-card">
+
+          <nav className="lg:hidden flex overflow-x-auto gap-1 px-2 py-2 border-b border-border bg-muted/30 scrollbar-none">
             {nav.map((item) => {
               const active = pathname === item.to || pathname.startsWith(item.to + "/");
               return (
                 <Link
                   key={item.to}
                   to={item.to}
-                  className={`px-3 py-1.5 rounded-sm text-xs whitespace-nowrap ${
-                    active ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+                  className={`px-3 py-1.5 rounded-full text-[10px] font-mono uppercase tracking-widest whitespace-nowrap transition-all ${
+                    active 
+                      ? "bg-primary text-primary-foreground shadow-sm font-bold" 
+                      : "text-muted-foreground hover:bg-primary/5 hover:text-foreground"
                   }`}
                 >
                   {item.label}
@@ -136,10 +173,13 @@ export function AppShell({ children }: { children: ReactNode }) {
               );
             })}
           </nav>
-          <PageTransition>{children}</PageTransition>
+
+          <div className="flex-1 min-h-0">
+            <PageTransition>{children}</PageTransition>
+          </div>
         </main>
-        <QuickActions />
       </div>
+      <QuickActions />
     </div>
   );
 }
@@ -156,25 +196,37 @@ export function PageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <div className="border-b border-border bg-card">
-      <div className="max-w-6xl mx-auto px-6 lg:px-10 py-10 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-        <div>
+    <div className="border-b border-border bg-card/50 backdrop-blur-sm">
+      <div className="max-w-6xl mx-auto px-6 lg:px-10 py-12 lg:py-16 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+        <div className="space-y-4">
           {eyebrow && (
-            <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-primary mb-3">
+            <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-primary font-bold">
               {eyebrow}
             </div>
           )}
-          <h1 className="font-serif text-4xl lg:text-5xl leading-tight text-foreground">{title}</h1>
+          <h1 className="font-serif text-4xl lg:text-6xl leading-tight text-foreground animate-in fade-in slide-in-from-left-4 duration-700">
+            {title}
+          </h1>
           {description && (
-            <p className="mt-3 max-w-2xl text-muted-foreground">{description}</p>
+            <p className="max-w-2xl text-base lg:text-lg text-muted-foreground leading-relaxed animate-in fade-in slide-in-from-left-6 duration-1000">
+              {description}
+            </p>
           )}
         </div>
-        {actions && <div className="flex gap-2">{actions}</div>}
+        {actions && (
+          <div className="flex flex-wrap gap-3 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            {actions}
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
 export function PageBody({ children }: { children: ReactNode }) {
-  return <div className="max-w-6xl mx-auto px-6 lg:px-10 py-10">{children}</div>;
+  return (
+    <div className="max-w-6xl mx-auto px-6 lg:px-10 py-10 lg:py-12 animate-in fade-in duration-1000">
+      {children}
+    </div>
+  );
 }

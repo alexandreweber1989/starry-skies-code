@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ShieldCheck, LogOut, MessageSquare } from "lucide-react";
+import { ShieldCheck, LogOut, MessageSquare, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -21,18 +21,14 @@ import { GUARDIAN_RELATION_LABEL, type KidsCheckin } from "@/lib/kids";
 interface CheckoutPanelProps {
   checkin: KidsCheckin;
   childName: string;
-  /** Chamado depois que a retirada é confirmada com sucesso. */
   onDone?: () => void;
 }
 
-/**
- * Conferência de retirada: foto da criança, fotos dos responsáveis autorizados,
- * código de segurança e registro de quem levou. Usado no painel e na tela do QR.
- */
 export function CheckoutPanel({ checkin, childName, onDone }: CheckoutPanelProps) {
   const qc = useQueryClient();
   const [code, setCode] = useState("");
   const [pickedBy, setPickedBy] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const { data: child } = useQuery({
     queryKey: ["kids-child-photo", checkin.child_id],
@@ -63,8 +59,9 @@ export function CheckoutPanel({ checkin, childName, onDone }: CheckoutPanelProps
   const confirm = useMutation({
     mutationFn: async () => {
       if (code.trim().toUpperCase() !== checkin.security_code)
-        throw new Error("Código de segurança incorreto. Confira o código do responsável.");
-      if (!pickedBy.trim()) throw new Error("Informe quem está retirando a criança.");
+        throw new Error("Código de segurança incorreto. Peça ao responsável para mostrar o código no celular.");
+      if (!pickedBy.trim()) throw new Error("Selecione ou informe quem está retirando a criança.");
+      
       const { error } = await supabase
         .from("kids_checkins")
         .update({
@@ -76,110 +73,141 @@ export function CheckoutPanel({ checkin, childName, onDone }: CheckoutPanelProps
       if (error) throw error;
     },
     onSuccess: () => {
+      setIsSuccess(true);
       void qc.invalidateQueries({ queryKey: ["kids-checkins"] });
-      toast.success(`${childName} entregue com segurança.`);
-      setCode("");
-      setPickedBy("");
-      onDone?.();
+      toast.success(`${childName} entregue com sucesso.`);
+      setTimeout(() => {
+        onDone?.();
+      }, 2000);
     },
     onError: (e: Error) => toast.error(e.message),
   });
 
+  if (isSuccess) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 space-y-4 animate-in zoom-in duration-500">
+        <div className="h-20 w-20 bg-primary/10 rounded-full flex items-center justify-center">
+          <CheckCircle2 className="h-10 w-10 text-primary animate-bounce" />
+        </div>
+        <div className="text-center space-y-1">
+          <h3 className="text-2xl font-serif">Retirada Confirmada!</h3>
+          <p className="text-muted-foreground">{childName} foi liberado(a) com segurança.</p>
+        </div>
+      </div>
+    );
+  }
+
   const authorized = (guardians ?? []).filter((g) => g.can_pickup);
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col items-center gap-2">
+    <div className="space-y-6">
+      <div className="flex flex-col items-center gap-3">
         <KidsPhoto
           value={child?.photo_url}
           alt={childName}
           variant="crianca"
-          className="h-32 w-32 rounded-2xl border-2 border-primary/20 shadow-xl"
+          className="h-32 w-32 rounded-3xl border-4 border-background shadow-2xl ring-1 ring-primary/10"
         />
-        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-          Identificação da criança
-        </span>
+        <div className="text-center">
+          <h2 className="text-2xl font-serif">{childName}</h2>
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary/70">
+            Conferência de Segurança
+          </span>
+        </div>
       </div>
 
-      <div className="border border-border rounded-sm p-3 bg-muted/30">
-        <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-2">
-          Autorizados a retirar — toque na foto de quem está levando
+      <div className="bg-card/50 border border-primary/5 rounded-3xl overflow-hidden shadow-sm">
+        <div className="bg-muted/30 px-4 py-3 border-b border-primary/5">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+            Responsáveis Autorizados
+          </span>
         </div>
-        {authorized.length === 0 ? (
-          <p className="text-sm text-destructive">
-            Nenhum responsável autorizado cadastrado. Chame a liderança antes de liberar.
-          </p>
-        ) : (
-          <ul className="space-y-1 text-sm">
-            {authorized.map((g) => (
-              <li
+        <div className="p-2 space-y-1 max-h-[300px] overflow-y-auto scrollbar-none">
+          {authorized.length === 0 ? (
+            <div className="flex items-center gap-3 p-4 text-destructive bg-destructive/5 rounded-2xl">
+              <AlertTriangle className="h-5 w-5 shrink-0" />
+              <p className="text-xs font-medium">
+                ALERTA: Nenhum responsável autorizado cadastrado. Não libere sem consultar a coordenação.
+              </p>
+            </div>
+          ) : (
+            authorized.map((g) => (
+              <div
                 key={g.id}
-                className={`flex items-start justify-between gap-3 p-2 rounded-md border transition-all ${
+                className={`group flex items-center justify-between gap-3 p-3 rounded-2xl border transition-all cursor-pointer ${
                   pickedBy === g.full_name
-                    ? "border-primary bg-primary/5"
-                    : "border-transparent hover:border-border hover:bg-muted/50"
+                    ? "border-primary bg-primary/5 shadow-inner"
+                    : "border-transparent hover:bg-accent/50"
                 }`}
+                onClick={() => setPickedBy(g.full_name)}
               >
-                <button
-                  type="button"
-                  className="flex gap-3 items-center text-left min-w-0"
-                  onClick={() => setPickedBy(g.full_name)}
-                >
+                <div className="flex gap-3 items-center min-w-0">
                   <KidsPhoto
                     value={g.photo_url}
                     alt={g.full_name}
                     variant="responsavel"
-                    className="h-12 w-12 rounded-full shrink-0"
+                    className="h-12 w-12 rounded-2xl shrink-0 shadow-sm transition-transform group-hover:scale-105"
                   />
-                  <span className="min-w-0">
+                  <div className="min-w-0">
                     <span className="font-medium text-sm block truncate">{g.full_name}</span>
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-mono">
                       {GUARDIAN_RELATION_LABEL[g.relation] ?? g.relation}
                       {g.is_primary && " · Principal"}
                     </span>
-                  </span>
-                </button>
+                  </div>
+                </div>
                 {g.phone && (
-                  <Button variant="ghost" size="icon" className="h-8 w-8 text-primary" asChild>
+                  <Button variant="ghost" size="icon" className="h-9 w-9 text-primary/60 hover:text-primary hover:bg-primary/10 rounded-xl" asChild>
                     <a
                       href={`https://wa.me/55${g.phone.replace(/\D/g, "")}?text=${encodeURIComponent(
-                        `Olá ${g.full_name}, aqui é do Kids da Igreja Atos sobre ${childName}.`,
+                        `Olá ${g.full_name}, aqui é do Kids da Igreja Atos. ${childName} está saindo da sala agora.`,
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      title="Enviar mensagem via WhatsApp"
+                      title="WhatsApp"
                     >
-                      <MessageSquare className="h-3.5 w-3.5" />
+                      <MessageSquare className="h-4 w-4" />
                     </a>
                   </Button>
                 )}
-              </li>
-            ))}
-          </ul>
-        )}
+              </div>
+            ))
+          )}
+        </div>
       </div>
 
-      <div className="space-y-2">
-        <Label>Código de segurança</Label>
-        <Input
-          value={code}
-          onChange={(e) => setCode(e.target.value.toUpperCase())}
-          placeholder="Ex.: A7KQ"
-          maxLength={6}
-          className="font-mono tracking-[0.3em] text-lg"
-        />
-      </div>
-      <div className="space-y-2">
-        <Label>Quem está retirando</Label>
-        <Input
-          value={pickedBy}
-          onChange={(e) => setPickedBy(e.target.value)}
-          placeholder="Nome de quem levou a criança"
-        />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-2">
+          <Label className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground ml-1">
+            Código de Segurança
+          </Label>
+          <Input
+            value={code}
+            onChange={(e) => setCode(e.target.value.toUpperCase())}
+            placeholder="????"
+            maxLength={6}
+            className="font-mono tracking-[0.4em] text-center text-xl h-12 rounded-2xl bg-background/50 border-primary/10 focus:ring-primary/20"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground ml-1">
+            Nome de quem retirou
+          </Label>
+          <Input
+            value={pickedBy}
+            onChange={(e) => setPickedBy(e.target.value)}
+            placeholder="Nome completo..."
+            className="h-12 rounded-2xl bg-background/50 border-primary/10 focus:ring-primary/20"
+          />
+        </div>
       </div>
 
-      <Button className="w-full" onClick={() => confirm.mutate()} disabled={confirm.isPending}>
-        Confirmar retirada
+      <Button 
+        className="w-full h-14 rounded-2xl text-lg font-serif shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 active:scale-[0.98] transition-all" 
+        onClick={() => confirm.mutate()} 
+        disabled={confirm.isPending || !code || !pickedBy}
+      >
+        {confirm.isPending ? "Confirmando..." : "Finalizar Retirada"}
       </Button>
     </div>
   );
@@ -190,32 +218,31 @@ interface CheckoutDialogProps {
   childName: string;
 }
 
-/** Retirada da criança a partir do painel de check-in. */
 export function CheckoutDialog({ checkin, childName }: CheckoutDialogProps) {
   const [open, setOpen] = useState(false);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" variant="outline">
-          <LogOut className="h-3.5 w-3.5" /> Entregar
+        <Button size="sm" variant="outline" className="rounded-xl border-primary/10 hover:bg-primary/5 hover:text-primary transition-all group">
+          <LogOut className="mr-1.5 h-3.5 w-3.5 group-hover:-translate-x-0.5 transition-transform" /> Entregar
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5 text-primary" /> Retirada de {childName}
+      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto rounded-[2rem] border-primary/5 p-6 sm:p-8 scrollbar-thin">
+        <DialogHeader className="mb-2">
+          <DialogTitle className="flex items-center gap-2 font-serif text-2xl">
+            <ShieldCheck className="h-6 w-6 text-primary" /> Fluxo de Saída
           </DialogTitle>
-          <DialogDescription>
-            Confira a foto do responsável e o código antes de liberar a criança.
+          <DialogDescription className="text-muted-foreground/80">
+            Confirme a identidade visual e o código de segurança do responsável.
           </DialogDescription>
         </DialogHeader>
 
         <CheckoutPanel checkin={checkin} childName={childName} onDone={() => setOpen(false)} />
 
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>
-            Fechar
+        <DialogFooter className="mt-4 pt-4 border-t border-primary/5">
+          <Button variant="ghost" onClick={() => setOpen(false)} className="rounded-xl">
+            Voltar
           </Button>
         </DialogFooter>
       </DialogContent>

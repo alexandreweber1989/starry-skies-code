@@ -94,7 +94,13 @@ export const createMemberAccount = createServerFn({ method: "POST" })
       email_confirm: true,
       user_metadata: { full_name: data.full_name },
     });
-    if (error) throw new Error(error.message);
+
+    if (error) {
+      if (error.message.includes("already registered")) {
+        throw new Error("Este e-mail já está cadastrado na plataforma.");
+      }
+      throw new Error(error.message);
+    }
     const userId = created.user?.id;
     if (!userId) throw new Error("Conta criada sem identificador.");
 
