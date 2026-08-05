@@ -98,7 +98,7 @@ function Landing() {
               <span className="h-px w-10 bg-foreground/40" />
               Est. 2014 · Ponta Grossa / PR
             </div>
-            <h1 className="font-serif font-semibold tracking-[-0.03em] text-[15vw] md:text-[10vw] lg:text-[9rem] leading-[0.88] uppercase">
+            <h1 className="font-serif font-semibold tracking-[-0.03em] text-[15vw] md:text-[10vw] lg:text-[9rem] leading-[0.88] uppercase animate-reveal">
               Uma casa <br />
               <span className="italic font-normal">construída</span> <br />
               sobre a rocha.
@@ -110,7 +110,7 @@ function Landing() {
                   uma igreja gerada no coração de um homem através da visão de Deus,
                   edificada sobre a rocha e família de famílias.
                 </p>
-                <div className="bg-primary/5 border border-primary/10 rounded-lg p-5 max-w-xl">
+                <div className="bg-primary/5 border border-primary/10 rounded-2xl p-6 max-w-xl animate-reveal-slow shadow-inner">
                   <p className="text-sm font-medium text-primary uppercase tracking-wider mb-1">Status da Implementação:</p>
                   <ul className="text-foreground font-serif text-lg leading-snug space-y-2">
                     <li>• Segurança Visual: Registro de fotos de crianças e responsáveis para conferência no check-out, garantindo que quem retira é de fato autorizado.</li>
@@ -218,7 +218,7 @@ function Landing() {
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-px bg-background/15 border border-background/15">
               {pilares.map((p) => (
-                <article key={p.n} className="bg-foreground p-8 flex flex-col gap-8 min-h-[240px] group hover:bg-background/[0.04] transition-colors">
+                <article key={p.n} className="bg-foreground p-8 flex flex-col gap-8 min-h-[240px] group hover:bg-background/[0.08] transition-all duration-500 hover:-translate-y-2 cursor-default">
                   <div className="font-mono text-xs tracking-[0.3em] text-background/50">{p.n}</div>
                   <div className="flex-1 flex flex-col justify-end gap-3">
                     <h3 className="font-serif text-2xl leading-tight">{p.nome}</h3>
@@ -246,7 +246,7 @@ function Landing() {
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border border border-border">
               {ministerios.map(({ icon: Icon, nome, tag }) => (
-                <div key={nome} className="bg-background p-8 flex items-start justify-between gap-6 hover:bg-secondary transition-colors group">
+                <div key={nome} className="bg-background/40 backdrop-blur-md p-8 flex items-start justify-between gap-6 hover:bg-secondary/80 transition-all duration-500 group border border-transparent hover:border-border/50 hover:shadow-lg hover:-translate-y-1 rounded-2xl">
                   <div>
                     <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">{tag}</div>
                     <div className="font-serif text-2xl mt-2">{nome}</div>

@@ -10,6 +10,23 @@
   --font-serif: "Syne", ui-sans-serif, system-ui, sans-serif;
 }
 
+@theme {
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-reveal: reveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  --animate-reveal-slow: reveal 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  @keyframes reveal {
+    0% { opacity: 0; transform: translateY(20px); filter: blur(8px); }
+    100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+  }
+}
+
+
 /*
  * Design system definition.
  *
