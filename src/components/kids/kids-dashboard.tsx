@@ -20,7 +20,7 @@ import { VisitorQueue } from "@/components/kids/visitor-queue";
 import { SessionDialog, EditSessionButton } from "@/components/kids/session-dialog";
 import { ChildDialog, EditChildButton } from "@/components/kids/child-dialog";
 import {
-  KIDS_CLASSROOM_LIST,
+  KIDS_CLASSROOMS,
   KIDS_CLASSROOM_LABEL,
   ageInYears,
   childDisplayName,
@@ -194,7 +194,7 @@ export function KidsCheckinDashboard() {
                   </SelectTrigger>
                   <SelectContent className="rounded-xl">
                     <SelectItem value="all">Todas as turmas</SelectItem>
-                    {KIDS_CLASSROOM_LIST.map((c) => (
+                    {KIDS_CLASSROOMS.map((c) => (
                       <SelectItem key={c.value} value={c.value}>
                         {c.label}
                       </SelectItem>
