@@ -213,6 +213,11 @@ export function CheckoutPanel({ checkin, childName, onDone }: CheckoutPanelProps
   );
 }
 
+interface CheckoutDialogProps {
+  checkin: KidsCheckin;
+  childName: string;
+}
+
 export function CheckoutDialog({ checkin, childName }: CheckoutDialogProps) {
   const [open, setOpen] = useState(false);
 
