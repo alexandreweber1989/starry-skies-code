@@ -59,6 +59,7 @@ export function MemberFormDialog({
 
   useEffect(() => {
     if (open && profile) setForm({ ...profile });
+    else if (open) setForm(EMPTY);
   }, [open, profile]);
 
   const set = (key: string) => (value: unknown) =>
@@ -235,138 +236,139 @@ export function MemberFormDialog({
             />
           </Section>
 
-          <Section title="Contato de emergência">
-            <TextField
-              label="Nome"
-              value={str("emergency_contact_name")}
-              onChange={set("emergency_contact_name")}
-            />
-            <TextField
-              label="Telefone"
-              value={str("emergency_contact_phone")}
-              onChange={set("emergency_contact_phone")}
-            />
-            <TextField
-              label="Parentesco"
-              value={str("emergency_contact_relation")}
-              onChange={set("emergency_contact_relation")}
-            />
+          <Section title="Contatos de emergência">
+            <TextField label="Nome do contato" value={str("emergency_contact_name")} onChange={set("emergency_contact_name")} />
+            <TextField label="Telefone" value={str("emergency_contact_phone")} onChange={set("emergency_contact_phone")} />
+            <TextField label="Parentesco" value={str("emergency_contact_relation")} onChange={set("emergency_contact_relation")} />
           </Section>
 
-          <Section title="Vida cristã e membresia">
-            <TextField label="Data da conversão" type="date" value={str("conversion_date")} onChange={set("conversion_date")} />
-            <Field label="Batizado nas águas">
+          <Section title="Vida cristã">
+            <TextField label="Data de conversão" type="date" value={str("conversion_date")} onChange={set("conversion_date")} />
+            <Field label="Batizado(a)">
               <div className="flex items-center gap-3 h-9">
                 <Switch checked={!!form.is_baptized} onCheckedChange={set("is_baptized")} />
                 <span className="text-sm text-muted-foreground">{form.is_baptized ? "Sim" : "Não"}</span>
               </div>
             </Field>
-            <TextField label="Data do batismo" type="date" value={str("baptism_date")} onChange={set("baptism_date")} />
-            <TextField label="Igreja onde foi batizado" value={str("baptism_church")} onChange={set("baptism_church")} />
-            <TextField label="Membro desde" type="date" value={str("member_since")} onChange={set("member_since")} />
-            <TextField label="Igreja de origem" value={str("previous_church")} onChange={set("previous_church")} />
-            {canEditMembership && (
+            {form.is_baptized && (
               <>
-                <Field label="Função eclesiástica" full>
-                  <ChurchFunctionCards
-                    value={str("church_function") || "membro"}
-                    onChange={(v) => set("church_function")(v)}
-                    gender={str("gender")}
-                    previewName={str("full_name")}
-                  />
-                </Field>
-                <SelectField
-                  label="Forma de entrada"
-                  value={str("membership_type")}
-                  onChange={set("membership_type")}
-                  options={MEMBERSHIP_TYPES}
-                />
-                <SelectField
-                  label="Situação na membresia"
-                  value={str("membership_status") || "ativo"}
-                  onChange={set("membership_status")}
-                  options={MEMBERSHIP_STATUS}
-                />
-                <TextField
-                  label="Data de desligamento"
-                  type="date"
-                  value={str("membership_end_date")}
-                  onChange={set("membership_end_date")}
-                />
+                <TextField label="Data do batismo" type="date" value={str("baptism_date")} onChange={set("baptism_date")} />
+                <TextField label="Igreja do batismo" value={str("baptism_church")} onChange={set("baptism_church")} />
               </>
             )}
+            <TextField label="Igreja anterior" value={str("previous_church")} onChange={set("previous_church")} />
           </Section>
 
-          <Section title="Formação e serviço">
-            <Field label="Cursos e encontros concluídos" full>
-              <div className="grid sm:grid-cols-2 gap-2">
-                {COURSE_OPTIONS.map((course) => {
-                  const checked = Array.isArray(form.courses) && form.courses.includes(course);
-                  return (
-                    <label key={course} className="flex items-center gap-2 text-sm">
-                      <Checkbox
-                        checked={checked}
-                        onCheckedChange={(v) => toggleCourse(course, v === true)}
-                      />
-                      {course}
-                    </label>
-                  );
-                })}
-              </div>
-            </Field>
-            <Field label="Dons e talentos" full>
-              <Textarea
-                rows={2}
-                maxLength={500}
-                value={str("gifts")}
-                onChange={(e) => set("gifts")(e.target.value)}
-                placeholder="Ex.: canto, instrumentos, ensino, intercessão..."
-              />
-            </Field>
-            <Field label="Disponibilidade para servir" full>
-              <Textarea
-                rows={2}
-                maxLength={300}
-                value={str("availability")}
-                onChange={(e) => set("availability")(e.target.value)}
-                placeholder="Ex.: domingo à noite, quartas, sábados pela manhã"
-              />
-            </Field>
-          </Section>
-
-          <Section title="Saúde e observações">
+          <Section title="Informações de saúde">
             <SelectField
               label="Tipo sanguíneo"
               value={str("blood_type")}
               onChange={set("blood_type")}
               options={BLOOD_TYPES.map((b) => ({ value: b, label: b }))}
             />
-            <TextField label="Alergias" value={str("allergies")} onChange={set("allergies")} />
+            <TextField label="Alergias" value={str("allergies")} onChange={set("allergies")} full />
             <Field label="Observações de saúde" full>
               <Textarea
-                rows={2}
-                maxLength={500}
                 value={str("health_notes")}
                 onChange={(e) => set("health_notes")(e.target.value)}
+                placeholder="Ex.: medicações contínuas, restrições físicas..."
+                className="resize-none"
               />
             </Field>
-            <Field label="Testemunho / bio" full>
-              <Textarea rows={3} maxLength={1000} value={str("bio")} onChange={(e) => set("bio")(e.target.value)} />
-            </Field>
-            {canEditMembership && (
-              <Field label="Observações pastorais (internas)" full>
-                <Textarea rows={3} maxLength={1000} value={str("notes")} onChange={(e) => set("notes")(e.target.value)} />
-              </Field>
-            )}
           </Section>
+
+          <Section title="Serviço e talentos">
+            <Field label="Cursos concluídos" full>
+              <div className="grid sm:grid-cols-2 gap-2">
+                {COURSE_OPTIONS.map((c) => (
+                  <div key={c} className="flex items-center gap-2">
+                    <Checkbox
+                      id={`course-${c}`}
+                      checked={Array.isArray(form.courses) && form.courses.includes(c)}
+                      onCheckedChange={(checked) => toggleCourse(c, !!checked)}
+                    />
+                    <label htmlFor={`course-${c}`} className="text-sm leading-none">
+                      {c}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </Field>
+            <Field label="Dons e talentos" full>
+              <Textarea
+                value={str("gifts")}
+                onChange={(e) => set("gifts")(e.target.value)}
+                placeholder="No que você gosta de servir?"
+                className="resize-none"
+              />
+            </Field>
+            <Field label="Disponibilidade" full>
+              <Textarea
+                value={str("availability")}
+                onChange={(e) => set("availability")(e.target.value)}
+                placeholder="Quais dias e horários você pode servir?"
+                className="resize-none"
+              />
+            </Field>
+          </Section>
+
+          <Section title="Biografia e testemunho">
+            <Field label="Sua história" full>
+              <Textarea
+                value={str("bio")}
+                onChange={(e) => set("bio")(e.target.value)}
+                className="min-h-[120px] resize-none"
+              />
+            </Field>
+          </Section>
+
+          {canEditMembership && (
+            <Section title="Administração (somente secretaria)">
+              <SelectField
+                label="Tipo de entrada"
+                value={str("membership_type")}
+                onChange={set("membership_type")}
+                options={MEMBERSHIP_TYPES}
+              />
+              <TextField label="Membro desde" type="date" value={str("member_since")} onChange={set("member_since")} />
+              <SelectField
+                label="Situação atual"
+                value={str("membership_status")}
+                onChange={set("membership_status")}
+                options={MEMBERSHIP_STATUS}
+              />
+              <TextField
+                label="Data de saída"
+                type="date"
+                value={str("membership_end_date")}
+                onChange={set("membership_end_date")}
+              />
+              <div className="sm:col-span-2">
+                <Field label="Função eclesiástica (Tratamento)">
+                  <ChurchFunctionCards
+                    value={str("church_function") || "membro"}
+                    onChange={set("church_function")}
+                    gender={str("gender")}
+                  />
+                </Field>
+              </div>
+              <Field label="Observações administrativas" full>
+                <Textarea
+                  value={str("notes")}
+                  onChange={(e) => set("notes")(e.target.value)}
+                  className="resize-none"
+                />
+              </Field>
+            </Section>
+          )}
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="sticky bottom-0 bg-background pt-4 border-t mt-4 pb-2">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
           <Button onClick={() => save.mutate()} disabled={save.isPending}>
-            {save.isPending ? "Salvando..." : "Salvar ficha"}
+            {save.isPending ? "Salvando..." : "Salvar alterações"}
           </Button>
         </DialogFooter>
       </DialogContent>
