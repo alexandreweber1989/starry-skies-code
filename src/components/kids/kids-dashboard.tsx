@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Baby, CalendarDays, QrCode, ShieldCheck, Users } from "lucide-react";
+import { Baby, CalendarDays, QrCode, ShieldCheck, Users, Search, Filter } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ import { CheckinBoard } from "@/components/kids/checkin-board";
 import { VisitorQueue } from "@/components/kids/visitor-queue";
 import { SessionDialog, EditSessionButton } from "@/components/kids/session-dialog";
 import { ChildDialog, EditChildButton } from "@/components/kids/child-dialog";
+import { KidsPhoto } from "@/components/kids/kids-photo";
 import {
   KIDS_CLASSROOMS,
   KIDS_CLASSROOM_LABEL,
@@ -28,14 +29,6 @@ import {
   type KidsSession,
 } from "@/lib/kids";
 
-/**
- * Painel do Ministério Infantil.
- *
- * Segurança: a leitura de crianças/sessões é controlada por RLS no banco —
- * este componente apenas reflete o que o usuário tem permissão de ver.
- * Ações de operação (criar sessão, cadastrar criança, aprovar visitante)
- * ficam visíveis somente para a equipe Kids/admin.
- */
 export function KidsCheckinDashboard() {
   const { isKidsAdmin } = useAuth();
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -68,7 +61,6 @@ export function KidsCheckinDashboard() {
     },
   });
 
-  /** Sessão selecionada, com fallback para a mais recente disponível. */
   const activeSession = useMemo<KidsSession | null>(() => {
     const list = sessions ?? [];
     if (list.length === 0) return null;
@@ -89,18 +81,18 @@ export function KidsCheckinDashboard() {
   }, [children, search, classroom]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in duration-500">
       {/* Barra de operação: sessão do dia + acesso ao QR Code dos visitantes */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border border-border bg-card rounded-sm p-4 sticky top-0 z-20 backdrop-blur-sm">
-        <div className="flex flex-col gap-1">
-          <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-            Culto / sessão
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border border-border bg-card/50 rounded-2xl p-6 sticky top-0 z-20 backdrop-blur-xl shadow-lg transition-all duration-300">
+        <div className="flex flex-col gap-1.5 min-w-0">
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary/70">
+            Sessão Ativa
           </span>
           {loadingSessions ? (
-            <span className="text-sm text-muted-foreground">Carregando sessões…</span>
+            <div className="h-10 w-48 bg-muted animate-pulse rounded-lg" />
           ) : (sessions ?? []).length === 0 ? (
-            <span className="text-sm text-muted-foreground">
-              Nenhuma sessão criada ainda.
+            <span className="text-sm text-muted-foreground italic">
+              Aguardando criação de sessão...
             </span>
           ) : (
             <div className="flex items-center gap-2">
@@ -108,12 +100,12 @@ export function KidsCheckinDashboard() {
                 value={activeSession?.id ?? ""}
                 onValueChange={(v) => setSessionId(v)}
               >
-                <SelectTrigger className="w-full sm:w-80" aria-label="Selecionar sessão">
+                <SelectTrigger className="w-full sm:w-80 bg-background/50 hover:bg-background transition-colors border-primary/10 rounded-xl" aria-label="Selecionar sessão">
                   <SelectValue placeholder="Selecione a sessão" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="rounded-xl border-primary/10">
                   {(sessions ?? []).map((s) => (
-                    <SelectItem key={s.id} value={s.id}>
+                    <SelectItem key={s.id} value={s.id} className="rounded-lg">
                       {new Date(`${s.session_date}T00:00:00`).toLocaleDateString("pt-BR")} · {s.title}
                     </SelectItem>
                   ))}
@@ -124,121 +116,150 @@ export function KidsCheckinDashboard() {
           )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <Button asChild variant="outline" size="sm">
+        <div className="flex flex-wrap items-center gap-3 shrink-0">
+          <Button asChild variant="outline" size="sm" className="rounded-xl hover:scale-105 active:scale-95 transition-all">
             <Link to="/kids/visitante" search={{ kiosk: true }}>
-              <QrCode className="mr-1.5 h-4 w-4" /> Tela do QR Code
+              <QrCode className="mr-2 h-4 w-4" /> Kiosk Visitantes
             </Link>
           </Button>
           {isKidsAdmin && <SessionDialog />}
         </div>
       </div>
 
-      <Tabs defaultValue="checkin">
-        <TabsList>
-          <TabsTrigger value="checkin">
-            <ShieldCheck className="mr-1.5 h-4 w-4" /> Check-in
+      <Tabs defaultValue="checkin" className="w-full">
+        <TabsList className="bg-card/50 p-1 rounded-2xl border border-primary/5 h-12">
+          <TabsTrigger value="checkin" className="rounded-xl px-6 data-[state=active]:bg-background data-[state=active]:shadow-sm">
+            <ShieldCheck className="mr-2 h-4 w-4" /> Check-in
           </TabsTrigger>
-          <TabsTrigger value="visitantes">
-            <Users className="mr-1.5 h-4 w-4" /> Visitantes
+          <TabsTrigger value="visitantes" className="rounded-xl px-6 data-[state=active]:bg-background data-[state=active]:shadow-sm">
+            <Users className="mr-2 h-4 w-4" /> Visitantes
           </TabsTrigger>
-          <TabsTrigger value="criancas">
-            <Baby className="mr-1.5 h-4 w-4" /> Crianças
+          <TabsTrigger value="criancas" className="rounded-xl px-6 data-[state=active]:bg-background data-[state=active]:shadow-sm">
+            <Baby className="mr-2 h-4 w-4" /> Cadastro
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="checkin" className="mt-6">
+        <TabsContent value="checkin" className="mt-8 focus-visible:outline-none">
           {activeSession ? (
             <CheckinBoard session={activeSession} children={children ?? []} />
           ) : (
             <EmptyState
-              icon={<CalendarDays className="h-5 w-5 text-primary" />}
-              title="Nenhuma sessão ativa"
-              description="Crie um culto/sessão para começar a registrar as entradas das crianças."
+              icon={<CalendarDays className="h-8 w-8 text-primary/40" />}
+              title="Aguardando Sessão"
+              description="Inicie um novo culto ou evento para habilitar o painel de check-in."
             />
           )}
         </TabsContent>
 
-        <TabsContent value="visitantes" className="mt-6">
-          <VisitorQueue session={activeSession} churchId={activeSession?.church_id ?? null} />
+        <TabsContent value="visitantes" className="mt-8 focus-visible:outline-none">
+          <div className="bg-card/30 border border-primary/5 rounded-3xl p-6">
+            <VisitorQueue session={activeSession} churchId={activeSession?.church_id ?? null} />
+          </div>
         </TabsContent>
 
-        <TabsContent value="criancas" className="mt-6 space-y-4">
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar criança por nome ou apelido"
-              className="sm:max-w-sm"
-              aria-label="Buscar crianças"
-            />
-            <Select value={classroom} onValueChange={setClassroom}>
-              <SelectTrigger className="sm:w-56" aria-label="Filtrar por turma">
-                <SelectValue placeholder="Todas as turmas" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas as turmas</SelectItem>
-                {KIDS_CLASSROOMS.map((c) => (
-                  <SelectItem key={c.value} value={c.value}>
-                    {c.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <span className="self-center font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-              {filteredChildren.length} {filteredChildren.length === 1 ? "criança" : "crianças"}
-            </span>
-            {isKidsAdmin && (
-              <div className="sm:ml-auto">
-                <ChildDialog />
+        <TabsContent value="criancas" className="mt-8 space-y-6 focus-visible:outline-none">
+          <div className="flex flex-col gap-4 sm:flex-row items-end sm:items-center bg-card/30 border border-primary/5 p-4 rounded-2xl shadow-sm">
+            <div className="relative flex-1 w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Nome ou apelido da criança..."
+                className="pl-10 bg-background/50 border-primary/10 rounded-xl focus:ring-primary/20"
+                aria-label="Buscar crianças"
+              />
+            </div>
+            
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              <div className="relative flex-1 sm:w-56">
+                <Filter className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
+                <Select value={classroom} onValueChange={setClassroom}>
+                  <SelectTrigger className="pl-10 bg-background/50 border-primary/10 rounded-xl" aria-label="Filtrar por turma">
+                    <SelectValue placeholder="Turma" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl">
+                    <SelectItem value="all">Todas as turmas</SelectItem>
+                    {KIDS_CLASSROOMS.map((c) => (
+                      <SelectItem key={c.value} value={c.value}>
+                        {c.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-            )}
+
+              {isKidsAdmin && <ChildDialog />}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between px-2">
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary/70">
+              Listagem Geral ({filteredChildren.length})
+            </span>
           </div>
 
           {loadingChildren ? (
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-32 animate-pulse rounded-sm border border-border bg-muted/40" />
+                <div key={i} className="h-40 animate-pulse rounded-3xl border border-primary/5 bg-card/50" />
               ))}
             </div>
           ) : filteredChildren.length === 0 ? (
             <EmptyState
-              icon={<Baby className="h-5 w-5 text-primary" />}
-              title="Nenhuma criança encontrada"
-              description="Cadastre uma criança ou ajuste os filtros de busca."
+              icon={<Baby className="h-8 w-8 text-primary/40" />}
+              title="Sem resultados"
+              description="Não encontramos nenhuma criança com estes critérios de busca."
             />
           ) : (
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {filteredChildren.map((child) => {
                 const age = ageInYears(child.birth_date);
                 return (
                   <article
                     key={child.id}
-                    className="flex flex-col rounded-sm border border-border bg-card p-4"
+                    className="group relative flex flex-col rounded-3xl border border-primary/5 bg-card hover:bg-accent/50 p-5 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 overflow-hidden"
                   >
-                    <div className="flex items-start justify-between gap-2">
-                      <h3 className="font-serif text-lg leading-tight">
-                        {childDisplayName(child)}
-                      </h3>
-                      <Badge variant="secondary">
-                        {KIDS_CLASSROOM_LABEL[child.classroom] ?? "A definir"}
-                      </Badge>
+                    <div className="flex gap-4 items-center">
+                      <KidsPhoto 
+                        value={child.photo_url} 
+                        alt={child.full_name} 
+                        variant="crianca" 
+                        className="h-16 w-16 rounded-2xl shadow-md group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-serif text-lg leading-tight truncate group-hover:text-primary transition-colors">
+                          {childDisplayName(child)}
+                        </h3>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          <Badge variant="secondary" className="bg-primary/5 text-primary border-none rounded-lg text-[10px] py-0 px-2 uppercase tracking-wider font-mono">
+                            {KIDS_CLASSROOM_LABEL[child.classroom] ?? "???"}
+                          </Badge>
+                          <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground self-center">
+                            {age === null ? "S/I" : `${age}a`}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                      {age === null ? "Idade não informada" : `${age} anos`}
-                    </p>
-                    {child.allergies && (
-                      <p className="mt-2 text-sm text-destructive">
-                        Alergias: {child.allergies}
-                      </p>
+                    
+                    {(child.allergies || child.special_needs) && (
+                      <div className="mt-4 pt-4 border-t border-primary/5 space-y-1">
+                        {child.allergies && (
+                          <p className="text-[11px] text-destructive leading-relaxed flex items-center gap-1.5">
+                            <span className="h-1 w-1 rounded-full bg-destructive shrink-0" />
+                            Alergia: {child.allergies}
+                          </p>
+                        )}
+                        {child.special_needs && (
+                          <p className="text-[11px] text-muted-foreground leading-relaxed flex items-center gap-1.5">
+                            <span className="h-1 w-1 rounded-full bg-primary/40 shrink-0" />
+                            {child.special_needs}
+                          </p>
+                        )}
+                      </div>
                     )}
-                    {child.special_needs && (
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        Cuidados: {child.special_needs}
-                      </p>
-                    )}
+                    
                     {isKidsAdmin && (
-                      <div className="mt-4 flex items-center gap-2">
+                      <div className="mt-auto pt-4 flex opacity-0 group-hover:opacity-100 transition-opacity">
                         <EditChildButton child={child} />
                       </div>
                     )}
@@ -263,10 +284,14 @@ function EmptyState({
   description: string;
 }) {
   return (
-    <div className="flex flex-col items-center gap-2 rounded-sm border border-dashed border-border bg-card px-6 py-14 text-center">
-      {icon}
-      <h3 className="font-serif text-xl">{title}</h3>
-      <p className="max-w-sm text-sm text-muted-foreground">{description}</p>
+    <div className="flex flex-col items-center gap-4 rounded-[2rem] border border-dashed border-primary/20 bg-card/20 px-6 py-20 text-center animate-in zoom-in duration-300">
+      <div className="p-4 bg-background rounded-full shadow-sm ring-1 ring-primary/5">
+        {icon}
+      </div>
+      <div className="space-y-1">
+        <h3 className="font-serif text-2xl text-foreground/80">{title}</h3>
+        <p className="max-w-xs text-sm text-muted-foreground/70">{description}</p>
+      </div>
     </div>
   );
 }
