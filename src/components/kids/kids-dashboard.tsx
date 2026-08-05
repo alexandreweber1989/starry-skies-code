@@ -91,7 +91,7 @@ export function KidsCheckinDashboard() {
   return (
     <div className="space-y-6">
       {/* Barra de operação: sessão do dia + acesso ao QR Code dos visitantes */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border border-border bg-card rounded-sm p-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border border-border bg-card rounded-sm p-4 sticky top-0 z-20 backdrop-blur-sm">
         <div className="flex flex-col gap-1">
           <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
             Culto / sessão
