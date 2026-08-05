@@ -16,6 +16,7 @@ import {
   Baby,
   ChevronRight,
   Menu,
+  LucideIcon,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { useAuth } from "@/lib/auth-context";
@@ -27,7 +28,18 @@ import { QuickActions } from "@/components/quick-actions";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
-const nav = [
+interface NavItem {
+  to: string;
+  label: string;
+  icon: LucideIcon;
+}
+
+interface NavGroup {
+  group: string;
+  items: NavItem[];
+}
+
+const nav: NavGroup[] = [
   { group: "Principal", items: [
     { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { to: "/agenda", label: "Calendário", icon: CalendarDays },
@@ -45,7 +57,7 @@ const nav = [
     { to: "/cantina", label: "Cantina", icon: Coffee },
     { to: "/igrejas", label: "Igrejas", icon: Church },
   ]}
-] as const;
+];
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { user, isAdmin, signOut } = useAuth();
