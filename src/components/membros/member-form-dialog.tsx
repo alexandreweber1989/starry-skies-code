@@ -150,7 +150,7 @@ export function MemberFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[88vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 hover:scrollbar-thumb-primary/30">
         <DialogHeader>
           <DialogTitle className="font-serif text-2xl">Ficha de membro</DialogTitle>
           <DialogDescription>
