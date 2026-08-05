@@ -45,7 +45,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const sidebarContent = (
-    <div className="flex flex-col h-full bg-sidebar text-sidebar-foreground">
+    <div className="flex flex-col h-full bg-sidebar text-sidebar-foreground border-r border-sidebar-border shadow-2xl">
       <div className="px-6 py-8 border-b border-sidebar-border">
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-sm bg-sidebar-primary/20 flex items-center justify-center">
@@ -118,7 +118,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </aside>
 
         <main className="min-w-0 flex flex-col">
-          <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background/95 px-4 backdrop-blur-sm lg:px-10 transition-all duration-300">
+          <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border/50 bg-background/80 px-4 backdrop-blur-xl lg:px-10 transition-all duration-300 shadow-sm">
             <div className="flex items-center gap-2 lg:hidden">
               <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
                 <SheetTrigger asChild>
@@ -155,14 +155,14 @@ export function AppShell({ children }: { children: ReactNode }) {
             </div>
           </header>
 
-          <nav className="lg:hidden flex overflow-x-auto gap-1 px-2 py-2 border-b border-border bg-muted/30 scrollbar-none">
+          <nav className="lg:hidden flex overflow-x-auto gap-2 px-4 py-3 border-b border-border/50 bg-muted/40 backdrop-blur-md scrollbar-none sticky top-16 z-20">
             {nav.map((item) => {
               const active = pathname === item.to || pathname.startsWith(item.to + "/");
               return (
                 <Link
                   key={item.to}
                   to={item.to}
-                  className={`px-3 py-1.5 rounded-full text-[10px] font-mono uppercase tracking-widest whitespace-nowrap transition-all ${
+                  className={`px-4 py-2 rounded-full text-[10px] font-mono uppercase tracking-widest whitespace-nowrap transition-all duration-300 shadow-sm ${
                     active 
                       ? "bg-primary text-primary-foreground shadow-sm font-bold" 
                       : "text-muted-foreground hover:bg-primary/5 hover:text-foreground"
@@ -196,8 +196,9 @@ export function PageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <div className="border-b border-border bg-card/50 backdrop-blur-sm">
-      <div className="max-w-6xl mx-auto px-6 lg:px-10 py-12 lg:py-16 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+    <div className="border-b border-border/40 bg-card/40 backdrop-blur-xl relative overflow-hidden group">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+      <div className="max-w-6xl mx-auto px-6 lg:px-10 py-16 lg:py-20 flex flex-col md:flex-row md:items-end md:justify-between gap-8 relative z-10">
         <div className="space-y-4">
           {eyebrow && (
             <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-primary font-bold">

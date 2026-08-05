@@ -83,7 +83,7 @@ export function KidsCheckinDashboard() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Barra de operação: sessão do dia + acesso ao QR Code dos visitantes */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border border-border bg-card/50 rounded-2xl p-6 sticky top-0 z-20 backdrop-blur-xl shadow-lg transition-all duration-300">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border border-border/50 bg-card/60 rounded-[2rem] p-8 sticky top-4 z-20 backdrop-blur-2xl shadow-2xl shadow-black/5 transition-all duration-500 hover:shadow-black/10 hover:border-primary/20">
         <div className="flex flex-col gap-1.5 min-w-0">
           <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary/70">
             Sessão Ativa
@@ -127,15 +127,15 @@ export function KidsCheckinDashboard() {
       </div>
 
       <Tabs defaultValue="checkin" className="w-full">
-        <TabsList className="bg-card/50 p-1 rounded-2xl border border-primary/5 h-12">
-          <TabsTrigger value="checkin" className="rounded-xl px-6 data-[state=active]:bg-background data-[state=active]:shadow-sm">
-            <ShieldCheck className="mr-2 h-4 w-4" /> Check-in
+        <TabsList className="bg-muted/50 p-1.5 rounded-2xl border border-primary/5 h-14 backdrop-blur-md">
+          <TabsTrigger value="checkin" className="rounded-xl px-8 h-full data-[state=active]:bg-background data-[state=active]:shadow-lg data-[state=active]:scale-105 transition-all duration-300 font-medium">
+            <ShieldCheck className="mr-2 h-4 w-4 text-primary" /> Check-in
           </TabsTrigger>
-          <TabsTrigger value="visitantes" className="rounded-xl px-6 data-[state=active]:bg-background data-[state=active]:shadow-sm">
-            <Users className="mr-2 h-4 w-4" /> Visitantes
+          <TabsTrigger value="visitantes" className="rounded-xl px-8 h-full data-[state=active]:bg-background data-[state=active]:shadow-lg data-[state=active]:scale-105 transition-all duration-300 font-medium">
+            <Users className="mr-2 h-4 w-4 text-primary" /> Visitantes
           </TabsTrigger>
-          <TabsTrigger value="criancas" className="rounded-xl px-6 data-[state=active]:bg-background data-[state=active]:shadow-sm">
-            <Baby className="mr-2 h-4 w-4" /> Cadastro
+          <TabsTrigger value="criancas" className="rounded-xl px-8 h-full data-[state=active]:bg-background data-[state=active]:shadow-lg data-[state=active]:scale-105 transition-all duration-300 font-medium">
+            <Baby className="mr-2 h-4 w-4 text-primary" /> Cadastro
           </TabsTrigger>
         </TabsList>
 
@@ -152,7 +152,7 @@ export function KidsCheckinDashboard() {
         </TabsContent>
 
         <TabsContent value="visitantes" className="mt-8 focus-visible:outline-none">
-          <div className="bg-card/30 border border-primary/5 rounded-3xl p-6">
+          <div className="bg-card/40 border border-border/50 rounded-[2.5rem] p-10 shadow-2xl shadow-black/5 backdrop-blur-xl">
             <VisitorQueue session={activeSession} churchId={activeSession?.church_id ?? null} />
           </div>
         </TabsContent>
