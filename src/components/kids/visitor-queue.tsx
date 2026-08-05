@@ -231,24 +231,26 @@ export function VisitorQueue({ session, churchId }: VisitorQueueProps) {
                 </p>
               )}
 
-              <div className="mt-4 flex items-center gap-2">
+              <div className="mt-6 flex items-center gap-3">
                 <Button
-                  size="sm"
+                  className="flex-1 h-12 rounded-2xl shadow-lg shadow-primary/10 hover:-translate-y-1 transition-all"
                   onClick={() => approve.mutate(req)}
                   disabled={approve.isPending || reject.isPending}
                 >
-                  <Sticker className="h-3.5 w-3.5" />
-                  {session ? "Aprovar e fazer check-in" : "Aprovar cadastro"}
+                  <Sticker className="mr-2 h-4 w-4" />
+                  {session ? "Aprovar Check-in" : "Validar Cadastro"}
                 </Button>
                 <Button
-                  size="sm"
                   variant="ghost"
+                  className="h-12 w-12 rounded-2xl hover:bg-destructive/10 hover:text-destructive transition-colors p-0"
                   onClick={() => reject.mutate(req)}
                   disabled={approve.isPending || reject.isPending}
+                  title="Descartar"
                 >
-                  <X className="h-3.5 w-3.5" /> Descartar
+                  <X className="h-5 w-5" />
                 </Button>
               </div>
+
             </li>
           ))}
         </ul>
