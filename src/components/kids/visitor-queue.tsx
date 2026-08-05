@@ -20,6 +20,7 @@ import {
   shortTime,
   type KidsSession,
 } from "@/lib/kids";
+import { cn } from "@/lib/utils";
 
 export interface VisitorRequest {
   id: string;
@@ -43,16 +44,10 @@ export interface VisitorRequest {
 }
 
 interface VisitorQueueProps {
-  /** Sessão ativa: quando existe, aprovar já faz o check-in e gera a etiqueta. */
   session: KidsSession | null;
   churchId?: string | null;
 }
 
-/**
- * Fila de conferência dos cadastros feitos pelos pais no QR Code.
- * Nada entra na sala sem passar por aqui — a equipe confere o documento
- * do responsável antes de aprovar.
- */
 export function VisitorQueue({ session, churchId }: VisitorQueueProps) {
   const qc = useQueryClient();
 
@@ -74,7 +69,6 @@ export function VisitorQueue({ session, churchId }: VisitorQueueProps) {
     mutationFn: async (req: VisitorRequest) => {
       let childId = req.child_id;
 
-      // Família nova: cria a criança e o responsável autorizado.
       if (!childId) {
         const { data: child, error: childError } = await supabase
           .from("kids_children")
@@ -110,7 +104,6 @@ export function VisitorQueue({ session, churchId }: VisitorQueueProps) {
         if (guardianError) throw guardianError;
       }
 
-      // Check-in imediato quando há sessão aberta.
       let code: string | null = null;
       if (session) {
         const { data: existing } = await supabase
@@ -173,80 +166,97 @@ export function VisitorQueue({ session, churchId }: VisitorQueueProps) {
   const list = requests ?? [];
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h3 className="font-serif text-2xl">Visitantes aguardando conferência</h3>
-          <p className="text-muted-foreground text-sm mt-1">
-            Confira o documento de quem trouxe a criança antes de aprovar. A aprovação
-            {session ? " já gera a etiqueta com o código de retirada." : " cadastra a criança."}
+    <div className="space-y-8">
+      <div className="flex flex-wrap items-center justify-between gap-6 px-2">
+        <div className="space-y-1">
+          <h3 className="font-serif text-3xl tracking-tight">Fila de Visitantes</h3>
+          <p className="text-muted-foreground/60 text-sm max-w-lg leading-relaxed">
+            Confira o documento do responsável antes de validar. {session ? "O check-in será automático após a aprovação." : "Isso criará o cadastro permanente da criança."}
           </p>
         </div>
         <QrDialog />
       </div>
 
       {list.length === 0 ? (
-        <div className="border border-dashed border-border rounded-sm p-10 text-center">
-          <ShieldQuestion className="h-8 w-8 text-muted-foreground mx-auto" />
-          <h4 className="font-serif text-xl mt-4">Nenhum cadastro pendente</h4>
-          <p className="text-muted-foreground mt-2">
-            Assim que um pai preencher o QR Code da porta, ele aparece aqui na hora.
+        <div className="flex flex-col items-center justify-center py-24 px-6 border-2 border-dashed border-border/50 rounded-[3rem] bg-muted/10 animate-reveal">
+          <div className="h-20 w-20 rounded-full bg-background flex items-center justify-center shadow-xl shadow-black/5 ring-1 ring-border/50 mb-6">
+            <ShieldQuestion className="h-10 w-10 text-muted-foreground/30" />
+          </div>
+          <h4 className="font-serif text-2xl tracking-tight">Fila vazia</h4>
+          <p className="max-w-xs mx-auto text-sm text-muted-foreground leading-relaxed mt-2 text-center">
+            Novos cadastros via QR Code aparecerão aqui em tempo real para sua conferência.
           </p>
         </div>
       ) : (
-        <ul className="grid md:grid-cols-2 gap-3">
+        <ul className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {list.map((req) => (
-            <li key={req.id} className="border border-border bg-card rounded-sm p-4">
-              <div className="flex items-start justify-between gap-3">
+            <li key={req.id} className="group relative flex flex-col bg-card/60 backdrop-blur-md border border-border/50 rounded-[2.5rem] p-6 transition-all duration-500 hover:shadow-2xl hover:shadow-black/10 hover:border-primary/20">
+              <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
-                  <h4 className="font-serif text-lg truncate">
+                  <h4 className="font-serif text-2xl truncate tracking-tight group-hover:text-primary transition-colors">
                     {req.child_nickname
                       ? `${req.child_full_name} (${req.child_nickname})`
                       : req.child_full_name}
                   </h4>
-                  <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mt-1">
-                    {KIDS_CLASSROOM_LABEL[req.classroom] ?? req.classroom} ·{" "}
-                    {shortTime(req.created_at)}
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground/80 px-2 py-0.5 rounded-lg bg-muted/50 border border-border/40">
+                      {KIDS_CLASSROOM_LABEL[req.classroom] ?? req.classroom}
+                    </span>
+                    <span className="text-[10px] font-mono text-muted-foreground/50">
+                      {shortTime(req.created_at)}
+                    </span>
                   </div>
                 </div>
-                <Badge variant="secondary">{req.child_id ? "Retorno" : "Visitante"}</Badge>
+                <Badge variant="secondary" className="rounded-full px-3 py-1 bg-primary/10 text-primary border-primary/20 text-[10px] font-bold uppercase tracking-wider">
+                  {req.child_id ? "Retorno" : "Visitante"}
+                </Badge>
               </div>
 
-              <dl className="mt-3 text-sm space-y-1">
-                <Line
-                  label="Responsável"
-                  value={`${req.guardian_full_name} · ${
-                    GUARDIAN_RELATION_LABEL[req.guardian_relation] ?? req.guardian_relation
-                  }`}
-                />
-                <Line label="Telefone" value={req.guardian_phone} />
-                {req.guardian_document && <Line label="Documento" value={req.guardian_document} />}
-                {req.other_pickup && <Line label="Também retiram" value={req.other_pickup} />}
-                {req.notes && <Line label="Observações" value={req.notes} />}
-              </dl>
+              <div className="mt-6 p-5 rounded-2xl bg-muted/20 border border-border/40 space-y-4">
+                <dl className="grid grid-cols-1 gap-y-3">
+                  <Line
+                    label="Responsável"
+                    value={`${req.guardian_full_name} · ${
+                      GUARDIAN_RELATION_LABEL[req.guardian_relation] ?? req.guardian_relation
+                    }`}
+                  />
+                  <Line label="Telefone" value={req.guardian_phone} />
+                  {req.guardian_document && <Line label="Documento" value={req.guardian_document} />}
+                  {req.other_pickup && <Line label="Autorizados" value={req.other_pickup} />}
+                </dl>
+                
+                {req.notes && (
+                  <div className="pt-3 border-t border-border/40 italic text-xs text-muted-foreground">
+                    Obs: {req.notes}
+                  </div>
+                )}
+              </div>
 
               {(req.allergies || req.health_notes || req.special_needs) && (
-                <p className="mt-3 text-xs text-destructive">
-                  {[req.allergies, req.health_notes, req.special_needs].filter(Boolean).join(" · ")}
-                </p>
+                <div className="mt-4 p-3 rounded-xl bg-destructive/5 border border-destructive/10">
+                   <p className="text-[11px] leading-relaxed text-destructive/80 font-medium">
+                     {[req.allergies, req.health_notes, req.special_needs].filter(Boolean).join(" · ")}
+                   </p>
+                </div>
               )}
 
-              <div className="mt-4 flex items-center gap-2">
+              <div className="mt-6 flex items-center gap-3">
                 <Button
-                  size="sm"
+                  className="flex-1 h-12 rounded-2xl shadow-lg shadow-primary/10 hover:-translate-y-1 transition-all"
                   onClick={() => approve.mutate(req)}
                   disabled={approve.isPending || reject.isPending}
                 >
-                  <Sticker className="h-3.5 w-3.5" />
-                  {session ? "Aprovar e fazer check-in" : "Aprovar cadastro"}
+                  <Sticker className="mr-2 h-4 w-4" />
+                  {session ? "Aprovar Check-in" : "Validar Cadastro"}
                 </Button>
                 <Button
-                  size="sm"
                   variant="ghost"
+                  className="h-12 w-12 rounded-2xl hover:bg-destructive/10 hover:text-destructive transition-colors p-0 border border-border/50"
                   onClick={() => reject.mutate(req)}
                   disabled={approve.isPending || reject.isPending}
+                  title="Descartar"
                 >
-                  <X className="h-3.5 w-3.5" /> Descartar
+                  <X className="h-5 w-5" />
                 </Button>
               </div>
             </li>
@@ -259,16 +269,15 @@ export function VisitorQueue({ session, churchId }: VisitorQueueProps) {
 
 function Line({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex gap-2">
-      <dt className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground pt-1 w-28 shrink-0">
+    <div className="flex gap-4">
+      <dt className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground/50 pt-1 w-24 shrink-0">
         {label}
       </dt>
-      <dd className="text-foreground">{value}</dd>
+      <dd className="text-sm font-medium text-foreground truncate">{value}</dd>
     </div>
   );
 }
 
-/** Link + QR Code para imprimir e colar na porta da sala. */
 function QrDialog() {
   const [open, setOpen] = useState(false);
   const url =
@@ -277,41 +286,44 @@ function QrDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          <QrCode className="h-4 w-4" /> QR da porta
+        <Button variant="outline" className="h-11 rounded-xl px-5 border-border/50 hover:bg-accent transition-all group">
+          <QrCode className="mr-2 h-4 w-4 transition-transform group-hover:rotate-12" /> 
+          <span className="font-medium">QR da Porta</span>
         </Button>
       </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Cadastro do visitante</DialogTitle>
-          <DialogDescription>
-            Imprima e cole na porta do Kids. Os pais leem com a câmera do celular e preenchem em
-            menos de um minuto.
+      <DialogContent className="rounded-[2.5rem] border-border/50 shadow-2xl p-10 max-w-md">
+        <DialogHeader className="text-center space-y-4">
+          <DialogTitle className="text-3xl font-serif">Cadastro Expresso</DialogTitle>
+          <DialogDescription className="text-muted-foreground leading-relaxed">
+            Aponte a câmera para o QR Code. Os pais preenchem o cadastro em segundos e ele aparece aqui na fila.
           </DialogDescription>
         </DialogHeader>
-        <div className="flex flex-col items-center gap-4">
-          <img
-            src={`https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(url)}`}
-            alt="QR Code do cadastro de crianças visitantes"
-            width={260}
-            height={260}
-            className="rounded-sm bg-card p-2"
-          />
-          <code className="text-xs text-muted-foreground break-all text-center">{url}</code>
-          <div className="flex gap-2">
+        <div className="flex flex-col items-center gap-8 py-4">
+          <div className="relative group">
+            <div className="absolute inset-0 bg-primary/10 blur-2xl rounded-3xl group-hover:bg-primary/20 transition-colors" />
+            <div className="relative bg-white p-6 rounded-[2rem] shadow-xl border border-border/50 transition-transform duration-500 hover:scale-[1.02]">
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(url)}`}
+                alt="QR Code do cadastro de crianças visitantes"
+                width={220}
+                height={220}
+              />
+            </div>
+          </div>
+          
+          <div className="w-full flex flex-col gap-3">
             <Button
-              variant="outline"
-              size="sm"
+              className="w-full h-12 rounded-2xl bg-muted/50 text-foreground border border-border/50 hover:bg-muted"
               onClick={() => {
                 void navigator.clipboard.writeText(url);
-                toast.success("Link copiado.");
+                toast.success("Link copiado para a área de transferência.");
               }}
             >
-              <Copy className="h-3.5 w-3.5" /> Copiar link
+              <Copy className="mr-2 h-4 w-4" /> Copiar Link
             </Button>
-            <Button variant="outline" size="sm" asChild>
+            <Button className="w-full h-12 rounded-2xl" asChild>
               <a href={`${url}?kiosk=1`} target="_blank" rel="noreferrer">
-                <Check className="h-3.5 w-3.5" /> Abrir no tablet (quiosque)
+                <Check className="mr-2 h-4 w-4" /> Abrir Modo Quiosque
               </a>
             </Button>
           </div>
