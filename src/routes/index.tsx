@@ -110,23 +110,13 @@ function Landing() {
                   uma igreja gerada no coração de um homem através da visão de Deus,
                   edificada sobre a rocha e família de famílias.
                 </p>
-                <div className="bg-primary/5 border border-primary/10 rounded-3xl p-8 max-w-xl animate-reveal-slow shadow-xl shadow-black/[0.02] relative group">
-                  <div className="absolute top-4 right-6">
-                     <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                  </div>
-                  <p className="text-[10px] font-mono font-medium text-primary uppercase tracking-[0.25em] mb-4">Status Kids & UX</p>
-                  <ul className="text-foreground font-serif text-lg leading-relaxed space-y-4">
-                    <li className="flex gap-3">
-                      <span className="text-primary font-mono text-xs mt-1">/01</span>
-                      <span><strong className="font-semibold">Segurança Visual:</strong> Biometria visual de crianças e responsáveis para conferência absoluta no check-out.</span>
-                    </li>
-                    <li className="flex gap-3">
-                      <span className="text-primary font-mono text-xs mt-1">/02</span>
-                      <span><strong className="font-semibold">Modern UX:</strong> Interface redesenhada com foco em fluidez, microinterações e padrão premium.</span>
-                    </li>
+                <div className="bg-primary/5 border border-primary/10 rounded-2xl p-6 max-w-xl animate-reveal-slow shadow-inner">
+                  <p className="text-sm font-medium text-primary uppercase tracking-wider mb-1">Status da Implementação:</p>
+                  <ul className="text-foreground font-serif text-lg leading-snug space-y-2">
+                    <li>• Segurança Visual: Registro de fotos de crianças e responsáveis para conferência no check-out, garantindo que quem retira é de fato autorizado.</li>
+                    <li>• Fluxo sem papel & Digital: Implementamos check-in com código de segurança e conferência visual, eliminando a necessidade de impressoras.</li>
                   </ul>
                 </div>
-
               </div>
               <div className="lg:col-span-6 flex flex-col items-start lg:items-end gap-6">
                 <div className="flex flex-wrap gap-3">
@@ -254,21 +244,19 @@ function Landing() {
                 Nove frentes de serviço, escalas e comunhão — todas conectadas na mesma plataforma.
               </p>
             </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border border border-border">
               {ministerios.map(({ icon: Icon, nome, tag }) => (
-                <div key={nome} className="group relative bg-card/40 backdrop-blur-md p-8 flex items-start justify-between gap-6 transition-all duration-500 border border-border/50 hover:border-primary/20 hover:shadow-2xl hover:shadow-black/5 hover:-translate-y-2 rounded-[2.5rem] overflow-hidden">
-                  <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="relative z-10">
-                    <div className="font-mono text-[9px] uppercase tracking-[0.3em] text-muted-foreground/60 mb-2">{tag}</div>
-                    <div className="font-serif text-3xl tracking-tight">{nome}</div>
+                <div key={nome} className="bg-background/40 backdrop-blur-md p-8 flex items-start justify-between gap-6 hover:bg-secondary/80 transition-all duration-500 group border border-transparent hover:border-border/50 hover:shadow-lg hover:-translate-y-1 rounded-2xl">
+                  <div>
+                    <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">{tag}</div>
+                    <div className="font-serif text-2xl mt-2">{nome}</div>
                   </div>
-                  <div className="relative z-10 h-14 w-14 rounded-2xl border border-border/50 grid place-items-center bg-background shadow-lg group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all duration-500 group-hover:rotate-12">
-                    <Icon className="h-6 w-6" />
+                  <div className="h-11 w-11 rounded-full border border-border grid place-items-center group-hover:bg-foreground group-hover:text-background group-hover:border-foreground transition-colors">
+                    <Icon className="h-4 w-4" />
                   </div>
                 </div>
               ))}
             </div>
-
           </div>
         </section>
 

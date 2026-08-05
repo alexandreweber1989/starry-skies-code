@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CalendarPlus, Pencil, CalendarDays, Clock, MapPin, FileText, ChevronRight } from "lucide-react";
+import { CalendarPlus, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/dialog";
 import { ChurchSelect } from "@/components/admin/church-select";
 import type { KidsSession } from "@/lib/kids";
-import { cn } from "@/lib/utils";
 
 function nextSundayISO(): string {
   const d = new Date();
@@ -26,6 +25,7 @@ function nextSundayISO(): string {
   return d.toISOString().slice(0, 10);
 }
 
+/** Cria ou edita um culto/sessão Kids — é o "dia" em que o check-in acontece. */
 export function SessionDialog({
   session,
   trigger,
@@ -72,7 +72,7 @@ export function SessionDialog({
     },
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ["kids-sessions"] });
-      toast.success(session ? "Sessão atualizada com sucesso." : "Sessão criada com sucesso.");
+      toast.success(session ? "Sessão atualizada." : "Sessão criada.");
       setOpen(false);
     },
     onError: (e: Error) => toast.error(e.message),
@@ -82,103 +82,49 @@ export function SessionDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {trigger ?? (
-          <Button size="lg" className="h-12 rounded-xl px-6 shadow-xl shadow-primary/10 hover:-translate-y-1 transition-all">
-            <CalendarPlus className="mr-2 h-4.5 w-4.5" /> Nova Sessão
+          <Button size="sm" variant="outline">
+            <CalendarPlus className="h-4 w-4" /> Nova sessão
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-w-xl rounded-[2.5rem] border-border/50 shadow-2xl p-8">
-        <DialogHeader className="mb-6">
-          <DialogTitle className="text-3xl font-serif">
-            {session ? "Ajustar Sessão" : "Configurar Nova Sessão"}
-          </DialogTitle>
-          <DialogDescription className="text-muted-foreground leading-relaxed mt-2">
-            As sessões organizam os check-ins por evento. Defina os detalhes do culto para iniciar as atividades do Kids.
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{session ? "Editar sessão Kids" : "Nova sessão Kids"}</DialogTitle>
+          <DialogDescription>
+            Cada culto tem uma sessão própria — é nela que os check-ins do dia ficam registrados.
           </DialogDescription>
         </DialogHeader>
-        
-        <div className="space-y-6">
+        <div className="space-y-3">
           <div className="space-y-2">
-            <Label className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground ml-1">Identificação do Evento</Label>
-            <div className="relative group">
-              <FileText className="absolute left-4 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
-              <Input 
-                value={title} 
-                onChange={(e) => setTitle(e.target.value)} 
-                className="h-12 pl-12 rounded-xl bg-muted/30 border-border/50 focus-visible:ring-primary/20 font-medium"
-                placeholder="Ex: Culto da Noite"
-              />
-            </div>
+            <Label>Nome</Label>
+            <Input value={title} onChange={(e) => setTitle(e.target.value)} />
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <Label className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground ml-1">Data</Label>
-              <div className="relative">
-                <CalendarDays className="absolute left-4 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-muted-foreground/50" />
-                <Input 
-                  type="date" 
-                  value={date} 
-                  onChange={(e) => setDate(e.target.value)} 
-                  className="h-12 pl-12 rounded-xl bg-muted/30 border-border/50 focus-visible:ring-primary/20 font-medium"
-                />
-              </div>
+              <Label>Data</Label>
+              <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground ml-1">Horário de Início</Label>
-              <div className="relative">
-                <Clock className="absolute left-4 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-muted-foreground/50" />
-                <Input 
-                  type="time" 
-                  value={startTime} 
-                  onChange={(e) => setStartTime(e.target.value)} 
-                  className="h-12 pl-12 rounded-xl bg-muted/30 border-border/50 focus-visible:ring-primary/20 font-medium"
-                />
-              </div>
+              <Label>Horário</Label>
+              <Input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
             </div>
           </div>
-
           <div className="space-y-2">
-            <Label className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground ml-1">Local / Sala</Label>
-            <div className="relative">
-              <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-muted-foreground/50" />
-              <Input 
-                value={room} 
-                onChange={(e) => setRoom(e.target.value)} 
-                placeholder="Ex.: Sala Principal Kids" 
-                className="h-12 pl-12 rounded-xl bg-muted/30 border-border/50 focus-visible:ring-primary/20 font-medium"
-              />
-            </div>
+            <Label>Sala</Label>
+            <Input value={room} onChange={(e) => setRoom(e.target.value)} placeholder="Ex.: Sala 2" />
           </div>
-
+          <ChurchSelect value={churchId} onChange={setChurchId} />
           <div className="space-y-2">
-            <Label className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground ml-1">Igreja Responsável</Label>
-            <ChurchSelect value={churchId} onChange={setChurchId} />
-          </div>
-
-          <div className="space-y-2">
-            <Label className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground ml-1">Notas Adicionais</Label>
-            <Textarea 
-              rows={3} 
-              value={notes} 
-              onChange={(e) => setNotes(e.target.value)} 
-              placeholder="Informações para a equipe de recepção..."
-              className="rounded-2xl bg-muted/30 border-border/50 focus-visible:ring-primary/20 font-medium resize-none p-4"
-            />
+            <Label>Observações</Label>
+            <Textarea rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} />
           </div>
         </div>
-
-        <DialogFooter className="mt-10 sm:justify-between gap-4">
-          <Button variant="ghost" onClick={() => setOpen(false)} className="h-12 px-6 rounded-xl hover:bg-destructive/5 hover:text-destructive transition-colors">
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setOpen(false)}>
             Cancelar
           </Button>
-          <Button 
-            onClick={() => save.mutate()} 
-            disabled={save.isPending}
-            className="h-14 px-10 rounded-2xl shadow-xl shadow-primary/20 hover:-translate-y-1 transition-all group"
-          >
-            {save.isPending ? "Salvando..." : (session ? "Atualizar Sessão" : "Criar Sessão")}
-            <ChevronRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+          <Button onClick={() => save.mutate()} disabled={save.isPending}>
+            {save.isPending ? "Salvando..." : "Salvar"}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -191,9 +137,8 @@ export function EditSessionButton({ session }: { session: KidsSession }) {
     <SessionDialog
       session={session}
       trigger={
-        <Button variant="ghost" className="h-12 px-4 rounded-xl text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all">
-          <Pencil className="mr-2 h-3.5 w-3.5" /> 
-          <span className="text-xs font-medium uppercase tracking-wider">Ajustar Detalhes</span>
+        <Button variant="ghost" size="sm">
+          <Pencil className="h-3.5 w-3.5" /> Editar sessão
         </Button>
       }
     />

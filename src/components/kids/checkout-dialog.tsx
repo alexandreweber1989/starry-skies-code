@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ShieldCheck, LogOut, MessageSquare, ChevronRight } from "lucide-react";
+import { ShieldCheck, LogOut, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -17,14 +17,18 @@ import {
 } from "@/components/ui/dialog";
 import { KidsPhoto } from "@/components/kids/kids-photo";
 import { GUARDIAN_RELATION_LABEL, type KidsCheckin } from "@/lib/kids";
-import { cn } from "@/lib/utils";
 
 interface CheckoutPanelProps {
   checkin: KidsCheckin;
   childName: string;
+  /** Chamado depois que a retirada é confirmada com sucesso. */
   onDone?: () => void;
 }
 
+/**
+ * Conferência de retirada: foto da criança, fotos dos responsáveis autorizados,
+ * código de segurança e registro de quem levou. Usado no painel e na tela do QR.
+ */
 export function CheckoutPanel({ checkin, childName, onDone }: CheckoutPanelProps) {
   const qc = useQueryClient();
   const [code, setCode] = useState("");
@@ -84,120 +88,98 @@ export function CheckoutPanel({ checkin, childName, onDone }: CheckoutPanelProps
   const authorized = (guardians ?? []).filter((g) => g.can_pickup);
 
   return (
-    <div className="space-y-8 py-4">
-      <div className="flex flex-col items-center text-center space-y-4">
-        <div className="relative group">
-           <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-700 opacity-50" />
-           <KidsPhoto
-             value={child?.photo_url}
-             alt={childName}
-             variant="crianca"
-             className="relative h-40 w-40 rounded-full border-4 border-background shadow-2xl ring-1 ring-border/50 object-cover"
-           />
-        </div>
-        <div className="space-y-1">
-          <h4 className="font-serif text-3xl tracking-tight">{childName}</h4>
-          <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground/60">
-            Conferência de Identidade
-          </span>
-        </div>
+    <div className="space-y-4">
+      <div className="flex flex-col items-center gap-2">
+        <KidsPhoto
+          value={child?.photo_url}
+          alt={childName}
+          variant="crianca"
+          className="h-32 w-32 rounded-2xl border-2 border-primary/20 shadow-xl"
+        />
+        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+          Identificação da criança
+        </span>
       </div>
 
-      <div className="space-y-4">
-        <div className="flex items-center justify-between px-2">
-           <h5 className="text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground">Responsáveis Autorizados</h5>
-           <span className="text-[10px] font-mono text-primary/60">{authorized.length} pessoas</span>
+      <div className="border border-border rounded-sm p-3 bg-muted/30">
+        <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-2">
+          Autorizados a retirar — toque na foto de quem está levando
         </div>
-        
         {authorized.length === 0 ? (
-          <div className="p-6 rounded-3xl bg-destructive/5 border border-destructive/10 text-center">
-            <p className="text-sm text-destructive font-medium leading-relaxed">
-              ATENÇÃO: Nenhum responsável autorizado cadastrado. <br/>Solicite autorização da liderança.
-            </p>
-          </div>
+          <p className="text-sm text-destructive">
+            Nenhum responsável autorizado cadastrado. Chame a liderança antes de liberar.
+          </p>
         ) : (
-          <div className="grid gap-3">
+          <ul className="space-y-1 text-sm">
             {authorized.map((g) => (
-              <button
+              <li
                 key={g.id}
-                type="button"
-                className={cn(
-                  "group flex items-center gap-4 p-4 rounded-3xl border transition-all duration-300 text-left",
+                className={`flex items-start justify-between gap-3 p-2 rounded-md border transition-all ${
                   pickedBy === g.full_name
-                    ? "border-primary bg-primary/5 shadow-inner"
-                    : "border-border/50 bg-muted/20 hover:border-primary/30 hover:bg-muted/30"
-                )}
-                onClick={() => setPickedBy(g.full_name)}
+                    ? "border-primary bg-primary/5"
+                    : "border-transparent hover:border-border hover:bg-muted/50"
+                }`}
               >
-                <div className="relative shrink-0">
+                <button
+                  type="button"
+                  className="flex gap-3 items-center text-left min-w-0"
+                  onClick={() => setPickedBy(g.full_name)}
+                >
                   <KidsPhoto
                     value={g.photo_url}
                     alt={g.full_name}
                     variant="responsavel"
-                    className={cn(
-                      "h-14 w-14 rounded-2xl object-cover border-2 border-background shadow-md transition-transform duration-300",
-                      pickedBy === g.full_name && "scale-110"
-                    )}
+                    className="h-12 w-12 rounded-full shrink-0"
                   />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <span className="font-medium text-base block truncate group-hover:text-primary transition-colors">{g.full_name}</span>
-                  <span className="text-[10px] font-mono uppercase tracking-[0.1em] text-muted-foreground/60 mt-0.5 block">
-                    {GUARDIAN_RELATION_LABEL[g.relation] ?? g.relation}
-                    {g.is_primary && " · Principal"}
+                  <span className="min-w-0">
+                    <span className="font-medium text-sm block truncate">{g.full_name}</span>
+                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                      {GUARDIAN_RELATION_LABEL[g.relation] ?? g.relation}
+                      {g.is_primary && " · Principal"}
+                    </span>
                   </span>
-                </div>
-                {pickedBy === g.full_name && (
-                   <div className="h-6 w-6 rounded-full bg-primary flex items-center justify-center animate-in zoom-in duration-300">
-                     <ShieldCheck className="h-3 w-3 text-primary-foreground" />
-                   </div>
+                </button>
+                {g.phone && (
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-primary" asChild>
+                    <a
+                      href={`https://wa.me/55${g.phone.replace(/\D/g, "")}?text=${encodeURIComponent(
+                        `Olá ${g.full_name}, aqui é do Kids da Igreja Atos sobre ${childName}.`,
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Enviar mensagem via WhatsApp"
+                    >
+                      <MessageSquare className="h-3.5 w-3.5" />
+                    </a>
+                  </Button>
                 )}
-                {g.phone && pickedBy !== g.full_name && (
-                   <a
-                    href={`https://wa.me/55${g.phone.replace(/\D/g, "")}?text=${encodeURIComponent(`Olá ${g.full_name}, aqui é do Kids da Igreja Atos.`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-3 rounded-xl hover:bg-primary/10 text-primary/60 hover:text-primary transition-colors"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <MessageSquare className="h-4 w-4" />
-                  </a>
-                )}
-              </button>
+              </li>
             ))}
-          </div>
+          </ul>
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-border/50">
-        <div className="space-y-2">
-          <Label className="text-[10px] uppercase font-mono tracking-widest text-muted-foreground ml-1">Código de Segurança</Label>
-          <Input
-            value={code}
-            onChange={(e) => setCode(e.target.value.toUpperCase())}
-            placeholder="A7KQ"
-            maxLength={6}
-            className="h-14 font-mono tracking-[0.4em] text-2xl text-center rounded-2xl bg-muted/30 border-border/50 focus-visible:ring-primary/20"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label className="text-[10px] uppercase font-mono tracking-widest text-muted-foreground ml-1">Quem retirou</Label>
-          <Input
-            value={pickedBy}
-            onChange={(e) => setPickedBy(e.target.value)}
-            placeholder="Nome completo..."
-            className="h-14 rounded-2xl bg-muted/30 border-border/50 focus-visible:ring-primary/20 font-medium"
-          />
-        </div>
+      <div className="space-y-2">
+        <Label>Código de segurança</Label>
+        <Input
+          value={code}
+          onChange={(e) => setCode(e.target.value.toUpperCase())}
+          placeholder="Ex.: A7KQ"
+          maxLength={6}
+          className="font-mono tracking-[0.3em] text-lg"
+        />
+      </div>
+      <div className="space-y-2">
+        <Label>Quem está retirando</Label>
+        <Input
+          value={pickedBy}
+          onChange={(e) => setPickedBy(e.target.value)}
+          placeholder="Nome de quem levou a criança"
+        />
       </div>
 
-      <Button 
-        className="w-full h-16 rounded-[1.5rem] text-lg font-serif shadow-2xl shadow-primary/20 hover:-translate-y-1 transition-all" 
-        onClick={() => confirm.mutate()} 
-        disabled={confirm.isPending || !pickedBy || code.length < 2}
-      >
-        {confirm.isPending ? "Processando..." : "Confirmar Entrega com Segurança"}
-        <ChevronRight className="ml-2 h-5 w-5" />
+      <Button className="w-full" onClick={() => confirm.mutate()} disabled={confirm.isPending}>
+        Confirmar retirada
       </Button>
     </div>
   );
@@ -208,27 +190,34 @@ interface CheckoutDialogProps {
   childName: string;
 }
 
+/** Retirada da criança a partir do painel de check-in. */
 export function CheckoutDialog({ checkin, childName }: CheckoutDialogProps) {
   const [open, setOpen] = useState(false);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="h-9 rounded-xl border-border/50 hover:bg-destructive/5 hover:text-destructive hover:border-destructive/20 transition-all group">
-          <LogOut className="mr-2 h-3.5 w-3.5 transition-transform group-hover:translate-x-1" /> Entregar
+        <Button size="sm" variant="outline">
+          <LogOut className="h-3.5 w-3.5" /> Entregar
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[95vh] overflow-y-auto rounded-[2rem] border-border/50 shadow-2xl p-8">
-        <DialogHeader className="mb-4">
-          <DialogTitle className="flex items-center gap-2 text-2xl font-serif">
-            <ShieldCheck className="h-6 w-6 text-primary" /> Retirada Segura
+      <DialogContent className="max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <ShieldCheck className="h-5 w-5 text-primary" /> Retirada de {childName}
           </DialogTitle>
-          <DialogDescription className="text-muted-foreground">
-            Confirme as informações abaixo para liberar a criança com total segurança.
+          <DialogDescription>
+            Confira a foto do responsável e o código antes de liberar a criança.
           </DialogDescription>
         </DialogHeader>
 
         <CheckoutPanel checkin={checkin} childName={childName} onDone={() => setOpen(false)} />
+
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setOpen(false)}>
+            Fechar
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
