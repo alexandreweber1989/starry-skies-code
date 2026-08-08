@@ -19,7 +19,7 @@ export function PanelSection({
   children: ReactNode;
 }) {
   return (
-    <section className={cn("border border-border bg-card rounded-sm", className)}>
+    <section className={cn("brutal-edge bg-card", className)}>
       <header className="flex flex-wrap items-end justify-between gap-3 px-6 pt-6 pb-4 border-b border-border">
         <div>
           <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
