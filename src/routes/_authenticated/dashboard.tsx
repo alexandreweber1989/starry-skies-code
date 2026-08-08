@@ -12,6 +12,7 @@ import {
   UserPlus,
   Baby,
   ArrowUpRight,
+  Layout,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, PageBody } from "@/components/app-shell";
