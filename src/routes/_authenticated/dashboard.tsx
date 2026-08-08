@@ -62,6 +62,7 @@ const atalhos: { to: string; label: string; icon: any; requiredRoles?: AppRole[]
 function Dashboard() {
   const { user, isAdmin, roles, isLivrariaAdmin, isCantinaAdmin } = useAuth();
   const podeVerOperacao = isAdmin || isLivrariaAdmin || isCantinaAdmin;
+  const isLiderMesaOuRede = roles.some(r => r.role === "lider_mesa" || r.role === "admin_ministerio");
 
   const filteredAtalhos = atalhos.filter((a) => {
     if (isAdmin) return true;
