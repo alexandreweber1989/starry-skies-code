@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
-import { Baby, Check, Loader2, ShieldCheck } from "lucide-react";
+import { Baby, Check, Loader2, ShieldCheck, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -184,7 +184,19 @@ function VisitorPage() {
   return (
     <main className="min-h-screen bg-background px-5 py-10">
       <div className="mx-auto w-full max-w-xl">
-        <header className="text-center">
+        <header className="relative text-center">
+          {kiosk && (
+            <Button
+              asChild
+              variant="ghost"
+              size="icon"
+              className="absolute -top-4 -left-4 sm:-left-8 rounded-full hover:bg-muted"
+            >
+              <Link to="/kids">
+                <X className="h-5 w-5 text-muted-foreground" />
+              </Link>
+            </Button>
+          )}
           <Baby className="h-8 w-8 text-primary mx-auto" />
           <h1 className="font-serif text-3xl mt-4">Bem-vindo ao Kids</h1>
           <p className="text-muted-foreground mt-3">
