@@ -126,6 +126,23 @@ function Landing() {
               </div>
             </div>
 
+            <div className="mt-12 p-6 bg-card border rounded-xl shadow-sm text-left max-w-2xl animate-reveal-slow" style={{ animationDelay: '400ms' }}>
+              <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                Blueprint Técnico Disponível
+              </h3>
+              <p className="text-muted-foreground mb-4 text-sm leading-relaxed">
+                O documento completo de engenharia da plataforma (BLUEPRINT.md) foi gerado, detalhando a arquitetura, design system, modelos de dados e fluxos de segurança para replicação total do sistema.
+              </p>
+              <a 
+                href="/BLUEPRINT.md" 
+                target="_blank"
+                className="inline-flex items-center text-sm font-medium underline underline-offset-4 hover:text-primary transition-colors"
+              >
+                Visualizar Blueprint Técnico completo <ArrowUpRight className="ml-1 h-3 w-3" />
+              </a>
+            </div>
+
             {/* Marquee tira */}
             <div className="mt-20 border-y border-border -mx-6 lg:-mx-10 overflow-hidden">
               <div className="flex whitespace-nowrap animate-[marquee_38s_linear_infinite] py-4 font-serif text-2xl md:text-3xl uppercase tracking-tight">
