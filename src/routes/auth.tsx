@@ -75,14 +75,7 @@ function AuthPage() {
     const result = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: window.location.origin,
     });
-    if (result.error) {
-      // Exibe a causa real (provedor desabilitado, redirect_uri inválido, etc.)
-      const err: unknown = result.error;
-      const msg =
-        typeof err === "string" ? err : ((err as { message?: string })?.message ?? "Falha desconhecida");
-      console.error("[auth] Google OAuth falhou:", err);
-      return toast.error(`Erro ao entrar com Google: ${msg}`);
-    }
+    if (result.error) return toast.error("Erro ao entrar com Google");
     if (result.redirected) return;
     navigate({ to: "/dashboard", replace: true });
   }
