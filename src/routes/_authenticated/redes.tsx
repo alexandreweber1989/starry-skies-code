@@ -83,7 +83,7 @@ function RedesPage() {
       <PageHeader
         eyebrow="Comunhão"
         title="Redes"
-        description="As redes reúnem pessoas por afinidade e as organizam em Mesas — grupos semanais de comunhão."
+        description={isAdmin ? "As redes reúnem pessoas por afinidade e as organizam em Mesas — grupos semanais de comunhão." : "Redes de comunhão das quais você faz parte."}
         actions={
           isAdmin ? (
             <>

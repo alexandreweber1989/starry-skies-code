@@ -82,7 +82,7 @@ function MesasPage() {
       <PageHeader
         eyebrow="Comunhão semanal"
         title="Mesas"
-        description="Cada Mesa é um grupo de comunhão que se reúne durante a semana, sob a liderança de um casal ou líder da rede."
+        description={isAdmin ? "Cada Mesa é um grupo de comunhão que se reúne durante a semana, sob a liderança de um casal ou líder da rede." : "Seus grupos de comunhão semanais."}
         actions={isAdmin ? <MesaDialog /> : undefined}
       />
       <PageBody>

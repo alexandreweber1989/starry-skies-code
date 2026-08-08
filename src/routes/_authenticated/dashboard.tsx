@@ -62,6 +62,7 @@ const atalhos: { to: string; label: string; icon: any; requiredRoles?: AppRole[]
 function Dashboard() {
   const { user, isAdmin, roles, isLivrariaAdmin, isCantinaAdmin } = useAuth();
   const podeVerOperacao = isAdmin || isLivrariaAdmin || isCantinaAdmin;
+  const isLiderMesaOuRede = roles.some(r => r.role === "lider_mesa" || r.role === "admin_ministerio");
 
   const filteredAtalhos = atalhos.filter((a) => {
     if (isAdmin) return true;
@@ -145,22 +146,42 @@ function Dashboard() {
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatTile
-            label="Membros ativos"
-            value={data?.ativos ?? "—"}
-            hint={data ? `${data.novos} novo(s) neste mês` : undefined}
-            icon={Users}
-            to="/membros"
-          />
-          <StatTile label="Ministérios" value={data?.ministries ?? "—"} icon={Sparkles} to="/ministerios" />
-          <StatTile label="Mesas ativas" value={data?.mesas ?? "—"} icon={UtensilsCrossed} to="/mesas" />
-          <StatTile
-            label="Escalas pendentes"
-            value={data?.pendentes ?? "—"}
-            hint="Aguardando confirmação"
-            icon={CalendarDays}
-            to="/louvor"
-          />
+          {isAdmin ? (
+            <StatTile
+              label="Membros ativos"
+              value={data?.ativos ?? "—"}
+              hint={data ? `${data.novos} novo(s) neste mês` : undefined}
+              icon={Users}
+              to="/membros"
+            />
+          ) : (
+            <StatTile label="Ministérios" value={data?.ministries ?? "—"} icon={Sparkles} to="/ministerios" />
+          )}
+          {isAdmin ? (
+            <StatTile label="Ministérios" value={data?.ministries ?? "—"} icon={Sparkles} to="/ministerios" />
+          ) : (
+            <StatTile label="Mesas ativas" value={data?.mesas ?? "—"} icon={UtensilsCrossed} to="/mesas" />
+          )}
+          {isAdmin ? (
+            <StatTile label="Mesas ativas" value={data?.mesas ?? "—"} icon={UtensilsCrossed} to="/mesas" />
+          ) : (
+            <StatTile
+              label="Escalas pendentes"
+              value={data?.pendentes ?? "—"}
+              hint="Aguardando confirmação"
+              icon={CalendarDays}
+              to="/louvor"
+            />
+          )}
+          {isAdmin && (
+            <StatTile
+              label="Escalas pendentes"
+              value={data?.pendentes ?? "—"}
+              hint="Aguardando confirmação"
+              icon={CalendarDays}
+              to="/louvor"
+            />
+          )}
         </div>
 
         <div className="mt-6 grid lg:grid-cols-2 gap-6">

@@ -30,7 +30,7 @@ function MinistriesPage() {
       <PageHeader
         eyebrow="Corpo em serviço"
         title="Ministérios"
-        description="Os nove ministérios da Igreja Batista Atos, cada um com sua vocação e seus servos."
+        description={isAdmin ? "Os nove ministérios da Igreja Batista Atos, cada um com sua vocação e seus servos." : "Ministérios nos quais você serve."}
         actions={isAdmin ? <MinistryDialog /> : undefined}
       />
       <PageBody>
