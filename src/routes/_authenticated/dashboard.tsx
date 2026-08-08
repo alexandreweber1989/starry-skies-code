@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, PageBody } from "@/components/app-shell";
-import { useAuth } from "@/lib/auth-context";
+import { useAuth, type AppRole } from "@/lib/auth-context";
 import { todayISO, formatDateBR, relativeDayLabel } from "@/lib/painel";
 import { StatTile, PanelSection } from "@/components/painel/ui";
 import { MinhaSemana } from "@/components/painel/minha-semana";
@@ -47,21 +47,27 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
 });
 
-const atalhos = [
+const atalhos: { to: string; label: string; icon: any; requiredRoles?: AppRole[] }[] = [
   { to: "/ministerios", label: "Ministérios", icon: Sparkles },
   { to: "/louvor", label: "Louvor", icon: Music },
   { to: "/redes", label: "Redes", icon: Network },
   { to: "/mesas", label: "Mesas", icon: UtensilsCrossed },
-  { to: "/membros", label: "Membros", icon: Users },
-  { to: "/kids", label: "Kids", icon: Baby },
-  { to: "/livraria", label: "Livraria", icon: BookOpen },
-  { to: "/cantina", label: "Cantina", icon: Coffee },
+  { to: "/membros", label: "Membros", icon: Users, requiredRoles: ["admin_geral"] },
+  { to: "/kids", label: "Kids", icon: Baby, requiredRoles: ["admin_geral", "admin_kids"] },
+  { to: "/livraria", label: "Livraria", icon: BookOpen, requiredRoles: ["admin_geral", "admin_livraria"] },
+  { to: "/cantina", label: "Cantina", icon: Coffee, requiredRoles: ["admin_geral", "admin_cantina"] },
   { to: "/perfil", label: "Meu perfil", icon: UserPlus },
-] as const;
+];
 
 function Dashboard() {
-  const { user, isAdmin, isLivrariaAdmin, isCantinaAdmin } = useAuth();
+  const { user, isAdmin, roles, isLivrariaAdmin, isCantinaAdmin } = useAuth();
   const podeVerOperacao = isAdmin || isLivrariaAdmin || isCantinaAdmin;
+
+  const filteredAtalhos = atalhos.filter((a) => {
+    if (isAdmin) return true;
+    if (!a.requiredRoles) return true;
+    return roles.some((r) => a.requiredRoles?.includes(r.role));
+  });
 
   const { data } = useQuery({
     queryKey: ["dashboard-counts"],
@@ -193,7 +199,7 @@ function Dashboard() {
         <div className="mt-6 grid lg:grid-cols-3 gap-6">
           <PanelSection label="Navegação" title="Atalhos" className="lg:col-span-2">
             <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-3">
-              {atalhos.map((a) => (
+              {filteredAtalhos.map((a) => (
                 <Link
                   key={a.to}
                   to={a.to}
