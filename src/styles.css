@@ -668,3 +668,19 @@ iframe[src*="lovable.dev/badge"] {
   height: 0 !important;
 }
 /* NEXUS-PRO:WATERMARK-HIDE:END */
+
+/* ---- Brutalismo editorial: traço duro e sombra deslocada ---- */
+@utility brutal-edge {
+  border: 1px solid var(--color-foreground);
+  border-radius: 0;
+}
+
+@utility brutal-shadow {
+  border: 1px solid var(--color-foreground);
+  border-radius: 0;
+  transition: box-shadow 180ms ease, transform 180ms ease;
+  &:hover {
+    box-shadow: 6px 6px 0 0 var(--color-muted-foreground);
+    transform: translate(-1px, -1px);
+  }
+}
