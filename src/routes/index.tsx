@@ -106,7 +106,7 @@ function Landing() {
             <div className="mt-12 grid lg:grid-cols-12 gap-10 items-end">
               <div className="lg:col-span-6 space-y-4">
                 <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
-                  Pensando em um membro da igreja, nessa plataforma o que seria legal pra ele ter acesso e informações?
+                  preciso que você me traga dicas de o que pode ser uma experiência nova para os membros da igreja, algo que façam eles se sentirem mais parte da igreja e atraídos pela plataforma
                 </p>
               </div>
               <div className="lg:col-span-6 flex flex-col items-start lg:items-end gap-6">
