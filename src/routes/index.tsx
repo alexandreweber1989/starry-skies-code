@@ -106,9 +106,7 @@ function Landing() {
             <div className="mt-12 grid lg:grid-cols-12 gap-10 items-end">
               <div className="lg:col-span-6 space-y-4">
                 <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
-                  Somos a <span className="text-foreground font-medium">Igreja Batista Atos</span> —
-                  uma igreja gerada no coração de um homem através da visão de Deus,
-                  edificada sobre a rocha e família de famílias.
+                  Pensando em um membro da igreja, nessa plataforma o que seria legal pra ele ter acesso e informações?
                 </p>
               </div>
               <div className="lg:col-span-6 flex flex-col items-start lg:items-end gap-6">
