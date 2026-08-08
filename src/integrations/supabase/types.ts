@@ -819,6 +819,69 @@ export type Database = {
           },
         ]
       }
+      media_assets: {
+        Row: {
+          category: string
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          file_url: string
+          id: string
+          thumbnail_url: string | null
+          title: string
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          file_url: string
+          id?: string
+          thumbnail_url?: string | null
+          title: string
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          file_url?: string
+          id?: string
+          thumbnail_url?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
+      media_requests: {
+        Row: {
+          created_at: string | null
+          deadline: string | null
+          description: string
+          id: string
+          requester_id: string
+          status: string
+          title: string
+        }
+        Insert: {
+          created_at?: string | null
+          deadline?: string | null
+          description: string
+          id?: string
+          requester_id: string
+          status?: string
+          title: string
+        }
+        Update: {
+          created_at?: string | null
+          deadline?: string | null
+          description?: string
+          id?: string
+          requester_id?: string
+          status?: string
+          title?: string
+        }
+        Relationships: []
+      }
       membership_requests: {
         Row: {
           created_at: string
@@ -1434,6 +1497,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      social_assistance_campaigns: {
+        Row: {
+          created_at: string | null
+          description: string
+          goal_current: number | null
+          goal_target: number | null
+          goal_type: string
+          id: string
+          status: string
+          title: string
+        }
+        Insert: {
+          created_at?: string | null
+          description: string
+          goal_current?: number | null
+          goal_target?: number | null
+          goal_type: string
+          id?: string
+          status?: string
+          title: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string
+          goal_current?: number | null
+          goal_target?: number | null
+          goal_type?: string
+          id?: string
+          status?: string
+          title?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
