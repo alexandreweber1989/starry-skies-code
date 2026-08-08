@@ -14,7 +14,11 @@ export const Route = createFileRoute("/_authenticated/kids")({
 });
 
 function KidsPage() {
-  const { isAdmin } = useAuth();
+  const { isAdmin, isKidsAdmin } = useAuth();
+
+  if (!isKidsAdmin) {
+    throw new Error("Acesso negado. Apenas administradores do Kids ou gerais podem acessar este painel.");
+  }
 
   return (
     <>

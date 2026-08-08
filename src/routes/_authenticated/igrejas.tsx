@@ -30,6 +30,10 @@ export const Route = createFileRoute("/_authenticated/igrejas")({
 function IgrejasPage() {
   const { isAdmin } = useAuth();
 
+  if (!isAdmin) {
+    throw new Error("Acesso negado. Apenas administradores gerais podem gerenciar igrejas.");
+  }
+
   const { data: churches } = useQuery({
     queryKey: ["churches"],
     queryFn: async () => {

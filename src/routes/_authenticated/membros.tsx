@@ -80,8 +80,12 @@ export const Route = createFileRoute("/_authenticated/membros")({
 
 function MembrosPage() {
   const { isAdmin, user, roles: myRoles } = useAuth();
-  const canRequest =
-    isAdmin || myRoles.some((r) => r.role === "admin_ministerio" || r.role === "lider_mesa");
+
+  if (!isAdmin) {
+    throw new Error("Acesso negado. Apenas administradores gerais podem gerenciar membros.");
+  }
+
+  const canRequest = true; // Sempre true se chegou aqui
   const removeMember = useServerFn(deleteMemberAccount);
   const qc = useQueryClient();
   const [filters, setFilters] = useState<MemberFilters>(DEFAULT_FILTERS);
