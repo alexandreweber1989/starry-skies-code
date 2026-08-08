@@ -15,6 +15,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as KidsVisitanteRouteImport } from './routes/kids.visitante'
 import { Route as AuthenticatedRedesRouteImport } from './routes/_authenticated/redes'
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
+import { Route as AuthenticatedMidiaRouteImport } from './routes/_authenticated/midia'
 import { Route as AuthenticatedMesasRouteImport } from './routes/_authenticated/mesas'
 import { Route as AuthenticatedMembrosRouteImport } from './routes/_authenticated/membros'
 import { Route as AuthenticatedLouvorRouteImport } from './routes/_authenticated/louvor'
@@ -55,6 +56,11 @@ const AuthenticatedRedesRoute = AuthenticatedRedesRouteImport.update({
 const AuthenticatedPerfilRoute = AuthenticatedPerfilRouteImport.update({
   id: '/perfil',
   path: '/perfil',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMidiaRoute = AuthenticatedMidiaRouteImport.update({
+  id: '/midia',
+  path: '/midia',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedMesasRoute = AuthenticatedMesasRouteImport.update({
@@ -133,6 +139,7 @@ export interface FileRoutesByFullPath {
   '/louvor': typeof AuthenticatedLouvorRoute
   '/membros': typeof AuthenticatedMembrosRoute
   '/mesas': typeof AuthenticatedMesasRoute
+  '/midia': typeof AuthenticatedMidiaRoute
   '/perfil': typeof AuthenticatedPerfilRoute
   '/redes': typeof AuthenticatedRedesRoute
   '/kids/visitante': typeof KidsVisitanteRoute
@@ -152,6 +159,7 @@ export interface FileRoutesByTo {
   '/louvor': typeof AuthenticatedLouvorRoute
   '/membros': typeof AuthenticatedMembrosRoute
   '/mesas': typeof AuthenticatedMesasRoute
+  '/midia': typeof AuthenticatedMidiaRoute
   '/perfil': typeof AuthenticatedPerfilRoute
   '/redes': typeof AuthenticatedRedesRoute
   '/kids/visitante': typeof KidsVisitanteRoute
@@ -173,6 +181,7 @@ export interface FileRoutesById {
   '/_authenticated/louvor': typeof AuthenticatedLouvorRoute
   '/_authenticated/membros': typeof AuthenticatedMembrosRoute
   '/_authenticated/mesas': typeof AuthenticatedMesasRoute
+  '/_authenticated/midia': typeof AuthenticatedMidiaRoute
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
   '/_authenticated/redes': typeof AuthenticatedRedesRoute
   '/kids/visitante': typeof KidsVisitanteRoute
@@ -194,6 +203,7 @@ export interface FileRouteTypes {
     | '/louvor'
     | '/membros'
     | '/mesas'
+    | '/midia'
     | '/perfil'
     | '/redes'
     | '/kids/visitante'
@@ -213,6 +223,7 @@ export interface FileRouteTypes {
     | '/louvor'
     | '/membros'
     | '/mesas'
+    | '/midia'
     | '/perfil'
     | '/redes'
     | '/kids/visitante'
@@ -233,6 +244,7 @@ export interface FileRouteTypes {
     | '/_authenticated/louvor'
     | '/_authenticated/membros'
     | '/_authenticated/mesas'
+    | '/_authenticated/midia'
     | '/_authenticated/perfil'
     | '/_authenticated/redes'
     | '/kids/visitante'
@@ -290,6 +302,13 @@ declare module '@tanstack/react-router' {
       path: '/perfil'
       fullPath: '/perfil'
       preLoaderRoute: typeof AuthenticatedPerfilRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/midia': {
+      id: '/_authenticated/midia'
+      path: '/midia'
+      fullPath: '/midia'
+      preLoaderRoute: typeof AuthenticatedMidiaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/mesas': {
@@ -389,6 +408,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedLouvorRoute: typeof AuthenticatedLouvorRoute
   AuthenticatedMembrosRoute: typeof AuthenticatedMembrosRoute
   AuthenticatedMesasRoute: typeof AuthenticatedMesasRoute
+  AuthenticatedMidiaRoute: typeof AuthenticatedMidiaRoute
   AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
   AuthenticatedRedesRoute: typeof AuthenticatedRedesRoute
   AuthenticatedKidsRetiradaCheckinIdRoute: typeof AuthenticatedKidsRetiradaCheckinIdRoute
@@ -406,6 +426,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedLouvorRoute: AuthenticatedLouvorRoute,
   AuthenticatedMembrosRoute: AuthenticatedMembrosRoute,
   AuthenticatedMesasRoute: AuthenticatedMesasRoute,
+  AuthenticatedMidiaRoute: AuthenticatedMidiaRoute,
   AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
   AuthenticatedRedesRoute: AuthenticatedRedesRoute,
   AuthenticatedKidsRetiradaCheckinIdRoute:

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader, PageBody } from "@/components/app-shell";
-import { useWorship } from "@/lib/use-worship";
+import { useMusicians } from "@/lib/use-worship";
 import { VisaoGeral } from "@/components/louvor/visao-geral";
 import { Repertorio } from "@/components/louvor/repertorio";
 import { Escalas } from "@/components/louvor/escalas";
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/_authenticated/louvor")({
 });
 
 function LouvorPage() {
-  const { data: schedules, isLoading } = useWorship();
+  const { data: musicians, isLoading } = useMusicians();
 
   return (
     <>
@@ -46,7 +46,7 @@ function LouvorPage() {
           </div>
 
           <TabsContent value="overview" className="animate-in fade-in duration-500">
-            <VisaoGeral schedules={schedules || []} isLoading={isLoading} />
+            <VisaoGeral />
           </TabsContent>
           <TabsContent value="repertorio" className="animate-in fade-in duration-500">
             <Repertorio />
