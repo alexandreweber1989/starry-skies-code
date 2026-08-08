@@ -22,17 +22,40 @@ A plataforma é uma aplicação **TanStack Start v1** (Full-Stack React 19) oper
 
 O sistema utiliza um **App Shell** (layout compartilhado) com uma barra lateral ou menu de navegação que varia conforme o papel do usuário.
 
-### 2.1 Menu Principal (Sidebar/Dashboard)
-- **Painel (Dashboard):** Visão geral da igreja. Centraliza métricas e atalhos rápidos.
-- **Ministérios:** Lista de frentes de trabalho (Ex: Louvor, Kids, Mídia).
-- **Redes:** Divisões estratégicas por faixa etária ou afinidade (Ex: Rede de Jovens).
-- **Mesas:** Células ou pequenos grupos de comunhão nas casas.
-- **Membros:** Diretório completo de pessoas, controle de status e aprovações.
-- **Kids:** Central de check-in, segurança infantil e gestão de responsáveis.
-- **Louvor:** Gestão de escalas, repertório e "Modo Palco" para músicos.
-- **Livraria:** Venda de produtos e controle de estoque básico.
-- **Cantina:** Cardápios, pedidos e operações de domingo.
-- **Perfil:** Ajustes pessoais e visualização de credenciais digitais.
+### 2.1 Detalhamento por Página
+- **Painel (Dashboard):**
+    - **Finalidade:** Centro operacional e visão 360º da igreja.
+    - **O que faz:** Exibe avisos, escalas pendentes (Louvor), solicitações de membros para aprovação, métricas de crescimento e atalhos rápidos. É a primeira tela após o login.
+- **Agenda:**
+    - **Finalidade:** Gestão do calendário e presença.
+    - **O que faz:** Centraliza cultos, ensaios e encontros. Permite aos membros confirmar presença (RSVP), visualizar por lista ou calendário e aos líderes gerenciar detalhes dos eventos.
+- **Ministérios:**
+    - **Finalidade:** Gestão das frentes de trabalho.
+    - **O que faz:** Lista os ministérios (Louvor, Kids, etc.). Cada item leva a uma página específica com a missão do ministério, líderes e membros vinculados.
+- **Redes:**
+    - **Finalidade:** Organização por afinidade (Jovens, Mulheres, etc.).
+    - **O que faz:** Exibe a hierarquia de liderança da rede e as "Mesas" (células) que pertencem a cada rede. Permite gerenciar membros em massa por rede.
+- **Mesas:**
+    - **Finalidade:** Gestão de grupos pequenos/células.
+    - **O que faz:** Foca na comunhão semanal. Detalha dia, hora e local (endereço) das reuniões, além da liderança (geralmente casais) e participantes de cada mesa.
+- **Membros:**
+    - **Finalidade:** Diretório central da membresia.
+    - **O que faz:** Ferramenta poderosa de busca e filtros. Permite visualizar fichas completas, exportar CSV, gerenciar o status ministerial (Batizado, Novo Convertido) e conceder permissões de sistema.
+- **Kids:**
+    - **Finalidade:** Operação de domingo e segurança infantil.
+    - **O que faz:** Interface de check-in em tempo real. Separa crianças por salas, gerencia fila de visitantes e o processo de retirada segura via QR Code ou foto.
+- **Louvor:**
+    - **Finalidade:** Gestão técnica e musical.
+    - **O que faz:** Centraliza o elenco (quem toca o quê), repertório (cifras/letras) e escalas por instrumento. Inclui o "Modo Palco" para facilitar a leitura durante o culto.
+- **Livraria:**
+    - **Finalidade:** E-commerce interno.
+    - **O que faz:** Catálogo de produtos oficiais. Membros compram e pagam via PIX integrado, e o sistema gerencia a fila de retirada e o estoque.
+- **Cantina:**
+    - **Finalidade:** Gestão de alimentação em eventos.
+    - **O que faz:** Cardápio digital para reservas. O membro reserva o lanche, e a equipe da cozinha visualiza a demanda em tempo real em um painel específico.
+- **Meu Perfil:**
+    - **Finalidade:** Autoatendimento do membro.
+    - **O que faz:** Permite atualizar dados pessoais (endereço, telefone) e visualizar suas próprias escalas, dons e cursos realizados. É onde o primeiro admin pode "reivindicar" o controle do sistema.
 
 ---
 
