@@ -110,13 +110,6 @@ function Landing() {
                   uma igreja gerada no coração de um homem através da visão de Deus,
                   edificada sobre a rocha e família de famílias.
                 </p>
-                <div className="bg-primary/5 border border-primary/10 rounded-2xl p-6 max-w-xl animate-reveal-slow shadow-inner">
-                  <p className="text-sm font-medium text-primary uppercase tracking-wider mb-1">Status da Implementação:</p>
-                  <ul className="text-foreground font-serif text-lg leading-snug space-y-2">
-                    <li>• Segurança Visual: Registro de fotos de crianças e responsáveis para conferência no check-out, garantindo que quem retira é de fato autorizado.</li>
-                    <li>• Fluxo sem papel & Digital: Implementamos check-in com código de segurança e conferência visual, eliminando a necessidade de impressoras.</li>
-                  </ul>
-                </div>
               </div>
               <div className="lg:col-span-6 flex flex-col items-start lg:items-end gap-6">
                 <div className="flex flex-wrap gap-3">
