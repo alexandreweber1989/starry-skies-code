@@ -1,124 +1,151 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { Church, MapPin, Phone } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, PageBody } from "@/components/app-shell";
-import { useAuth } from "@/lib/auth-context";
-import { ChurchDialog, EditChurchButton } from "@/components/admin/church-dialog";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { 
+  Heart, 
+  Target, 
+  TrendingUp, 
+  Users, 
+  Gift,
+  PlusCircle,
+  FileText
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 
 export const Route = createFileRoute("/_authenticated/igrejas")({
-  head: () => ({
-    meta: [
-      { title: "Igrejas — Igreja Batista Atos" },
-      {
-        name: "description",
-        content:
-          "Cadastro das igrejas e congregações da Igreja Batista Atos, com cidade, contato e pastor responsável.",
-      },
-      { property: "og:title", content: "Igrejas — Igreja Batista Atos" },
-      {
-        property: "og:description",
-        content: "Sede e congregações em outras cidades, com os membros vinculados a cada casa.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
-  component: IgrejasPage,
+  component: SocialActionPage,
 });
 
-function IgrejasPage() {
-  const { isAdmin } = useAuth();
-
-  if (!isAdmin) {
-    throw new Error("Acesso negado. Apenas administradores gerais podem gerenciar igrejas.");
-  }
-
-  const { data: churches } = useQuery({
-    queryKey: ["churches"],
+function SocialActionPage() {
+  const { data: campaigns } = useQuery({
+    queryKey: ["social-campaigns"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("churches")
+      const { data } = await supabase
+        .from("social_assistance_campaigns")
         .select("*")
-        .order("is_headquarters", { ascending: false })
-        .order("name");
-      if (error) throw error;
-      return data ?? [];
-    },
-  });
-
-  const { data: counts } = useQuery({
-    queryKey: ["church-member-counts"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("profiles").select("church_id");
-      if (error) throw error;
-      const map: Record<string, number> = {};
-      for (const row of data ?? []) {
-        if (row.church_id) map[row.church_id] = (map[row.church_id] ?? 0) + 1;
-      }
-      return map;
-    },
+        .order("created_at", { ascending: false });
+      return data || [];
+    }
   });
 
   return (
     <>
       <PageHeader
-        eyebrow="Uma família, várias casas"
-        title="Igrejas"
-        description="Ponto de partida do cadastro: Igreja → Ministérios → Redes → Mesas → Pastores, Apascentadores e Líderes → Membros. Cada ministério, rede e mesa pertence a uma igreja."
-        actions={isAdmin ? <ChurchDialog /> : undefined}
+        eyebrow="Ação Social"
+        title="Atos de Amor"
+        description="Gestão de assistência social, campanhas de doação e apoio à comunidade."
+        actions={
+          <Button className="gap-2">
+            <PlusCircle className="h-4 w-4" />
+            Nova Campanha
+          </Button>
+        }
       />
       <PageBody>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {churches?.map((c: any) => (
-            <div key={c.id} className="border border-border bg-card p-6 rounded-sm">
-              <div className="flex items-start justify-between gap-3">
-                <Church className="h-5 w-5 text-primary" />
-                <div className="flex items-center gap-2">
-                  {c.is_headquarters && (
-                    <span className="font-mono text-[10px] uppercase tracking-widest text-primary">Sede</span>
-                  )}
-                  {isAdmin && <EditChurchButton church={c} />}
-                </div>
-              </div>
-              <h2 className="font-serif text-2xl mt-4">{c.name}</h2>
-              {c.lead_pastor && (
-                <p className="mt-1 text-sm text-muted-foreground">Pastor(a): {c.lead_pastor}</p>
-              )}
-              <div className="mt-4 space-y-1 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
-                {(c.city || c.state) && (
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-3 w-3" /> {c.city}
-                    {c.state ? `/${c.state}` : ""}
-                  </div>
+        <div className="grid lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-8">
+            <section>
+              <h2 className="font-serif text-2xl mb-6">Campanhas Ativas</h2>
+              <div className="grid gap-6">
+                {campaigns?.length === 0 ? (
+                  <Card className="border-dashed p-12 flex flex-col items-center justify-center text-center">
+                    <Heart className="h-12 w-12 text-muted-foreground mb-4" />
+                    <CardTitle>Nenhuma campanha no momento</CardTitle>
+                    <CardDescription>Fique atento às próximas ações sociais da igreja.</CardDescription>
+                  </Card>
+                ) : (
+                  campaigns?.map(campaign => {
+                    const progress = campaign.goal_target ? (campaign.goal_current / campaign.goal_target) * 100 : 0;
+                    return (
+                      <Card key={campaign.id} className="overflow-hidden">
+                        <CardHeader className="flex flex-row items-start justify-between">
+                          <div>
+                            <CardTitle className="text-xl mb-1">{campaign.title}</CardTitle>
+                            <CardDescription>{campaign.description}</CardDescription>
+                          </div>
+                          <Badge variant="outline" className="uppercase text-[10px] tracking-wider">
+                            {campaign.goal_type}
+                          </Badge>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                          {campaign.goal_target && (
+                            <div className="space-y-2">
+                              <div className="flex justify-between text-sm font-mono uppercase tracking-wider">
+                                <span className="text-muted-foreground">Progresso</span>
+                                <span>{Math.round(progress)}%</span>
+                              </div>
+                              <Progress value={progress} className="h-2" />
+                              <div className="flex justify-between text-xs text-muted-foreground">
+                                <span>Atual: {campaign.goal_current}</span>
+                                <span>Meta: {campaign.goal_target}</span>
+                              </div>
+                            </div>
+                          )}
+                          <div className="flex gap-3">
+                            <Button className="flex-1 gap-2">
+                              <Gift className="h-4 w-4" />
+                              Quero Ajudar
+                            </Button>
+                            <Button variant="outline" size="icon">
+                              <FileText className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })
                 )}
-                {c.phone && (
-                  <div className="flex items-center gap-2">
-                    <Phone className="h-3 w-3" /> {c.phone}
+              </div>
+            </section>
+          </div>
+
+          <aside className="space-y-6">
+            <Card className="bg-foreground text-background">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                  Impacto Social
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-1">
+                  <div className="text-3xl font-serif">150+</div>
+                  <div className="text-[10px] uppercase tracking-widest opacity-70">Famílias Atendidas</div>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-3xl font-serif">1.2t</div>
+                  <div className="text-[10px] uppercase tracking-widest opacity-70">Alimentos Arrecadados</div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Próximas Ações</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex gap-4 items-start">
+                  <div className="h-10 w-10 shrink-0 bg-muted rounded-sm flex items-center justify-center font-serif text-lg">20</div>
+                  <div>
+                    <div className="text-sm font-medium">Bazar Solidário</div>
+                    <div className="text-xs text-muted-foreground">Sábado, às 09:00 no Anexo 2</div>
                   </div>
-                )}
-              </div>
-              <div className="mt-6 pt-4 border-t border-border flex items-end justify-between">
-                <div className="font-serif text-3xl leading-none">
-                  {(counts?.[c.id] ?? 0).toString().padStart(2, "0")}
                 </div>
-                <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                  membros vinculados
+                <div className="flex gap-4 items-start">
+                  <div className="h-10 w-10 shrink-0 bg-muted rounded-sm flex items-center justify-center font-serif text-lg">28</div>
+                  <div>
+                    <div className="text-sm font-medium">Entrega de Cestas</div>
+                    <div className="text-xs text-muted-foreground">Domingo após o culto da manhã</div>
+                  </div>
                 </div>
-              </div>
-              {!c.is_active && (
-                <div className="mt-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                  Inativa
-                </div>
-              )}
-            </div>
-          ))}
+              </CardContent>
+            </Card>
+          </aside>
         </div>
-        {churches && churches.length === 0 && (
-          <p className="text-muted-foreground">
-            Nenhuma igreja cadastrada ainda. Comece pela sede.
-          </p>
-        )}
       </PageBody>
     </>
   );
