@@ -77,11 +77,10 @@ function AuthPage() {
     });
     if (result.error) {
       // Exibe a causa real (provedor desabilitado, redirect_uri inválido, etc.)
+      const err: unknown = result.error;
       const msg =
-        typeof result.error === "string"
-          ? result.error
-          : ((result.error as { message?: string }).message ?? "Falha desconhecida");
-      console.error("[auth] Google OAuth falhou:", result.error);
+        typeof err === "string" ? err : ((err as { message?: string })?.message ?? "Falha desconhecida");
+      console.error("[auth] Google OAuth falhou:", err);
       return toast.error(`Erro ao entrar com Google: ${msg}`);
     }
     if (result.redirected) return;
