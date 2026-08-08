@@ -65,7 +65,7 @@ export function StatTile({
   );
 
   const base =
-    "group border border-border bg-card p-6 rounded-sm transition-colors block";
+    "group brutal-shadow bg-card p-6 block";
 
   if (to) {
     return (
