@@ -59,7 +59,7 @@ function SocialActionPage() {
                   </Card>
                 ) : (
                   campaigns?.map(campaign => {
-                    const progress = campaign.goal_target ? (campaign.goal_current / campaign.goal_target) * 100 : 0;
+                    const progress = campaign.goal_target ? ((campaign.goal_current ?? 0) / campaign.goal_target) * 100 : 0;
                     return (
                       <Card key={campaign.id} className="overflow-hidden">
                         <CardHeader className="flex flex-row items-start justify-between">

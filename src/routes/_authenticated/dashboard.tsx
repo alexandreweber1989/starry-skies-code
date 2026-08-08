@@ -13,6 +13,7 @@ import {
   Baby,
   ArrowUpRight,
   Layout,
+  CheckCircle2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, PageBody } from "@/components/app-shell";
@@ -240,21 +241,21 @@ function Dashboard() {
             </div>
           </PanelSection>
 
-          <PanelSection label="Roadmap" title="Próximas fases">
+          <PanelSection label="Roadmap" title="Fases Concluídas">
             <ol className="space-y-3 text-sm text-muted-foreground">
               {[
-                "Kids — check-in seguro por QR Code",
-                "Mídia — biblioteca e central de solicitações",
-                "Redes e Mesas — eventos por escopo",
-                "Jovens e Adolescentes — feed moderado",
-                "Atos de Amor — campanhas mensais",
-                "Portal de notícias e avisos",
+                "Kids — check-in seguro e QR Code",
+                "Mídia — biblioteca e central de mídias",
+                "Atos de Amor — campanhas e impacto",
+                "Hierarchy — isolamento de mesas e redes",
+                "RBAC — menus dinâmicos por cargo",
+                "Personalização — interface adaptativa",
               ].map((t, i) => (
                 <li key={t} className="flex gap-3">
                   <span className="font-mono text-[10px] text-primary pt-1">
-                    {String(i + 1).padStart(2, "0")}
+                    <CheckCircle2 className="h-3 w-3" />
                   </span>
-                  <span>{t}</span>
+                  <span className="line-through opacity-50">{t}</span>
                 </li>
               ))}
             </ol>
