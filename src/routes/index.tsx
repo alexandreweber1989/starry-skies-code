@@ -106,7 +106,7 @@ function Landing() {
             <div className="mt-12 grid lg:grid-cols-12 gap-10 items-end">
               <div className="lg:col-span-6 space-y-4">
                 <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
-                  para de ficar trocando o a descrição da landing page, presta atenção no que eu to te pedindo. Execute o que foi solicitado anteriormente, e para de ficar fazendo o que eu não to te pedindo, execute e não fique mudando descrição do texto da landing page
+                  Plataforma da Igreja Batista Atos — ministérios, redes, mesas e comunidade em um só lugar.
                 </p>
               </div>
               <div className="lg:col-span-6 flex flex-col items-start lg:items-end gap-6">
