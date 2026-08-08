@@ -1,6 +1,6 @@
-# Blueprint Mestre da Plataforma Igreja Batista Atos (V2 - Extendido)
+# Blueprint Mestre da Plataforma Igreja Batista Atos (V2.1 - Ultra Detalhado)
 
-Este documento é a especificação técnica máxima para a replicação total da plataforma. Ele cobre desde a infraestrutura de dados até a lógica de componentes e roteamento.
+Este documento é a especificação técnica e funcional máxima para a replicação total da plataforma. Ele cobre desde a infraestrutura de dados até a lógica de componentes, menus e fluxos de botões.
 
 ---
 
@@ -18,82 +18,102 @@ A plataforma é uma aplicação **TanStack Start v1** (Full-Stack React 19) oper
 
 ---
 
-## 2. Estrutura de Pastas e Responsabilidades
+## 2. Mapa de Navegação e Menus (UX)
 
-### 2.1 `/src/components` (UI/UX)
-- **`admin/`**: Diálogos e editores para a estrutura organizacional (Igrejas, Redes, Mesas).
-- **`kids/`**: O sistema de segurança infantil. Inclui `checkin-board` para voluntários e `photo-input` para captura via webcam.
-- **`membros/`**: O `member-wizard-dialog.tsx` é o componente mais complexo, lidando com formulários multi-passo.
-- **`louvor/`**: `stage-mode.tsx` fornece uma interface de alto contraste para músicos.
-- **`ui/`**: Componentes atômicos (Button, Input, Card) customizados com o design system da Igreja.
+O sistema utiliza um **App Shell** (layout compartilhado) com uma barra lateral ou menu de navegação que varia conforme o papel do usuário.
 
-### 2.2 `/src/lib` (Lógica e Integração)
-- **`auth-context.tsx`**: O coração do RBAC. Define quem é `admin_geral` ou `membro`.
-- **`*.functions.ts`**: RPCs que executam no servidor (Node/Edge). Exemplos: `kids.functions.ts` para geração de QR Codes e `membership.functions.ts` para aprovação de cadastros.
-- **`*.server.ts`**: Helpers que NUNCA são enviados ao cliente, protegendo a lógica de banco de dados.
-
-### 2.3 `/src/routes` (Navegação)
-- **`_authenticated/`**: Layout seguro que redireciona usuários não logados.
-- **`api/public/`**: Endpoints para integração externa (Webhooks).
+### 2.1 Menu Principal (Sidebar/Dashboard)
+- **Painel (Dashboard):** Visão geral da igreja. Centraliza métricas e atalhos rápidos.
+- **Ministérios:** Lista de frentes de trabalho (Ex: Louvor, Kids, Mídia).
+- **Redes:** Divisões estratégicas por faixa etária ou afinidade (Ex: Rede de Jovens).
+- **Mesas:** Células ou pequenos grupos de comunhão nas casas.
+- **Membros:** Diretório completo de pessoas, controle de status e aprovações.
+- **Kids:** Central de check-in, segurança infantil e gestão de responsáveis.
+- **Louvor:** Gestão de escalas, repertório e "Modo Palco" para músicos.
+- **Livraria:** Venda de produtos e controle de estoque básico.
+- **Cantina:** Cardápios, pedidos e operações de domingo.
+- **Perfil:** Ajustes pessoais e visualização de credenciais digitais.
 
 ---
 
-## 3. Design System (Identidade Visual)
-Configurado em `src/styles.css`.
+## 3. Guia de Botões e Funcionalidades
 
-### 3.1 Tipografia
-- **Títulos (Serif):** `Syne` - Transmite solidez e história.
-- **Corpo (Sans):** `Plus Jakarta Sans` - Focada em legibilidade extrema.
-- **Tokens:** `tracking-tight` para títulos e `tracking-[0.3em]` para metadados (estilo Apple/Minimalista).
+### 3.1 Gestão de Membros (`src/components/membros/`)
+- **Botão "Novo Membro":** Abre o `MemberWizardDialog`. Funciona em 3 passos:
+    1. Dados Pessoais (Nome, Nasc, Sexo).
+    2. Contatos (WhatsApp, Endereço).
+    3. Eclesiástico (Status Ministerial, Igreja, Foto).
+- **Botão "Solicitar Acesso":** (Na Landing Page) Cria um registro na `membership_requests` para aprovação posterior do Admin.
+- **Botão "Aprovar":** No painel de solicitações, converte o pedido em um perfil ativo.
+- **Botão "Editar Funções":** Permite ao Admin atribuir roles como "Pastor" ou "Líder" a um membro.
 
-### 3.2 Cores (Semântica OKLCH)
-- **Background Principal:** `oklch(1 0 0)` no claro, `oklch(0.129 0.042 264.695)` no escuro.
-- **Animações:** `animate-reveal` (subida com blur) e `pt-overlay` (transições de página com persianas dinâmicas).
+### 3.2 Módulo Kids (`src/components/kids/`)
+- **Botão "Realizar Check-in":** Abre o `SessionDialog`. Associa uma criança a uma sala e gera um código de segurança.
+- **Botão "QR Code":** Gera um QR Code único para o pai. O voluntário pode escanear esse código para abrir a página de checkout.
+- **Botão "Capturar Foto":** Aciona a webcam ou câmera do celular via `PhotoInput` para registrar a criança e o responsável.
+- **Botão "WhatsApp (Checkout)":** Abre o link `wa.me` com o número do pai para avisar que a criança está pronta para retirada.
+- **Botão "Visualizar Fotos":** Exibe imagens armazenadas no Storage privado via `KidsPhoto` (com URLs assinadas temporárias).
 
----
+### 3.3 Louvor & Palco (`src/components/louvor/`)
+- **Botão "Modo Palco":** Ativa a interface `StageMode`. Inverte cores (fundo escuro), aumenta a fonte e remove distrações para uso em tablets.
+- **Botão "Adicionar Música":** Abre o `SongDialog` para inserir letras, cifras e links do YouTube/Spotify.
+- **Botão "Gerar Escala":** Vincula músicos a datas e instrumentos específicos.
 
-## 4. Banco de Dados (Schema PostgreSQL)
-
-### 4.1 Tipos Customizados (Enums)
-- `app_role`: `['admin_geral', 'admin_ministerio', 'lider_mesa', 'membro']`
-- `ministerial_status`: `['Membro', 'Líder', 'Apasc.', 'Pr.', 'Pra.']`
-
-### 4.2 Tabelas Críticas
-- **`profiles`**: `id (UUID)`, `full_name`, `birth_date`, `status_ministerial`, `church_id`, `alergias`, `restricoes_alimentares`.
-- **`kids_children`**: `id`, `name`, `photo_url`, `parent_id`.
-- **`kids_sessions`**: `id`, `child_id`, `checkin_at`, `checkout_at`, `status ('presente', 'retirado')`, `qr_code_id`.
-- **`user_roles`**: Tabela de junção para permissões granulares.
-
-### 4.3 Segurança (RLS - Row Level Security)
-- **Regra 0:** Nenhuma tabela é pública sem política.
-- **Função `has_role(_user_id, _role)`**: Função `SECURITY DEFINER` que checa permissões sem recursão.
-- **Política de Membros:** `USING (auth.uid() = id)` permite que o membro veja apenas a si mesmo.
-- **Política de Kids:** Somente usuários com a role `admin_geral` ou `admin_kids` podem ver a `photo_url` das crianças.
+### 3.4 Finanças & Compras (`src/components/financeiro/` e `src/components/livraria/`)
+- **Botão "Pagar com PIX":** Abre o `PixDialog`. Gera um QR Code e um código "Copia e Cola" dinâmico.
+- **Botão "Finalizar Pedido":** Envia a demanda da Cantina para a tela `CantinaDemanda` visualizada pela equipe da cozinha.
 
 ---
 
-## 5. Módulos de Especialidade
+## 4. Estrutura de Pastas e Responsabilidades
 
-### 5.1 Kids & QR Check-in
-- **Fluxo:** Registro -> Foto do Responsável -> Check-in -> Geração de QR -> Notificação via `wa.me` -> Leitura do QR no Checkout.
-- **Segurança:** URLs das fotos são assinadas (`signedUrls`) com expiração de 60 minutos para evitar vazamentos.
+### 4.1 `/src/components` (UI/UX)
+- **`admin/`**: Diálogos para a estrutura organizacional (Igrejas, Redes, Mesas).
+- **`kids/`**: Segurança infantil. Inclui `checkin-board` e `visitor-queue`.
+- **`louvor/`**: Gestão de músicos e repertório.
+- **`ui/`**: Componentes atômicos customizados (Button, Input, Card).
 
-### 5.2 Gestão Ministerial
-- **Mesa/Rede:** Cada grupo possui um ou dois líderes (geralmente um casal). O sistema vincula `profiles` a `redes` via tabelas de junção, permitindo que o líder veja o Whatsapp de seus liderados.
-
-### 5.3 Livraria e Cantina
-- **Financeiro:** Suporte a QR Code PIX dinâmico (componente `pix-dialog.tsx`).
-- **Logística:** Fila de demanda em tempo real para pedidos da cantina.
-
----
-
-## 6. Checklist de Replicação
-1. **Configurar TanStack Start:** `npm create tanstack/start`.
-2. **Importar CSS:** Copiar `src/styles.css` e instalar `tw-animate-css`.
-3. **Database:** Rodar as migrations em ordem e criar os Buckets no Storage (`kids-photos`).
-4. **Auth:** Configurar Google Auth e Magic Link no painel do Supabase.
-5. **Types:** Executar `npx supabase gen types typescript` para sincronizar o frontend.
+### 4.2 `/src/lib` (Lógica e Integração)
+- **`auth-context.tsx`**: O coração do RBAC (Role-Based Access Control).
+- **`*.functions.ts`**: RPCs (Server Functions) para operações pesadas ou seguras.
+- **`*.server.ts`**: Helpers puramente backend (nunca vazam para o browser).
 
 ---
 
-Este documento é a alma técnica da Igreja Batista Atos. Replicar este sistema exige atenção especial às políticas de RLS e à hierarquia de roles.
+## 5. Design System (Identidade Visual)
+
+### 5.1 Tipografia
+- **Títulos:** `Syne` (Impacto e modernidade).
+- **Corpo:** `Plus Jakarta Sans` (Legibilidade).
+- **Estilo:** Minimalista, inspirado na Apple, com uso generoso de espaços em branco e bordas arredondadas suaves.
+
+### 5.2 Cores (Tokens semânticos)
+- **Primary:** Azul institucional.
+- **Surface:** Tons de cinza ultra-leves no modo claro, grafite profundo no modo escuro.
+
+---
+
+## 6. Banco de Dados (Schema PostgreSQL)
+
+### 6.1 Tabelas Críticas
+- **`profiles`**: Dados centrais do membro.
+- **`kids_children` / `kids_guardians`**: Cadastro de menores e seus responsáveis.
+- **`worship_songs` / `worship_schedules`**: Base de dados do ministério de louvor.
+- **`user_roles`**: Mapeamento de permissões (Admin, Líder, Voluntário).
+
+### 6.2 Segurança (RLS)
+- **Políticas Restritivas:** Ninguém vê dados de outros a menos que seja um `admin_geral` ou tenha relação direta (ex: líder de mesa vê seus liderados).
+- **Bucket Storage:** O bucket `kids-photos` é privado. O acesso é feito via `getSignedUrl` no servidor.
+
+---
+
+## 7. Checklist de Replicação
+1. **Infra:** Configurar projeto no Supabase com Storage (`kids-photos` privado).
+2. **Schema:** Aplicar migrations de Enums (`app_role`, `ministerial_status`) e tabelas.
+3. **Frontend:** Instalar TanStack Start, Tailwind v4 e Radix UI.
+4. **Auth:** Configurar Google Auth (URI de redirecionamento: `/auth/callback`).
+5. **Storage:** Criar buckets e definir políticas RLS para upload e leitura.
+
+---
+
+Este documento serve como a "Bússola Técnica" da plataforma Igreja Batista Atos. Replicar este sistema exige seguir a ordem das migrations e garantir que os componentes de UI respeitem os tokens definidos em `styles.css`.
