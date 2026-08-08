@@ -1,6 +1,6 @@
-# Blueprint Mestre da Plataforma Igreja Batista Atos (V2.1 - Ultra Detalhado)
+# Blueprint Mestre da Plataforma Igreja Batista Atos (V3.0 - Guia de Excelência e Inovação)
 
-Este documento é a especificação técnica e funcional máxima para a replicação total da plataforma. Ele cobre desde a infraestrutura de dados até a lógica de componentes, menus e fluxos de botões.
+Este documento é a especificação técnica e funcional definitiva para a replicação total da plataforma. Ele cobre desde a infraestrutura de dados até a lógica de componentes, menus, fluxos de botões e o **Planejamento de Expansão (Inovações)**.
 
 ---
 
@@ -82,55 +82,73 @@ O sistema utiliza um **App Shell** (layout compartilhado) com uma barra lateral 
 - **Botão "Adicionar Música":** Abre o `SongDialog` para inserir letras, cifras e links do YouTube/Spotify.
 - **Botão "Gerar Escala":** Vincula músicos a datas e instrumentos específicos.
 
-### 3.4 Finanças & Compras (`src/components/financeiro/` e `src/components/livraria/`)
-- **Botão "Pagar com PIX":** Abre o `PixDialog`. Gera um QR Code e um código "Copia e Cola" dinâmico.
-- **Botão "Finalizar Pedido":** Envia a demanda da Cantina para a tela `CantinaDemanda` visualizada pela equipe da cozinha.
+---
+
+## 4. O PRÓXIMO NÍVEL: Planejamento de Expansão (Inovações)
+
+Para tornar a plataforma "Incrível", as seguintes implementações são recomendadas como próximos passos:
+
+### 4.1 Módulo Mídia (Engajamento Digital)
+- **Central de Ativos:** Biblioteca de fotos de cultos, logos e templates para as redes sociais das Mesas.
+- **Solicitações de Arte:** Formulário para líderes solicitarem artes ao time de design da igreja.
+
+### 4.2 Atos de Amor (Ação Social)
+- **Dashboard de Doações:** Acompanhamento de metas de arrecadação de alimentos ou vestuário.
+- **Ficha de Assistidos:** Cadastro de famílias atendidas para evitar duplicação e garantir a entrega periódica.
+
+### 4.3 Gamificação & Discipulado (Crescimento)
+- **Jornada do Membro:** Barra de progresso visual no perfil ("Novo Membro" -> "Batismo" -> "Cursos" -> "Liderança").
+- **Badges/Conquistas:** Medalhas digitais para voluntários com base em horas servidas ou presenças em cursos.
+
+### 4.4 Inteligência & Notificações (Automação)
+- **Bot no WhatsApp (Integração Gateway):** Envio automático de lembretes de escala e avisos de aniversário sem intervenção humana.
+- **Check-in de Culto por Geolocalização:** Confirmar presença apenas ao estar fisicamente na igreja (opcional).
 
 ---
 
-## 4. Estrutura de Pastas e Responsabilidades
+## 5. Estrutura de Pastas e Responsabilidades
 
-### 4.1 `/src/components` (UI/UX)
+### 5.1 `/src/components` (UI/UX)
 - **`admin/`**: Diálogos para a estrutura organizacional (Igrejas, Redes, Mesas).
 - **`kids/`**: Segurança infantil. Inclui `checkin-board` e `visitor-queue`.
 - **`louvor/`**: Gestão de músicos e repertório.
 - **`ui/`**: Componentes atômicos customizados (Button, Input, Card).
 
-### 4.2 `/src/lib` (Lógica e Integração)
+### 5.2 `/src/lib` (Lógica e Integração)
 - **`auth-context.tsx`**: O coração do RBAC (Role-Based Access Control).
 - **`*.functions.ts`**: RPCs (Server Functions) para operações pesadas ou seguras.
 - **`*.server.ts`**: Helpers puramente backend (nunca vazam para o browser).
 
 ---
 
-## 5. Design System (Identidade Visual)
+## 6. Design System (Identidade Visual)
 
-### 5.1 Tipografia
+### 6.1 Tipografia
 - **Títulos:** `Syne` (Impacto e modernidade).
 - **Corpo:** `Plus Jakarta Sans` (Legibilidade).
 - **Estilo:** Minimalista, inspirado na Apple, com uso generoso de espaços em branco e bordas arredondadas suaves.
 
-### 5.2 Cores (Tokens semânticos)
+### 6.2 Cores (Tokens semânticos)
 - **Primary:** Azul institucional.
 - **Surface:** Tons de cinza ultra-leves no modo claro, grafite profundo no modo escuro.
 
 ---
 
-## 6. Banco de Dados (Schema PostgreSQL)
+## 7. Banco de Dados (Schema PostgreSQL)
 
-### 6.1 Tabelas Críticas
+### 7.1 Tabelas Críticas
 - **`profiles`**: Dados centrais do membro.
 - **`kids_children` / `kids_guardians`**: Cadastro de menores e seus responsáveis.
 - **`worship_songs` / `worship_schedules`**: Base de dados do ministério de louvor.
 - **`user_roles`**: Mapeamento de permissões (Admin, Líder, Voluntário).
 
-### 6.2 Segurança (RLS)
+### 7.2 Segurança (RLS)
 - **Políticas Restritivas:** Ninguém vê dados de outros a menos que seja um `admin_geral` ou tenha relação direta (ex: líder de mesa vê seus liderados).
 - **Bucket Storage:** O bucket `kids-photos` é privado. O acesso é feito via `getSignedUrl` no servidor.
 
 ---
 
-## 7. Checklist de Replicação
+## 8. Checklist de Replicação
 1. **Infra:** Configurar projeto no Supabase com Storage (`kids-photos` privado).
 2. **Schema:** Aplicar migrations de Enums (`app_role`, `ministerial_status`) e tabelas.
 3. **Frontend:** Instalar TanStack Start, Tailwind v4 e Radix UI.
