@@ -126,21 +126,39 @@ function Landing() {
               </div>
             </div>
 
-            <div className="mt-12 p-6 bg-card border rounded-xl shadow-sm text-left max-w-2xl animate-reveal-slow" style={{ animationDelay: '400ms' }}>
-              <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                Blueprint Técnico Disponível
-              </h3>
-              <p className="text-muted-foreground mb-4 text-sm leading-relaxed">
-                O documento completo de engenharia da plataforma (BLUEPRINT.md) foi gerado, detalhando a arquitetura, design system, modelos de dados e fluxos de segurança para replicação total do sistema.
-              </p>
-              <a 
-                href="/BLUEPRINT.md" 
-                target="_blank"
-                className="inline-flex items-center text-sm font-medium underline underline-offset-4 hover:text-primary transition-colors"
-              >
-                Visualizar Blueprint Técnico completo <ArrowUpRight className="ml-1 h-3 w-3" />
-              </a>
+            <div className="mt-12 grid md:grid-cols-2 gap-6 animate-reveal-slow" style={{ animationDelay: '400ms' }}>
+              <div className="p-6 bg-card border rounded-xl shadow-sm text-left">
+                <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                  <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                  Blueprint Técnico Master
+                </h3>
+                <p className="text-muted-foreground mb-4 text-sm leading-relaxed">
+                  Documentação de engenharia completa (BLUEPRINT.md) atualizada para a V3.0, detalhando arquitetura, RLS e o guia de replicação.
+                </p>
+                <a 
+                  href="/BLUEPRINT.md" 
+                  target="_blank"
+                  className="inline-flex items-center text-sm font-medium underline underline-offset-4 hover:text-primary transition-colors"
+                >
+                  Visualizar Blueprint Técnico <ArrowUpRight className="ml-1 h-3 w-3" />
+                </a>
+              </div>
+
+              <div className="p-6 bg-primary/5 border border-primary/20 rounded-xl shadow-sm text-left">
+                <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-primary">
+                  <Sparkles className="w-4 h-4" />
+                  O que vem por aí?
+                </h3>
+                <p className="text-muted-foreground mb-4 text-sm leading-relaxed">
+                  Gamificação de discipulado, central de mídias, automação via WhatsApp e o novo portal "Atos de Amor" já estão no roadmap de inovação.
+                </p>
+                <Link 
+                  to="/dashboard"
+                  className="inline-flex items-center text-sm font-medium underline underline-offset-4 hover:text-primary transition-colors text-primary"
+                >
+                  Ver Roadmap no Painel <ArrowRight className="ml-1 h-3 w-3" />
+                </Link>
+              </div>
             </div>
 
             {/* Marquee tira */}
