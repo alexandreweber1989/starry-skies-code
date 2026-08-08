@@ -48,6 +48,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 });
 
 const atalhos: { to: string; label: string; icon: any; requiredRoles?: AppRole[] }[] = [
+  { to: "/midia", label: "Mídia", icon: Layout, requiredRoles: ["admin_geral"] },
   { to: "/ministerios", label: "Ministérios", icon: Sparkles },
   { to: "/louvor", label: "Louvor", icon: Music },
   { to: "/redes", label: "Redes", icon: Network },
