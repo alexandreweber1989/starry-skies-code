@@ -6,6 +6,7 @@ import {
   Network,
   UtensilsCrossed,
   Church,
+  Heart,
   LogOut,
   UserCircle,
   ShieldCheck,
