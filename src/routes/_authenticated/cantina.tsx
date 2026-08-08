@@ -29,7 +29,7 @@ export const Route = createFileRoute("/_authenticated/cantina")({
 });
 
 function CantinaPage() {
-  const { isCantinaAdmin } = useAuth();
+  const { isCantinaAdmin, isAdmin } = useAuth();
 
   return (
     <>

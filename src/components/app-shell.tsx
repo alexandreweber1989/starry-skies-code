@@ -17,7 +17,7 @@ import {
   Menu,
 } from "lucide-react";
 import { type ReactNode, useState } from "react";
-import { useAuth } from "@/lib/auth-context";
+import { useAuth, type AppRole } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { PageTransition } from "@/components/page-transition";
 import { GlobalSearch } from "@/components/global-search";
@@ -25,24 +25,37 @@ import { NotificationsBell } from "@/components/notifications-bell";
 import { QuickActions } from "@/components/quick-actions";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
-const nav = [
+interface NavItem {
+  to: string;
+  label: string;
+  icon: any;
+  requiredRoles?: AppRole[];
+}
+
+const nav: NavItem[] = [
   { to: "/dashboard", label: "Painel", icon: LayoutDashboard },
   { to: "/agenda", label: "Agenda", icon: CalendarDays },
   { to: "/ministerios", label: "Ministérios", icon: Sparkles },
   { to: "/louvor", label: "Louvor", icon: Music },
   { to: "/redes", label: "Redes", icon: Network },
   { to: "/mesas", label: "Mesas", icon: UtensilsCrossed },
-  { to: "/membros", label: "Membros", icon: Users },
-  { to: "/kids", label: "Kids", icon: Baby },
-  { to: "/igrejas", label: "Igrejas", icon: Church },
-  { to: "/livraria", label: "Livraria", icon: BookOpen },
-  { to: "/cantina", label: "Cantina", icon: Coffee },
-] as const;
+  { to: "/membros", label: "Membros", icon: Users, requiredRoles: ["admin_geral"] },
+  { to: "/kids", label: "Kids", icon: Baby, requiredRoles: ["admin_geral", "admin_kids"] },
+  { to: "/igrejas", label: "Igrejas", icon: Church, requiredRoles: ["admin_geral"] },
+  { to: "/livraria", label: "Livraria", icon: BookOpen, requiredRoles: ["admin_geral", "admin_livraria"] },
+  { to: "/cantina", label: "Cantina", icon: Coffee, requiredRoles: ["admin_geral", "admin_cantina"] },
+];
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { user, isAdmin, signOut } = useAuth();
+  const { user, isAdmin, roles, signOut } = useAuth();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const filteredNav = nav.filter((item) => {
+    if (isAdmin) return true;
+    if (!item.requiredRoles) return true;
+    return roles.some((r) => item.requiredRoles?.includes(r.role));
+  });
 
   const sidebarContent = (
     <div className="flex flex-col h-full bg-sidebar text-sidebar-foreground border-r border-sidebar-border shadow-2xl">
@@ -60,7 +73,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </div>
       <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-sidebar-border/50">
-        {nav.map((item) => {
+        {filteredNav.map((item) => {
           const active = pathname === item.to || pathname.startsWith(item.to + "/");
           const Icon = item.icon;
           return (
@@ -156,7 +169,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </header>
 
           <nav className="lg:hidden flex overflow-x-auto gap-2 px-4 py-3 border-b border-border/50 bg-muted/40 backdrop-blur-md scrollbar-none sticky top-16 z-20">
-            {nav.map((item) => {
+            {filteredNav.map((item) => {
               const active = pathname === item.to || pathname.startsWith(item.to + "/");
               return (
                 <Link
