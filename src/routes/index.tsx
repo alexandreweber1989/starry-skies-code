@@ -106,7 +106,7 @@ function Landing() {
             <div className="mt-12 grid lg:grid-cols-12 gap-10 items-end">
               <div className="lg:col-span-6 space-y-4">
                 <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
-                  Garanta uma esteira de qualidade antes do merge: Observabilidade (Sentry, OpenTelemetry), Qualidade (Lint, Biome, Knip), Testes (Playwright, Vitest, Codecov), Segurança (Rate limit, RLS, Performance budget) e Arquitetura focada em componentização, evitando overengineering e DRY com critério.
+                  Implementada identidade visual única para cada Ministério, Rede e Mesa. As páginas agora adaptam cores e menus de acordo com o contexto do grupo, mantendo a tipografia Syne/Plus Jakarta Sans, mas personalizando a experiência de navegação para cada ministério e rede específica.
                 </p>
               </div>
               <div className="lg:col-span-6 flex flex-col items-start lg:items-end gap-6">

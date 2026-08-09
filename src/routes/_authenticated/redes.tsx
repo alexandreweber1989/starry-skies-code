@@ -111,16 +111,17 @@ function RedesPage() {
           {filtered.map((r, i) => {
             const redeStats = statsOf(stats?.redes, r.id);
             const mesas = mesasByRede?.[r.id] ?? [];
+            const redeColor = r.color || 'var(--primary)';
             return (
-              <div key={r.id} className="border border-border bg-card rounded-sm">
+              <div key={r.id} className="border border-border bg-card rounded-sm overflow-hidden" style={{ borderTop: `4px solid ${redeColor}` }}>
                 <div className="p-6 border-b border-border flex items-start justify-between gap-4">
                   <div className="min-w-0">
-                    <div className="font-mono text-[11px] uppercase tracking-widest text-primary mb-2">
+                    <div className="font-mono text-[11px] uppercase tracking-widest mb-2" style={{ color: redeColor }}>
                       Rede {String(i + 1).padStart(2, "0")} · {r.target_audience}
                       {r.church?.name ? ` · ${r.church.name}` : ""}
                     </div>
 
-                    <h3 className="font-serif text-3xl">{r.name}</h3>
+                    <h3 className="font-serif text-3xl group-hover:text-primary transition-colors">{r.name}</h3>
                     {r.description && (
                       <p className="mt-2 text-sm text-muted-foreground">{r.description}</p>
                     )}

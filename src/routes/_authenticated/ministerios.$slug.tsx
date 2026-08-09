@@ -45,15 +45,16 @@ function MinistryDetail() {
   const canManage = isMinistryAdmin(ministry.id);
 
   return (
-    <>
+    <div style={{ "--group-primary": ministry.color || 'var(--primary)' } as React.CSSProperties}>
       <PageHeader
         eyebrow="Ministério"
         title={ministry.name}
         description={ministry.description ?? undefined}
+        className="border-b-[3px] border-[var(--group-primary)]"
         actions={
           <Link
             to="/ministerios"
-            className="inline-flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground"
+            className="inline-flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-[var(--group-primary)] transition-colors"
           >
             <ArrowLeft className="h-4 w-4" /> Todos os ministérios
           </Link>
