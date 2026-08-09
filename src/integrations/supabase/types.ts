@@ -1508,6 +1508,7 @@ export type Database = {
           id: string
           status: string
           title: string
+          total_families_reached: number | null
         }
         Insert: {
           created_at?: string | null
@@ -1518,6 +1519,7 @@ export type Database = {
           id?: string
           status?: string
           title: string
+          total_families_reached?: number | null
         }
         Update: {
           created_at?: string | null
@@ -1528,6 +1530,46 @@ export type Database = {
           id?: string
           status?: string
           title?: string
+          total_families_reached?: number | null
+        }
+        Relationships: []
+      }
+      social_assistance_requests: {
+        Row: {
+          created_at: string | null
+          family_members_count: number | null
+          handled_by: string | null
+          id: string
+          needs_description: string
+          notes: string | null
+          requester_name: string
+          requester_phone: string | null
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          family_members_count?: number | null
+          handled_by?: string | null
+          id?: string
+          needs_description: string
+          notes?: string | null
+          requester_name: string
+          requester_phone?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          family_members_count?: number | null
+          handled_by?: string | null
+          id?: string
+          needs_description?: string
+          notes?: string | null
+          requester_name?: string
+          requester_phone?: string | null
+          status?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
