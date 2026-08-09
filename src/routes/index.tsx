@@ -109,7 +109,7 @@ function Landing() {
             <div className="mt-12 grid lg:grid-cols-12 gap-10 items-end">
               <div className="lg:col-span-6 space-y-4">
                 <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
-                  Implementada identidade visual única para cada Ministério, Rede e Mesa. As páginas agora adaptam cores e menus de acordo com o contexto do grupo, mantendo a tipografia Syne/Plus Jakarta Sans, mas personalizando a experiência de navegação para cada ministério e rede específica.
+                  A plataforma da Igreja Batista Atos agora utiliza elementos inspirados no 21st.dev para uma experiência visual incrível. Combinamos a sofisticação da tipografia Syne e Plus Jakarta Sans com micro-interações, sombras profundas e estados de hover refinados em toda a plataforma.
                 </p>
               </div>
               <div className="lg:col-span-6 flex flex-col items-start lg:items-end gap-6">
