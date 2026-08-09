@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, PageBody } from "@/components/app-shell";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, UserPlus, Music, Camera, Sparkles, Users, UserSquare2, Flame, Compass, Baby, HeartHandshake, HelpCircle } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { MinistryDialog, EditMinistryButton } from "@/components/admin/ministry-dialog";
 
@@ -31,7 +31,18 @@ function MinistriesPage() {
         eyebrow="Corpo em serviço"
         title="Ministérios"
         description={isAdmin ? "Os nove ministérios da Igreja Batista Atos, cada um com sua vocação e seus servos." : "Ministérios nos quais você serve."}
-        actions={isAdmin ? <MinistryDialog /> : undefined}
+        actions={
+          <div className="flex gap-2">
+            {isAdmin && (
+              <Button variant="outline" asChild>
+                <Link to="/membros">
+                  <UserPlus className="mr-2 h-4 w-4" /> Vincular Líderes
+                </Link>
+              </Button>
+            )}
+            {isAdmin && <MinistryDialog />}
+          </div>
+        }
       />
       <PageBody>
         {isLoading && <div className="text-muted-foreground">Carregando...</div>}
@@ -49,22 +60,35 @@ function MinistriesPage() {
               className="group block h-full border border-border bg-card rounded-sm p-6 hover:border-primary transition-colors"
             >
               <div className="flex items-start justify-between mb-6 pr-10">
-                <div
-                  className="font-mono text-[11px] uppercase tracking-widest text-primary"
+                <div 
+                  className="h-12 w-12 rounded-2xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform duration-500"
+                  style={{ backgroundColor: m.color || '#3b82f6' }}
+                >
+                  {(() => {
+                    const Icon = {
+                      Music, Camera, Sparkles, Users, UserSquare2, Flame, Compass, Baby, HeartHandshake
+                    }[m.icon || ''] || HelpCircle;
+                    return <Icon className="h-6 w-6" />;
+                  })()}
+                </div>
+                <ArrowUpRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+              </div>
+              <h3 className="font-serif text-2xl leading-tight group-hover:text-primary transition-colors">{m.name}</h3>
+              {m.description && (
+                <p className="mt-3 text-sm text-muted-foreground line-clamp-2 leading-relaxed">{m.description}</p>
+              )}
+              <div className="mt-auto pt-6 flex items-center justify-between">
+                <div 
+                  className="font-mono text-[10px] uppercase tracking-[0.2em] px-2 py-0.5 rounded-full bg-primary/5 text-primary/70"
                 >
                   {String(i + 1).padStart(2, "0")}
                 </div>
-                <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
+                {m.meeting_info && (
+                  <span className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground/60">
+                    {m.meeting_info}
+                  </span>
+                )}
               </div>
-              <h3 className="font-serif text-2xl leading-tight">{m.name}</h3>
-              {m.description && (
-                <p className="mt-3 text-sm text-muted-foreground line-clamp-3">{m.description}</p>
-              )}
-              {m.meeting_info && (
-                <div className="mt-6 pt-4 border-t border-border font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                  {m.meeting_info}
-                </div>
-              )}
             </Link>
             </div>
           ))}
