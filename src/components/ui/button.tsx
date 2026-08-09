@@ -74,18 +74,15 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     // O Slot do Radix exige EXATAMENTE um filho único que seja um elemento React
     // válido. Se `children` for um array, fragmento ou texto puro, o Slot falha.
     if (asChild) {
-      // Garantimos que children seja um único elemento React.
-      // Se houver múltiplos filhos ou texto puro, React.Children.only lançará um erro
-      // útil no desenvolvimento, mas aqui tentamos ser resilientes.
-      const child = React.isValidElement(children) 
+      const child = (React.isValidElement(children) 
         ? children 
-        : React.Children.only(children) as React.ReactElement<any>;
+        : React.Children.only(children)) as unknown as React.ReactElement<any>;
 
       return (
         <Slot className={classes} ref={ref} aria-busy={loading || undefined} {...props}>
           {React.cloneElement(child, {
-            className: cn(classes, (child.props as any)?.className),
-          } as any)}
+            className: cn(classes, child.props?.className),
+          })}
         </Slot>
       );
     }
