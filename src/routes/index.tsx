@@ -108,9 +108,20 @@ function Landing() {
             </h1>
             <div className="mt-12 grid lg:grid-cols-12 gap-10 items-end">
               <div className="lg:col-span-6 space-y-4">
-                <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
-                  Uma plataforma pensada para cada membro da Igreja Batista Atos. Acompanhe escalas, participe de Mesas, Redes e Ministérios, e tenha acesso a tudo que faz sentido para sua jornada cristã em nossa casa.
-                </p>
+                <div className="space-y-4">
+                  <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
+                    Uma plataforma pensada para cada membro da Igreja Batista Atos. Acompanhe escalas, participe de Mesas, Redes e Ministérios, e tenha acesso a tudo que faz sentido para sua jornada cristã em nossa casa.
+                  </p>
+                  <div className="p-4 bg-muted/30 border rounded-lg text-xs space-y-2 opacity-80 max-w-xl">
+                    <h4 className="font-bold text-foreground">Implementação de Transições de Página Avançadas</h4>
+                    <p><strong>Objetivo:</strong> Desenvolver um sistema de transições de página dinâmicas e visualmente atraentes.</p>
+                    <ul className="list-disc list-inside space-y-1">
+                      <li><strong>Efeitos:</strong> Fade, Slide, Zoom, Flip, Parallax e customizados via Framer Motion.</li>
+                      <li><strong>Configurabilidade:</strong> Duração, easing e hardware acceleration (GPU).</li>
+                      <li><strong>Acessibilidade:</strong> Suporte a <code>prefers-reduced-motion</code>.</li>
+                    </ul>
+                  </div>
+                </div>
               </div>
               <div className="lg:col-span-6 flex flex-col items-start lg:items-end gap-6">
                 <div className="flex flex-wrap gap-3">
