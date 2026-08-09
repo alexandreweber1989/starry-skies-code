@@ -182,9 +182,11 @@ function VisitorPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background px-5 py-10">
+    <main className="min-h-screen bg-yellow-50 px-5 py-10 font-kids selection:bg-pink-200 selection:text-pink-900">
       <div className="mx-auto w-full max-w-xl">
-        <header className="relative text-center">
+        <header className="relative text-center bg-white rounded-[3rem] p-10 border-4 border-yellow-200 shadow-xl mb-10 overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-yellow-400 via-pink-400 to-blue-400" />
+
           {kiosk && (
             <Button
               asChild
@@ -198,14 +200,16 @@ function VisitorPage() {
             </Button>
           )}
           <Baby className="h-8 w-8 text-primary mx-auto" />
-          <h1 className="font-serif text-3xl mt-4">Bem-vindo ao Kids</h1>
-          <p className="text-muted-foreground mt-3">
-            Leva menos de um minuto. Depois de enviar, a equipe confere seus dados no balcão e
-            entrega a etiqueta com o código de segurança da criança.
+          <h1 className="text-4xl mt-4 font-bold text-yellow-600 tracking-tight">Bem-vindo ao Kids! 🎨</h1>
+          <p className="text-muted-foreground mt-4 text-lg leading-relaxed">
+            Estamos muito felizes em ter vocês aqui! O cadastro é rapidinho, e logo sua criança estará se divertindo com a gente.
           </p>
         </header>
 
-        <form onSubmit={submit} className="mt-10 space-y-8">
+        <form onSubmit={submit} className="space-y-8 bg-white rounded-[3rem] p-8 sm:p-12 border-4 border-blue-100 shadow-2xl relative">
+          <div className="absolute -top-6 -right-6 w-12 h-12 bg-pink-400 rounded-full flex items-center justify-center text-white text-2xl animate-bounce">✨</div>
+          <div className="absolute -bottom-6 -left-6 w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center text-white text-3xl animate-pulse">🧸</div>
+
           <section className="space-y-4">
             <SectionTitle step="1" title="Quem está trazendo a criança" />
             <Field label="Telefone com DDD">
@@ -398,10 +402,15 @@ function VisitorPage() {
 }
 
 function SectionTitle({ step, title }: { step: string; title: string }) {
+  const colors = ["bg-yellow-400", "bg-pink-400", "bg-blue-400", "bg-green-400"];
+  const color = colors[parseInt(step) - 1] || "bg-primary";
+  
   return (
-    <div className="flex items-center gap-3 border-b border-border pb-2">
-      <span className="font-mono text-[10px] uppercase tracking-widest text-primary">{step}</span>
-      <h2 className="font-serif text-xl">{title}</h2>
+    <div className="flex items-center gap-4 border-b-4 border-dashed border-muted pb-4 mb-6">
+      <span className={cn("flex h-10 w-10 items-center justify-center rounded-2xl text-white font-bold text-xl shadow-lg rotate-[-10deg]", color)}>
+        {step}
+      </span>
+      <h2 className="text-2xl font-bold text-slate-800">{title}</h2>
     </div>
   );
 }
