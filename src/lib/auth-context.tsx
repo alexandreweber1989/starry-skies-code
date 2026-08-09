@@ -89,8 +89,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [session?.user?.id]);
 
   const isAdmin = roles.some((r) => r.role === "admin_geral");
-
-  const isAdmin = roles.some((r) => r.role === "admin_geral");
   const isKidsAdmin = isAdmin || roles.some((r) => r.role === "admin_kids");
 
   const value: AuthState = {
