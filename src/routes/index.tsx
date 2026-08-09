@@ -106,7 +106,7 @@ function Landing() {
             <div className="mt-12 grid lg:grid-cols-12 gap-10 items-end">
               <div className="lg:col-span-6 space-y-4">
                 <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
-                  Os 9 ministérios (Louvor, Mídia, Dança, Sabaoth, Zadoque, Jovens, Adolescentes, Kids e Atos de Amor) já estão configurados no sistema.
+                  Crie Issues no GitHub para todas as tarefas que faremos, separando cada uma como Correção, Melhoria ou Nova função. Trabalhe com Pull Requests para gerenciar entregas e deploys. Em todo Pull Request: mencione a Issue relacionada na descrição; explique o que mudou; descreva como foi validado; registre riscos, limitações e próximos passos.
                 </p>
               </div>
               <div className="lg:col-span-6 flex flex-col items-start lg:items-end gap-6">
