@@ -71,14 +71,15 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     const classes = cn(buttonVariants({ variant, size, className }));
 
-    // O Slot do Radix exige EXATAMENTE um filho — e um `null` vindo de um
-    // ternário já conta como um segundo nó, quebrando em runtime com
-    // "Slot failed to slot onto its children". Por isso o modo `asChild`
-    // repassa `children` intocado, sem nenhum irmão condicional.
+    // O Slot do Radix exige EXATAMENTE um filho único que seja um elemento React
+    // válido. Se `children` for um array, fragmento ou texto puro, o Slot falha.
     if (asChild) {
+      const child = React.Children.only(children) as React.ReactElement;
       return (
         <Slot className={classes} ref={ref} aria-busy={loading || undefined} {...props}>
-          {children}
+          {React.cloneElement(child, {
+            className: cn(classes, child.props.className),
+          })}
         </Slot>
       );
     }
