@@ -60,6 +60,6 @@ function LouvorPage() {
           </TabsContent>
         </Tabs>
       </PageBody>
-    </>
+    </div>
   );
 }
