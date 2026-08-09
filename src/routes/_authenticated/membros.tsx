@@ -79,7 +79,7 @@ export const Route = createFileRoute("/_authenticated/membros")({
 });
 
 function MembrosPage() {
-  const { isAdmin, loading } = useAuth();
+  const { isAdmin, loading, user } = useAuth();
 
   if (loading) {
     return (
