@@ -109,7 +109,7 @@ function Landing() {
             <div className="mt-12 grid lg:grid-cols-12 gap-10 items-end">
               <div className="lg:col-span-6 space-y-4">
                 <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
-                  Uma plataforma pensada para cada membro da Igreja Batista Atos. Acompanhe escalas, participe de Mesas, Redes e Ministérios, e tenha acesso a tudo que faz sentido para sua jornada cristã em nossa casa.
+                  Uma plataforma pensada para cada membro da Igreja Batista Atos. Acompanhe escalas, participe de Mesas, Redes e Ministérios, e tenha acesso a tudo que faz sentido para sua jornada cristã em nossa casa. Load the security issues from the scan results and fix the selected issues.
                 </p>
               </div>
               <div className="lg:col-span-6 flex flex-col items-start lg:items-end gap-6">
