@@ -5,6 +5,7 @@ import { PageHeader, PageBody } from "@/components/app-shell";
 import { ArrowUpRight, UserPlus, Music, Camera, Sparkles, Users, UserSquare2, Flame, Compass, Baby, HeartHandshake, HelpCircle } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { MinistryDialog, EditMinistryButton } from "@/components/admin/ministry-dialog";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/ministerios/")({
   head: () => ({ meta: [{ title: "Ministérios — IB Atos" }] }),
