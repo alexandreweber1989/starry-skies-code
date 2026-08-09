@@ -652,6 +652,13 @@
   .pt-phase-cover.pt-v-rows .pt-piece { transform-origin: left; }
 }
 
+/* Page Transition Utility Overlays */
+.pt-page-transition {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pt-phase-cover .pt-piece,
   .pt-phase-reveal .pt-piece,
