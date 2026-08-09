@@ -106,7 +106,7 @@ function Landing() {
             <div className="mt-12 grid lg:grid-cols-12 gap-10 items-end">
               <div className="lg:col-span-6 space-y-4">
                 <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
-                  Plataforma da Igreja Batista Atos — ministérios, redes, mesas e comunidade em um só lugar.
+                  Os 9 ministérios (Louvor, Mídia, Dança, Sabaoth, Zadoque, Jovens, Adolescentes, Kids e Atos de Amor) já estão configurados no sistema.
                 </p>
               </div>
               <div className="lg:col-span-6 flex flex-col items-start lg:items-end gap-6">
