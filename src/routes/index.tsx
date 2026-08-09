@@ -282,12 +282,14 @@ function Landing() {
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border border border-border">
               {ministerios.map(({ icon: Icon, nome, tag }) => (
-                <div key={nome} className="bg-background/40 backdrop-blur-md p-8 flex items-start justify-between gap-6 hover:bg-secondary/80 transition-all duration-500 group border border-transparent hover:border-border/50 hover:shadow-lg hover:-translate-y-1 rounded-2xl">
-                  <div>
-                    <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">{tag}</div>
-                    <div className="font-serif text-2xl mt-2">{nome}</div>
+                <div key={nome} className="bg-background/40 backdrop-blur-md p-8 flex items-start justify-between gap-6 hover:bg-secondary/80 transition-all duration-700 group border border-transparent hover:border-primary/20 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-2 rounded-2xl relative overflow-hidden">
+                  {/* Efeito de Spotlight/Glow no hover */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+                  <div className="relative z-10">
+                    <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground group-hover:text-primary transition-colors duration-500">{tag}</div>
+                    <div className="font-serif text-2xl mt-2 group-hover:translate-x-1 transition-transform duration-500">{nome}</div>
                   </div>
-                  <div className="h-11 w-11 rounded-full border border-border grid place-items-center group-hover:bg-foreground group-hover:text-background group-hover:border-foreground transition-colors">
+                  <div className="h-11 w-11 rounded-full border border-border grid place-items-center group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 relative z-10">
                     <Icon className="h-4 w-4" />
                   </div>
                 </div>
