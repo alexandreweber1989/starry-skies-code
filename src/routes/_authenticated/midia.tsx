@@ -47,13 +47,14 @@ function MediaModule() {
   });
 
   return (
-    <>
+    <div style={{ "--group-primary": "#ec4899" } as React.CSSProperties}>
       <PageHeader
         eyebrow="Comunicação"
         title="Central de Mídia"
+        className="border-b-[3px] border-[var(--group-primary)]"
         description="Biblioteca de ativos, logos, artes e central de solicitações para o time de design da IB Atos."
         actions={
-          <Button className="gap-2">
+          <Button className="gap-2" style={{ backgroundColor: 'var(--group-primary)' }}>
             <PlusCircle className="h-4 w-4" />
             Nova Solicitação
           </Button>
