@@ -171,6 +171,6 @@ function MediaModule() {
           </aside>
         </div>
       </PageBody>
-    </>
+    </div>
   );
 }
