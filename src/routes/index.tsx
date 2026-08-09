@@ -103,11 +103,11 @@ function Landing() {
               <span className="h-px w-10 bg-foreground/40" />
               Est. 2014 · Ponta Grossa / PR
             </div>
-            <h1 className="font-serif font-semibold tracking-[-0.04em] text-[15vw] md:text-[10vw] lg:text-[10rem] leading-[0.85] uppercase animate-reveal drop-shadow-2xl">
+            <h1 className="font-serif font-semibold tracking-[-0.04em] text-[15vw] md:text-[10vw] lg:text-[10rem] leading-[0.85] uppercase animate-reveal drop-shadow-2xl selection:bg-primary selection:text-primary-foreground">
               Uma casa <br />
-              <span className="italic font-normal text-primary/80 relative">
+              <span className="italic font-normal text-primary/80 relative inline-block group/title">
                 construída
-                <span className="absolute -bottom-4 left-0 w-full h-1 bg-primary/20 rounded-full blur-sm" />
+                <span className="absolute -bottom-4 left-0 w-0 h-1 bg-primary/40 rounded-full blur-sm group-hover/title:w-full transition-all duration-1000" />
               </span> <br />
               sobre a rocha.
             </h1>
