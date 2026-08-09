@@ -112,14 +112,14 @@ function Landing() {
                   <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
                     Uma plataforma pensada para cada membro da Igreja Batista Atos. Acompanhe escalas, participe de Mesas, Redes e Ministérios, e tenha acesso a tudo que faz sentido para sua jornada cristã em nossa casa.
                   </p>
-                  <div className="p-4 bg-muted/30 border rounded-lg text-xs space-y-2 opacity-80 max-w-xl">
-                    <h4 className="font-bold text-foreground">Implementação de Transições de Página Avançadas</h4>
-                    <p><strong>Objetivo:</strong> Desenvolver um sistema de transições de página dinâmicas e visualmente atraentes.</p>
-                    <ul className="list-disc list-inside space-y-1">
-                      <li><strong>Efeitos:</strong> Fade, Slide, Zoom, Flip, Parallax e customizados via Framer Motion.</li>
-                      <li><strong>Configurabilidade:</strong> Duração, easing e hardware acceleration (GPU).</li>
-                      <li><strong>Acessibilidade:</strong> Suporte a <code>prefers-reduced-motion</code>.</li>
-                    </ul>
+                  <div className="p-4 bg-primary/10 border border-primary/20 rounded-xl text-xs space-y-2 max-w-xl shadow-sm">
+                    <h4 className="font-bold text-primary flex items-center gap-2">
+                      <Sparkles className="h-3 w-3" /> 
+                      Sistema de Navegação Fluida
+                    </h4>
+                    <p className="text-muted-foreground leading-relaxed">
+                      Navegue por ministérios e redes com <strong>transições cinematográficas</strong> e acesso rápido via menu de ações inteligentes (botão <kbd className="px-1.5 py-0.5 rounded border bg-background font-mono text-[10px]">+</kbd> flutuante).
+                    </p>
                   </div>
                 </div>
               </div>
