@@ -114,7 +114,7 @@ function MesasPage() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((m: any) => (
-            <div key={m.id} className="border border-border bg-card p-6 rounded-sm flex flex-col">
+            <div key={m.id} className="border border-border bg-card p-6 rounded-sm flex flex-col hover:shadow-lg transition-all duration-300" style={{ borderTop: `4px solid ${m.rede?.color || 'var(--primary)'}` }}>
               <div className="flex items-start justify-between mb-4">
                 <UtensilsCrossed className="h-5 w-5 text-primary" />
                 {m.rede && (

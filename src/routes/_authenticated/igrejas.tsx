@@ -47,18 +47,19 @@ function SocialActionPage() {
   const familiesReached = campaigns?.reduce((acc, curr) => acc + (curr.total_families_reached || 0), 0) || 0;
 
   return (
-    <>
+    <div style={{ "--group-primary": "#f43f5e" } as React.CSSProperties}>
       <PageHeader
         eyebrow="Ação Social"
         title="Atos de Amor"
+        className="border-b-[3px] border-[var(--group-primary)]"
         description="Gestão de assistência social, campanhas de doação e apoio à comunidade."
         actions={
           <div className="flex gap-2">
-            <Button variant="outline" className="gap-2">
+            <Button variant="outline" className="gap-2 hover:text-[var(--group-primary)] transition-colors">
               <Users className="h-4 w-4" />
               Ver Famílias
             </Button>
-            <Button className="gap-2">
+            <Button className="gap-2" style={{ backgroundColor: 'var(--group-primary)' }}>
               <PlusCircle className="h-4 w-4" />
               Nova Campanha
             </Button>
@@ -171,6 +172,6 @@ function SocialActionPage() {
           </aside>
         </div>
       </PageBody>
-    </>
+    </div>
   );
 }
