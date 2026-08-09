@@ -120,6 +120,6 @@ function MinistryDetail() {
           </aside>
         </div>
       </PageBody>
-    </>
+    </div>
   );
 }
