@@ -44,28 +44,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const qc = useQueryClient();
 
   useEffect(() => {
+    let active = true;
+
+    const init = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (active) {
+        setSession(data.session);
+      }
+    };
+
     const { data: sub } = supabase.auth.onAuthStateChange((event, s) => {
+      if (!active) return;
       setSession(s);
       if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED") {
         router.invalidate();
-        if (event !== "SIGNED_OUT") qc.invalidateQueries();
+        if (event !== "SIGNED_OUT") {
+          qc.invalidateQueries();
+        } else {
+          setLoading(false);
+        }
       }
     });
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setLoading(false);
-    });
-    return () => sub.subscription.unsubscribe();
+
+    void init();
+    return () => {
+      active = false;
+      sub.subscription.unsubscribe();
+    };
   }, [router, qc]);
 
   useEffect(() => {
     if (!session?.user) {
       setRoles([]);
+      if (!session) setLoading(false);
       return;
     }
     let active = true;
 
     const loadRoles = async () => {
+      setLoading(true);
       const { data, error } = await supabase
         .from("user_roles")
         .select("role, ministry_id, mesa_id")
@@ -75,9 +92,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (error) {
         console.error("Não foi possível carregar as permissões do usuário.", error);
         setRoles([]);
-        return;
+      } else {
+        setRoles((data ?? []) as RoleRow[]);
       }
-      setRoles((data ?? []) as RoleRow[]);
+      setLoading(false);
     };
 
     void loadRoles();
