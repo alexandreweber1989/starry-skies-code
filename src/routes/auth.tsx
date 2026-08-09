@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Church, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -71,19 +70,54 @@ function AuthPage() {
     setMode("signin");
   }
 
+  /**
+   * Login com Google via Supabase (OAuth direto).
+   *
+   * Antes usávamos o broker do Lovable (`lovable.auth.signInWithOAuth`), que
+   * envia o navegador para `/~oauth/initiate` — um caminho RELATIVO, servido
+   * apenas pela hospedagem do Lovable. Fora dela (Vercel) ninguém atende esse
+   * endereço e o app caía no 404. Ver #22.
+   *
+   * O Supabase devolve para `redirectTo` com o código na URL; o cliente tem
+   * `detectSessionInUrl` ligado (padrão) e conclui a sessão sozinho, por isso
+   * não é preciso uma rota de callback dedicada.
+   */
   async function handleGoogle() {
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/auth` },
     });
-    if (result.error) return toast.error("Erro ao entrar com Google");
-    if (result.redirected) return;
-    navigate({ to: "/dashboard", replace: true });
+    if (error) {
+      toast.error(
+        error.message.includes("provider is not enabled")
+          ? "O login com Google ainda não está habilitado. Use e-mail e senha."
+          : "Não foi possível entrar com o Google. Tente novamente.",
+      );
+    }
+    // Em caso de sucesso o navegador é redirecionado para o Google.
+  }
+
+  /** Envia o e-mail de redefinição de senha. */
+  async function handleRecuperarSenha() {
+    if (!email) {
+      return toast.error("Digite seu e-mail acima para receber o link de redefinição.");
+    }
+    setLoading(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth`,
+    });
+    setLoading(false);
+    if (error) return toast.error(error.message);
+    toast.success("Enviamos um link de redefinição para o seu e-mail.");
   }
 
   return (
     <div className="min-h-screen bg-background text-foreground grid lg:grid-cols-2">
       <aside className="hidden lg:flex flex-col justify-between bg-sidebar text-sidebar-foreground p-12">
-        <Link to="/" className="flex items-center gap-2 text-sidebar-foreground/70 hover:text-sidebar-foreground text-sm">
+        <Link
+          to="/"
+          className="flex items-center gap-2 text-sidebar-foreground/70 hover:text-sidebar-foreground text-sm"
+        >
           <ArrowLeft className="h-4 w-4" /> Voltar ao início
         </Link>
         <div>
@@ -122,13 +156,35 @@ function AuthPage() {
               <form onSubmit={handleSignIn} className="space-y-4 mt-6">
                 <div className="space-y-1.5">
                   <Label htmlFor="email">E-mail</Label>
-                  <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                  <Input
+                    id="email"
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="password">Senha</Label>
-                  <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+                  <div className="flex items-baseline justify-between gap-2">
+                    <Label htmlFor="password">Senha</Label>
+                    <button
+                      type="button"
+                      onClick={handleRecuperarSenha}
+                      disabled={loading}
+                      className="text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline disabled:opacity-50"
+                    >
+                      Esqueci minha senha
+                    </button>
+                  </div>
+                  <Input
+                    id="password"
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button type="submit" className="w-full" loading={loading}>
                   {loading ? "Entrando..." : "Entrar"}
                 </Button>
               </form>
@@ -142,11 +198,22 @@ function AuthPage() {
                 </p>
                 <div className="space-y-1.5">
                   <Label htmlFor="fn">Nome completo</Label>
-                  <Input id="fn" required value={fullName} onChange={(e) => setFullName(e.target.value)} />
+                  <Input
+                    id="fn"
+                    required
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                  />
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="email2">E-mail</Label>
-                  <Input id="email2" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                  <Input
+                    id="email2"
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="phone2">Telefone</Label>
@@ -180,7 +247,8 @@ function AuthPage() {
           </Button>
 
           <p className="mt-6 text-xs text-muted-foreground text-center">
-            O acesso é liberado por um administrador. O primeiro usuário a entrar se torna Admin geral.
+            O acesso é liberado por um administrador. O primeiro usuário a entrar se torna Admin
+            geral.
           </p>
         </div>
       </div>
