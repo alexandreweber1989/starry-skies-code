@@ -311,7 +311,7 @@ function QrDialog() {
             </Button>
             <Button variant="outline" size="sm" asChild>
               <a href={`${url}?kiosk=1`} target="_blank" rel="noreferrer">
-                <Check className="h-3.5 w-3.5" /> Abrir no tablet (quiosque)
+                <span><Check className="h-3.5 w-3.5 inline-block" /> Abrir no tablet (quiosque)</span>
               </a>
             </Button>
           </div>

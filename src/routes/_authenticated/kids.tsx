@@ -14,7 +14,8 @@ export const Route = createFileRoute("/_authenticated/kids")({
 });
 
 function KidsPage() {
-  const { loading, isKidsAdmin } = useAuth();
+  const { loading, isKidsAdmin, isAdmin } = useAuth();
+  const canAccess = isKidsAdmin || isAdmin;
 
   if (loading) {
     return (
@@ -24,8 +25,16 @@ function KidsPage() {
     );
   }
 
-  if (!isKidsAdmin) {
-    throw new Error("Acesso negado. Apenas administradores do Kids ou gerais podem acessar este painel.");
+  if (!canAccess) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4 px-4 text-center">
+        <h1 className="text-2xl font-serif text-destructive">Acesso negado</h1>
+        <p className="text-muted-foreground max-w-md">
+          Apenas administradores do Kids ou gerais podem acessar este painel.
+          Se você acredita que deveria ter acesso, entre em contato com o administrador.
+        </p>
+      </div>
+    );
   }
 
   return (

@@ -120,7 +120,7 @@ export function KidsCheckinDashboard() {
         <div className="flex flex-wrap items-center gap-3 shrink-0">
           <Button asChild variant="outline" size="sm" className="rounded-xl hover:scale-105 active:scale-95 transition-all">
             <Link to="/kids/visitante" search={{ kiosk: true }}>
-              <QrCode className="mr-2 h-4 w-4" /> Kiosk Visitantes
+              <span><QrCode className="mr-2 h-4 w-4 inline-block" /> Kiosk Visitantes</span>
             </Link>
           </Button>
           {isKidsAdmin && <SessionDialog />}
