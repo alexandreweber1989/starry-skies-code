@@ -32,6 +32,20 @@ function SocialActionPage() {
     }
   });
 
+  const { data: requests } = useQuery({
+    queryKey: ["social-requests"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("social_assistance_requests")
+        .select("*")
+        .order("created_at", { ascending: false });
+      return data || [];
+    }
+  });
+
+  const familiesInNeed = requests?.filter(r => r.status === 'pending').length || 0;
+  const familiesReached = campaigns?.reduce((acc, curr) => acc + (curr.total_families_reached || 0), 0) || 0;
+
   return (
     <>
       <PageHeader
@@ -39,10 +53,16 @@ function SocialActionPage() {
         title="Atos de Amor"
         description="Gestão de assistência social, campanhas de doação e apoio à comunidade."
         actions={
-          <Button className="gap-2">
-            <PlusCircle className="h-4 w-4" />
-            Nova Campanha
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" className="gap-2">
+              <Users className="h-4 w-4" />
+              Ver Famílias
+            </Button>
+            <Button className="gap-2">
+              <PlusCircle className="h-4 w-4" />
+              Nova Campanha
+            </Button>
+          </div>
         }
       />
       <PageBody>
@@ -113,12 +133,16 @@ function SocialActionPage() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-1">
-                  <div className="text-3xl font-serif">150+</div>
+                  <div className="text-3xl font-serif">{familiesReached}+</div>
                   <div className="text-[10px] uppercase tracking-widest opacity-70">Famílias Atendidas</div>
                 </div>
                 <div className="space-y-1">
+                  <div className="text-3xl font-serif text-primary">{familiesInNeed}</div>
+                  <div className="text-[10px] uppercase tracking-widest opacity-70">Famílias Aguardando</div>
+                </div>
+                <div className="space-y-1 pt-4 border-t border-background/20">
                   <div className="text-3xl font-serif">1.2t</div>
-                  <div className="text-[10px] uppercase tracking-widest opacity-70">Alimentos Arrecadados</div>
+                  <div className="text-[10px] uppercase tracking-widest opacity-70">Total Arrecadado</div>
                 </div>
               </CardContent>
             </Card>
