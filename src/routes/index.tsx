@@ -110,15 +110,15 @@ function Landing() {
               <div className="lg:col-span-6 space-y-4">
                 <div className="space-y-4">
                   <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
-                    Uma plataforma pensada para cada membro da Igreja Batista Atos. Acompanhe escalas, participe de Mesas, Redes e Ministérios, e tenha acesso a tudo que faz sentido para sua jornada cristã em nossa casa.
+                    considerando os elementos que possui no 21st.dev o que ainda podemos adicionar na nossa página pra deixar ela bem mais animada com animações e incríveis elementos para interação do usuário com ela?
                   </p>
                   <div className="p-4 bg-primary/10 border border-primary/20 rounded-xl text-xs space-y-2 max-w-xl shadow-sm">
                     <h4 className="font-bold text-primary flex items-center gap-2">
                       <Sparkles className="h-3 w-3" /> 
-                      Sistema de Navegação Fluida
+                      Novas Possibilidades Visuais
                     </h4>
                     <p className="text-muted-foreground leading-relaxed">
-                      Navegue por ministérios e redes com <strong>transições cinematográficas</strong> e acesso rápido via menu de ações inteligentes (botão <kbd className="px-1.5 py-0.5 rounded border bg-background font-mono text-[10px]">+</kbd> flutuante).
+                      Podemos integrar <strong>componentes interativos do 21st.dev</strong> como botões com efeitos magnéticos, grids com hover 3D e sistemas de partículas para elevar a experiência da Igreja Batista Atos.
                     </p>
                   </div>
                 </div>
