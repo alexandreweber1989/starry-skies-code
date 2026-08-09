@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { Component, useMemo, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
@@ -45,6 +45,36 @@ function SemDados({ mensagem }: { mensagem: string }) {
       <p className="max-w-xs text-center text-sm text-muted-foreground">{mensagem}</p>
     </div>
   );
+}
+
+/**
+ * Barreira de erro local.
+ *
+ * Um gráfico é informação complementar: se ele falhar (dado inesperado, falha
+ * do recharts), isso NÃO pode derrubar o Painel inteiro — que é a tela de
+ * trabalho da liderança. Aqui o erro fica contido no próprio bloco.
+ */
+class BlocoSeguro extends Component<{ titulo: string; children: ReactNode }, { falhou: boolean }> {
+  state = { falhou: false };
+
+  static getDerivedStateFromError() {
+    return { falhou: true };
+  }
+
+  componentDidCatch(erro: Error) {
+    console.error("Falha ao renderizar gráfico do painel:", erro);
+  }
+
+  render() {
+    if (this.state.falhou) {
+      return (
+        <PanelSection label="Indisponível" title={this.props.titulo}>
+          <SemDados mensagem="Não foi possível montar este gráfico agora. O restante do painel segue funcionando normalmente." />
+        </PanelSection>
+      );
+    }
+    return this.props.children;
+  }
 }
 
 /** Novos membros por mês nos últimos 12 meses. */
@@ -200,5 +230,19 @@ export function DistribuicaoPorRede() {
         </>
       )}
     </PanelSection>
+  );
+}
+
+/* Versões usadas pelo Painel: cada gráfico isolado em sua própria barreira. */
+export function GraficosDoPainel() {
+  return (
+    <>
+      <BlocoSeguro titulo="Novos membros por mês">
+        <CrescimentoMembros />
+      </BlocoSeguro>
+      <BlocoSeguro titulo="Membros por rede">
+        <DistribuicaoPorRede />
+      </BlocoSeguro>
+    </>
   );
 }

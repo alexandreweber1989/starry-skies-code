@@ -21,7 +21,7 @@ import { useAuth, type AppRole } from "@/lib/auth-context";
 import { todayISO, formatDateBR, relativeDayLabel } from "@/lib/painel";
 import { StatTile, PanelSection } from "@/components/painel/ui";
 import { LoadingRegion, StatGridSkeleton } from "@/components/ui/loading-states";
-import { CrescimentoMembros, DistribuicaoPorRede } from "@/components/painel/graficos";
+import { GraficosDoPainel } from "@/components/painel/graficos";
 import { MinhaSemana } from "@/components/painel/minha-semana";
 import { AgendaCultos } from "@/components/painel/agenda-cultos";
 import { Aniversariantes } from "@/components/painel/aniversariantes";
@@ -239,8 +239,7 @@ function Dashboard() {
             abaixo dizem "para onde". Restrito a quem tem visão da igreja toda. */}
         {isAdmin && (
           <div className="mt-6 grid lg:grid-cols-2 gap-6">
-            <CrescimentoMembros />
-            <DistribuicaoPorRede />
+            <GraficosDoPainel />
           </div>
         )}
 
