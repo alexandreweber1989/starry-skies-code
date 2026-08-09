@@ -106,7 +106,7 @@ function Landing() {
             <div className="mt-12 grid lg:grid-cols-12 gap-10 items-end">
               <div className="lg:col-span-6 space-y-4">
                 <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
-                  Crie Issues no GitHub para todas as tarefas que faremos, separando cada uma como Correção, Melhoria ou Nova função. Trabalhe com Pull Requests para gerenciar entregas e deploys. Em todo Pull Request: mencione a Issue relacionada na descrição; explique o que mudou; descreva como foi validado; registre riscos, limitações e próximos passos.
+                  Utilize a skill Motion Principles disponível em: https://github.com/kylezantos/design-principles. Garanta que toda interface do sistema tenha: lazy loading quando fizer sentido; skeleton screens para carregamento; animações suaves de entrada e saída; estados de progresso nos elementos interativos; feedback visual para ações do usuário; transições consistentes entre telas, cards, modais e listas. Antes de finalizar, revise a interface como designer de produto sênior e corrija tudo que parecer brusco, travado, genérico ou amador.
                 </p>
               </div>
               <div className="lg:col-span-6 flex flex-col items-start lg:items-end gap-6">
