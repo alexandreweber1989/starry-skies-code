@@ -106,7 +106,7 @@ function Landing() {
             <div className="mt-12 grid lg:grid-cols-12 gap-10 items-end">
               <div className="lg:col-span-6 space-y-4">
                 <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
-                  Utilize a skill Motion Principles disponível em: https://github.com/kylezantos/design-principles. Garanta que toda interface do sistema tenha: lazy loading quando fizer sentido; skeleton screens para carregamento; animações suaves de entrada e saída; estados de progresso nos elementos interativos; feedback visual para ações do usuário; transições consistentes entre telas, cards, modais e listas. Antes de finalizar, revise a interface como designer de produto sênior e corrija tudo que parecer brusco, travado, genérico ou amador.
+                  Garanta uma esteira de qualidade antes do merge: Observabilidade (Sentry, OpenTelemetry), Qualidade (Lint, Biome, Knip), Testes (Playwright, Vitest, Codecov), Segurança (Rate limit, RLS, Performance budget) e Arquitetura focada em componentização, evitando overengineering e DRY com critério.
                 </p>
               </div>
               <div className="lg:col-span-6 flex flex-col items-start lg:items-end gap-6">
