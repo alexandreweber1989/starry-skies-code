@@ -7,12 +7,14 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "../lib/auth-context";
 import { Toaster } from "@/components/ui/sonner";
+import { GlobalErrorBoundary } from "@/components/error-boundary";
 
 function NotFoundComponent() {
   return (
@@ -128,13 +130,33 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
+  const state = router.state;
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Outlet />
-        <Toaster richColors position="top-right" closeButton />
-      </AuthProvider>
+      <GlobalErrorBoundary>
+        <AuthProvider>
+          <div className="flex flex-col min-h-screen">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={state.location.pathname}
+                initial={{ opacity: 0, filter: "blur(4px)" }}
+                animate={{ opacity: 1, filter: "blur(0px)" }}
+                exit={{ opacity: 0, filter: "blur(4px)" }}
+                transition={{
+                  duration: 0.4,
+                  ease: [0.22, 1, 0.36, 1]
+                }}
+                className="flex-1 flex flex-col pt-page-transition"
+              >
+                <Outlet />
+              </motion.div>
+            </AnimatePresence>
+          </div>
+          <Toaster richColors position="top-right" closeButton />
+        </AuthProvider>
+      </GlobalErrorBoundary>
     </QueryClientProvider>
   );
 }

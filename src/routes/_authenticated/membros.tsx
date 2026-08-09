@@ -79,7 +79,15 @@ export const Route = createFileRoute("/_authenticated/membros")({
 });
 
 function MembrosPage() {
-  const { isAdmin, user, roles: myRoles } = useAuth();
+  const { isAdmin, loading, user } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-[50vh] grid place-items-center">
+        <div className="animate-spin size-6 border-2 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
 
   if (!isAdmin) {
     throw new Error("Acesso negado. Apenas administradores gerais podem gerenciar membros.");
@@ -221,7 +229,7 @@ function MembrosPage() {
       <PageHeader
         eyebrow="Corpo de Cristo"
         title="Membros"
-        description="Gestão completa da membresia: fichas, filtros, permissões e indicadores."
+        description="Gestão completa da membresia com visualização contextualizada e métricas em tempo real."
         actions={
           <div className="flex flex-wrap gap-2">
             {canRequest && <RequestMemberDialog />}

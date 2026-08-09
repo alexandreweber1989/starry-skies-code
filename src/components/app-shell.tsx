@@ -205,14 +205,16 @@ export function PageHeader({
   title,
   description,
   actions,
+  className,
 }: {
   eyebrow?: string;
   title: string;
   description?: string;
   actions?: ReactNode;
+  className?: string;
 }) {
   return (
-    <div className="border-b border-border/40 bg-card/40 backdrop-blur-xl relative overflow-hidden group">
+    <div className={`border-b border-border/40 bg-card/40 backdrop-blur-xl relative overflow-hidden group ${className}`}>
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
       <div className="max-w-6xl mx-auto px-6 lg:px-10 py-16 lg:py-20 flex flex-col md:flex-row md:items-end md:justify-between gap-8 relative z-10">
         <div className="space-y-4">

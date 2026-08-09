@@ -90,9 +90,9 @@ export function MemberCard({
       }}
       className={cn(
         "group relative animate-fade-in cursor-pointer select-none overflow-hidden rounded-sm border bg-card p-4",
-        "transition-all duration-300 hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-        selected ? "border-primary ring-2 ring-primary/30" : "border-border hover:border-primary",
-        engaged && !selected && "shadow-sm",
+        "transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        selected ? "border-primary ring-2 ring-primary/30" : "border-border hover:border-primary/50",
+        engaged && !selected && "shadow-md border-primary/20",
         punch && "member-punch",
       )}
       style={{

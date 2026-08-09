@@ -676,6 +676,98 @@ export type Database = {
           },
         ]
       }
+      kids_schedule_volunteers: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: string
+          schedule_id: string | null
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role: string
+          schedule_id?: string | null
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: string
+          schedule_id?: string | null
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kids_schedule_volunteers_schedule_id_fkey"
+            columns: ["schedule_id"]
+            isOneToOne: false
+            referencedRelation: "kids_schedules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kids_schedules: {
+        Row: {
+          church_id: string | null
+          created_at: string | null
+          description: string | null
+          end_time: string | null
+          event_date: string
+          id: string
+          session_id: string | null
+          start_time: string
+          status: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          church_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          end_time?: string | null
+          event_date: string
+          id?: string
+          session_id?: string | null
+          start_time: string
+          status?: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          church_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          end_time?: string | null
+          event_date?: string
+          id?: string
+          session_id?: string | null
+          start_time?: string
+          status?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kids_schedules_church_id_fkey"
+            columns: ["church_id"]
+            isOneToOne: false
+            referencedRelation: "churches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kids_schedules_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "kids_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       kids_sessions: {
         Row: {
           church_id: string | null

@@ -16,10 +16,11 @@ function LouvorPage() {
   const { data: musicians, isLoading } = useMusicians();
 
   return (
-    <>
+    <div style={{ "--group-primary": "#facc15" } as React.CSSProperties}>
       <PageHeader
         eyebrow="Ministério"
         title="Louvor & Adoração"
+        className="border-b-[3px] border-[var(--group-primary)]"
         description="Gestão de escalas, repertório e elenco musical da Igreja Batista Atos."
       />
       <PageBody>
@@ -59,6 +60,6 @@ function LouvorPage() {
           </TabsContent>
         </Tabs>
       </PageBody>
-    </>
+    </div>
   );
 }
