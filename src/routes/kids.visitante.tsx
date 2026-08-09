@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
 import { Baby, Check, Loader2, ShieldCheck, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
