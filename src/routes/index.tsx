@@ -83,13 +83,18 @@ function Landing() {
 
       <main className="flex-1">
         {/* HERO */}
-        <section className="relative overflow-hidden border-b border-border">
+        <section className="relative overflow-hidden border-b border-border bg-background">
+          {/* Fundo dinâmico inspirado em 21st.dev */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute -top-[25%] -left-[10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] animate-pulse-subtle" />
+            <div className="absolute top-[20%] -right-[10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[100px] animate-float" />
+          </div>
           <div
-            className="pointer-events-none absolute inset-0 opacity-[0.04]"
+            className="pointer-events-none absolute inset-0 opacity-[0.03]"
             style={{
               backgroundImage:
-                "linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)",
-              backgroundSize: "56px 56px",
+                "radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)",
+              backgroundSize: "32px 32px",
             }}
             aria-hidden
           />
@@ -98,11 +103,11 @@ function Landing() {
               <span className="h-px w-10 bg-foreground/40" />
               Est. 2014 · Ponta Grossa / PR
             </div>
-            <h1 className="font-serif font-semibold tracking-[-0.04em] text-[15vw] md:text-[10vw] lg:text-[10rem] leading-[0.85] uppercase animate-reveal drop-shadow-2xl">
+            <h1 className="font-serif font-semibold tracking-[-0.04em] text-[15vw] md:text-[10vw] lg:text-[10rem] leading-[0.85] uppercase animate-reveal drop-shadow-2xl selection:bg-primary selection:text-primary-foreground">
               Uma casa <br />
-              <span className="italic font-normal text-primary/80 relative">
+              <span className="italic font-normal text-primary/80 relative inline-block group/title">
                 construída
-                <span className="absolute -bottom-4 left-0 w-full h-1 bg-primary/20 rounded-full blur-sm" />
+                <span className="absolute -bottom-4 left-0 w-0 h-1 bg-primary/40 rounded-full blur-sm group-hover/title:w-full transition-all duration-1000" />
               </span> <br />
               sobre a rocha.
             </h1>
@@ -110,17 +115,8 @@ function Landing() {
               <div className="lg:col-span-6 space-y-4">
                 <div className="space-y-4">
                   <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
-                    considerando os elementos que possui no 21st.dev o que ainda podemos adicionar na nossa página pra deixar ela bem mais animada com animações e incríveis elementos para interação do usuário com ela?
+                    Uma plataforma pensada para cada membro da Igreja Batista Atos. Acompanhe escalas, participe de Mesas, Redes e Ministérios, e tenha acesso a tudo que faz sentido para sua jornada cristã em nossa casa.
                   </p>
-                  <div className="p-4 bg-primary/10 border border-primary/20 rounded-xl text-xs space-y-2 max-w-xl shadow-sm">
-                    <h4 className="font-bold text-primary flex items-center gap-2">
-                      <Sparkles className="h-3 w-3" /> 
-                      Novas Possibilidades Visuais
-                    </h4>
-                    <p className="text-muted-foreground leading-relaxed">
-                      Podemos integrar <strong>componentes interativos do 21st.dev</strong> como botões com efeitos magnéticos, grids com hover 3D e sistemas de partículas para elevar a experiência da Igreja Batista Atos.
-                    </p>
-                  </div>
                 </div>
               </div>
               <div className="lg:col-span-6 flex flex-col items-start lg:items-end gap-6">
@@ -286,12 +282,14 @@ function Landing() {
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border border border-border">
               {ministerios.map(({ icon: Icon, nome, tag }) => (
-                <div key={nome} className="bg-background/40 backdrop-blur-md p-8 flex items-start justify-between gap-6 hover:bg-secondary/80 transition-all duration-500 group border border-transparent hover:border-border/50 hover:shadow-lg hover:-translate-y-1 rounded-2xl">
-                  <div>
-                    <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">{tag}</div>
-                    <div className="font-serif text-2xl mt-2">{nome}</div>
+                <div key={nome} className="bg-background/40 backdrop-blur-md p-8 flex items-start justify-between gap-6 hover:bg-secondary/80 transition-all duration-700 group border border-transparent hover:border-primary/20 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-2 rounded-2xl relative overflow-hidden">
+                  {/* Efeito de Spotlight/Glow no hover */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+                  <div className="relative z-10">
+                    <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground group-hover:text-primary transition-colors duration-500">{tag}</div>
+                    <div className="font-serif text-2xl mt-2 group-hover:translate-x-1 transition-transform duration-500">{nome}</div>
                   </div>
-                  <div className="h-11 w-11 rounded-full border border-border grid place-items-center group-hover:bg-foreground group-hover:text-background group-hover:border-foreground transition-colors">
+                  <div className="h-11 w-11 rounded-full border border-border grid place-items-center group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 relative z-10">
                     <Icon className="h-4 w-4" />
                   </div>
                 </div>
