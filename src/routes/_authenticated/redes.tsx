@@ -10,6 +10,7 @@ import { MesaDialog, MesaMembersDialog, EditMesaButton } from "@/components/admi
 import { RedeMembersDialog } from "@/components/admin/rede-members-dialog";
 import { GroupSummary } from "@/components/admin/group-summary";
 import { statsOf, useGroupStats } from "@/lib/use-grupos";
+import { LoadingRegion, CardGridSkeleton } from "@/components/ui/loading-states";
 
 export const Route = createFileRoute("/_authenticated/redes")({
   head: () => ({
@@ -36,7 +37,7 @@ function RedesPage() {
   const { isAdmin } = useAuth();
   const [term, setTerm] = useState("");
 
-  const { data: redes } = useQuery({
+  const { data: redes, isPending } = useQuery({
     queryKey: ["redes-full"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -69,7 +70,9 @@ function RedesPage() {
     if (!q) return redes ?? [];
     return (redes ?? []).filter((r) => {
       const mesaNames = (mesasByRede?.[r.id] ?? []).map((m: any) => m.name).join(" ");
-      const leaders = statsOf(stats?.redes, r.id).leaders.map((l) => l.name).join(" ");
+      const leaders = statsOf(stats?.redes, r.id)
+        .leaders.map((l) => l.name)
+        .join(" ");
       return [r.name, r.description, r.target_audience, r.church?.name, mesaNames, leaders]
         .filter(Boolean)
         .join(" ")
@@ -83,7 +86,11 @@ function RedesPage() {
       <PageHeader
         eyebrow="Comunhão"
         title="Redes"
-        description={isAdmin ? "As redes reúnem pessoas por afinidade e as organizam em Mesas — grupos semanais de comunhão." : "Redes de comunhão das quais você faz parte."}
+        description={
+          isAdmin
+            ? "As redes reúnem pessoas por afinidade e as organizam em Mesas — grupos semanais de comunhão."
+            : "Redes de comunhão das quais você faz parte."
+        }
         actions={
           isAdmin ? (
             <>
@@ -107,92 +114,107 @@ function RedesPage() {
           </span>
         </div>
 
-        <div className="space-y-8">
-          {filtered.map((r, i) => {
-            const redeStats = statsOf(stats?.redes, r.id);
-            const mesas = mesasByRede?.[r.id] ?? [];
-            const redeColor = r.color || 'var(--primary)';
-            return (
-              <div key={r.id} className="border border-border bg-card rounded-sm overflow-hidden" style={{ borderTop: `4px solid ${redeColor}` }}>
-                <div className="p-6 border-b border-border flex items-start justify-between gap-4">
-                  <div className="min-w-0">
-                    <div className="font-mono text-[11px] uppercase tracking-widest mb-2" style={{ color: redeColor }}>
-                      Rede {String(i + 1).padStart(2, "0")} · {r.target_audience}
-                      {r.church?.name ? ` · ${r.church.name}` : ""}
-                    </div>
-
-                    <h3 className="font-serif text-3xl group-hover:text-primary transition-colors">{r.name}</h3>
-                    {r.description && (
-                      <p className="mt-2 text-sm text-muted-foreground">{r.description}</p>
-                    )}
-
-                    <div className="mt-4">
-                      <GroupSummary
-                        stats={redeStats}
-                        emptyHint="Nenhum responsável ou membro vinculado a esta rede ainda."
-                      />
-                    </div>
-
-                    {isAdmin && (
-                      <div className="mt-4 flex flex-wrap gap-2">
-                        <EditRedeButton rede={r} />
-                        <RedeMembersDialog redeId={r.id} redeName={r.name} />
-                        <MesaDialog redeId={r.id} compact />
-                      </div>
-                    )}
-                  </div>
-                  <div className="font-serif text-4xl text-muted-foreground text-right shrink-0">
-                    {mesas.length.toString().padStart(2, "0")}
-                    <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                      mesas
-                    </div>
-                  </div>
-                </div>
-                <ul className="divide-y divide-border">
-                  {mesas.map((m: any) => {
-                    const mesaStats = statsOf(stats?.mesas, m.id);
-                    return (
-                      <li
-                        key={m.id}
-                        className="px-6 py-3 flex flex-wrap items-center justify-between gap-3 text-sm"
+        {isPending ? (
+          <LoadingRegion label="Carregando redes…">
+            <CardGridSkeleton count={3} className="grid gap-6 lg:grid-cols-2" />
+          </LoadingRegion>
+        ) : (
+          <div className="space-y-8">
+            {filtered.map((r, i) => {
+              const redeStats = statsOf(stats?.redes, r.id);
+              const mesas = mesasByRede?.[r.id] ?? [];
+              const redeColor = r.color || "var(--primary)";
+              return (
+                <div
+                  key={r.id}
+                  className="border border-border bg-card rounded-sm overflow-hidden"
+                  style={{ borderTop: `4px solid ${redeColor}` }}
+                >
+                  <div className="p-6 border-b border-border flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <div
+                        className="font-mono text-[11px] uppercase tracking-widest mb-2"
+                        style={{ color: redeColor }}
                       >
-                        <div className="min-w-0">
-                          <div className="font-serif text-lg">{m.name}</div>
-                          <div className="text-xs text-muted-foreground truncate">
-                            {mesaStats.leaders.length
-                              ? mesaStats.leaders.map((l) => l.name).join(" · ")
-                              : "Sem liderança definida"}
-                            {" — "}
-                            {mesaStats.total} {mesaStats.total === 1 ? "pessoa" : "pessoas"}
-                          </div>
+                        Rede {String(i + 1).padStart(2, "0")} · {r.target_audience}
+                        {r.church?.name ? ` · ${r.church.name}` : ""}
+                      </div>
+
+                      <h3 className="font-serif text-3xl group-hover:text-primary transition-colors">
+                        {r.name}
+                      </h3>
+                      {r.description && (
+                        <p className="mt-2 text-sm text-muted-foreground">{r.description}</p>
+                      )}
+
+                      <div className="mt-4">
+                        <GroupSummary
+                          stats={redeStats}
+                          emptyHint="Nenhum responsável ou membro vinculado a esta rede ainda."
+                        />
+                      </div>
+
+                      {isAdmin && (
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          <EditRedeButton rede={r} />
+                          <RedeMembersDialog redeId={r.id} redeName={r.name} />
+                          <MesaDialog redeId={r.id} compact />
                         </div>
-                        <div className="flex items-center gap-3">
-                          <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                            {m.meeting_day ?? "Dia a definir"} · {m.meeting_time ?? "—"}
+                      )}
+                    </div>
+                    <div className="font-serif text-4xl text-muted-foreground text-right shrink-0">
+                      {mesas.length.toString().padStart(2, "0")}
+                      <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                        mesas
+                      </div>
+                    </div>
+                  </div>
+                  <ul className="divide-y divide-border">
+                    {mesas.map((m: any) => {
+                      const mesaStats = statsOf(stats?.mesas, m.id);
+                      return (
+                        <li
+                          key={m.id}
+                          className="px-6 py-3 flex flex-wrap items-center justify-between gap-3 text-sm"
+                        >
+                          <div className="min-w-0">
+                            <div className="font-serif text-lg">{m.name}</div>
+                            <div className="text-xs text-muted-foreground truncate">
+                              {mesaStats.leaders.length
+                                ? mesaStats.leaders.map((l) => l.name).join(" · ")
+                                : "Sem liderança definida"}
+                              {" — "}
+                              {mesaStats.total} {mesaStats.total === 1 ? "pessoa" : "pessoas"}
+                            </div>
                           </div>
-                          {isAdmin && <MesaMembersDialog mesaId={m.id} mesaName={m.name} />}
-                          {isAdmin && <EditMesaButton mesa={m} />}
-                        </div>
+                          <div className="flex items-center gap-3">
+                            <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                              {m.meeting_day ?? "Dia a definir"} · {m.meeting_time ?? "—"}
+                            </div>
+                            {isAdmin && <MesaMembersDialog mesaId={m.id} mesaName={m.name} />}
+                            {isAdmin && <EditMesaButton mesa={m} />}
+                          </div>
+                        </li>
+                      );
+                    })}
+                    {mesas.length === 0 && (
+                      <li className="px-6 py-4 text-sm text-muted-foreground">
+                        Nenhuma mesa cadastrada nesta rede.
                       </li>
-                    );
-                  })}
-                  {mesas.length === 0 && (
-                    <li className="px-6 py-4 text-sm text-muted-foreground">
-                      Nenhuma mesa cadastrada nesta rede.
-                    </li>
-                  )}
-                </ul>
-              </div>
-            );
-          })}
-          {redes && filtered.length === 0 && (
-            <p className="text-muted-foreground">
-              {redes.length === 0
-                ? "Nenhuma rede cadastrada ainda."
-                : "Nenhuma rede encontrada para essa busca."}
-            </p>
-          )}
-        </div>
+                    )}
+                  </ul>
+                </div>
+              );
+            })}
+            {redes && filtered.length === 0 && (
+              <p className="text-muted-foreground">
+                {redes.length === 0
+                  ? "Nenhuma rede cadastrada ainda."
+                  : "Nenhuma rede encontrada para essa busca."}
+              </p>
+            )}
+          </div>
+        )}
       </PageBody>
     </>
   );

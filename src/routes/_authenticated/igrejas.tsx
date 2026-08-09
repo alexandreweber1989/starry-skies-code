@@ -2,15 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader, PageBody } from "@/components/app-shell";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { 
-  Heart, 
-  Target, 
-  TrendingUp, 
-  Users, 
-  Gift,
-  PlusCircle,
-  FileText
-} from "lucide-react";
+import { LoadingRegion, CardGridSkeleton } from "@/components/ui/loading-states";
+import { Heart, Target, TrendingUp, Users, Gift, PlusCircle, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -21,7 +14,7 @@ export const Route = createFileRoute("/_authenticated/igrejas")({
 });
 
 function SocialActionPage() {
-  const { data: campaigns } = useQuery({
+  const { data: campaigns, isPending } = useQuery({
     queryKey: ["social-campaigns"],
     queryFn: async () => {
       const { data } = await supabase
@@ -29,7 +22,7 @@ function SocialActionPage() {
         .select("*")
         .order("created_at", { ascending: false });
       return data || [];
-    }
+    },
   });
 
   const { data: requests } = useQuery({
@@ -40,11 +33,12 @@ function SocialActionPage() {
         .select("*")
         .order("created_at", { ascending: false });
       return data || [];
-    }
+    },
   });
 
-  const familiesInNeed = requests?.filter(r => r.status === 'pending').length || 0;
-  const familiesReached = campaigns?.reduce((acc, curr) => acc + (curr.total_families_reached || 0), 0) || 0;
+  const familiesInNeed = requests?.filter((r) => r.status === "pending").length || 0;
+  const familiesReached =
+    campaigns?.reduce((acc, curr) => acc + (curr.total_families_reached || 0), 0) || 0;
 
   return (
     <div style={{ "--group-primary": "#f43f5e" } as React.CSSProperties}>
@@ -55,11 +49,14 @@ function SocialActionPage() {
         description="Gestão de assistência social, campanhas de doação e apoio à comunidade."
         actions={
           <div className="flex gap-2">
-            <Button variant="outline" className="gap-2 hover:text-[var(--group-primary)] transition-colors">
+            <Button
+              variant="outline"
+              className="gap-2 hover:text-[var(--group-primary)] transition-colors"
+            >
               <Users className="h-4 w-4" />
               Ver Famílias
             </Button>
-            <Button className="gap-2" style={{ backgroundColor: 'var(--group-primary)' }}>
+            <Button className="gap-2" style={{ backgroundColor: "var(--group-primary)" }}>
               <PlusCircle className="h-4 w-4" />
               Nova Campanha
             </Button>
@@ -72,15 +69,23 @@ function SocialActionPage() {
             <section>
               <h2 className="font-serif text-2xl mb-6">Campanhas Ativas</h2>
               <div className="grid gap-6">
-                {campaigns?.length === 0 ? (
+                {isPending ? (
+                  <LoadingRegion label="Carregando campanhas…" className="contents">
+                    <CardGridSkeleton count={2} className="grid gap-6" />
+                  </LoadingRegion>
+                ) : campaigns?.length === 0 ? (
                   <Card className="border-dashed p-12 flex flex-col items-center justify-center text-center">
                     <Heart className="h-12 w-12 text-muted-foreground mb-4" />
                     <CardTitle>Nenhuma campanha no momento</CardTitle>
-                    <CardDescription>Fique atento às próximas ações sociais da igreja.</CardDescription>
+                    <CardDescription>
+                      Fique atento às próximas ações sociais da igreja.
+                    </CardDescription>
                   </Card>
                 ) : (
-                  campaigns?.map(campaign => {
-                    const progress = campaign.goal_target ? ((campaign.goal_current ?? 0) / campaign.goal_target) * 100 : 0;
+                  campaigns?.map((campaign) => {
+                    const progress = campaign.goal_target
+                      ? ((campaign.goal_current ?? 0) / campaign.goal_target) * 100
+                      : 0;
                     return (
                       <Card key={campaign.id} className="overflow-hidden">
                         <CardHeader className="flex flex-row items-start justify-between">
@@ -135,15 +140,21 @@ function SocialActionPage() {
               <CardContent className="space-y-6">
                 <div className="space-y-1">
                   <div className="text-3xl font-serif">{familiesReached}+</div>
-                  <div className="text-[10px] uppercase tracking-widest opacity-70">Famílias Atendidas</div>
+                  <div className="text-[10px] uppercase tracking-widest opacity-70">
+                    Famílias Atendidas
+                  </div>
                 </div>
                 <div className="space-y-1">
                   <div className="text-3xl font-serif text-primary">{familiesInNeed}</div>
-                  <div className="text-[10px] uppercase tracking-widest opacity-70">Famílias Aguardando</div>
+                  <div className="text-[10px] uppercase tracking-widest opacity-70">
+                    Famílias Aguardando
+                  </div>
                 </div>
                 <div className="space-y-1 pt-4 border-t border-background/20">
                   <div className="text-3xl font-serif">1.2t</div>
-                  <div className="text-[10px] uppercase tracking-widest opacity-70">Total Arrecadado</div>
+                  <div className="text-[10px] uppercase tracking-widest opacity-70">
+                    Total Arrecadado
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -154,17 +165,23 @@ function SocialActionPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex gap-4 items-start">
-                  <div className="h-10 w-10 shrink-0 bg-muted rounded-sm flex items-center justify-center font-serif text-lg">20</div>
+                  <div className="h-10 w-10 shrink-0 bg-muted rounded-sm flex items-center justify-center font-serif text-lg">
+                    20
+                  </div>
                   <div>
                     <div className="text-sm font-medium">Bazar Solidário</div>
                     <div className="text-xs text-muted-foreground">Sábado, às 09:00 no Anexo 2</div>
                   </div>
                 </div>
                 <div className="flex gap-4 items-start">
-                  <div className="h-10 w-10 shrink-0 bg-muted rounded-sm flex items-center justify-center font-serif text-lg">28</div>
+                  <div className="h-10 w-10 shrink-0 bg-muted rounded-sm flex items-center justify-center font-serif text-lg">
+                    28
+                  </div>
                   <div>
                     <div className="text-sm font-medium">Entrega de Cestas</div>
-                    <div className="text-xs text-muted-foreground">Domingo após o culto da manhã</div>
+                    <div className="text-xs text-muted-foreground">
+                      Domingo após o culto da manhã
+                    </div>
                   </div>
                 </div>
               </CardContent>

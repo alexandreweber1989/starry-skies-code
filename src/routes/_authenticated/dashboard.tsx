@@ -20,6 +20,7 @@ import { PageHeader, PageBody } from "@/components/app-shell";
 import { useAuth, type AppRole } from "@/lib/auth-context";
 import { todayISO, formatDateBR, relativeDayLabel } from "@/lib/painel";
 import { StatTile, PanelSection } from "@/components/painel/ui";
+import { LoadingRegion, StatGridSkeleton } from "@/components/ui/loading-states";
 import { MinhaSemana } from "@/components/painel/minha-semana";
 import { AgendaCultos } from "@/components/painel/agenda-cultos";
 import { Aniversariantes } from "@/components/painel/aniversariantes";
@@ -57,15 +58,27 @@ const atalhos: { to: string; label: string; icon: any; requiredRoles?: AppRole[]
   { to: "/mesas", label: "Mesas", icon: UtensilsCrossed },
   { to: "/membros", label: "Membros", icon: Users, requiredRoles: ["admin_geral"] },
   { to: "/kids", label: "Kids", icon: Baby, requiredRoles: ["admin_geral", "admin_kids"] },
-  { to: "/livraria", label: "Livraria", icon: BookOpen, requiredRoles: ["admin_geral", "admin_livraria"] },
-  { to: "/cantina", label: "Cantina", icon: Coffee, requiredRoles: ["admin_geral", "admin_cantina"] },
+  {
+    to: "/livraria",
+    label: "Livraria",
+    icon: BookOpen,
+    requiredRoles: ["admin_geral", "admin_livraria"],
+  },
+  {
+    to: "/cantina",
+    label: "Cantina",
+    icon: Coffee,
+    requiredRoles: ["admin_geral", "admin_cantina"],
+  },
   { to: "/perfil", label: "Meu perfil", icon: UserPlus },
 ];
 
 function Dashboard() {
   const { user, isAdmin, roles, isLivrariaAdmin, isCantinaAdmin } = useAuth();
   const podeVerOperacao = isAdmin || isLivrariaAdmin || isCantinaAdmin;
-  const isLiderMesaOuRede = roles.some(r => r.role === "lider_mesa" || r.role === "admin_ministerio");
+  const isLiderMesaOuRede = roles.some(
+    (r) => r.role === "lider_mesa" || r.role === "admin_ministerio",
+  );
 
   const filteredAtalhos = atalhos.filter((a) => {
     if (isAdmin) return true;
@@ -73,13 +86,16 @@ function Dashboard() {
     return roles.some((r) => a.requiredRoles?.includes(r.role));
   });
 
-  const { data } = useQuery({
+  const { data, isPending } = useQuery({
     queryKey: ["dashboard-counts"],
     queryFn: async () => {
       const hoje = todayISO();
       const inicioMes = hoje.slice(0, 8) + "01";
       const [m, r, mesas, ativos, novos, proximo, pendentes] = await Promise.all([
-        supabase.from("ministries").select("id", { count: "exact", head: true }).eq("is_active", true),
+        supabase
+          .from("ministries")
+          .select("id", { count: "exact", head: true })
+          .eq("is_active", true),
         supabase.from("redes").select("id", { count: "exact", head: true }).eq("is_active", true),
         supabase.from("mesas").select("id", { count: "exact", head: true }).eq("is_active", true),
         supabase
@@ -110,7 +126,12 @@ function Dashboard() {
         novos: novos.count ?? 0,
         pendentes: pendentes.count ?? 0,
         proximo: (proximo.data ?? [])[0] as
-          | { title: string; event_date: string; start_time: string | null; location: string | null }
+          | {
+              title: string;
+              event_date: string;
+              start_time: string | null;
+              location: string | null;
+            }
           | undefined,
       };
     },
@@ -148,44 +169,70 @@ function Dashboard() {
           <MembershipRequestsPanel compact />
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {isAdmin ? (
-            <StatTile
-              label="Membros ativos"
-              value={data?.ativos ?? "—"}
-              hint={data ? `${data.novos} novo(s) neste mês` : undefined}
-              icon={Users}
-              to="/membros"
-            />
-          ) : (
-            <StatTile label="Ministérios" value={data?.ministries ?? "—"} icon={Sparkles} to="/ministerios" />
-          )}
-          {isAdmin ? (
-            <StatTile label="Ministérios" value={data?.ministries ?? "—"} icon={Sparkles} to="/ministerios" />
-          ) : (
-            <StatTile label="Mesas ativas" value={data?.mesas ?? "—"} icon={UtensilsCrossed} to="/mesas" />
-          )}
-          {isAdmin ? (
-            <StatTile label="Mesas ativas" value={data?.mesas ?? "—"} icon={UtensilsCrossed} to="/mesas" />
-          ) : (
-            <StatTile
-              label="Escalas pendentes"
-              value={data?.pendentes ?? "—"}
-              hint="Aguardando confirmação"
-              icon={CalendarDays}
-              to="/louvor"
-            />
-          )}
-          {isAdmin && (
-            <StatTile
-              label="Escalas pendentes"
-              value={data?.pendentes ?? "—"}
-              hint="Aguardando confirmação"
-              icon={CalendarDays}
-              to="/louvor"
-            />
-          )}
-        </div>
+        {isPending ? (
+          <LoadingRegion label="Carregando indicadores da igreja…">
+            <StatGridSkeleton count={4} />
+          </LoadingRegion>
+        ) : (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {isAdmin ? (
+              <StatTile
+                label="Membros ativos"
+                value={data?.ativos ?? "—"}
+                hint={data ? `${data.novos} novo(s) neste mês` : undefined}
+                icon={Users}
+                to="/membros"
+              />
+            ) : (
+              <StatTile
+                label="Ministérios"
+                value={data?.ministries ?? "—"}
+                icon={Sparkles}
+                to="/ministerios"
+              />
+            )}
+            {isAdmin ? (
+              <StatTile
+                label="Ministérios"
+                value={data?.ministries ?? "—"}
+                icon={Sparkles}
+                to="/ministerios"
+              />
+            ) : (
+              <StatTile
+                label="Mesas ativas"
+                value={data?.mesas ?? "—"}
+                icon={UtensilsCrossed}
+                to="/mesas"
+              />
+            )}
+            {isAdmin ? (
+              <StatTile
+                label="Mesas ativas"
+                value={data?.mesas ?? "—"}
+                icon={UtensilsCrossed}
+                to="/mesas"
+              />
+            ) : (
+              <StatTile
+                label="Escalas pendentes"
+                value={data?.pendentes ?? "—"}
+                hint="Aguardando confirmação"
+                icon={CalendarDays}
+                to="/louvor"
+              />
+            )}
+            {isAdmin && (
+              <StatTile
+                label="Escalas pendentes"
+                value={data?.pendentes ?? "—"}
+                hint="Aguardando confirmação"
+                icon={CalendarDays}
+                to="/louvor"
+              />
+            )}
+          </div>
+        )}
 
         <div className="mt-6 grid lg:grid-cols-2 gap-6">
           <MinhaSemana />

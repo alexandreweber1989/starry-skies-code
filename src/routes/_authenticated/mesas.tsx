@@ -16,6 +16,7 @@ import { useAuth } from "@/lib/auth-context";
 import { MesaDialog, MesaMembersDialog, EditMesaButton } from "@/components/admin/mesa-dialog";
 import { GroupSummary } from "@/components/admin/group-summary";
 import { statsOf, useGroupStats } from "@/lib/use-grupos";
+import { LoadingRegion, CardGridSkeleton } from "@/components/ui/loading-states";
 
 export const Route = createFileRoute("/_authenticated/mesas")({
   head: () => ({
@@ -43,7 +44,7 @@ function MesasPage() {
   const [term, setTerm] = useState("");
   const [redeFilter, setRedeFilter] = useState("all");
 
-  const { data } = useQuery({
+  const { data, isPending } = useQuery({
     queryKey: ["mesas-full"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -69,7 +70,14 @@ function MesasPage() {
     return (data ?? []).filter((m) => {
       if (redeFilter !== "all" && m.rede?.id !== redeFilter) return false;
       if (!q) return true;
-      const haystack = [m.name, m.description, m.meeting_location, m.meeting_day, m.rede?.name, m.church?.name]
+      const haystack = [
+        m.name,
+        m.description,
+        m.meeting_location,
+        m.meeting_day,
+        m.rede?.name,
+        m.church?.name,
+      ]
         .filter(Boolean)
         .join(" ")
         .toLowerCase();
@@ -82,7 +90,11 @@ function MesasPage() {
       <PageHeader
         eyebrow="Comunhão semanal"
         title="Mesas"
-        description={isAdmin ? "Cada Mesa é um grupo de comunhão que se reúne durante a semana, sob a liderança de um casal ou líder da rede." : "Seus grupos de comunhão semanais."}
+        description={
+          isAdmin
+            ? "Cada Mesa é um grupo de comunhão que se reúne durante a semana, sob a liderança de um casal ou líder da rede."
+            : "Seus grupos de comunhão semanais."
+        }
         actions={isAdmin ? <MesaDialog /> : undefined}
       />
       <PageBody>
@@ -112,41 +124,55 @@ function MesasPage() {
           </span>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((m: any) => (
-            <div key={m.id} className="border border-border bg-card p-6 rounded-sm flex flex-col hover:shadow-lg transition-all duration-300" style={{ borderTop: `4px solid ${m.rede?.color || 'var(--primary)'}` }}>
-              <div className="flex items-start justify-between mb-4">
-                <UtensilsCrossed className="h-5 w-5 text-primary" />
-                {m.rede && (
-                  <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                    {m.rede.name}
+        {isPending ? (
+          <LoadingRegion label="Carregando mesas…">
+            <CardGridSkeleton count={6} className="grid md:grid-cols-2 lg:grid-cols-3 gap-4" />
+          </LoadingRegion>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filtered.map((m: any) => (
+              <div
+                key={m.id}
+                className="border border-border bg-card p-6 rounded-sm flex flex-col hover:shadow-lg transition-all duration-300"
+                style={{ borderTop: `4px solid ${m.rede?.color || "var(--primary)"}` }}
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <UtensilsCrossed className="h-5 w-5 text-primary" />
+                  {m.rede && (
+                    <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                      {m.rede.name}
+                    </div>
+                  )}
+                </div>
+                <h3 className="font-serif text-2xl">{m.name}</h3>
+                {m.description && (
+                  <p className="mt-2 text-sm text-muted-foreground">{m.description}</p>
+                )}
+
+                <div className="mt-4">
+                  <GroupSummary
+                    stats={statsOf(stats?.mesas, m.id)}
+                    emptyHint="Nenhuma pessoa nesta mesa ainda."
+                  />
+                </div>
+
+                {(isAdmin || isMesaLeader(m.id)) && (
+                  <div className="mt-4 flex flex-wrap items-center gap-2">
+                    <MesaMembersDialog mesaId={m.id} mesaName={m.name} />
+                    {isAdmin && <EditMesaButton mesa={m} />}
                   </div>
                 )}
-              </div>
-              <h3 className="font-serif text-2xl">{m.name}</h3>
-              {m.description && <p className="mt-2 text-sm text-muted-foreground">{m.description}</p>}
-
-              <div className="mt-4">
-                <GroupSummary
-                  stats={statsOf(stats?.mesas, m.id)}
-                  emptyHint="Nenhuma pessoa nesta mesa ainda."
-                />
-              </div>
-
-              {(isAdmin || isMesaLeader(m.id)) && (
-                <div className="mt-4 flex flex-wrap items-center gap-2">
-                  <MesaMembersDialog mesaId={m.id} mesaName={m.name} />
-                  {isAdmin && <EditMesaButton mesa={m} />}
+                <div className="mt-6 pt-4 border-t border-border space-y-1 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+                  <div>
+                    {m.meeting_day ?? "Dia a definir"} · {m.meeting_time ?? "—"}
+                  </div>
+                  <div>{m.meeting_location ?? "Local a definir"}</div>
+                  <div>{m.church?.name ?? "Igreja a definir"}</div>
                 </div>
-              )}
-              <div className="mt-6 pt-4 border-t border-border space-y-1 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
-                <div>{m.meeting_day ?? "Dia a definir"} · {m.meeting_time ?? "—"}</div>
-                <div>{m.meeting_location ?? "Local a definir"}</div>
-                <div>{m.church?.name ?? "Igreja a definir"}</div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
         {data && filtered.length === 0 && (
           <p className="text-muted-foreground">
             {data.length === 0
