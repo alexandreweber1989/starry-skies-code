@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Users } from "lucide-react";
+import { ArrowLeft, Users, Music, Camera, Sparkles, HeartHandshake, Baby, Compass, Flame, UserSquare2, HelpCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, PageBody } from "@/components/app-shell";
 import { useAuth } from "@/lib/auth-context";
@@ -65,11 +65,16 @@ function MinistryDetail() {
           <div className="lg:col-span-2 border border-border bg-card p-8 rounded-sm">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <div className="font-mono text-[10px] uppercase tracking-widest text-primary mb-4">
+                <div className="font-mono text-[10px] uppercase tracking-widest mb-4" style={{ color: 'var(--group-primary)' }}>
                   Equipe
                 </div>
                 <div className="flex items-center gap-3 mb-6">
-                  <Users className="h-5 w-5 text-muted-foreground" />
+                  {(() => {
+                    const Icon = {
+                      Music, Camera, Sparkles, Users, UserSquare2, Flame, Compass, Baby, HeartHandshake
+                    }[ministry.icon || ''] || HelpCircle;
+                    return <Icon className="h-6 w-6" style={{ color: 'var(--group-primary)' }} />;
+                  })()}
                   <div className="font-serif text-2xl">{members?.length ?? 0} servos</div>
                 </div>
               </div>
