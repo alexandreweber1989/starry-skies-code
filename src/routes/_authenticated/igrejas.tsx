@@ -100,7 +100,7 @@ function SocialActionPage() {
                               </div>
                               <Progress value={progress} className="h-2" />
                               <div className="flex justify-between text-xs text-muted-foreground">
-                                <span>Atual: {campaign.goal_current}</span>
+                                <span>Arrecadado: {campaign.goal_current}</span>
                                 <span>Meta: {campaign.goal_target}</span>
                               </div>
                             </div>
