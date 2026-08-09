@@ -77,7 +77,7 @@ export function MemberToolbar({
   const dirty = JSON.stringify(filters) !== JSON.stringify(DEFAULT_FILTERS);
 
   return (
-    <div className="space-y-3 mb-6">
+    <div className="space-y-3 mb-6 bg-muted/20 p-4 rounded-sm border border-border/50 backdrop-blur-sm">
       <div className="flex flex-wrap gap-2">
         <Input
           className="w-full sm:w-72"

@@ -30,11 +30,11 @@ export function MemberStats({ members }: { members: StatMember[] }) {
 
   return (
     <div className="grid gap-3 grid-cols-2 lg:grid-cols-5 mb-8">
-      <Stat label="Membros" value={total} hint={`${homens} homens · ${mulheres} mulheres`} />
+      <Stat label="Total" value={total} hint={`${homens}♂ · ${mulheres}♀`} />
       <Stat label="Ativos" value={ativos} hint={total ? `${Math.round((ativos / total) * 100)}% da base` : undefined} />
-      <Stat label="Batizados" value={batizados} hint={total ? `${Math.round((batizados / total) * 100)}% da base` : undefined} />
-      <Stat label="Aniversários do mês" value={aniversariantes} />
-      <Stat label="Idade média" value={media ? `${media} anos` : "—"} />
+      <Stat label="Fieis" value={batizados} hint="Batizados" />
+      <Stat label="Celebração" value={aniversariantes} hint="Nascidos este mês" />
+      <Stat label="Média" value={media ? `${media} anos` : "—"} hint="Perfil etário" />
     </div>
   );
 }
