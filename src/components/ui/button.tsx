@@ -69,25 +69,32 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     { className, variant, size, asChild = false, loading = false, disabled, children, ...props },
     ref,
   ) => {
-    const Comp = asChild ? Slot : "button";
-    // O Slot do Radix exige exatamente um filho, então com `asChild` não
-    // injetamos o indicador — quem usa nesse modo controla o próprio conteúdo.
-    const showSpinner = loading && !asChild;
+    const classes = cn(buttonVariants({ variant, size, className }));
+
+    // O Slot do Radix exige EXATAMENTE um filho — e um `null` vindo de um
+    // ternário já conta como um segundo nó, quebrando em runtime com
+    // "Slot failed to slot onto its children". Por isso o modo `asChild`
+    // repassa `children` intocado, sem nenhum irmão condicional.
+    if (asChild) {
+      return (
+        <Slot className={classes} ref={ref} aria-busy={loading || undefined} {...props}>
+          {children}
+        </Slot>
+      );
+    }
 
     return (
-      <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
+      <button
+        className={classes}
         ref={ref}
-        disabled={asChild ? undefined : disabled || loading}
+        disabled={disabled || loading}
         aria-busy={loading || undefined}
         data-loading={loading ? "" : undefined}
         {...props}
       >
-        {showSpinner ? (
-          <Loader2 className="animate-spin motion-keep-spin" aria-hidden="true" />
-        ) : null}
+        {loading ? <Loader2 className="animate-spin motion-keep-spin" aria-hidden="true" /> : null}
         {children}
-      </Comp>
+      </button>
     );
   },
 );
