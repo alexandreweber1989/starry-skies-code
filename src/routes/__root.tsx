@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "../lib/auth-context";
 import { Toaster } from "@/components/ui/sonner";
+import { GlobalErrorBoundary } from "@/components/error-boundary";
 
 function NotFoundComponent() {
   return (
@@ -131,10 +132,12 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Outlet />
-        <Toaster richColors position="top-right" closeButton />
-      </AuthProvider>
+      <GlobalErrorBoundary>
+        <AuthProvider>
+          <Outlet />
+          <Toaster richColors position="top-right" closeButton />
+        </AuthProvider>
+      </GlobalErrorBoundary>
     </QueryClientProvider>
   );
 }
