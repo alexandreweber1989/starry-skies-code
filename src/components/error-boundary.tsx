@@ -1,7 +1,7 @@
 import React, { Component, ErrorInfo, ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, RotateCcw } from "lucide-react";
-import { reportError } from "@/lib/lovable-error-reporting";
+import { reportLovableError } from "@/lib/lovable-error-reporting";
 
 interface Props {
   children: ReactNode;
@@ -24,8 +24,7 @@ export class GlobalErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error("Uncaught error:", error, errorInfo);
-    // Use the existing reporting utility
-    reportError(error, { 
+    reportLovableError(error, { 
       componentStack: errorInfo.componentStack,
       timestamp: new Date().toISOString()
     });
@@ -63,6 +62,6 @@ export class GlobalErrorBoundary extends Component<Props, State> {
       );
     }
 
-    return this.children;
+    return this.props.children;
   }
 }
