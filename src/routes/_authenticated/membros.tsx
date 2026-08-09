@@ -221,7 +221,7 @@ function MembrosPage() {
       <PageHeader
         eyebrow="Corpo de Cristo"
         title="Membros"
-        description="Gestão completa da membresia: fichas, filtros, permissões e indicadores."
+        description="Gestão completa da membresia com visualização contextualizada e métricas em tempo real."
         actions={
           <div className="flex flex-wrap gap-2">
             {canRequest && <RequestMemberDialog />}
