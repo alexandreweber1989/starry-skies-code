@@ -35,6 +35,31 @@ A Issue deve descrever: **contexto**, **objetivo** e **critérios de aceite**.
 - `main` é a branch de produção: o Vercel publica automaticamente a partir dela,
   e ela sincroniza com o Lovable. Mantenha `main` sempre funcionando.
 
+### 2.1 Como a entrega chega em produção (fluxo acordado)
+
+O agente **não** faz merge com o build vermelho. O ciclo é:
+
+1. O agente cria a branch e abre o **PR** (com a Issue vinculada).
+2. O Vercel constrói um **preview** exclusivo daquele PR.
+3. **Check verde** → o agente faz o merge, **sem exigir ação do usuário**.
+4. **Check vermelho** → o agente corrige e só então mergeia. Nada quebrado vai ao ar.
+5. Ao entrar em `main`: o Vercel publica em **produção** e o **Lovable** recebe a
+   mudança no editor.
+
+**Exceções que exigem confirmação humana antes do merge** (mesmo com check verde):
+migrations destrutivas, mudanças em autenticação/permissões, remoção de dados,
+alterações de custo, ou qualquer coisa que afete todos os membros de uma vez.
+
+> **Por que não usamos branch protection no `main`:** ela bloquearia os commits
+> diretos do Lovable (`gpt-engineer-app[bot]`), que é o fluxo de edição visual do
+> usuário. A "rede de proteção" é responsabilidade do agente:
+> **nunca mergear com check vermelho.**
+
+> **Atenção:** as edições feitas no Lovable vão **direto para `main`** (sem PR e sem
+> preview) — é assim que a ferramenta funciona. Este padrão de Issues/PRs vale para
+> agentes de código. Evite editar no Lovable a mesma área que tem um PR aberto, para
+> não gerar conflito.
+
 ## 3. Todo Pull Request DEVE conter na descrição
 1. **Issue relacionada** — referencie com `Closes #<número>` (ou `Refs #<número>`).
 2. **O que mudou** — resumo claro das alterações.
