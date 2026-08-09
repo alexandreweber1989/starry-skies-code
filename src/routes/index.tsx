@@ -57,7 +57,7 @@ function Landing() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* NAV */}
-      <header className="border-b border-border sticky top-0 z-40 bg-background/85 backdrop-blur">
+      <header className="border-b border-border/40 sticky top-0 z-40 bg-background/60 backdrop-blur-2xl transition-all duration-500">
         <div className="max-w-7xl mx-auto px-6 lg:px-10 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="h-8 w-8 rounded-md bg-foreground text-background grid place-items-center">
@@ -98,15 +98,18 @@ function Landing() {
               <span className="h-px w-10 bg-foreground/40" />
               Est. 2014 · Ponta Grossa / PR
             </div>
-            <h1 className="font-serif font-semibold tracking-[-0.03em] text-[15vw] md:text-[10vw] lg:text-[9rem] leading-[0.88] uppercase animate-reveal">
+            <h1 className="font-serif font-semibold tracking-[-0.04em] text-[15vw] md:text-[10vw] lg:text-[10rem] leading-[0.85] uppercase animate-reveal drop-shadow-2xl">
               Uma casa <br />
-              <span className="italic font-normal">construída</span> <br />
+              <span className="italic font-normal text-primary/80 relative">
+                construída
+                <span className="absolute -bottom-4 left-0 w-full h-1 bg-primary/20 rounded-full blur-sm" />
+              </span> <br />
               sobre a rocha.
             </h1>
             <div className="mt-12 grid lg:grid-cols-12 gap-10 items-end">
               <div className="lg:col-span-6 space-y-4">
                 <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
-                  Implementada identidade visual única para cada Ministério, Rede e Mesa. As páginas agora adaptam cores e menus de acordo com o contexto do grupo, mantendo a tipografia Syne/Plus Jakarta Sans, mas personalizando a experiência de navegação para cada ministério e rede específica.
+                  A plataforma da Igreja Batista Atos agora utiliza elementos inspirados no 21st.dev para uma experiência visual incrível. Combinamos a sofisticação da tipografia Syne e Plus Jakarta Sans com micro-interações, sombras profundas e estados de hover refinados em toda a plataforma.
                 </p>
               </div>
               <div className="lg:col-span-6 flex flex-col items-start lg:items-end gap-6">
