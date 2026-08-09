@@ -83,13 +83,18 @@ function Landing() {
 
       <main className="flex-1">
         {/* HERO */}
-        <section className="relative overflow-hidden border-b border-border">
+        <section className="relative overflow-hidden border-b border-border bg-background">
+          {/* Fundo dinâmico inspirado em 21st.dev */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute -top-[25%] -left-[10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] animate-pulse-subtle" />
+            <div className="absolute top-[20%] -right-[10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[100px] animate-float" />
+          </div>
           <div
-            className="pointer-events-none absolute inset-0 opacity-[0.04]"
+            className="pointer-events-none absolute inset-0 opacity-[0.03]"
             style={{
               backgroundImage:
-                "linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)",
-              backgroundSize: "56px 56px",
+                "radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)",
+              backgroundSize: "32px 32px",
             }}
             aria-hidden
           />

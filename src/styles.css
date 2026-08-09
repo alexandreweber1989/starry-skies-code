@@ -16,7 +16,10 @@
   --animate-reveal: reveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   --animate-reveal-slow: reveal 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   --animate-pulse-subtle: pulse-subtle 3s ease-in-out infinite;
-  --animate-shimmer: shimmer 2s linear infinite;
+  --animate-shimmer: shimmer 3s linear infinite;
+  --animate-magnetic: magnetic 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  --animate-orbit: orbit 20s linear infinite;
+  --animate-spotlight: spotlight 2s ease infinite;
   
   @keyframes float {
     0%, 100% { transform: translateY(0); }
@@ -29,8 +32,23 @@
   }
 
   @keyframes shimmer {
-    from { background-position: 200% 0; }
-    to { background-position: -200% 0; }
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  @keyframes magnetic {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(var(--mx, 0), var(--my, 0)); }
+  }
+
+  @keyframes orbit {
+    from { transform: rotate(0deg) translateY(100px) rotate(0deg); }
+    to { transform: rotate(360deg) translateY(100px) rotate(-360deg); }
+  }
+
+  @keyframes spotlight {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.6; }
   }
   
   @keyframes reveal {
