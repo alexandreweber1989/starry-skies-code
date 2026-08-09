@@ -76,7 +76,9 @@ function Landing() {
             <a href="#ministerios" className="hover:text-foreground transition-colors">Ministérios</a>
           </nav>
           <Button asChild size="sm">
-            <Link to={cta.to}>{cta.label} <ArrowRight className="ml-1.5 h-4 w-4" /></Link>
+            <Link to={cta.to}>
+              <span>{cta.label} <ArrowRight className="ml-1.5 h-4 w-4 inline-block" /></span>
+            </Link>
           </Button>
         </div>
       </header>
@@ -122,10 +124,14 @@ function Landing() {
               <div className="lg:col-span-6 flex flex-col items-start lg:items-end gap-6">
                 <div className="flex flex-wrap gap-3">
                   <Button asChild size="lg" className="rounded-full h-12 px-6">
-                    <Link to={cta.to}>{cta.label} <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                    <Link to={cta.to}>
+                      <span>{cta.label} <ArrowRight className="ml-2 h-4 w-4 inline-block" /></span>
+                    </Link>
                   </Button>
                   <Button asChild size="lg" variant="outline" className="rounded-full h-12 px-6">
-                    <a href="#historia">Nossa história <ArrowUpRight className="ml-2 h-4 w-4" /></a>
+                    <a href="#historia">
+                      <span>Nossa história <ArrowUpRight className="ml-2 h-4 w-4 inline-block" /></span>
+                    </a>
                   </Button>
                 </div>
                 <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
@@ -313,7 +319,9 @@ function Landing() {
             </div>
             <div className="lg:col-span-4 flex lg:justify-end">
               <Button asChild size="lg" className="rounded-full h-14 px-8 text-base">
-                <Link to={cta.to}>{cta.label} <ArrowRight className="ml-2 h-5 w-5" /></Link>
+                <Link to={cta.to}>
+                  <span>{cta.label} <ArrowRight className="ml-2 h-5 w-5 inline-block" /></span>
+                </Link>
               </Button>
             </div>
           </div>
