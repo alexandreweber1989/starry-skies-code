@@ -58,7 +58,8 @@ function MinistriesPage() {
             <Link
               to="/ministerios/$slug"
               params={{ slug: m.slug }}
-              className="group block h-full border border-border bg-card rounded-sm p-6 hover:border-primary transition-colors"
+              className="group block h-full border border-border bg-card rounded-sm p-6 hover:shadow-lg transition-all duration-300"
+              style={{ borderTop: `4px solid ${m.color || 'var(--primary)'}` }}
             >
               <div className="flex items-start justify-between mb-6 pr-10">
                 <div 
