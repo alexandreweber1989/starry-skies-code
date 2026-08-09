@@ -90,6 +90,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const isAdmin = roles.some((r) => r.role === "admin_geral");
 
+  const isAdmin = roles.some((r) => r.role === "admin_geral");
+  const isKidsAdmin = isAdmin || roles.some((r) => r.role === "admin_kids");
+
   const value: AuthState = {
     user: session?.user ?? null,
     session,
@@ -100,7 +103,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isMesaLeader: (id) => isAdmin || roles.some((r) => r.role === "lider_mesa" && r.mesa_id === id),
     isLivrariaAdmin: isAdmin || roles.some((r) => r.role === "admin_livraria"),
     isCantinaAdmin: isAdmin || roles.some((r) => r.role === "admin_cantina"),
-    isKidsAdmin: isAdmin || roles.some((r) => r.role === "admin_kids"),
+    isKidsAdmin,
     signOut: async () => {
       await qc.cancelQueries();
       qc.clear();
