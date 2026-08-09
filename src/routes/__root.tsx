@@ -8,7 +8,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -48,9 +48,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-bold tracking-tight text-foreground">
-          Ops! Algo deu errado
-        </h1>
+        <h1 className="text-xl font-bold tracking-tight text-foreground">Ops! Algo deu errado</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Não conseguimos carregar esta página. Tente atualizar ou volte para o início.
         </p>
@@ -82,16 +80,36 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Igreja Batista Atos" },
-      { name: "description", content: "Plataforma da Igreja Batista Atos — ministérios, redes, mesas e comunidade em um só lugar." },
+      {
+        name: "description",
+        content:
+          "Plataforma da Igreja Batista Atos — ministérios, redes, mesas e comunidade em um só lugar.",
+      },
       { name: "author", content: "Igreja Batista Atos" },
       { property: "og:title", content: "Igreja Batista Atos" },
-      { property: "og:description", content: "Plataforma da Igreja Batista Atos — ministérios, redes, mesas e comunidade em um só lugar." },
+      {
+        property: "og:description",
+        content:
+          "Plataforma da Igreja Batista Atos — ministérios, redes, mesas e comunidade em um só lugar.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Igreja Batista Atos" },
-      { name: "twitter:description", content: "Plataforma da Igreja Batista Atos — ministérios, redes, mesas e comunidade em um só lugar." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/6c5a2957-c7da-4e8a-9fe9-4e79d6a2fe6e/id-preview-7103e3f7--519a36d2-6c4e-4611-a052-6f92099a6321.lovable.app-1785495563909.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/6c5a2957-c7da-4e8a-9fe9-4e79d6a2fe6e/id-preview-7103e3f7--519a36d2-6c4e-4611-a052-6f92099a6321.lovable.app-1785495563909.png" },
+      {
+        name: "twitter:description",
+        content:
+          "Plataforma da Igreja Batista Atos — ministérios, redes, mesas e comunidade em um só lugar.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/6c5a2957-c7da-4e8a-9fe9-4e79d6a2fe6e/id-preview-7103e3f7--519a36d2-6c4e-4611-a052-6f92099a6321.lovable.app-1785495563909.png",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/6c5a2957-c7da-4e8a-9fe9-4e79d6a2fe6e/id-preview-7103e3f7--519a36d2-6c4e-4611-a052-6f92099a6321.lovable.app-1785495563909.png",
+      },
     ],
     links: [
       {
@@ -104,7 +122,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Syne:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap",
-
       },
     ],
   }),
@@ -132,21 +149,41 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
   const state = router.state;
+  const prefersReducedMotion = useReducedMotion();
 
   return (
     <QueryClientProvider client={queryClient}>
       <GlobalErrorBoundary>
         <AuthProvider>
           <div className="flex flex-col min-h-screen">
-            <AnimatePresence mode="wait">
+            {/*
+              Transição entre telas (design-motion-principles — lente Emil Kowalski).
+
+              Navegar é uma ação de ALTA frequência num painel, então o movimento
+              precisa ser quase imperceptível. Antes: 400ms de saída + 400ms de
+              entrada com `mode="wait"` = ~800ms por navegação, mais blur na
+              página inteira — o que fazia a interface parecer travada.
+
+              Agora: entrada de 200ms (opacidade + 4px de deslocamento) e saída
+              de 120ms só em opacidade — a saída é sempre mais discreta que a
+              entrada, porque a atenção do usuário já está indo embora.
+
+              `useReducedMotion` é obrigatório aqui: o framer-motion aplica estilo
+              inline via JS e NÃO é alcançado pela media query de CSS.
+            */}
+            <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={state.location.pathname}
-                initial={{ opacity: 0, filter: "blur(4px)" }}
-                animate={{ opacity: 1, filter: "blur(0px)" }}
-                exit={{ opacity: 0, filter: "blur(4px)" }}
+                initial={prefersReducedMotion ? false : { opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={
+                  prefersReducedMotion
+                    ? { opacity: 1 }
+                    : { opacity: 0, transition: { duration: 0.12, ease: [0.4, 0, 1, 1] } }
+                }
                 transition={{
-                  duration: 0.4,
-                  ease: [0.22, 1, 0.36, 1]
+                  duration: prefersReducedMotion ? 0 : 0.2,
+                  ease: [0.22, 1, 0.36, 1],
                 }}
                 className="flex-1 flex flex-col pt-page-transition"
               >

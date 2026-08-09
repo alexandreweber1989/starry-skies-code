@@ -58,6 +58,55 @@
 }
 
 
+
+/* ─────────────────────────────────────────────────────────────────────
+ * SISTEMA DE MOVIMENTO — fonte única de duração e curva.
+ *
+ * Contexto: painel administrativo de uso diário (SaaS dashboard).
+ * Referência: design-motion-principles — lente primária Emil Kowalski
+ * (restrição/velocidade), secundária Jakub Krehel (polimento discreto).
+ *
+ * Regras:
+ *  - UI de produtividade fica abaixo de 300ms; ~180ms é o alvo.
+ *  - Nunca usar `ease` / `ease-in-out` puros: as curvas abaixo têm força.
+ *  - Animar apenas transform / opacity / filter.
+ *  - Saída sempre mais discreta que a entrada.
+ * ───────────────────────────────────────────────────────────────────── */
+:root {
+  /* Durações */
+  --dur-fast: 120ms;      /* micro-feedback: press, checkbox, switch */
+  --dur-base: 180ms;      /* padrão: hover, cor, foco */
+  --dur-entrance: 240ms;  /* entrada de card, popover, item de lista */
+  --dur-overlay: 300ms;   /* modal e drawer: superfície maior */
+
+  /* Curvas */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);      /* entrada de elementos */
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);           /* saída de elementos */
+  --ease-standard: cubic-bezier(0.32, 0.72, 0, 1); /* superfícies e overlays (iOS-like) */
+}
+
+/* Rede de proteção global de acessibilidade.
+ * Os blocos existentes cobriam apenas classes específicas; este garante que
+ * QUALQUER animação futura respeite a preferência do sistema operacional. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Exceção deliberada: indicadores de carregamento são movimento FUNCIONAL —
+     comunicam que algo está em andamento. Congelá-los faria a interface
+     parecer travada. Mantemos o giro, porém mais lento e suave. */
+  .motion-keep-spin {
+    animation-duration: 1.4s !important;
+    animation-iteration-count: infinite !important;
+  }
+}
+
 /*
  * Design system definition.
  *
