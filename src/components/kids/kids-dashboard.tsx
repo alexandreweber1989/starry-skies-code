@@ -137,6 +137,9 @@ export function KidsCheckinDashboard() {
           <TabsTrigger value="visitantes" className="rounded-2xl px-8 h-full data-[state=active]:bg-pink-400 data-[state=active]:text-pink-950 data-[state=active]:shadow-lg data-[state=active]:scale-105 transition-all duration-300 font-bold text-lg">
             <Users className="mr-2 h-5 w-5" /> Visitantes
           </TabsTrigger>
+          <TabsTrigger value="escalas" className="rounded-2xl px-8 h-full data-[state=active]:bg-orange-400 data-[state=active]:text-orange-950 data-[state=active]:shadow-lg data-[state=active]:scale-105 transition-all duration-300 font-bold text-lg">
+            <CalendarDays className="mr-2 h-5 w-5" /> Escalas
+          </TabsTrigger>
           <TabsTrigger value="criancas" className="rounded-2xl px-8 h-full data-[state=active]:bg-blue-400 data-[state=active]:text-blue-950 data-[state=active]:shadow-lg data-[state=active]:scale-105 transition-all duration-300 font-bold text-lg">
             <Baby className="mr-2 h-5 w-5" /> Cadastro
           </TabsTrigger>
@@ -158,6 +161,26 @@ export function KidsCheckinDashboard() {
         <TabsContent value="visitantes" className="mt-8 focus-visible:outline-none">
           <div className="bg-card/40 border border-border/50 rounded-[2.5rem] p-10 shadow-2xl shadow-black/5 backdrop-blur-xl">
             <VisitorQueue session={activeSession} churchId={activeSession?.church_id ?? null} />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="escalas" className="mt-8 focus-visible:outline-none">
+          <div className="bg-card/40 border-4 border-orange-200 rounded-[2.5rem] p-10 shadow-2xl shadow-orange-900/5 backdrop-blur-xl">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="font-serif text-3xl text-orange-900">Escalas Kids</h2>
+              {isKidsAdmin && (
+                <Button className="rounded-xl bg-orange-500 hover:bg-orange-600 text-white">
+                  Nova Escala
+                </Button>
+              )}
+            </div>
+            <div className="space-y-4">
+              <div className="p-6 border-2 border-dashed border-orange-200 rounded-3xl text-center">
+                <CalendarDays className="mx-auto h-12 w-12 text-orange-300 mb-4" />
+                <p className="text-orange-900/60 font-medium">As escalas iniciais do Kids estão sendo preparadas.</p>
+                <p className="text-orange-900/40 text-sm mt-1">Configure voluntários, turmas e horários aqui.</p>
+              </div>
+            </div>
           </div>
         </TabsContent>
 
