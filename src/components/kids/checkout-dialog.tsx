@@ -166,7 +166,7 @@ export function CheckoutPanel({ checkin, childName, onDone }: CheckoutPanelProps
                       rel="noopener noreferrer"
                       title="WhatsApp"
                     >
-                      <MessageSquare className="h-4 w-4" />
+                      <span><MessageSquare className="h-4 w-4" /></span>
                     </a>
                   </Button>
                 )}
