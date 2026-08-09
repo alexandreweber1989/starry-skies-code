@@ -172,6 +172,6 @@ function SocialActionPage() {
           </aside>
         </div>
       </PageBody>
-    </>
+    </div>
   );
 }
