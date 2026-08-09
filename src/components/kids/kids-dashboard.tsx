@@ -81,9 +81,10 @@ export function KidsCheckinDashboard() {
   }, [children, search, classroom]);
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
+    <div className="space-y-6 animate-in fade-in duration-500 font-kids selection:bg-yellow-200 selection:text-yellow-900">
       {/* Barra de operação: sessão do dia + acesso ao QR Code dos visitantes */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border border-border/50 bg-card/60 rounded-[2rem] p-8 sticky top-4 z-20 backdrop-blur-2xl shadow-2xl shadow-black/5 transition-all duration-500 hover:shadow-black/10 hover:border-primary/20">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-4 border-primary/20 bg-white rounded-[3rem] p-8 sticky top-4 z-20 backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all duration-500 hover:shadow-primary/10 hover:border-primary/40">
+
         <div className="flex flex-col gap-1.5 min-w-0">
           <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary/70">
             Sessão Ativa
@@ -127,16 +128,19 @@ export function KidsCheckinDashboard() {
       </div>
 
       <Tabs defaultValue="checkin" className="w-full">
-        <TabsList className="bg-muted/50 p-1.5 rounded-2xl border border-primary/5 h-14 backdrop-blur-md">
-          <TabsTrigger value="checkin" className="rounded-xl px-8 h-full data-[state=active]:bg-background data-[state=active]:shadow-lg data-[state=active]:scale-105 transition-all duration-300 font-medium">
-            <ShieldCheck className="mr-2 h-4 w-4 text-primary" /> Check-in
+        <TabsList className="bg-primary/5 p-2 rounded-3xl border-2 border-primary/10 h-16 backdrop-blur-md">
+
+          <TabsTrigger value="checkin" className="rounded-2xl px-8 h-full data-[state=active]:bg-yellow-400 data-[state=active]:text-yellow-950 data-[state=active]:shadow-lg data-[state=active]:scale-105 transition-all duration-300 font-bold text-lg">
+            <ShieldCheck className="mr-2 h-5 w-5" /> Check-in
           </TabsTrigger>
-          <TabsTrigger value="visitantes" className="rounded-xl px-8 h-full data-[state=active]:bg-background data-[state=active]:shadow-lg data-[state=active]:scale-105 transition-all duration-300 font-medium">
-            <Users className="mr-2 h-4 w-4 text-primary" /> Visitantes
+
+          <TabsTrigger value="visitantes" className="rounded-2xl px-8 h-full data-[state=active]:bg-pink-400 data-[state=active]:text-pink-950 data-[state=active]:shadow-lg data-[state=active]:scale-105 transition-all duration-300 font-bold text-lg">
+            <Users className="mr-2 h-5 w-5" /> Visitantes
           </TabsTrigger>
-          <TabsTrigger value="criancas" className="rounded-xl px-8 h-full data-[state=active]:bg-background data-[state=active]:shadow-lg data-[state=active]:scale-105 transition-all duration-300 font-medium">
-            <Baby className="mr-2 h-4 w-4 text-primary" /> Cadastro
+          <TabsTrigger value="criancas" className="rounded-2xl px-8 h-full data-[state=active]:bg-blue-400 data-[state=active]:text-blue-950 data-[state=active]:shadow-lg data-[state=active]:scale-105 transition-all duration-300 font-bold text-lg">
+            <Baby className="mr-2 h-5 w-5" /> Cadastro
           </TabsTrigger>
+
         </TabsList>
 
         <TabsContent value="checkin" className="mt-8 focus-visible:outline-none">
@@ -211,14 +215,24 @@ export function KidsCheckinDashboard() {
               description="Não encontramos nenhuma criança com estes critérios de busca."
             />
           ) : (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredChildren.map((child) => {
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {filteredChildren.map((child, i) => {
                 const age = ageInYears(child.birth_date);
+                const colors = [
+                  "border-yellow-200 bg-yellow-50 hover:bg-yellow-100",
+                  "border-pink-200 bg-pink-50 hover:bg-pink-100",
+                  "border-blue-200 bg-blue-50 hover:bg-blue-100",
+                  "border-green-200 bg-green-50 hover:bg-green-100",
+                  "border-purple-200 bg-purple-50 hover:bg-purple-100"
+                ];
+                const colorClass = colors[i % colors.length];
+                
                 return (
                   <article
                     key={child.id}
-                    className="group relative flex flex-col rounded-3xl border border-primary/5 bg-card hover:bg-accent/50 p-5 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 overflow-hidden"
+                    className={`group relative flex flex-col rounded-[2.5rem] border-4 p-6 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 overflow-hidden ${colorClass}`}
                   >
+
                     <div className="flex gap-4 items-center">
                       <KidsPhoto 
                         value={child.photo_url} 

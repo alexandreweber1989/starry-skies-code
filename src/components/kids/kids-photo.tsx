@@ -15,7 +15,7 @@ export function KidsPhoto({ value, alt, variant = "crianca", className }: KidsPh
   const Icon = variant === "crianca" ? Baby : User;
 
   return (
-    <div className={cn("overflow-hidden bg-muted border border-border", className)}>
+    <div className={cn("overflow-hidden bg-muted border-4 border-white shadow-inner", className)}>
       {url ? (
         <img src={url} alt={alt} loading="lazy" className="h-full w-full object-cover" />
       ) : (
