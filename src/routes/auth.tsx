@@ -85,16 +85,21 @@ function AuthPage() {
   async function handleGoogle() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth` },
+      options: { 
+        redirectTo: `${window.location.origin}/auth`,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        }
+      },
     });
     if (error) {
       toast.error(
-        error.message.includes("provider is not enabled")
-          ? "O login com Google ainda não está habilitado. Use e-mail e senha."
+        error.message.includes("provider is not enabled") || error.message.includes("missing OAuth secret")
+          ? "O login com Google precisa ser configurado no painel administrativo. Por favor, contate o suporte."
           : "Não foi possível entrar com o Google. Tente novamente.",
       );
     }
-    // Em caso de sucesso o navegador é redirecionado para o Google.
   }
 
   /** Envia o e-mail de redefinição de senha. */
