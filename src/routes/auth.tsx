@@ -83,22 +83,29 @@ function AuthPage() {
    * não é preciso uma rota de callback dedicada.
    */
   async function handleGoogle() {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { 
-        redirectTo: `${window.location.origin}/auth`,
-        queryParams: {
-          access_type: 'offline',
-          prompt: 'consent',
-        }
-      },
-    });
-    if (error) {
-      toast.error(
-        error.message.includes("provider is not enabled") || error.message.includes("missing OAuth secret")
-          ? "O login com Google precisa ser configurado no painel administrativo. Por favor, contate o suporte."
-          : "Não foi possível entrar com o Google. Tente novamente.",
-      );
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { 
+          redirectTo: `${window.location.origin}/auth`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          }
+        },
+      });
+      
+      if (error) {
+        console.error("Erro no login com Google:", error);
+        toast.error(
+          error.message.includes("provider is not enabled") || error.message.includes("missing OAuth secret")
+            ? "O login com Google precisa de configuração adicional no painel administrativo."
+            : "Não foi possível iniciar o login com Google."
+        );
+      }
+    } catch (err) {
+      console.error("Exceção no login com Google:", err);
+      toast.error("Ocorreu um erro ao tentar conectar com o Google.");
     }
   }
 
