@@ -161,17 +161,26 @@ function Landing() {
               <div className="p-6 bg-primary/5 border border-primary/20 rounded-xl shadow-sm text-left">
                 <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-primary">
                   <Sparkles className="w-4 h-4" />
-                  O que vem por aí?
+                  Backend e Infraestrutura
                 </h3>
                 <p className="text-muted-foreground mb-4 text-sm leading-relaxed">
-                  Gamificação de discipulado, central de mídias, automação via WhatsApp e o novo portal "Atos de Amor" já estão no roadmap de inovação.
+                  Conseguimos configurar o backend (RLS, Migrations, Roles) diretamente por aqui através de migrations e server functions, garantindo a integridade dos dados da nossa casa.
                 </p>
-                <Link 
-                  to="/dashboard"
-                  className="inline-flex items-center text-sm font-medium underline underline-offset-4 hover:text-primary transition-colors text-primary"
-                >
-                  Ver Roadmap no Painel <ArrowRight className="ml-1 h-3 w-3" />
-                </Link>
+                <div className="flex gap-4">
+                  <a 
+                    href="/BLUEPRINT.md" 
+                    target="_blank"
+                    className="inline-flex items-center text-sm font-medium underline underline-offset-4 hover:text-primary transition-colors text-primary"
+                  >
+                    Guia Técnico <ArrowUpRight className="ml-1 h-3 w-3" />
+                  </a>
+                  <Link 
+                    to="/dashboard"
+                    className="inline-flex items-center text-sm font-medium underline underline-offset-4 hover:text-primary transition-colors text-primary"
+                  >
+                    Ver Painel <ArrowRight className="ml-1 h-3 w-3" />
+                  </Link>
+                </div>
               </div>
             </div>
 
