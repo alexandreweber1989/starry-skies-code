@@ -111,7 +111,7 @@ function ConfigVercelPage() {
                     <div>
                       <h3 className="font-medium text-lg">Variáveis de Ambiente</h3>
                       <p className="text-sm text-muted-foreground leading-relaxed">
-                        Copie as variáveis do Lovable (Configurações > Environment Variables) para o Vercel:
+                        Copie as variáveis do Lovable (Configurações {" > "} Environment Variables) para o Vercel:
                       </p>
                       <div className="mt-3 grid grid-cols-1 gap-2">
                         <code className="text-[10px] bg-muted/50 p-2 rounded border border-border/50">VITE_SUPABASE_URL</code>
