@@ -84,7 +84,7 @@ function ruido(
   src.stop(t0 + dur);
 }
 
-export function tocarSomMinisterio(tipo: string) {
+function sintetizar(tipo: string) {
   const c = getCtx();
   if (!c) return;
   const master = c.createGain();
@@ -156,5 +156,41 @@ export function tocarSomMinisterio(tipo: string) {
     default: {
       tom(c, master, t, { freq: 660, dur: 0.18, tipo: "sine", vol: 0.2 });
     }
+  }
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Camada de ARQUIVOS DE ÁUDIO REAIS (o que soa de verdade).
+ * Coloque os arquivos em: public/sons/<slug>.mp3
+ * slugs: zadoque, sabaoth, louvor, midia, danca, jovens, adolescentes, kids, atos
+ * Se o arquivo existir, ele toca; se não existir ainda, cai no som sintetizado
+ * como placeholder temporário.
+ * ------------------------------------------------------------------------- */
+const cacheAudio = new Map<string, HTMLAudioElement>();
+const semArquivo = new Set<string>();
+
+export function tocarSomMinisterio(slug: string) {
+  if (typeof window === "undefined") return;
+  if (semArquivo.has(slug)) {
+    sintetizar(slug);
+    return;
+  }
+  let a = cacheAudio.get(slug);
+  if (!a) {
+    a = new Audio(`/sons/${slug}.mp3`);
+    a.preload = "auto";
+    a.volume = 0.9;
+    a.addEventListener("error", () => {
+      semArquivo.add(slug);
+    });
+    cacheAudio.set(slug, a);
+  }
+  try {
+    a.currentTime = 0;
+    const p = a.play();
+    if (p) p.catch(() => sintetizar(slug));
+  } catch {
+    sintetizar(slug);
   }
 }
