@@ -215,10 +215,18 @@ function FloatingNav({ cta }: { cta: { to: string; label: string } }) {
 const PALAVRAS_ROCHA = [
   "construída",
   "edificada",
-  "firmada",
+  "fundada",
   "alicerçada",
+  "firmada",
+  "fundamentada",
   "enraizada",
+  "ancorada",
   "sustentada",
+  "estabelecida",
+  "erguida",
+  "consolidada",
+  "inabalável",
+  "firme",
 ];
 
 // Palavra rotativa com efeito glitch (monocromático) no título do hero.
