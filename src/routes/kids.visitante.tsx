@@ -321,6 +321,7 @@ function VisitorPage() {
                 <Input
                   value={form.child_nickname}
                   onChange={(e) => set("child_nickname", e.target.value)}
+                  className="lg:h-14 lg:text-xl lg:rounded-2xl"
                 />
               </Field>
               <Field label="Data de nascimento">
