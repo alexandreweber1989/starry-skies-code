@@ -489,12 +489,13 @@ function CadastroSection() {
       id="cadastro"
       className="relative z-20 bg-background border-t border-border/10 py-20 md:py-28 px-6 lg:px-10"
     >
-      <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-10 lg:gap-20 items-center">
+      <div className="max-w-7xl mx-auto flex flex-col items-center">
         <motion.div
           initial={reduce ? undefined : { opacity: 0, y: 24 }}
           whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="w-full text-center mb-12 lg:mb-20"
         >
           <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-5">
             Comece por aqui
