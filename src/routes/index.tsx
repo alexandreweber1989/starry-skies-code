@@ -377,12 +377,12 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="flex items-center gap-2.5 mb-5"
+            className="flex items-center gap-3 md:gap-4 mb-6"
           >
-            <span className="h-9 w-9 rounded-lg bg-foreground text-background grid place-items-center shrink-0">
-              <Church className="h-[18px] w-[18px]" />
+            <span className="h-12 w-12 md:h-16 md:w-16 rounded-xl md:rounded-2xl bg-foreground text-background grid place-items-center shrink-0">
+              <Church className="h-6 w-6 md:h-8 md:w-8" />
             </span>
-            <span className="font-serif text-xl md:text-2xl font-bold tracking-[-0.01em] leading-none">
+            <span className="font-serif font-extrabold tracking-[-0.02em] leading-[0.95] text-3xl md:text-5xl lg:text-6xl">
               Igreja Batista Atos
             </span>
           </motion.div>
