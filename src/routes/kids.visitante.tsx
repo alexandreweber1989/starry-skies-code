@@ -439,10 +439,10 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <div className="space-y-1.5">
-      <Label>{label}</Label>
+    <div className="space-y-1.5 lg:space-y-3">
+      <Label className="lg:text-xl">{label}</Label>
       {children}
-      {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
+      {hint && <p className="text-xs lg:text-sm text-muted-foreground">{hint}</p>}
     </div>
   );
 }
