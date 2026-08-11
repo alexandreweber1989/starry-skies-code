@@ -95,8 +95,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else {
         setRoles((data ?? []) as RoleRow[]);
       }
-      setLoading(false);
+      if (active) setLoading(false);
     };
+
 
     void loadRoles();
     window.addEventListener("focus", loadRoles);
