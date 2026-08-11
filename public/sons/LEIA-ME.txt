@@ -1,0 +1,18 @@
+SONS DOS MINISTÉRIOS
+====================
+Coloque aqui os arquivos de áudio (formato .mp3), com EXATAMENTE estes nomes:
+
+  zadoque.mp3        -> Homens · Zadoque  (ex.: brado de guerra masculino)
+  sabaoth.mp3        -> Mulheres · Sabaoth (ex.: multidão de mulheres em brado)
+  louvor.mp3         -> Louvor            (ex.: banda/instrumentos tocando)
+  midia.mp3          -> Mídia             (ex.: click de DSLR profissional)
+  danca.mp3          -> Dança             (ex.: batida/whoosh de dança)
+  jovens.mp3         -> Jovens            (ex.: galera empolgada / riff)
+  adolescentes.mp3   -> Adolescentes      (ex.: turma animada)
+  kids.mp3           -> Kids              (ex.: crianças comemorando)
+  atos.mp3           -> Atos de Amor      (ex.: sino/piano acolhedor)
+
+REGRAS
+- Use áudios LIVRES DE DIREITOS (royalty-free / CC0) ou gravados por vocês.
+- Curtos (1 a 3 segundos) e já "cortados" pra tocar no clique.
+- Enquanto um arquivo não existir, o site toca um som sintetizado provisório.

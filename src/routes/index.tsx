@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
+import { tocarSomMinisterio } from "@/components/home/ministerio-sons";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -103,15 +104,15 @@ const pilares = [
 ];
 
 const ministerios = [
-  { icon: Music, nome: "Louvor", tag: "Adoração" },
-  { icon: Camera, nome: "Mídia", tag: "Comunicação" },
-  { icon: Sparkles, nome: "Dança", tag: "Expressão" },
-  { icon: Users, nome: "Mulheres · Sabaoth", tag: "Rede" },
-  { icon: UserSquare2, nome: "Homens · Zadoque", tag: "Rede" },
-  { icon: Flame, nome: "Jovens", tag: "Rede" },
-  { icon: Compass, nome: "Adolescentes", tag: "Formação" },
-  { icon: Baby, nome: "Kids", tag: "Infância" },
-  { icon: HeartHandshake, nome: "Atos de Amor", tag: "Ação social" },
+  { icon: Music, nome: "Louvor", tag: "Adoração", som: "louvor" },
+  { icon: Camera, nome: "Mídia", tag: "Comunicação", som: "midia" },
+  { icon: Sparkles, nome: "Dança", tag: "Expressão", som: "danca" },
+  { icon: Users, nome: "Mulheres · Sabaoth", tag: "Rede", som: "sabaoth" },
+  { icon: UserSquare2, nome: "Homens · Zadoque", tag: "Rede", som: "zadoque" },
+  { icon: Flame, nome: "Jovens", tag: "Rede", som: "jovens" },
+  { icon: Compass, nome: "Adolescentes", tag: "Formação", som: "adolescentes" },
+  { icon: Baby, nome: "Kids", tag: "Infância", som: "kids" },
+  { icon: HeartHandshake, nome: "Atos de Amor", tag: "Ação social", som: "atos" },
 ];
 
 const anosDeCaminhada = new Date().getFullYear() - 2014;
@@ -791,17 +792,21 @@ function Ministerios() {
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {ministerios.map((m, idx) => (
-            <motion.div
+            <motion.button
+              type="button"
               key={m.nome}
+              onClick={() => tocarSomMinisterio(m.som)}
+              aria-label={`Ouvir o som do ministério ${m.nome}`}
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
+              whileTap={reduce ? undefined : { scale: 0.97 }}
               transition={{
                 delay: (idx % 3) * 0.06,
                 duration: 0.5,
                 ease: [0.22, 1, 0.36, 1],
               }}
               viewport={{ once: true, margin: "-60px" }}
-              className="group relative p-8 bg-card border border-border/50 rounded-3xl hover:border-primary/30 transition-all duration-500 overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-primary/5"
+              className="group relative w-full text-left p-8 bg-card border border-border/50 rounded-3xl hover:border-primary/30 transition-all duration-500 overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-primary/5 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
             >
               <div className="relative z-10 flex justify-between items-start mb-8">
                 <div className="h-12 w-12 rounded-2xl bg-primary/5 text-primary grid place-items-center group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-500 rotate-3 group-hover:rotate-0">
@@ -817,7 +822,7 @@ function Ministerios() {
                 </h3>
                 <div className="h-px w-0 group-hover:w-full bg-primary/20 transition-all duration-700" />
               </div>
-            </motion.div>
+            </motion.button>
           ))}
         </div>
       </div>
