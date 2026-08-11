@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
+import { CadastroLead } from "@/components/home/cadastro-lead";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -340,7 +341,7 @@ function LinhaGlitch({ palavras }: { palavras: string[] }) {
   return (
     <span
       ref={ref}
-      className="block italic text-foreground whitespace-nowrap text-[10vw] md:text-[8vw] lg:text-[8rem]"
+      className="block italic text-foreground whitespace-nowrap text-[9vw] md:text-[6vw] lg:text-[4.5rem]"
       style={fontPx ? { fontSize: `${fontPx}px`, lineHeight: 1 } : undefined}
     >
       <PalavraGlitch palavras={palavras} />
@@ -371,6 +372,8 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
           }
           className="max-w-7xl mx-auto w-full"
         >
+          <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(320px,360px)] gap-8 lg:gap-14 items-center">
+          <div className="min-w-0 overflow-hidden">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -418,26 +421,25 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
               </motion.span>
             </span>
           </h1>
+          </div>
 
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.6 }}
-            className="mt-16 md:mt-20 flex flex-wrap gap-4"
+            initial={reduce ? undefined : { opacity: 0, y: 20 }}
+            animate={reduce ? undefined : { opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.5 }}
+            className="w-full max-w-sm mx-auto lg:mx-0 mt-10 lg:mt-0"
           >
-            <Button
-              asChild
-              size="lg"
-              className="rounded-full h-14 px-8 text-lg group"
-            >
-              <Link to={cta.to}>
-                <span>
-                  {cta.label}
-                  <ArrowRight className="ml-2 h-5 w-5 inline-block group-hover:translate-x-1 transition-transform" />
-                </span>
+            <CadastroLead />
+            <div className="mt-3 text-center lg:text-left">
+              <Link
+                to={cta.to}
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Já faz parte da igreja? {cta.label} →
               </Link>
-            </Button>
+            </div>
           </motion.div>
+          </div>
         </motion.div>
 
         {/* Indicador de rolagem */}
@@ -446,7 +448,7 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
           animate={{ opacity: 1 }}
           transition={{ delay: 1.6, duration: 1 }}
           style={reduce ? undefined : { opacity }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2"
         >
           <span className="font-mono text-[8px] uppercase tracking-[0.3em] text-muted-foreground">
             Role para explorar
