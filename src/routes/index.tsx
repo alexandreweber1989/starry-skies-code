@@ -1,310 +1,92 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  Church,
-  ArrowRight,
-  ArrowUpRight,
-  Music,
-  Camera,
-  Sparkles,
-  Users,
-  UserSquare2,
-  Flame,
-  Baby,
-  HeartHandshake,
-  Compass,
-} from "lucide-react";
-import { useAuth } from "@/lib/auth-context";
+import { createFileRoute } from "@tanstack/react-router";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import { useRef } from "react";
+import { Church, ArrowRight, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Igreja Batista Atos" },
-      { name: "description", content: "Plataforma da Igreja Batista Atos — ministérios, redes, mesas e comunidade em um só lugar." },
-      { property: "og:title", content: "Igreja Batista Atos" },
-      { property: "og:description", content: "Plataforma da Igreja Batista Atos — ministérios, redes, mesas e comunidade em um só lugar." },
-    ],
-  }),
-  component: Landing,
+  component: ScrolltellingLanding,
 });
 
-const pilares = [
-  { n: "01", nome: "Mesa", desc: "Comunhão semanal, oração e Palavra ao redor da mesa — o berço dos discípulos." },
-  { n: "02", nome: "Sacerdócio", desc: "Cada filho um sacerdote, servindo a Deus e ao próximo com vida consagrada." },
-  { n: "03", nome: "Paternidade", desc: "Referência, cuidado e formação de identidade que sustenta gerações." },
-  { n: "04", nome: "Adoração", desc: "Um povo que se ajoelha, entrega e vive uma vida inteira como louvor." },
-  { n: "05", nome: "Ministério Quíntuplo", desc: "Apóstolos, profetas, evangelistas, pastores e mestres edificando o corpo." },
-];
-
-const ministerios = [
-  { icon: Music, nome: "Louvor", tag: "Adoração" },
-  { icon: Camera, nome: "Mídia", tag: "Comunicação" },
-  { icon: Sparkles, nome: "Dança", tag: "Expressão" },
-  { icon: Users, nome: "Mulheres · Sabaoth", tag: "Rede" },
-  { icon: UserSquare2, nome: "Homens · Zadoque", tag: "Rede" },
-  { icon: Flame, nome: "Jovens", tag: "Rede" },
-  { icon: Compass, nome: "Adolescentes", tag: "Formação" },
-  { icon: Baby, nome: "Kids", tag: "Infância" },
-  { icon: HeartHandshake, nome: "Atos de Amor", tag: "Ação social" },
-];
-
-function Landing() {
-  const { user, loading } = useAuth();
-  const cta = !loading && user
-    ? { to: "/dashboard", label: "Entrar no painel" }
-    : { to: "/auth", label: "Acessar plataforma" };
+function ScrolltellingLanding() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: containerRef });
+  
+  // Efeito Parallax no título principal
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
-      {/* NAV */}
-      <header className="border-b border-border/40 sticky top-0 z-40 bg-background/60 backdrop-blur-2xl transition-all duration-500">
-        <div className="max-w-7xl mx-auto px-6 lg:px-10 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="h-8 w-8 rounded-md bg-foreground text-background grid place-items-center">
-              <Church className="h-4 w-4" />
-            </div>
-            <div>
-              <div className="font-serif text-base leading-none font-semibold tracking-tight">Igreja Batista Atos</div>
-              <div className="font-mono text-[9px] uppercase tracking-[0.3em] text-muted-foreground mt-1">
-                Ponta Grossa · desde 2014
-              </div>
-            </div>
+    <div ref={containerRef} className="relative bg-background text-foreground">
+      {/* SEÇÃO 1: HERO (Focado) */}
+      <section className="h-screen flex flex-col justify-center px-6 lg:px-10 border-b border-border/20 sticky top-0 overflow-hidden">
+        <motion.div style={{ y, opacity }} className="max-w-7xl mx-auto w-full">
+          <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.35em] text-muted-foreground mb-10">
+            <span className="h-px w-10 bg-foreground/40" />
+            Est. 2014 · Ponta Grossa / PR
           </div>
-          <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
-            <a href="#historia" className="hover:text-foreground transition-colors">História</a>
-            <a href="#pilares" className="hover:text-foreground transition-colors">Pilares</a>
-            <a href="#ministerios" className="hover:text-foreground transition-colors">Ministérios</a>
-          </nav>
-          <Button asChild size="sm">
-            <Link to={cta.to}>
-              <span>{cta.label} <ArrowRight className="ml-1.5 h-4 w-4 inline-block" /></span>
+          <h1 className="font-serif font-semibold tracking-[-0.04em] text-[15vw] md:text-[10vw] lg:text-[8rem] leading-[0.85] uppercase selection:bg-primary selection:text-primary-foreground">
+            Uma casa <br />
+            <span className="italic font-normal text-primary/80">construída</span> <br />
+            sobre a rocha.
+          </h1>
+        </motion.div>
+      </section>
+
+      {/* SEÇÃO 2: A HISTÓRIA (Reveal Scroll) */}
+      <section className="min-h-screen py-32 px-6 lg:px-10 max-w-5xl mx-auto flex flex-col justify-center">
+        <motion.div 
+          initial={{ opacity: 0, y: 100 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
+          className="space-y-12"
+        >
+          <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">§ 01 — Nossa Gênese</div>
+          <h2 className="font-serif text-5xl md:text-7xl leading-tight">
+            Tudo começou com uma Kombi branca e um propósito.
+          </h2>
+          <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed">
+            De reuniões na sala do Pastor Geraldo a um templo erguido pelas mãos dos próprios filhos, nossa história não é feita de tijolos, mas de vidas forjadas pelo Evangelho.
+          </p>
+        </motion.div>
+      </section>
+
+      {/* SEÇÃO 3: PILARES (Grid Interativo) */}
+      <section className="py-32 bg-foreground text-background">
+        <div className="max-w-7xl mx-auto px-6 lg:px-10">
+          <h2 className="font-serif text-5xl mb-20">Fundamentos da fé.</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {["Mesa", "Sacerdócio", "Paternidade", "Adoração", "Ministério"].map((item, i) => (
+              <motion.div 
+                key={item}
+                whileHover={{ y: -10 }}
+                className="p-10 border border-background/20 rounded-3xl group"
+              >
+                <div className="text-6xl mb-8 font-serif text-background/20 group-hover:text-primary transition-colors">0{i+1}</div>
+                <h3 className="text-3xl font-serif mb-4">{item}</h3>
+                <p className="text-background/60">Uma base inabalável para nossa comunhão e missão.</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SEÇÃO 4: CTA FINAL */}
+      <section className="h-screen flex items-center justify-center text-center px-6">
+        <motion.div 
+          initial={{ scale: 0.8, opacity: 0 }}
+          whileInView={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring" }}
+          className="space-y-8"
+        >
+          <h2 className="font-serif text-6xl md:text-8xl">A casa está pronta.</h2>
+          <Button asChild size="lg" className="rounded-full text-lg h-16 px-10">
+            <Link to="/auth">
+              Junte-se a nós <ArrowRight className="ml-2 h-6 w-6" />
             </Link>
           </Button>
-        </div>
-      </header>
-
-      <main className="flex-1">
-        {/* HERO */}
-        <section className="relative overflow-hidden border-b border-border bg-background">
-          {/* Fundo dinâmico inspirado em 21st.dev */}
-          <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute -top-[25%] -left-[10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] animate-pulse-subtle" />
-            <div className="absolute top-[20%] -right-[10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[100px] animate-float" />
-          </div>
-          <div
-            className="pointer-events-none absolute inset-0 opacity-[0.03]"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)",
-              backgroundSize: "32px 32px",
-            }}
-            aria-hidden
-          />
-          <div className="relative max-w-7xl mx-auto px-6 lg:px-10 pt-20 pb-24 lg:pt-32 lg:pb-40">
-            <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.35em] text-muted-foreground mb-10">
-              <span className="h-px w-10 bg-foreground/40" />
-              Est. 2014 · Ponta Grossa / PR
-            </div>
-            <h1 className="font-serif font-semibold tracking-[-0.04em] text-[15vw] md:text-[10vw] lg:text-[10rem] leading-[0.85] uppercase animate-reveal drop-shadow-2xl selection:bg-primary selection:text-primary-foreground">
-              Uma casa <br />
-              <span className="italic font-normal text-primary/80 relative inline-block group/title">
-                construída
-                <span className="absolute -bottom-4 left-0 w-0 h-1 bg-primary/40 rounded-full blur-sm group-hover/title:w-full transition-all duration-1000" />
-              </span> <br />
-              sobre a rocha.
-            </h1>
-            <div className="mt-12 grid lg:grid-cols-12 gap-10 items-end">
-              <div className="lg:col-span-6 space-y-4">
-                <div className="space-y-4">
-                  <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
-                    Uma plataforma pensada para cada membro da Igreja Batista Atos. Acompanhe escalas, participe de Mesas, Redes e Ministérios, e tenha acesso a tudo que faz sentido para sua jornada cristã em nossa casa. Add agent integrations (MCP) to this app
-                  </p>
-                </div>
-              </div>
-              <div className="lg:col-span-6 flex flex-col items-start lg:items-end gap-6">
-                <div className="flex flex-wrap gap-3">
-                  <Button asChild size="lg" className="rounded-full h-12 px-6">
-                    <Link to={cta.to}>
-                      <span>{cta.label} <ArrowRight className="ml-2 h-4 w-4 inline-block" /></span>
-                    </Link>
-                  </Button>
-                  <Button asChild size="lg" variant="outline" className="rounded-full h-12 px-6">
-                    <a href="#historia">
-                      <span>Nossa história <ArrowUpRight className="ml-2 h-4 w-4 inline-block" /></span>
-                    </a>
-                  </Button>
-                </div>
-                <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-                  Cultos · Dom 09h30 e 18h30
-                </div>
-              </div>
-            </div>
-
-
-            {/* Marquee tira */}
-            <div className="mt-20 border-y border-border -mx-6 lg:-mx-10 overflow-hidden">
-              <div className="flex whitespace-nowrap animate-[marquee_38s_linear_infinite] py-4 font-serif text-2xl md:text-3xl uppercase tracking-tight">
-                {Array.from({ length: 2 }).map((_, k) => (
-                  <div key={k} className="flex items-center gap-8 pr-8">
-                    {["Mesa", "Sacerdócio", "Paternidade", "Adoração", "Ministério Quíntuplo", "Atos de Amor", "Kombi Branca", "05 · 01 · 2015"].map((w) => (
-                      <span key={w} className="flex items-center gap-8">
-                        <span>{w}</span>
-                        <span className="text-muted-foreground">✳</span>
-                      </span>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-          <style>{`@keyframes marquee { from { transform: translateX(0);} to { transform: translateX(-50%);} }`}</style>
-        </section>
-
-        {/* HISTÓRIA */}
-        <section id="historia" className="border-b border-border">
-          <div className="max-w-7xl mx-auto px-6 lg:px-10 py-24 lg:py-32 grid lg:grid-cols-12 gap-12">
-            <div className="lg:col-span-4">
-              <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">§ 01 — História</div>
-              <h2 className="mt-4 font-serif text-4xl md:text-5xl tracking-tight leading-[1.05]">
-                Da sala do pastor à casa de famílias.
-              </h2>
-              <div className="mt-8 space-y-6 font-mono text-[11px] uppercase tracking-[0.25em] text-muted-foreground">
-                <div className="flex items-baseline gap-4">
-                  <span className="font-serif text-2xl text-foreground normal-case tracking-normal">2014</span>
-                  <span>Reuniões na casa do Pr. Geraldo</span>
-                </div>
-                <div className="flex items-baseline gap-4">
-                  <span className="font-serif text-2xl text-foreground normal-case tracking-normal">05·01·2015</span>
-                  <span>Primeiros cultos oficiais</span>
-                </div>
-                <div className="flex items-baseline gap-4">
-                  <span className="font-serif text-2xl text-foreground normal-case tracking-normal">Hoje</span>
-                  <span>Templo no Parque N. S. das Graças</span>
-                </div>
-              </div>
-            </div>
-            <div className="lg:col-span-8 space-y-6 text-base md:text-lg leading-relaxed text-muted-foreground">
-              <p>
-                No início as reuniões aconteciam na casa do pastor Geraldo — um lugar pequeno,
-                cheio de amor e esperança. Sem templo físico, a sala virava altar de adoração,
-                oração, Palavra e comunhão.
-              </p>
-              <p>
-                A famosa <span className="text-foreground font-medium">Kombi branca</span> se
-                tornou símbolo desses primeiros dias — mais que um veículo, uma escola de
-                discipulado percorrendo Ponta Grossa com jovens sendo forjados pela Palavra
-                em cada quilômetro.
-              </p>
-              <p>
-                Após dez meses de encontros nas casas, no dia 05 de janeiro de 2015,
-                começaram os cultos num espaço que podia ser chamado de casa. A nuvem se
-                moveu para o barracão no Parque N. S. das Graças, onde os próprios filhos
-                da casa levantaram o púlpito de madeira, a salinha das crianças e o mezanino.
-              </p>
-              <blockquote className="border-l-2 border-foreground pl-6 py-2 font-serif text-2xl md:text-3xl italic text-foreground leading-snug">
-                “Compreendemos que o mais importante não era o local em si,
-                mas o propósito que estava sendo gerado em nossos corações.”
-              </blockquote>
-            </div>
-          </div>
-        </section>
-
-        {/* PILARES */}
-        <section id="pilares" className="border-b border-border bg-foreground text-background">
-          <div className="max-w-7xl mx-auto px-6 lg:px-10 py-24 lg:py-32">
-            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-16">
-              <div>
-                <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-background/60">§ 02 — Pilares</div>
-                <h2 className="mt-4 font-serif text-4xl md:text-6xl tracking-tight leading-[1.02] max-w-3xl">
-                  Cinco pilares que sustentam a casa.
-                </h2>
-              </div>
-              <p className="max-w-sm text-background/70">
-                Cada um deles é essencial para a edificação do corpo de Cristo e para
-                cumprirmos juntos a Grande Comissão.
-              </p>
-            </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-px bg-background/15 border border-background/15">
-              {pilares.map((p) => (
-                <article key={p.n} className="bg-foreground p-8 flex flex-col gap-8 min-h-[240px] group hover:bg-background/[0.08] transition-all duration-500 hover:-translate-y-2 cursor-default">
-                  <div className="font-mono text-xs tracking-[0.3em] text-background/50">{p.n}</div>
-                  <div className="flex-1 flex flex-col justify-end gap-3">
-                    <h3 className="font-serif text-2xl leading-tight">{p.nome}</h3>
-                    <p className="text-sm text-background/60 leading-relaxed">{p.desc}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* MINISTÉRIOS */}
-        <section id="ministerios" className="border-b border-border">
-          <div className="max-w-7xl mx-auto px-6 lg:px-10 py-24 lg:py-32">
-            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-16">
-              <div>
-                <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">§ 03 — Ministérios</div>
-                <h2 className="mt-4 font-serif text-4xl md:text-6xl tracking-tight leading-[1.02] max-w-3xl">
-                  Um corpo. Muitos chamados.
-                </h2>
-              </div>
-              <p className="max-w-sm text-muted-foreground">
-                Nove frentes de serviço, escalas e comunhão — todas conectadas na mesma plataforma.
-              </p>
-            </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border border border-border">
-              {ministerios.map(({ icon: Icon, nome, tag }) => (
-                <div key={nome} className="bg-background/40 backdrop-blur-md p-8 flex items-start justify-between gap-6 hover:bg-secondary/80 transition-all duration-700 group border border-transparent hover:border-primary/20 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-2 rounded-2xl relative overflow-hidden">
-                  {/* Efeito de Spotlight/Glow no hover */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-                  <div className="relative z-10">
-                    <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground group-hover:text-primary transition-colors duration-500">{tag}</div>
-                    <div className="font-serif text-2xl mt-2 group-hover:translate-x-1 transition-transform duration-500">{nome}</div>
-                  </div>
-                  <div className="h-11 w-11 rounded-full border border-border grid place-items-center group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 relative z-10">
-                    <Icon className="h-4 w-4" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* CTA FINAL */}
-        <section className="border-b border-border">
-          <div className="max-w-7xl mx-auto px-6 lg:px-10 py-24 lg:py-32 grid lg:grid-cols-12 gap-10 items-center">
-            <div className="lg:col-span-8">
-              <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">§ 04 — Entre</div>
-              <h2 className="mt-4 font-serif text-4xl md:text-6xl tracking-tight leading-[1.02]">
-                A plataforma da nossa casa está aberta.
-              </h2>
-              <p className="mt-6 text-lg text-muted-foreground max-w-xl">
-                Escalas, avisos, mesas, redes, kids, louvor, mídia e Atos de Amor —
-                tudo em um lugar, pra cada líder e cada membro do corpo.
-              </p>
-            </div>
-            <div className="lg:col-span-4 flex lg:justify-end">
-              <Button asChild size="lg" className="rounded-full h-14 px-8 text-base">
-                <Link to={cta.to}>
-                  <span>{cta.label} <ArrowRight className="ml-2 h-5 w-5 inline-block" /></span>
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </section>
-      </main>
-
-      <footer className="bg-foreground text-background">
-        <div className="max-w-7xl mx-auto px-6 lg:px-10 py-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5">
-            <Church className="h-4 w-4" />
-            <span className="font-serif text-base">Igreja Batista Atos</span>
-          </div>
-          <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-background/60">
-            Ponta Grossa · PR · Plataforma interna © {new Date().getFullYear()}
-          </div>
-        </div>
-      </footer>
+        </motion.div>
+      </section>
     </div>
   );
 }
