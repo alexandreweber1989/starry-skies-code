@@ -218,7 +218,6 @@ const PALAVRAS_ROCHA = [
   "fundada",
   "alicerçada",
   "firmada",
-  "fundamentada",
   "enraizada",
   "ancorada",
   "sustentada",
@@ -334,12 +333,12 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
                 Uma casa
               </motion.span>
             </span>
-            <span className="block pb-[0.05em]">
+            <span className="block pb-[0.05em] text-[11vw] sm:text-[12vw] md:text-[10vw] lg:text-[10rem]">
               <motion.span
                 initial={reduce ? undefined : { opacity: 0, y: 20 }}
                 animate={reduce ? undefined : { opacity: 1, y: 0 }}
                 transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.27 }}
-                className="block italic text-primary/80"
+                className="block italic text-primary/80 whitespace-nowrap"
               >
                 <PalavraGlitch palavras={PALAVRAS_ROCHA} />
               </motion.span>
