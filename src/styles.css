@@ -755,3 +755,63 @@ iframe[src*="lovable.dev/badge"] {
   height: 0 !important;
 }
 /* NEXUS-PRO:WATERMARK-HIDE:END */
+
+/* ---------- Glitch DIGITAL da palavra rotativa (headline do hero) ----------
+ * Efeito de interferência de sinal (monocromático): duas camadas fantasma
+ * recortadas em faixas que saltam horizontalmente com "hard steps" (datamosh/
+ * CRT) + flicker/jitter na base. Ativo só durante a troca da palavra.
+ * Respeita prefers-reduced-motion. */
+.palavra-glitch {
+  position: relative;
+  display: inline-block;
+}
+
+@keyframes glitch-base {
+  0%, 100% { transform: translateX(0); opacity: 1; }
+  25%      { transform: translateX(-2px); opacity: 0.86; }
+  50%      { transform: translateX(2px);  opacity: 1; }
+  75%      { transform: translateX(-1px); opacity: 0.92; }
+}
+@keyframes glitch-top {
+  0%   { clip-path: inset(0 0 62% 0);   transform: translateX(0); }
+  20%  { clip-path: inset(8% 0 66% 0);  transform: translateX(-8px); }
+  40%  { clip-path: inset(44% 0 40% 0); transform: translateX(6px); }
+  60%  { clip-path: inset(2% 0 82% 0);  transform: translateX(-4px); }
+  80%  { clip-path: inset(30% 0 55% 0); transform: translateX(7px); }
+  100% { clip-path: inset(0 0 62% 0);   transform: translateX(0); }
+}
+@keyframes glitch-bottom {
+  0%   { clip-path: inset(62% 0 0 0);   transform: translateX(0); }
+  25%  { clip-path: inset(74% 0 4% 0);  transform: translateX(8px); }
+  50%  { clip-path: inset(40% 0 34% 0); transform: translateX(-6px); }
+  75%  { clip-path: inset(86% 0 2% 0);  transform: translateX(4px); }
+  100% { clip-path: inset(62% 0 0 0);   transform: translateX(0); }
+}
+
+.palavra-glitch[data-glitch="true"] {
+  animation: glitch-base 0.16s steps(2, end) infinite;
+}
+.palavra-glitch[data-glitch="true"]::before,
+.palavra-glitch[data-glitch="true"]::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+  will-change: clip-path, transform;
+}
+.palavra-glitch[data-glitch="true"]::before {
+  opacity: 0.85;
+  animation: glitch-top 0.28s steps(4, end) infinite;
+}
+.palavra-glitch[data-glitch="true"]::after {
+  opacity: 0.6;
+  animation: glitch-bottom 0.32s steps(4, end) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .palavra-glitch[data-glitch="true"] { animation: none; }
+  .palavra-glitch::before,
+  .palavra-glitch::after { display: none; }
+}
