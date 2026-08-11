@@ -275,6 +275,7 @@ function VisitorPage() {
                 value={form.guardian_full_name}
                 onChange={(e) => set("guardian_full_name", e.target.value)}
                 required
+                className="lg:h-14 lg:text-xl lg:rounded-2xl"
               />
             </Field>
             <div className="grid sm:grid-cols-2 gap-4">
