@@ -57,7 +57,8 @@ function ConfigGooglePage() {
                   Acesse o <a href="https://console.cloud.google.com/" target="_blank" rel="noreferrer" className="text-primary underline underline-offset-4 inline-flex items-center gap-1">Google Cloud Console <ExternalLink className="h-3 w-3" /></a> e crie um projeto (ou use um existente).
                 </p>
                 <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground ml-4">
-                  <li>Vá em <strong>APIs e Serviços &gt; Tela de permissão OAuth</strong> e configure como "Externo".</li>
+                   <li>Vá em <strong>APIs e Serviços &gt; Tela de permissão OAuth</strong> e configure como "Externo".</li>
+                  <li>Na aba <strong>Tela de permissão OAuth</strong>, verifique se você adicionou seu e-mail em <strong>Usuários de teste</strong> (obrigatório enquanto o app está em modo "Testing").</li>
                   <li>Vá em <strong>Credenciais &gt; Criar Credenciais &gt; ID do cliente OAuth</strong>.</li>
                   <li>Tipo de aplicativo: <strong>Aplicativo da Web</strong>.</li>
                   <li>Origens JavaScript autorizadas: <code className="bg-muted px-1.5 py-0.5 rounded text-foreground">https://zrdzocdadiucrhvwvxhq.supabase.co</code></li>
