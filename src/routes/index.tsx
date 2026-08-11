@@ -511,15 +511,9 @@ function CadastroSection() {
           </p>
         </motion.div>
 
-        <motion.div
-          initial={reduce ? undefined : { opacity: 0, y: 24 }}
-          whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-          className="w-full max-w-md mx-auto lg:justify-self-end"
-        >
+        <div className="w-full">
           <CadastroLead />
-        </motion.div>
+        </div>
       </div>
     </section>
   );
