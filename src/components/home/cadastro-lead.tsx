@@ -104,7 +104,7 @@ export function CadastroLead() {
       : `Olá! Sou ${form.nome} (${form.bairro}). Vim pelo site e quero conhecer a igreja e participar de uma Mesa perto de mim.`;
 
   return (
-    <div className="w-full rounded-2xl border border-border/60 bg-card/80 backdrop-blur-sm p-5 sm:p-6 shadow-sm">
+    <div className="w-full lg:max-w-4xl xl:max-w-5xl mx-auto rounded-2xl lg:rounded-3xl border border-border/60 bg-card/80 backdrop-blur-sm p-5 sm:p-6 lg:p-12 xl:p-16 shadow-sm">
       <AnimatePresence mode="wait">
         {resultado === undefined ? (
           <motion.form
@@ -122,17 +122,17 @@ export function CadastroLead() {
               <span className="h-1 flex-1 rounded-full bg-muted" />
             </div>
 
-            <div className="font-serif text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+            <div className="font-serif text-[10px] lg:text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
               Novo por aqui? 👋
             </div>
-            <h3 className="font-serif text-xl font-bold leading-tight mt-1">
+            <h3 className="font-serif text-xl lg:text-3xl xl:text-4xl font-bold leading-tight mt-1 lg:mt-3">
               Vamos te achar uma casa perto de você
             </h3>
-            <p className="text-xs text-muted-foreground mt-2 mb-4">
+            <p className="text-xs lg:text-base xl:text-lg text-muted-foreground mt-2 lg:mt-4 mb-4 lg:mb-8">
               Sem compromisso — é só um oi. A gente cuida do resto.
             </p>
 
-            <div className="space-y-3">
+            <div className="space-y-3 lg:space-y-6">
               <Campo label="Como podemos te chamar?">
                 <input
                   value={form.nome}
@@ -152,7 +152,7 @@ export function CadastroLead() {
                   autoComplete="tel"
                 />
               </Campo>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 lg:gap-6">
                 <Campo label="Você é">
                   <select value={form.perfil} onChange={set("perfil")} className={inputCls}>
                     <option value="">Selecione…</option>
@@ -175,7 +175,7 @@ export function CadastroLead() {
             <button
               type="submit"
               disabled={!valido || enviando}
-              className="mt-4 w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary text-primary-foreground font-semibold text-sm h-11 px-6 transition-opacity disabled:opacity-50 hover:opacity-90"
+              className="mt-4 lg:mt-8 w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary text-primary-foreground font-semibold text-sm lg:text-base xl:text-lg h-11 lg:h-14 px-6 lg:px-10 transition-opacity disabled:opacity-50 hover:opacity-90"
             >
               {enviando ? (
                 <Loader2 className="h-4 w-4 animate-spin motion-keep-spin" />
@@ -186,7 +186,7 @@ export function CadastroLead() {
                 </>
               )}
             </button>
-            <p className="text-[11px] text-muted-foreground/80 text-center mt-3">
+            <p className="text-[11px] lg:text-xs xl:text-sm text-muted-foreground/80 text-center mt-3 lg:mt-5">
               Vamos te conectar à Mesa e ao líder mais próximos.
             </p>
           </motion.form>
@@ -267,12 +267,12 @@ export function CadastroLead() {
 }
 
 const inputCls =
-  "w-full rounded-lg border border-border/70 bg-background/60 px-3 h-10 text-sm text-foreground outline-none transition-colors focus:border-foreground focus:bg-background";
+  "w-full rounded-lg lg:rounded-xl border border-border/70 bg-background/60 px-3 lg:px-4 h-10 lg:h-14 text-sm lg:text-base xl:text-lg text-foreground outline-none transition-colors focus:border-foreground focus:bg-background";
 
 function Campo({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="block text-[11px] font-semibold text-foreground/80 mb-1">{label}</span>
+      <span className="block text-[11px] lg:text-xs xl:text-sm font-semibold text-foreground/80 mb-1 lg:mb-2">{label}</span>
       {children}
     </label>
   );

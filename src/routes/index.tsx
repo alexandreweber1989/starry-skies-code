@@ -489,36 +489,29 @@ function CadastroSection() {
       id="cadastro"
       className="relative z-20 bg-background border-t border-border/10 py-20 md:py-28 px-6 lg:px-10"
     >
-      <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-10 lg:gap-20 items-center">
+      <div className="max-w-7xl mx-auto flex flex-col items-center">
         <motion.div
           initial={reduce ? undefined : { opacity: 0, y: 24 }}
           whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="w-full text-center mb-12 lg:mb-20"
         >
           <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-5">
             Comece por aqui
           </div>
-          <h2 className="font-serif text-4xl md:text-6xl leading-[1.02]">
-            Quer fazer parte?{" "}
-            <span className="text-primary italic">Vamos te achar uma casa</span>{" "}
-            perto de você.
+          <h2 className="font-serif text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
+            Dê o seu próximo passo
           </h2>
-          <p className="mt-6 text-lg text-muted-foreground max-w-md leading-relaxed">
-            Preencha em 30 segundos e a gente te conecta à Mesa e ao líder mais
-            próximos do seu bairro. Sem compromisso — é só um oi.
+          <p className="text-muted-foreground text-sm md:text-base lg:text-xl max-w-2xl mx-auto">
+            Queremos te conhecer. Preencha os dados e vamos te conectar à Mesa
+            mais próxima de você.
           </p>
         </motion.div>
 
-        <motion.div
-          initial={reduce ? undefined : { opacity: 0, y: 24 }}
-          whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-          className="w-full max-w-md mx-auto lg:justify-self-end"
-        >
+        <div className="w-full">
           <CadastroLead />
-        </motion.div>
+        </div>
       </div>
     </section>
   );
