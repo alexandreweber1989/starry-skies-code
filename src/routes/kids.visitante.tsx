@@ -390,19 +390,26 @@ function VisitorPage() {
                 rows={2}
                 value={form.other_pickup}
                 onChange={(e) => set("other_pickup", e.target.value)}
+                className="lg:text-xl lg:rounded-2xl"
               />
             </Field>
             <label className="flex items-start gap-3 cursor-pointer">
               <Checkbox
                 checked={form.photo_consent}
                 onCheckedChange={(v) => set("photo_consent", v === true)}
+                className="lg:h-6 lg:w-6"
               />
-              <span className="text-sm text-muted-foreground">
+              <span className="text-sm lg:text-lg text-muted-foreground">
                 Autorizo o uso de fotos da criança em registros do ministério infantil.
               </span>
             </label>
             <Field label="Algo mais que precisamos saber?">
-              <Textarea rows={2} value={form.notes} onChange={(e) => set("notes", e.target.value)} />
+              <Textarea 
+                rows={2} 
+                value={form.notes} 
+                onChange={(e) => set("notes", e.target.value)} 
+                className="lg:text-xl lg:rounded-2xl"
+              />
             </Field>
           </section>
 
