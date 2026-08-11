@@ -117,7 +117,7 @@ function Landing() {
               <div className="lg:col-span-6 space-y-4">
                 <div className="space-y-4">
                   <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
-                    Uma plataforma pensada para cada membro da Igreja Batista Atos. Acompanhe escalas, participe de Mesas, Redes e Ministérios, e tenha acesso a tudo que faz sentido para sua jornada cristã em nossa casa.
+                    Uma plataforma pensada para cada membro da Igreja Batista Atos. Acompanhe escalas, participe de Mesas, Redes e Ministérios, e tenha acesso a tudo que faz sentido para sua jornada cristã em nossa casa. Add agent integrations (MCP) to this app
                   </p>
                 </div>
               </div>
