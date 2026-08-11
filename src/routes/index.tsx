@@ -139,6 +139,7 @@ function Landing() {
       <ScrollProgress />
       <FloatingNav cta={cta} />
       <Hero cta={cta} />
+      <CadastroSection />
       <Historia />
       <Numeros />
       <Pilares />
@@ -341,7 +342,7 @@ function LinhaGlitch({ palavras }: { palavras: string[] }) {
   return (
     <span
       ref={ref}
-      className="block italic text-foreground whitespace-nowrap text-[9vw] md:text-[6vw] lg:text-[4.5rem]"
+      className="block italic text-foreground whitespace-nowrap text-[10vw] md:text-[8vw] lg:text-[8rem]"
       style={fontPx ? { fontSize: `${fontPx}px`, lineHeight: 1 } : undefined}
     >
       <PalavraGlitch palavras={palavras} />
@@ -372,8 +373,6 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
           }
           className="max-w-7xl mx-auto w-full"
         >
-          <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(320px,360px)] gap-8 lg:gap-14 items-center">
-          <div className="min-w-0 overflow-hidden">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -421,25 +420,26 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
               </motion.span>
             </span>
           </h1>
-          </div>
 
           <motion.div
-            initial={reduce ? undefined : { opacity: 0, y: 20 }}
-            animate={reduce ? undefined : { opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.5 }}
-            className="w-full max-w-sm mx-auto lg:mx-0 mt-10 lg:mt-0"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.6 }}
+            className="mt-16 md:mt-20 flex flex-wrap gap-4"
           >
-            <CadastroLead />
-            <div className="mt-3 text-center lg:text-left">
-              <Link
-                to={cta.to}
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Já faz parte da igreja? {cta.label} →
+            <Button
+              asChild
+              size="lg"
+              className="rounded-full h-14 px-8 text-lg group"
+            >
+              <Link to={cta.to}>
+                <span>
+                  {cta.label}
+                  <ArrowRight className="ml-2 h-5 w-5 inline-block group-hover:translate-x-1 transition-transform" />
+                </span>
               </Link>
-            </div>
+            </Button>
           </motion.div>
-          </div>
         </motion.div>
 
         {/* Indicador de rolagem */}
@@ -448,7 +448,7 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
           animate={{ opacity: 1 }}
           transition={{ delay: 1.6, duration: 1 }}
           style={reduce ? undefined : { opacity }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2"
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
         >
           <span className="font-mono text-[8px] uppercase tracking-[0.3em] text-muted-foreground">
             Role para explorar
@@ -467,6 +467,48 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
 /* ---------------------------------------------------------------------------
  * História — scrollytelling: painel fixo que troca os capítulos ao rolar
  * ------------------------------------------------------------------------- */
+
+function CadastroSection() {
+  const reduce = useReducedMotion();
+  return (
+    <section
+      id="cadastro"
+      className="relative z-20 bg-background border-t border-border/10 py-20 md:py-28 px-6 lg:px-10"
+    >
+      <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-10 lg:gap-20 items-center">
+        <motion.div
+          initial={reduce ? undefined : { opacity: 0, y: 24 }}
+          whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-5">
+            Comece por aqui
+          </div>
+          <h2 className="font-serif text-4xl md:text-6xl leading-[1.02]">
+            Quer fazer parte?{" "}
+            <span className="text-primary italic">Vamos te achar uma casa</span>{" "}
+            perto de você.
+          </h2>
+          <p className="mt-6 text-lg text-muted-foreground max-w-md leading-relaxed">
+            Preencha em 30 segundos e a gente te conecta à Mesa e ao líder mais
+            próximos do seu bairro. Sem compromisso — é só um oi.
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={reduce ? undefined : { opacity: 0, y: 24 }}
+          whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+          className="w-full max-w-md mx-auto lg:justify-self-end"
+        >
+          <CadastroLead />
+        </motion.div>
+      </div>
+    </section>
+  );
+}
 
 function Historia() {
   const reduce = useReducedMotion();
