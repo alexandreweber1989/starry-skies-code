@@ -420,11 +420,11 @@ function SectionTitle({ step, title }: { step: string; title: string }) {
   const color = colors[parseInt(step) - 1] || "bg-primary";
   
   return (
-    <div className="flex items-center gap-4 border-b-4 border-dashed border-muted pb-4 mb-6">
-      <span className={cn("flex h-10 w-10 items-center justify-center rounded-2xl text-white font-bold text-xl shadow-lg rotate-[-10deg]", color)}>
+    <div className="flex items-center gap-4 border-b-4 border-dashed border-muted pb-4 mb-6 lg:pb-8 lg:mb-10">
+      <span className={cn("flex h-10 w-10 lg:h-14 lg:w-14 items-center justify-center rounded-2xl text-white font-bold text-xl lg:text-3xl shadow-lg rotate-[-10deg]", color)}>
         {step}
       </span>
-      <h2 className="text-2xl font-bold text-slate-800">{title}</h2>
+      <h2 className="text-2xl lg:text-4xl font-bold text-slate-800">{title}</h2>
     </div>
   );
 }
