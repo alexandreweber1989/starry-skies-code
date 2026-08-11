@@ -80,7 +80,8 @@ export function CadastroLead() {
     // Melhor esforço: registra o lead (passa a funcionar quando a tabela
     // "leads" existir no banco). Se ainda não existir, seguimos via WhatsApp.
     try {
-      await supabase.from("leads").insert({
+      // @ts-ignore - a tabela leads pode ser criada via migração depois
+      await (supabase.from("leads") as any).insert({
         name: form.nome.trim(),
         phone: form.whatsapp.trim(),
         profile: form.perfil,

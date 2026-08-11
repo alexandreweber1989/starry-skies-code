@@ -197,8 +197,8 @@ function VisitorPage() {
 
   return (
     <main className="min-h-screen bg-yellow-50 px-5 py-10 font-kids selection:bg-pink-200 selection:text-pink-900">
-      <div className="mx-auto w-full max-w-xl">
-        <header className="relative text-center bg-white rounded-[3rem] p-10 border-4 border-yellow-200 shadow-xl mb-10 overflow-hidden">
+      <div className="mx-auto w-full max-w-xl lg:max-w-4xl xl:max-w-5xl">
+        <header className="relative text-center bg-white rounded-[3rem] p-10 lg:p-16 border-4 border-yellow-200 shadow-xl mb-10 overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-yellow-400 via-pink-400 to-blue-400" />
 
           {kiosk && (
@@ -213,14 +213,14 @@ function VisitorPage() {
               </Link>
             </Button>
           )}
-          <Baby className="h-8 w-8 text-primary mx-auto" />
-          <h1 className="text-4xl mt-4 font-bold text-yellow-600 tracking-tight">Bem-vindo ao Kids! 🎨</h1>
-          <p className="text-muted-foreground mt-4 text-lg leading-relaxed">
+          <Baby className="h-8 w-8 text-primary mx-auto lg:h-12 lg:w-12" />
+          <h1 className="text-4xl lg:text-5xl mt-4 font-bold text-yellow-600 tracking-tight">Bem-vindo ao Kids! 🎨</h1>
+          <p className="text-muted-foreground mt-4 text-lg lg:text-xl lg:mt-6 leading-relaxed">
             Estamos muito felizes em ter vocês aqui! O cadastro é rapidinho, e logo sua criança estará se divertindo com a gente.
           </p>
         </header>
 
-        <form onSubmit={submit} className="space-y-8 bg-white rounded-[3rem] p-8 sm:p-12 border-4 border-blue-100 shadow-2xl relative">
+        <form onSubmit={submit} className="space-y-8 bg-white rounded-[3rem] p-8 sm:p-12 lg:p-20 border-4 border-blue-100 shadow-2xl relative">
           <div className="absolute -top-6 -right-6 w-12 h-12 bg-pink-400 rounded-full flex items-center justify-center text-white text-2xl animate-bounce">✨</div>
           <div className="absolute -bottom-6 -left-6 w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center text-white text-3xl animate-pulse">🧸</div>
 
@@ -234,6 +234,7 @@ function VisitorPage() {
                 onBlur={(e) => void lookupPhone(e.target.value)}
                 placeholder="(11) 99999-0000"
                 required
+                className="lg:h-14 lg:text-xl lg:rounded-2xl"
               />
             </Field>
 
@@ -274,6 +275,7 @@ function VisitorPage() {
                 value={form.guardian_full_name}
                 onChange={(e) => set("guardian_full_name", e.target.value)}
                 required
+                className="lg:h-14 lg:text-xl lg:rounded-2xl"
               />
             </Field>
             <div className="grid sm:grid-cols-2 gap-4">
@@ -282,7 +284,7 @@ function VisitorPage() {
                   value={form.guardian_relation}
                   onValueChange={(v) => set("guardian_relation", v)}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="lg:h-14 lg:text-xl lg:rounded-2xl">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -298,6 +300,7 @@ function VisitorPage() {
                 <Input
                   value={form.guardian_document}
                   onChange={(e) => set("guardian_document", e.target.value)}
+                  className="lg:h-14 lg:text-xl lg:rounded-2xl"
                 />
               </Field>
             </div>
@@ -310,6 +313,7 @@ function VisitorPage() {
                 value={form.child_full_name}
                 onChange={(e) => set("child_full_name", e.target.value)}
                 required
+                className="lg:h-14 lg:text-xl lg:rounded-2xl"
               />
             </Field>
             <div className="grid sm:grid-cols-2 gap-4">
@@ -317,6 +321,7 @@ function VisitorPage() {
                 <Input
                   value={form.child_nickname}
                   onChange={(e) => set("child_nickname", e.target.value)}
+                  className="lg:h-14 lg:text-xl lg:rounded-2xl"
                 />
               </Field>
               <Field label="Data de nascimento">
@@ -327,12 +332,13 @@ function VisitorPage() {
                     set("birth_date", e.target.value);
                     if (e.target.value) set("classroom", suggestClassroom(e.target.value));
                   }}
+                  className="lg:h-14 lg:text-xl lg:rounded-2xl"
                 />
               </Field>
             </div>
             <Field label="Turma" hint="Sugerida pela idade — a equipe confirma no balcão">
               <Select value={form.classroom} onValueChange={(v) => set("classroom", v)}>
-                <SelectTrigger>
+                <SelectTrigger className="lg:h-14 lg:text-xl lg:rounded-2xl">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -353,6 +359,7 @@ function VisitorPage() {
                 rows={2}
                 value={form.allergies}
                 onChange={(e) => set("allergies", e.target.value)}
+                className="lg:text-xl lg:rounded-2xl"
               />
             </Field>
             <Field label="Observações de saúde">
@@ -360,6 +367,7 @@ function VisitorPage() {
                 rows={2}
                 value={form.health_notes}
                 onChange={(e) => set("health_notes", e.target.value)}
+                className="lg:text-xl lg:rounded-2xl"
               />
             </Field>
             <Field label="Necessidades específicas" hint="Autismo, TDAH, mobilidade, fraldas…">
@@ -367,6 +375,7 @@ function VisitorPage() {
                 rows={2}
                 value={form.special_needs}
                 onChange={(e) => set("special_needs", e.target.value)}
+                className="lg:text-xl lg:rounded-2xl"
               />
             </Field>
           </section>
@@ -381,19 +390,26 @@ function VisitorPage() {
                 rows={2}
                 value={form.other_pickup}
                 onChange={(e) => set("other_pickup", e.target.value)}
+                className="lg:text-xl lg:rounded-2xl"
               />
             </Field>
             <label className="flex items-start gap-3 cursor-pointer">
               <Checkbox
                 checked={form.photo_consent}
                 onCheckedChange={(v) => set("photo_consent", v === true)}
+                className="lg:h-6 lg:w-6"
               />
-              <span className="text-sm text-muted-foreground">
+              <span className="text-sm lg:text-lg text-muted-foreground">
                 Autorizo o uso de fotos da criança em registros do ministério infantil.
               </span>
             </label>
             <Field label="Algo mais que precisamos saber?">
-              <Textarea rows={2} value={form.notes} onChange={(e) => set("notes", e.target.value)} />
+              <Textarea 
+                rows={2} 
+                value={form.notes} 
+                onChange={(e) => set("notes", e.target.value)} 
+                className="lg:text-xl lg:rounded-2xl"
+              />
             </Field>
           </section>
 
@@ -405,8 +421,8 @@ function VisitorPage() {
             </span>
           </div>
 
-          <Button type="submit" size="lg" className="w-full" disabled={saving}>
-            {saving && <Loader2 className="h-4 w-4 animate-spin" />}
+          <Button type="submit" size="lg" className="w-full lg:h-16 lg:text-2xl lg:rounded-3xl shadow-xl hover:scale-[1.02] transition-transform" disabled={saving}>
+            {saving && <Loader2 className="h-4 w-4 lg:h-6 lg:w-6 animate-spin" />}
             Enviar cadastro
           </Button>
         </form>
@@ -420,11 +436,11 @@ function SectionTitle({ step, title }: { step: string; title: string }) {
   const color = colors[parseInt(step) - 1] || "bg-primary";
   
   return (
-    <div className="flex items-center gap-4 border-b-4 border-dashed border-muted pb-4 mb-6">
-      <span className={cn("flex h-10 w-10 items-center justify-center rounded-2xl text-white font-bold text-xl shadow-lg rotate-[-10deg]", color)}>
+    <div className="flex items-center gap-4 border-b-4 border-dashed border-muted pb-4 mb-6 lg:pb-8 lg:mb-10">
+      <span className={cn("flex h-10 w-10 lg:h-14 lg:w-14 items-center justify-center rounded-2xl text-white font-bold text-xl lg:text-3xl shadow-lg rotate-[-10deg]", color)}>
         {step}
       </span>
-      <h2 className="text-2xl font-bold text-slate-800">{title}</h2>
+      <h2 className="text-2xl lg:text-4xl font-bold text-slate-800">{title}</h2>
     </div>
   );
 }
@@ -439,10 +455,10 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <div className="space-y-1.5">
-      <Label>{label}</Label>
+    <div className="space-y-1.5 lg:space-y-3">
+      <Label className="lg:text-xl">{label}</Label>
       {children}
-      {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
+      {hint && <p className="text-xs lg:text-sm text-muted-foreground">{hint}</p>}
     </div>
   );
 }
