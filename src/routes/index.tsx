@@ -229,7 +229,7 @@ function PalavraGlitch({ palavras }: { palavras: string[] }) {
 
   useEffect(() => {
     if (reduce) return;
-    const pool = "ABCDEFGHIJKLMNOPQRSTUVWXYZÁÉÍÓÚÃÕÇ";
+    const pool = "01</>{}[]=+*#\\|!?ABEFHKMNRSXZ▓▒░█";
     let alvoIdx = 0;
     let scrambleTimer: ReturnType<typeof setInterval> | undefined;
 
@@ -238,7 +238,7 @@ function PalavraGlitch({ palavras }: { palavras: string[] }) {
       const alvo = palavras[alvoIdx];
       setGlitch(true);
       let frame = 0;
-      const totalFrames = 14;
+      const totalFrames = 18;
       if (scrambleTimer) clearInterval(scrambleTimer);
       scrambleTimer = setInterval(() => {
         frame++;
@@ -256,10 +256,10 @@ function PalavraGlitch({ palavras }: { palavras: string[] }) {
           setTexto(alvo);
           setGlitch(false);
         }
-      }, 45);
+      }, 38);
     };
 
-    const agenda = setInterval(proxima, 3000);
+    const agenda = setInterval(proxima, 3200);
     return () => {
       clearInterval(agenda);
       if (scrambleTimer) clearInterval(scrambleTimer);
