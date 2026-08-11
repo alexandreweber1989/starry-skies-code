@@ -284,6 +284,69 @@ function PalavraGlitch({ palavras }: { palavras: string[] }) {
   );
 }
 
+// Envolve a palavra-glitch e calcula o MAIOR tamanho de fonte que ainda faz a
+// palavra mais longa caber na largura disponível (protagonista, sem cortar).
+function LinhaGlitch({ palavras }: { palavras: string[] }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [fontPx, setFontPx] = useState<number | null>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const maisLonga = palavras.reduce((a, b) => (b.length > a.length ? b : a), "");
+
+    const calc = () => {
+      const alvo = el.parentElement ?? el;
+      const disponivel = alvo.clientWidth;
+      if (!disponivel) return;
+      const cs = getComputedStyle(el);
+      const meas = document.createElement("span");
+      Object.assign(meas.style, {
+        position: "absolute",
+        visibility: "hidden",
+        whiteSpace: "nowrap",
+        fontFamily: cs.fontFamily,
+        fontStyle: cs.fontStyle,
+        fontWeight: cs.fontWeight,
+        letterSpacing: "-0.04em",
+        textTransform: "uppercase",
+        fontSize: "100px",
+      });
+      meas.textContent = maisLonga;
+      document.body.appendChild(meas);
+      const larguraA100 = meas.getBoundingClientRect().width;
+      meas.remove();
+      if (!larguraA100) return;
+      const ideal = (disponivel * 0.98) / (larguraA100 / 100);
+      setFontPx(Math.max(32, Math.min(240, ideal)));
+    };
+
+    calc();
+    // recalcula quando a fonte (Syne) terminar de carregar, para medir com as
+    // métricas reais e não com a fonte de fallback.
+    if (typeof document !== "undefined" && document.fonts?.ready) {
+      document.fonts.ready.then(calc).catch(() => {});
+    }
+    const ro = new ResizeObserver(calc);
+    if (el.parentElement) ro.observe(el.parentElement);
+    window.addEventListener("resize", calc);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", calc);
+    };
+  }, [palavras]);
+
+  return (
+    <span
+      ref={ref}
+      className="block italic text-foreground whitespace-nowrap text-[10vw] md:text-[8vw] lg:text-[8rem]"
+      style={fontPx ? { fontSize: `${fontPx}px`, lineHeight: 0.9 } : undefined}
+    >
+      <PalavraGlitch palavras={palavras} />
+    </span>
+  );
+}
+
 function Hero({ cta }: { cta: { to: string; label: string } }) {
   const reduce = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
@@ -322,33 +385,33 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
             Est. 2014 · Ponta Grossa / PR
           </motion.div>
 
-          <h1 className="font-serif font-semibold tracking-[-0.04em] text-[15vw] md:text-[10vw] lg:text-[10rem] leading-[0.85] uppercase">
-            <span className="block overflow-hidden pb-[0.05em]">
+          <h1 className="font-serif font-semibold tracking-[-0.04em] leading-[0.9] uppercase">
+            <span className="block overflow-hidden pb-[0.04em]">
               <motion.span
                 initial={reduce ? undefined : { y: "110%" }}
                 animate={reduce ? undefined : { y: "0%" }}
                 transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
-                className="block"
+                className="block text-muted-foreground text-[7vw] md:text-[5vw] lg:text-[5rem]"
               >
                 Uma casa
               </motion.span>
             </span>
-            <span className="block pb-[0.05em] text-[11vw] sm:text-[12vw] md:text-[10vw] lg:text-[10rem]">
+            <span className="block py-[0.02em]">
               <motion.span
                 initial={reduce ? undefined : { opacity: 0, y: 20 }}
                 animate={reduce ? undefined : { opacity: 1, y: 0 }}
                 transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.27 }}
-                className="block italic text-primary/80 whitespace-nowrap"
+                className="block"
               >
-                <PalavraGlitch palavras={PALAVRAS_ROCHA} />
+                <LinhaGlitch palavras={PALAVRAS_ROCHA} />
               </motion.span>
             </span>
-            <span className="block overflow-hidden pb-[0.05em]">
+            <span className="block overflow-hidden pt-[0.02em]">
               <motion.span
                 initial={reduce ? undefined : { y: "110%" }}
                 animate={reduce ? undefined : { y: "0%" }}
                 transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.39 }}
-                className="block"
+                className="block text-muted-foreground text-[7vw] md:text-[5vw] lg:text-[5rem]"
               >
                 sobre a rocha.
               </motion.span>
