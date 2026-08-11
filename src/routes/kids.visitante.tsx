@@ -332,6 +332,7 @@ function VisitorPage() {
                     set("birth_date", e.target.value);
                     if (e.target.value) set("classroom", suggestClassroom(e.target.value));
                   }}
+                  className="lg:h-14 lg:text-xl lg:rounded-2xl"
                 />
               </Field>
             </div>
