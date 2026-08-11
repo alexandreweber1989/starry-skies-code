@@ -102,10 +102,7 @@ function AuthPage() {
         if (error.message.includes("validation_failed") || error.message.includes("missing OAuth secret")) {
           toast.error(
             <span>
-              Configuração pendente.{" "}
-              <Link to="/config-google" className="underline font-bold">
-                Veja como configurar o Client ID e Secret do Google aqui.
-              </Link>
+              Configuração do Google pendente no backend. Por favor, acesse o painel do Lovable Cloud e configure o Client ID e Secret.
             </span>,
             { duration: 10000 }
           );
