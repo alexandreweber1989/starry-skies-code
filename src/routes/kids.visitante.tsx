@@ -359,6 +359,7 @@ function VisitorPage() {
                 rows={2}
                 value={form.allergies}
                 onChange={(e) => set("allergies", e.target.value)}
+                className="lg:text-xl lg:rounded-2xl"
               />
             </Field>
             <Field label="Observações de saúde">
@@ -366,6 +367,7 @@ function VisitorPage() {
                 rows={2}
                 value={form.health_notes}
                 onChange={(e) => set("health_notes", e.target.value)}
+                className="lg:text-xl lg:rounded-2xl"
               />
             </Field>
             <Field label="Necessidades específicas" hint="Autismo, TDAH, mobilidade, fraldas…">
@@ -373,6 +375,7 @@ function VisitorPage() {
                 rows={2}
                 value={form.special_needs}
                 onChange={(e) => set("special_needs", e.target.value)}
+                className="lg:text-xl lg:rounded-2xl"
               />
             </Field>
           </section>
