@@ -26,6 +26,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedCantinaRouteImport } from './routes/_authenticated/cantina'
 import { Route as AuthenticatedAgendaRouteImport } from './routes/_authenticated/agenda'
 import { Route as AuthenticatedMinisteriosIndexRouteImport } from './routes/_authenticated/ministerios.index'
+import { Route as ApiPublicKidsVisitorRouteImport } from './routes/api/public/kids-visitor'
 import { Route as AuthenticatedMinisteriosSlugRouteImport } from './routes/_authenticated/ministerios.$slug'
 import { Route as AuthenticatedKidsRetiradaCheckinIdRouteImport } from './routes/_authenticated/kids-retirada.$checkinId'
 
@@ -114,6 +115,11 @@ const AuthenticatedMinisteriosIndexRoute =
     path: '/ministerios/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicKidsVisitorRoute = ApiPublicKidsVisitorRouteImport.update({
+  id: '/api/public/kids-visitor',
+  path: '/api/public/kids-visitor',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedMinisteriosSlugRoute =
   AuthenticatedMinisteriosSlugRouteImport.update({
     id: '/ministerios/$slug',
@@ -145,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/kids/visitante': typeof KidsVisitanteRoute
   '/kids-retirada/$checkinId': typeof AuthenticatedKidsRetiradaCheckinIdRoute
   '/ministerios/$slug': typeof AuthenticatedMinisteriosSlugRoute
+  '/api/public/kids-visitor': typeof ApiPublicKidsVisitorRoute
   '/ministerios/': typeof AuthenticatedMinisteriosIndexRoute
 }
 export interface FileRoutesByTo {
@@ -165,6 +172,7 @@ export interface FileRoutesByTo {
   '/kids/visitante': typeof KidsVisitanteRoute
   '/kids-retirada/$checkinId': typeof AuthenticatedKidsRetiradaCheckinIdRoute
   '/ministerios/$slug': typeof AuthenticatedMinisteriosSlugRoute
+  '/api/public/kids-visitor': typeof ApiPublicKidsVisitorRoute
   '/ministerios': typeof AuthenticatedMinisteriosIndexRoute
 }
 export interface FileRoutesById {
@@ -187,6 +195,7 @@ export interface FileRoutesById {
   '/kids/visitante': typeof KidsVisitanteRoute
   '/_authenticated/kids-retirada/$checkinId': typeof AuthenticatedKidsRetiradaCheckinIdRoute
   '/_authenticated/ministerios/$slug': typeof AuthenticatedMinisteriosSlugRoute
+  '/api/public/kids-visitor': typeof ApiPublicKidsVisitorRoute
   '/_authenticated/ministerios/': typeof AuthenticatedMinisteriosIndexRoute
 }
 export interface FileRouteTypes {
@@ -209,6 +218,7 @@ export interface FileRouteTypes {
     | '/kids/visitante'
     | '/kids-retirada/$checkinId'
     | '/ministerios/$slug'
+    | '/api/public/kids-visitor'
     | '/ministerios/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -229,6 +239,7 @@ export interface FileRouteTypes {
     | '/kids/visitante'
     | '/kids-retirada/$checkinId'
     | '/ministerios/$slug'
+    | '/api/public/kids-visitor'
     | '/ministerios'
   id:
     | '__root__'
@@ -250,6 +261,7 @@ export interface FileRouteTypes {
     | '/kids/visitante'
     | '/_authenticated/kids-retirada/$checkinId'
     | '/_authenticated/ministerios/$slug'
+    | '/api/public/kids-visitor'
     | '/_authenticated/ministerios/'
   fileRoutesById: FileRoutesById
 }
@@ -258,6 +270,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   KidsVisitanteRoute: typeof KidsVisitanteRoute
+  ApiPublicKidsVisitorRoute: typeof ApiPublicKidsVisitorRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -381,6 +394,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMinisteriosIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/kids-visitor': {
+      id: '/api/public/kids-visitor'
+      path: '/api/public/kids-visitor'
+      fullPath: '/api/public/kids-visitor'
+      preLoaderRoute: typeof ApiPublicKidsVisitorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/ministerios/$slug': {
       id: '/_authenticated/ministerios/$slug'
       path: '/ministerios/$slug'
@@ -443,6 +463,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   KidsVisitanteRoute: KidsVisitanteRoute,
+  ApiPublicKidsVisitorRoute: ApiPublicKidsVisitorRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
