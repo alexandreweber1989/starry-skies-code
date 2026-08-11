@@ -421,8 +421,8 @@ function VisitorPage() {
             </span>
           </div>
 
-          <Button type="submit" size="lg" className="w-full" disabled={saving}>
-            {saving && <Loader2 className="h-4 w-4 animate-spin" />}
+          <Button type="submit" size="lg" className="w-full lg:h-16 lg:text-2xl lg:rounded-3xl shadow-xl hover:scale-[1.02] transition-transform" disabled={saving}>
+            {saving && <Loader2 className="h-4 w-4 lg:h-6 lg:w-6 animate-spin" />}
             Enviar cadastro
           </Button>
         </form>
