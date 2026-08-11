@@ -300,6 +300,7 @@ function VisitorPage() {
                 <Input
                   value={form.guardian_document}
                   onChange={(e) => set("guardian_document", e.target.value)}
+                  className="lg:h-14 lg:text-xl lg:rounded-2xl"
                 />
               </Field>
             </div>
