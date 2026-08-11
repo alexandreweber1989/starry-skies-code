@@ -284,7 +284,7 @@ function VisitorPage() {
                   value={form.guardian_relation}
                   onValueChange={(v) => set("guardian_relation", v)}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="lg:h-14 lg:text-xl lg:rounded-2xl">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
