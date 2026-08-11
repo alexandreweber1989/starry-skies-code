@@ -236,7 +236,7 @@ function PalavraGlitch({ palavras }: { palavras: string[] }) {
 
   useEffect(() => {
     if (reduce) return;
-    const pool = "01</>{}[]=+*#\\|!?ABEFHKMNRSXZ▓▒░█";
+    const pool = "01</>{}[]=+*#\\|!?~:;=ABEFHKMNRSXYZ";
     let alvoIdx = 0;
     let scrambleTimer: ReturnType<typeof setInterval> | undefined;
 
@@ -317,8 +317,9 @@ function LinhaGlitch({ palavras }: { palavras: string[] }) {
       const larguraA100 = meas.getBoundingClientRect().width;
       meas.remove();
       if (!larguraA100) return;
-      const ideal = (disponivel * 0.98) / (larguraA100 / 100);
-      setFontPx(Math.max(32, Math.min(240, ideal)));
+      const idealLargura = (disponivel * 0.92) / (larguraA100 / 100);
+      const capAltura = window.innerHeight * 0.24; // evita sobrepor as linhas em paisagem
+      setFontPx(Math.max(28, Math.min(200, idealLargura, capAltura)));
     };
 
     calc();
@@ -340,7 +341,7 @@ function LinhaGlitch({ palavras }: { palavras: string[] }) {
     <span
       ref={ref}
       className="block italic text-foreground whitespace-nowrap text-[10vw] md:text-[8vw] lg:text-[8rem]"
-      style={fontPx ? { fontSize: `${fontPx}px`, lineHeight: 0.9 } : undefined}
+      style={fontPx ? { fontSize: `${fontPx}px`, lineHeight: 1 } : undefined}
     >
       <PalavraGlitch palavras={palavras} />
     </span>
@@ -391,7 +392,7 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
                 initial={reduce ? undefined : { y: "110%" }}
                 animate={reduce ? undefined : { y: "0%" }}
                 transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
-                className="block text-muted-foreground text-[7vw] md:text-[5vw] lg:text-[5rem]"
+                className="block text-muted-foreground text-[min(7vw,8.5vh)] md:text-[min(5vw,8.5vh)] lg:text-[5rem]"
               >
                 Uma casa
               </motion.span>
@@ -411,7 +412,7 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
                 initial={reduce ? undefined : { y: "110%" }}
                 animate={reduce ? undefined : { y: "0%" }}
                 transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.39 }}
-                className="block text-muted-foreground text-[7vw] md:text-[5vw] lg:text-[5rem]"
+                className="block text-muted-foreground text-[min(7vw,8.5vh)] md:text-[min(5vw,8.5vh)] lg:text-[5rem]"
               >
                 sobre a rocha.
               </motion.span>
@@ -659,18 +660,18 @@ function Pilares() {
   const barra = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
   const Cabecalho = (
-    <div className="mb-10">
+    <div className="mb-6 md:mb-10">
       <div className="font-mono text-[10px] uppercase tracking-[0.3em] opacity-40 mb-4">
         § 02 — Pilares
       </div>
-      <h2 className="font-serif text-4xl md:text-7xl leading-tight">
+      <h2 className="font-serif text-4xl md:text-[min(4.5rem,11vh)] leading-tight">
         Os fundamentos da nossa fé.
       </h2>
     </div>
   );
 
   const Cartao = ({ p, i }: { p: (typeof pilares)[number]; i: number }) => (
-    <div className="flex flex-col justify-between p-8 md:p-10 rounded-3xl border border-background/10 bg-background/[0.03] min-h-[22rem] md:min-h-[26rem]">
+    <div className="flex flex-col justify-between p-6 md:p-10 rounded-3xl border border-background/10 bg-background/[0.03] min-h-[min(22rem,50vh)] md:min-h-[min(26rem,52vh)]">
       <div className="flex items-center justify-between">
         <span className="font-mono text-xs tracking-[0.4em] opacity-30">
           {p.n}
@@ -729,7 +730,7 @@ function Pilares() {
         </motion.div>
 
         {/* barra de progresso da faixa horizontal */}
-        <div className="px-6 lg:px-10 max-w-7xl mx-auto w-full mt-10">
+        <div className="px-6 lg:px-10 max-w-7xl mx-auto w-full mt-6 md:mt-10">
           <div className="h-px w-full bg-background/10 overflow-hidden">
             <motion.div style={{ width: barra }} className="h-full bg-primary" />
           </div>
