@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ConfigVercelRouteImport } from './routes/config-vercel'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -30,6 +31,11 @@ import { Route as ApiPublicKidsVisitorRouteImport } from './routes/api/public/ki
 import { Route as AuthenticatedMinisteriosSlugRouteImport } from './routes/_authenticated/ministerios.$slug'
 import { Route as AuthenticatedKidsRetiradaCheckinIdRouteImport } from './routes/_authenticated/kids-retirada.$checkinId'
 
+const ConfigVercelRoute = ConfigVercelRouteImport.update({
+  id: '/config-vercel',
+  path: '/config-vercel',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -136,6 +142,7 @@ const AuthenticatedKidsRetiradaCheckinIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/config-vercel': typeof ConfigVercelRoute
   '/agenda': typeof AuthenticatedAgendaRoute
   '/cantina': typeof AuthenticatedCantinaRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -157,6 +164,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/config-vercel': typeof ConfigVercelRoute
   '/agenda': typeof AuthenticatedAgendaRoute
   '/cantina': typeof AuthenticatedCantinaRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -180,6 +188,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/config-vercel': typeof ConfigVercelRoute
   '/_authenticated/agenda': typeof AuthenticatedAgendaRoute
   '/_authenticated/cantina': typeof AuthenticatedCantinaRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
@@ -203,6 +212,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/config-vercel'
     | '/agenda'
     | '/cantina'
     | '/dashboard'
@@ -224,6 +234,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/config-vercel'
     | '/agenda'
     | '/cantina'
     | '/dashboard'
@@ -246,6 +257,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/config-vercel'
     | '/_authenticated/agenda'
     | '/_authenticated/cantina'
     | '/_authenticated/dashboard'
@@ -269,12 +281,20 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ConfigVercelRoute: typeof ConfigVercelRoute
   KidsVisitanteRoute: typeof KidsVisitanteRoute
   ApiPublicKidsVisitorRoute: typeof ApiPublicKidsVisitorRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/config-vercel': {
+      id: '/config-vercel'
+      path: '/config-vercel'
+      fullPath: '/config-vercel'
+      preLoaderRoute: typeof ConfigVercelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -462,6 +482,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ConfigVercelRoute: ConfigVercelRoute,
   KidsVisitanteRoute: KidsVisitanteRoute,
   ApiPublicKidsVisitorRoute: ApiPublicKidsVisitorRoute,
 }
