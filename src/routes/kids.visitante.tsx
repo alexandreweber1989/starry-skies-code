@@ -135,30 +135,43 @@ function VisitorPage() {
     }
     const v = parsed.data;
     setSaving(true);
-    const { error } = await supabase.from("kids_visitor_requests").insert({
-      child_id: knownChildId,
-      child_full_name: v.child_full_name,
-      child_nickname: v.child_nickname || null,
-      birth_date: v.birth_date || null,
-      classroom: v.classroom,
-      allergies: v.allergies || null,
-      health_notes: v.health_notes || null,
-      special_needs: v.special_needs || null,
-      photo_consent: v.photo_consent,
-      guardian_full_name: v.guardian_full_name,
-      guardian_phone: v.guardian_phone,
-      guardian_relation: v.guardian_relation,
-      guardian_document: v.guardian_document || null,
-      other_pickup: v.other_pickup || null,
-      notes: v.notes || null,
-      status: "pendente",
-    });
-    setSaving(false);
-    if (error) {
-      toast.error("Não foi possível enviar. Chame alguém da equipe do Kids.");
-      return;
+    
+    // Agora usando a rota de API pública com validação Zod no servidor
+    try {
+      const response = await fetch('/api/public/kids-visitor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          child_id: knownChildId,
+          child_full_name: v.child_full_name,
+          child_nickname: v.child_nickname || null,
+          birth_date: v.birth_date || null,
+          classroom: v.classroom,
+          allergies: v.allergies || null,
+          health_notes: v.health_notes || null,
+          special_needs: v.special_needs || null,
+          photo_consent: v.photo_consent,
+          guardian_full_name: v.guardian_full_name,
+          guardian_phone: v.guardian_phone,
+          guardian_relation: v.guardian_relation,
+          guardian_document: v.guardian_document || null,
+          other_pickup: v.other_pickup || null,
+          notes: v.notes || null,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: "Erro desconhecido" }));
+        throw new Error(errorData.error || "Falha na requisição");
+      }
+      
+      setDone(true);
+    } catch (error: any) {
+      console.error("Erro ao enviar cadastro:", error);
+      toast.error(error.message || "Não foi possível enviar. Chame alguém da equipe do Kids.");
+    } finally {
+      setSaving(false);
     }
-    setDone(true);
   }
 
   if (done) {
