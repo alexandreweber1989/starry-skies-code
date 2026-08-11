@@ -687,33 +687,86 @@ function Ministerios() {
 
 function FinalCTA({ cta }: { cta: { to: string; label: string } }) {
   const reduce = useReducedMotion();
+
+  const palavras = ["Faça", "parte", "desta"];
+
   return (
-    <footer className="relative z-20 bg-foreground text-background py-32 md:py-40 px-6 lg:px-10 overflow-hidden">
-      <div className="max-w-7xl mx-auto text-center relative z-10">
+    <footer className="relative z-20 bg-foreground text-background py-32 md:py-48 px-6 lg:px-10 overflow-hidden">
+      {/* Brilho suave: dá calor e foco ao convite sobre o fundo escuro */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2 w-[46rem] h-[46rem] max-w-[120vw] rounded-full bg-background/[0.06] blur-[130px]"
+      />
+
+      <div className="max-w-4xl mx-auto text-center relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         >
-          <h2 className="font-serif text-5xl md:text-[8rem] leading-none mb-16 md:mb-20 uppercase tracking-tighter">
-            Faça parte <br /> desta <span className="italic text-primary">casa.</span>
-          </h2>
-          <Button
-            asChild
-            size="lg"
-            className="rounded-full h-16 md:h-20 px-10 md:px-12 text-lg md:text-xl bg-background text-foreground hover:bg-primary hover:text-primary-foreground transition-all"
-          >
-            <Link to={cta.to}>
-              <span>
-                {cta.label}
-                <ArrowRight className="ml-3 h-6 w-6 inline-block" />
+          <div className="font-mono text-[10px] uppercase tracking-[0.35em] text-background/50 mb-10">
+            § 04 — O convite
+          </div>
+
+          <h2 className="font-serif text-5xl md:text-[7rem] leading-[0.95] uppercase tracking-tighter">
+            {palavras.map((p, i) => (
+              <span key={p} className="inline-block overflow-hidden align-bottom">
+                <motion.span
+                  initial={reduce ? undefined : { y: "110%" }}
+                  whileInView={reduce ? undefined : { y: "0%" }}
+                  viewport={{ once: true }}
+                  transition={{
+                    duration: 0.8,
+                    ease: [0.22, 1, 0.36, 1],
+                    delay: i * 0.08,
+                  }}
+                  className="inline-block pr-[0.25em]"
+                >
+                  {p}
+                </motion.span>
               </span>
-            </Link>
-          </Button>
+            ))}
+            <br />
+            {/* Palavra em destaque: contorno (outline) — visível e sofisticado no preto */}
+            <span
+              className="italic"
+              style={{
+                WebkitTextStroke: "1.5px var(--background)",
+                color: "transparent",
+              }}
+            >
+              casa.
+            </span>
+          </h2>
+
+          <p className="mt-10 text-lg md:text-2xl text-background/70 leading-relaxed max-w-2xl mx-auto">
+            Você leu até aqui — e talvez seja porque algo em você procura um lugar
+            pra chamar de lar. Aqui tem mesa, tem abraço e tem um espaço guardado
+            pra sua história. Venha ser parte da nossa casa.
+          </p>
+
+          <div className="mt-14 flex flex-col items-center gap-6">
+            <Button
+              asChild
+              size="lg"
+              className="group rounded-full h-16 md:h-20 px-10 md:px-14 text-lg md:text-xl bg-background text-foreground border border-transparent hover:bg-transparent hover:text-background hover:border-background transition-all duration-300"
+            >
+              <Link to={cta.to}>
+                <span>
+                  {cta.label}
+                  <ArrowRight className="ml-3 h-6 w-6 inline-block transition-transform group-hover:translate-x-1" />
+                </span>
+              </Link>
+            </Button>
+
+            <div className="font-mono text-[11px] uppercase tracking-[0.25em] text-background/40">
+              Parque N. S. das Graças · Ponta Grossa / PR · Todos são bem-vindos
+            </div>
+          </div>
         </motion.div>
 
-        <div className="mt-32 md:mt-40 pt-10 border-t border-background/10 flex flex-col md:flex-row items-center justify-between gap-8 opacity-40 font-mono text-[10px] uppercase tracking-[0.3em]">
+        <div className="mt-28 md:mt-40 pt-10 border-t border-background/10 flex flex-col md:flex-row items-center justify-between gap-8 text-background/40 font-mono text-[10px] uppercase tracking-[0.3em]">
           <div className="flex items-center gap-3">
             <Church className="h-4 w-4" />
             <span>Igreja Batista Atos · PG</span>
