@@ -89,9 +89,10 @@ function MembrosPage() {
     );
   }
 
-  if (!isAdmin) {
+  if (!loading && !isAdmin) {
     throw new Error("Acesso negado. Apenas administradores gerais podem gerenciar membros.");
   }
+
 
   const canRequest = true; // Sempre true se chegou aqui
   const removeMember = useServerFn(deleteMemberAccount);

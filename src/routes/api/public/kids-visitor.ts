@@ -28,20 +28,15 @@ export const Route = createFileRoute('/api/public/kids-visitor')({
           const body = await request.json()
           const validated = visitorRequestSchema.parse(body)
 
-          // Inserção no banco usando a service_role através do cliente admin (se necessário) 
-          // ou apenas o cliente padrão se o RLS permitir inserção pública (kids_visitor_requests costuma permitir)
-          const { error } = await supabase.from('kids_visitor_requests').insert({
+          // Usar supabaseAdmin importado dinamicamente para garantir que a inserção ocorra via service_role
+          // sem expor a chave no cliente. A tabela kids_visitor_requests tem RLS restrito.
+          const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+          
+          const { error } = await supabaseAdmin.from('kids_visitor_requests').insert({
             ...validated,
             status: 'pendente'
           })
 
-          if (error) {
-            console.error('Database error in kids-visitor API:', error)
-            return new Response(JSON.stringify({ error: 'Falha ao salvar o cadastro.' }), { 
-              status: 500,
-              headers: { 'Content-Type': 'application/json' }
-            })
-          }
 
           return new Response(JSON.stringify({ success: true }), {
             status: 201,
