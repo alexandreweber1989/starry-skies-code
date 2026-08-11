@@ -234,6 +234,7 @@ function VisitorPage() {
                 onBlur={(e) => void lookupPhone(e.target.value)}
                 placeholder="(11) 99999-0000"
                 required
+                className="lg:h-14 lg:text-xl lg:rounded-2xl"
               />
             </Field>
 
