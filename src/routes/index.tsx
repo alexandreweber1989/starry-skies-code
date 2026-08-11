@@ -709,7 +709,7 @@ function FinalCTA({ cta }: { cta: { to: string; label: string } }) {
             § 04 — O convite
           </div>
 
-          <h2 className="font-serif text-5xl md:text-[7rem] leading-[0.95] uppercase tracking-tighter">
+          <h2 className="font-serif font-semibold text-5xl md:text-[7rem] leading-[0.95] uppercase tracking-[-0.04em]">
             {palavras.map((p, i) => (
               <span key={p} className="inline-block overflow-hidden align-bottom">
                 <motion.span
