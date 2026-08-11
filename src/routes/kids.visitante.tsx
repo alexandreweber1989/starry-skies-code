@@ -338,7 +338,7 @@ function VisitorPage() {
             </div>
             <Field label="Turma" hint="Sugerida pela idade — a equipe confirma no balcão">
               <Select value={form.classroom} onValueChange={(v) => set("classroom", v)}>
-                <SelectTrigger>
+                <SelectTrigger className="lg:h-14 lg:text-xl lg:rounded-2xl">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
