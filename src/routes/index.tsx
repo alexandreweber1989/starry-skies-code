@@ -500,14 +500,12 @@ function CadastroSection() {
           <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-5">
             Comece por aqui
           </div>
-          <h2 className="font-serif text-4xl md:text-6xl leading-[1.02]">
-            Quer fazer parte?{" "}
-            <span className="text-primary italic">Vamos te achar uma casa</span>{" "}
-            perto de você.
+          <h2 className="font-serif text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
+            Dê o seu próximo passo
           </h2>
-          <p className="mt-6 text-lg text-muted-foreground max-w-md leading-relaxed">
-            Preencha em 30 segundos e a gente te conecta à Mesa e ao líder mais
-            próximos do seu bairro. Sem compromisso — é só um oi.
+          <p className="text-muted-foreground text-sm md:text-base lg:text-xl max-w-2xl mx-auto">
+            Queremos te conhecer. Preencha os dados e vamos te conectar à Mesa
+            mais próxima de você.
           </p>
         </motion.div>
 
