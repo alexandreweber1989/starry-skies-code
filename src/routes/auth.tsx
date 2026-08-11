@@ -84,36 +84,18 @@ function AuthPage() {
    */
   async function handleGoogle() {
     try {
+      // Usamos o broker nativo do Lovable/TanStack Start
+      // Isso inicia o fluxo OAuth gerenciado pelo Lovable
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: { 
           redirectTo: `${window.location.origin}/auth`,
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          }
         },
       });
       
       if (error) {
         console.error("Erro no login com Google:", error);
-        
-        // Se for erro de validação (falta de secret), damos uma instrução clara.
-        if (error.message.includes("validation_failed") || error.message.includes("missing OAuth secret")) {
-          toast.error(
-            <span>
-              Configuração pendente.{" "}
-              <Link to="/config-google" className="underline font-bold">
-                Veja como configurar o Client ID e Secret do Google aqui.
-              </Link>
-            </span>,
-            { duration: 10000 }
-          );
-        } else if (error.message.includes("provider is not enabled")) {
-          toast.error("O login com Google não está habilitado no backend.");
-        } else {
-          toast.error("Não foi possível iniciar o login com Google: " + error.message);
-        }
+        toast.error("Não foi possível iniciar o login com Google: " + error.message);
       }
     } catch (err) {
       console.error("Exceção no login com Google:", err);
