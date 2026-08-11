@@ -212,6 +212,71 @@ function FloatingNav({ cta }: { cta: { to: string; label: string } }) {
  * Hero — fixado (pinned) com parallax e revelação linha-a-linha
  * ------------------------------------------------------------------------- */
 
+const PALAVRAS_ROCHA = [
+  "construída",
+  "edificada",
+  "firmada",
+  "alicerçada",
+  "enraizada",
+  "sustentada",
+];
+
+// Palavra rotativa com efeito glitch (monocromático) no título do hero.
+function PalavraGlitch({ palavras }: { palavras: string[] }) {
+  const reduce = useReducedMotion();
+  const [texto, setTexto] = useState(palavras[0]);
+  const [glitch, setGlitch] = useState(false);
+
+  useEffect(() => {
+    if (reduce) return;
+    const pool = "ABCDEFGHIJKLMNOPQRSTUVWXYZÁÉÍÓÚÃÕÇ";
+    let alvoIdx = 0;
+    let scrambleTimer: ReturnType<typeof setInterval> | undefined;
+
+    const proxima = () => {
+      alvoIdx = (alvoIdx + 1) % palavras.length;
+      const alvo = palavras[alvoIdx];
+      setGlitch(true);
+      let frame = 0;
+      const totalFrames = 14;
+      if (scrambleTimer) clearInterval(scrambleTimer);
+      scrambleTimer = setInterval(() => {
+        frame++;
+        const revelado = Math.floor((frame / totalFrames) * alvo.length);
+        let out = "";
+        for (let i = 0; i < alvo.length; i++) {
+          out +=
+            i < revelado
+              ? alvo[i]
+              : pool[Math.floor(Math.random() * pool.length)];
+        }
+        setTexto(out);
+        if (frame >= totalFrames) {
+          if (scrambleTimer) clearInterval(scrambleTimer);
+          setTexto(alvo);
+          setGlitch(false);
+        }
+      }, 45);
+    };
+
+    const agenda = setInterval(proxima, 3000);
+    return () => {
+      clearInterval(agenda);
+      if (scrambleTimer) clearInterval(scrambleTimer);
+    };
+  }, [reduce, palavras]);
+
+  return (
+    <span
+      className="palavra-glitch inline-block"
+      data-text={texto}
+      data-glitch={glitch ? "true" : undefined}
+    >
+      {texto}
+    </span>
+  );
+}
+
 function Hero({ cta }: { cta: { to: string; label: string } }) {
   const reduce = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
@@ -225,8 +290,6 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
   const y = useTransform(scrollYProgress, [0, 1], [0, -120]);
   const blur = useTransform(scrollYProgress, [0, 0.75], [0, 6]);
   const filter = useTransform(blur, (b) => `blur(${b}px)`);
-
-  const linhas = ["Uma casa", "construída", "sobre a rocha."];
 
   return (
     <section ref={ref} className="relative h-[200vh] z-10">
@@ -253,26 +316,36 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
           </motion.div>
 
           <h1 className="font-serif font-semibold tracking-[-0.04em] text-[15vw] md:text-[10vw] lg:text-[10rem] leading-[0.85] uppercase">
-            {linhas.map((linha, i) => (
-              <span key={linha} className="block overflow-hidden pb-[0.05em]">
-                <motion.span
-                  initial={reduce ? undefined : { y: "110%" }}
-                  animate={reduce ? undefined : { y: "0%" }}
-                  transition={{
-                    duration: 0.9,
-                    ease: [0.22, 1, 0.36, 1],
-                    delay: 0.15 + i * 0.12,
-                  }}
-                  className={
-                    i === 1
-                      ? "block italic font-normal text-primary/80"
-                      : "block"
-                  }
-                >
-                  {linha}
-                </motion.span>
-              </span>
-            ))}
+            <span className="block overflow-hidden pb-[0.05em]">
+              <motion.span
+                initial={reduce ? undefined : { y: "110%" }}
+                animate={reduce ? undefined : { y: "0%" }}
+                transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
+                className="block"
+              >
+                Uma casa
+              </motion.span>
+            </span>
+            <span className="block pb-[0.05em]">
+              <motion.span
+                initial={reduce ? undefined : { opacity: 0, y: 20 }}
+                animate={reduce ? undefined : { opacity: 1, y: 0 }}
+                transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.27 }}
+                className="block italic text-primary/80"
+              >
+                <PalavraGlitch palavras={PALAVRAS_ROCHA} />
+              </motion.span>
+            </span>
+            <span className="block overflow-hidden pb-[0.05em]">
+              <motion.span
+                initial={reduce ? undefined : { y: "110%" }}
+                animate={reduce ? undefined : { y: "0%" }}
+                transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.39 }}
+                className="block"
+              >
+                sobre a rocha.
+              </motion.span>
+            </span>
           </h1>
 
           <motion.div

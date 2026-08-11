@@ -755,3 +755,47 @@ iframe[src*="lovable.dev/badge"] {
   height: 0 !important;
 }
 /* NEXUS-PRO:WATERMARK-HIDE:END */
+
+/* ---------- Glitch da palavra rotativa (headline do hero) ----------
+ * Efeito monocromático: leve jitter/skew + duas camadas fantasma
+ * (::before/::after) recortadas, ativas só durante a troca da palavra.
+ * Respeita prefers-reduced-motion. */
+.palavra-glitch {
+  position: relative;
+  display: inline-block;
+}
+@keyframes glitch-jitter {
+  0%   { transform: translate(0, 0) skewX(0); }
+  20%  { transform: translate(-2px, 1px) skewX(-4deg); }
+  40%  { transform: translate(2px, -1px) skewX(3deg); }
+  60%  { transform: translate(-1px, 0) skewX(-2deg); }
+  80%  { transform: translate(1px, 1px) skewX(2deg); }
+  100% { transform: translate(0, 0) skewX(0); }
+}
+.palavra-glitch[data-glitch="true"] {
+  animation: glitch-jitter 0.3s steps(2, end) infinite;
+}
+.palavra-glitch[data-glitch="true"]::before,
+.palavra-glitch[data-glitch="true"]::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+}
+.palavra-glitch[data-glitch="true"]::before {
+  transform: translateX(3px);
+  opacity: 0.5;
+  clip-path: inset(0 0 55% 0);
+}
+.palavra-glitch[data-glitch="true"]::after {
+  transform: translateX(-3px);
+  opacity: 0.35;
+  clip-path: inset(55% 0 0 0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .palavra-glitch[data-glitch="true"] { animation: none; }
+  .palavra-glitch::before,
+  .palavra-glitch::after { display: none; }
+}
