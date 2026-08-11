@@ -101,8 +101,13 @@ function AuthPage() {
         // Se for erro de validação (falta de secret), damos uma instrução clara.
         if (error.message.includes("validation_failed") || error.message.includes("missing OAuth secret")) {
           toast.error(
-            "Configuração pendente: O administrador precisa inserir o Client ID e Secret do Google no painel do Lovable Cloud.",
-            { duration: 6000 }
+            <span>
+              Configuração pendente.{" "}
+              <Link to="/config-google" className="underline font-bold">
+                Veja como configurar o Client ID e Secret do Google aqui.
+              </Link>
+            </span>,
+            { duration: 10000 }
           );
         } else if (error.message.includes("provider is not enabled")) {
           toast.error("O login com Google não está habilitado no backend.");
