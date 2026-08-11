@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
+import { CadastroLead } from "@/components/home/cadastro-lead";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -138,6 +139,7 @@ function Landing() {
       <ScrollProgress />
       <FloatingNav cta={cta} />
       <Hero cta={cta} />
+      <CadastroSection />
       <Historia />
       <Numeros />
       <Pilares />
@@ -372,10 +374,24 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
           className="max-w-7xl mx-auto w-full"
         >
           <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="flex items-center gap-3 md:gap-4 mb-6"
+          >
+            <span className="h-12 w-12 md:h-16 md:w-16 rounded-xl md:rounded-2xl bg-foreground text-background grid place-items-center shrink-0">
+              <Church className="h-6 w-6 md:h-8 md:w-8" />
+            </span>
+            <span className="font-serif font-extrabold tracking-[-0.02em] leading-[0.95] text-3xl md:text-5xl lg:text-6xl">
+              Igreja Batista Atos
+            </span>
+          </motion.div>
+
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.6 }}
-            className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.35em] text-muted-foreground mb-10"
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.35em] text-muted-foreground mb-8"
           >
             <motion.span
               initial={{ scaleX: 0 }}
@@ -465,6 +481,48 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
 /* ---------------------------------------------------------------------------
  * História — scrollytelling: painel fixo que troca os capítulos ao rolar
  * ------------------------------------------------------------------------- */
+
+function CadastroSection() {
+  const reduce = useReducedMotion();
+  return (
+    <section
+      id="cadastro"
+      className="relative z-20 bg-background border-t border-border/10 py-20 md:py-28 px-6 lg:px-10"
+    >
+      <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-10 lg:gap-20 items-center">
+        <motion.div
+          initial={reduce ? undefined : { opacity: 0, y: 24 }}
+          whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-5">
+            Comece por aqui
+          </div>
+          <h2 className="font-serif text-4xl md:text-6xl leading-[1.02]">
+            Quer fazer parte?{" "}
+            <span className="text-primary italic">Vamos te achar uma casa</span>{" "}
+            perto de você.
+          </h2>
+          <p className="mt-6 text-lg text-muted-foreground max-w-md leading-relaxed">
+            Preencha em 30 segundos e a gente te conecta à Mesa e ao líder mais
+            próximos do seu bairro. Sem compromisso — é só um oi.
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={reduce ? undefined : { opacity: 0, y: 24 }}
+          whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+          className="w-full max-w-md mx-auto lg:justify-self-end"
+        >
+          <CadastroLead />
+        </motion.div>
+      </div>
+    </section>
+  );
+}
 
 function Historia() {
   const reduce = useReducedMotion();
