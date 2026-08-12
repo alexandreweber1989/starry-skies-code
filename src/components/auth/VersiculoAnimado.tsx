@@ -23,11 +23,13 @@ export function VersiculoAnimado() {
   const [index, setIndex] = useState(0);
   const [displayText, setDisplayText] = useState("");
   const [displayRef, setDisplayRef] = useState("");
-  const [phase, setPhase] = useState<"typing-text" | "typing-ref" | "waiting">("typing-text");
+  const [phase, setPhase] = useState<"typing-text" | "typing-ref" | "waiting" | "glitch">("typing-text");
+  const [glitchText, setGlitchText] = useState("");
 
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;
     const currentVersiculo = VERSICULOS[index];
+    const pool = "01</>{}[]=+*#\\|!?~:;=ABEFHKMNRSXYZ";
 
     if (phase === "typing-text") {
       if (displayText.length < currentVersiculo.texto.length) {
@@ -49,10 +51,25 @@ export function VersiculoAnimado() {
       }
     } else if (phase === "waiting") {
       timeout = setTimeout(() => {
-        setPhase("typing-text");
-        setDisplayText("");
-        setDisplayRef("");
-        setIndex((prev) => (prev + 1) % VERSICULOS.length);
+        setPhase("glitch");
+        let frame = 0;
+        const totalFrames = 20;
+        const scrambleInterval = setInterval(() => {
+          frame++;
+          let out = "";
+          for (let i = 0; i < currentVersiculo.texto.length; i++) {
+            out += pool[Math.floor(Math.random() * pool.length)];
+          }
+          setGlitchText(out);
+          if (frame >= totalFrames) {
+            clearInterval(scrambleInterval);
+            setPhase("typing-text");
+            setDisplayText("");
+            setDisplayRef("");
+            setGlitchText("");
+            setIndex((prev) => (prev + 1) % VERSICULOS.length);
+          }
+        }, 40);
       }, 5000);
     }
 
@@ -62,26 +79,39 @@ export function VersiculoAnimado() {
   return (
     <div className="min-h-[220px] flex flex-col justify-center">
       <div className="relative">
-        <h2 className="font-serif text-3xl md:text-4xl leading-tight min-h-[140px] text-sidebar-foreground">
-          "{displayText}"
-          {phase === "typing-text" && (
-            <motion.span
-              animate={{ opacity: [1, 0] }}
-              transition={{ repeat: Infinity, duration: 0.8 }}
-              className="inline-block w-0.5 h-8 bg-sidebar-primary ml-1 align-middle"
-            />
+        <h2 
+          className="font-serif text-3xl md:text-4xl leading-tight min-h-[140px] text-sidebar-foreground transition-all duration-300"
+          style={{ opacity: phase === "glitch" ? 0.8 : 1 }}
+        >
+          {phase === "glitch" ? (
+            <span className="font-mono text-primary/70 break-all">{glitchText}</span>
+          ) : (
+            <>
+              "{displayText}"
+              {phase === "typing-text" && (
+                <motion.span
+                  animate={{ opacity: [1, 0] }}
+                  transition={{ repeat: Infinity, duration: 0.8 }}
+                  className="inline-block w-0.5 h-8 bg-sidebar-primary ml-1 align-middle"
+                />
+              )}
+            </>
           )}
         </h2>
         <div className="mt-6 flex items-center gap-2">
-          <p className="font-mono text-xs uppercase tracking-widest text-sidebar-foreground/60 min-h-[20px]">
-            {displayRef}
-          </p>
-          {phase === "typing-ref" && (
-            <motion.span
-              animate={{ opacity: [1, 0] }}
-              transition={{ repeat: Infinity, duration: 0.8 }}
-              className="inline-block w-0.5 h-4 bg-sidebar-primary align-middle"
-            />
+          {phase !== "glitch" && (
+            <>
+              <p className="font-mono text-xs uppercase tracking-widest text-sidebar-foreground/60 min-h-[20px]">
+                {displayRef}
+              </p>
+              {phase === "typing-ref" && (
+                <motion.span
+                  animate={{ opacity: [1, 0] }}
+                  transition={{ repeat: Infinity, duration: 0.8 }}
+                  className="inline-block w-0.5 h-4 bg-sidebar-primary align-middle"
+                />
+              )}
+            </>
           )}
         </div>
       </div>
