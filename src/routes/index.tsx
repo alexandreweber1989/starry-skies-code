@@ -379,57 +379,73 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
   return (
     <section ref={ref} className="relative h-[200vh] z-10">
       <div className="sticky top-0 h-screen overflow-hidden flex flex-col justify-center px-6 lg:px-10">
+        {/* Background Grid Pattern */}
+        <div 
+          className="absolute inset-0 z-0 opacity-[0.07]"
+          style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, var(--foreground) 1px, transparent 0)`,
+            backgroundSize: '40px 40px',
+            maskImage: 'radial-gradient(circle at center, black, transparent 80%)'
+          }}
+        />
+
         <motion.div
           style={
             reduce ? undefined : { opacity, scale, y, filter }
           }
-          className="max-w-7xl mx-auto w-full"
+          className="max-w-7xl mx-auto w-full relative z-10"
         >
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="flex items-center gap-3 md:gap-4 mb-6"
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            className="flex items-center gap-3 md:gap-5 mb-8"
           >
-            <span className="h-12 w-12 md:h-16 md:w-16 rounded-xl md:rounded-2xl bg-foreground text-background grid place-items-center shrink-0">
-              <Church className="h-6 w-6 md:h-8 md:w-8" />
-            </span>
-            <span className="font-serif font-extrabold tracking-[-0.02em] leading-[0.95] text-3xl md:text-5xl lg:text-6xl">
-              Igreja Batista Atos
-            </span>
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-primary/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500" />
+              <span className="relative h-14 w-14 md:h-20 md:w-20 rounded-2xl md:rounded-[2rem] bg-foreground/5 backdrop-blur-md border border-foreground/10 text-foreground grid place-items-center shrink-0">
+                <Church className="h-7 w-7 md:h-10 md:w-10" />
+              </span>
+            </div>
+            <div>
+              <span className="block font-serif font-extrabold tracking-[-0.03em] leading-[0.95] text-3xl md:text-5xl lg:text-7xl">
+                Igreja Batista Atos
+              </span>
+              <div className="h-1 w-12 bg-primary mt-2 rounded-full opacity-60" />
+            </div>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.35em] text-muted-foreground mb-8"
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="flex items-center gap-4 font-mono text-[10px] md:text-[12px] uppercase tracking-[0.4em] text-muted-foreground mb-12"
           >
             <motion.span
               initial={{ scaleX: 0 }}
               animate={{ scaleX: 1 }}
-              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-              className="h-px w-10 bg-foreground/40 origin-left"
+              transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
+              className="h-px w-12 bg-primary/60 origin-left"
             />
-            Est. 2014 · Ponta Grossa / PR
+            PG · Est. 2014 · Ponta Grossa / PR
           </motion.div>
 
-          <h1 className="font-serif font-semibold tracking-[-0.04em] leading-[0.9] uppercase">
+          <h1 className="font-serif font-bold tracking-[-0.05em] leading-[0.85] uppercase">
             <span className="block overflow-hidden pb-[0.04em]">
               <motion.span
-                initial={reduce ? undefined : { y: "110%" }}
+                initial={reduce ? undefined : { y: "100%" }}
                 animate={reduce ? undefined : { y: "0%" }}
-                transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
-                className="block text-muted-foreground text-[min(7vw,8.5vh)] md:text-[min(5vw,8.5vh)] lg:text-[5rem]"
+                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
+                className="block text-muted-foreground/60 text-[min(8vw,9vh)] md:text-[min(6vw,9vh)] lg:text-[5.5rem]"
               >
                 Uma casa
               </motion.span>
             </span>
-            <span className="block py-[0.02em]">
+            <span className="block py-[0.05em]">
               <motion.span
-                initial={reduce ? undefined : { opacity: 0, y: 20 }}
-                animate={reduce ? undefined : { opacity: 1, y: 0 }}
-                transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.27 }}
+                initial={reduce ? undefined : { opacity: 0, scale: 0.95 }}
+                animate={reduce ? undefined : { opacity: 1, scale: 1 }}
+                transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.6 }}
                 className="block"
               >
                 <LinhaGlitch palavras={PALAVRAS_ROCHA} />
@@ -437,10 +453,10 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
             </span>
             <span className="block overflow-hidden pt-[0.02em]">
               <motion.span
-                initial={reduce ? undefined : { y: "110%" }}
+                initial={reduce ? undefined : { y: "100%" }}
                 animate={reduce ? undefined : { y: "0%" }}
-                transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.39 }}
-                className="block text-muted-foreground text-[min(7vw,8.5vh)] md:text-[min(5vw,8.5vh)] lg:text-[5rem]"
+                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.8 }}
+                className="block text-muted-foreground/60 text-[min(8vw,9vh)] md:text-[min(6vw,9vh)] lg:text-[5.5rem]"
               >
                 sobre a rocha.
               </motion.span>
@@ -450,40 +466,68 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.6 }}
-            className="mt-16 md:mt-20 flex flex-wrap gap-4"
+            transition={{ duration: 1, delay: 1.2, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-20 md:mt-24 flex flex-wrap gap-6"
           >
             <Button
               asChild
               size="lg"
-              className="rounded-full h-14 px-8 text-lg group"
+              className="rounded-full h-16 px-10 text-xl font-medium group relative overflow-hidden bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 shadow-2xl shadow-primary/20"
             >
               <Link to={cta.to}>
-                <span>
+                <span className="relative z-10 flex items-center">
                   {cta.label}
-                  <ArrowRight className="ml-2 h-5 w-5 inline-block group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="ml-3 h-6 w-6 transition-transform duration-500 group-hover:translate-x-2" />
                 </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </Link>
             </Button>
+            
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.5, duration: 1 }}
+              className="flex items-center gap-4 px-6 border-l border-foreground/10"
+            >
+              <div className="flex -space-x-3">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="h-10 w-10 rounded-full border-2 border-background bg-muted overflow-hidden flex items-center justify-center text-[10px] font-bold">
+                    {i}
+                  </div>
+                ))}
+              </div>
+              <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium max-w-[120px] leading-tight">
+                Junte-se a centenas de famílias
+              </span>
+            </motion.div>
           </motion.div>
         </motion.div>
 
-        {/* Indicador de rolagem */}
+        {/* Indicador de rolagem aprimorado */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.6, duration: 1 }}
+          transition={{ delay: 2, duration: 1.5 }}
           style={reduce ? undefined : { opacity }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+          className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4"
         >
-          <span className="font-mono text-[8px] uppercase tracking-[0.3em] text-muted-foreground">
-            Role para explorar
+          <span className="font-mono text-[9px] uppercase tracking-[0.5em] text-muted-foreground/60">
+            Explorar Gênese
           </span>
-          <motion.div
-            animate={reduce ? undefined : { scaleY: [0.4, 1, 0.4] }}
-            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-            className="h-12 w-px bg-gradient-to-b from-primary to-transparent origin-top"
-          />
+          <div className="h-20 w-px relative overflow-hidden">
+            <motion.div
+              animate={reduce ? undefined : { 
+                y: ["-100%", "100%"] 
+              }}
+              transition={{ 
+                duration: 2.5, 
+                repeat: Infinity, 
+                ease: "linear" 
+              }}
+              className="absolute inset-0 bg-gradient-to-b from-transparent via-primary to-transparent"
+            />
+            <div className="absolute inset-0 bg-foreground/10" />
+          </div>
         </motion.div>
       </div>
     </section>
