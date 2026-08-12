@@ -40,6 +40,7 @@ const AuthContext = createContext<AuthState | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [roles, setRoles] = useState<RoleRow[]>([]);
+  const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const qc = useQueryClient();
@@ -82,29 +83,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     let active = true;
 
-    const loadRoles = async () => {
+    const loadRolesAndProfile = async () => {
       setLoading(true);
-      const { data, error } = await supabase
-        .from("user_roles")
-        .select("role, ministry_id, mesa_id")
-        .eq("user_id", session.user.id);
+      const [rolesRes, profileRes] = await Promise.all([
+        supabase
+          .from("user_roles")
+          .select("role, ministry_id, mesa_id")
+          .eq("user_id", session.user.id),
+        supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", session.user.id)
+          .maybeSingle()
+      ]);
 
       if (!active) return;
-      if (error) {
-        console.error("Não foi possível carregar as permissões do usuário.", error);
+
+      if (rolesRes.error) {
+        console.error("Não foi possível carregar as permissões do usuário.", rolesRes.error);
         setRoles([]);
       } else {
-        setRoles((data ?? []) as RoleRow[]);
+        setRoles((rolesRes.data ?? []) as RoleRow[]);
       }
+
+      if (profileRes.error) {
+        console.error("Erro ao carregar perfil:", profileRes.error);
+      } else {
+        setProfile(profileRes.data);
+      }
+
       if (active) setLoading(false);
     };
 
-
-    void loadRoles();
-    window.addEventListener("focus", loadRoles);
+    void loadRolesAndProfile();
+    window.addEventListener("focus", loadRolesAndProfile);
     return () => {
       active = false;
-      window.removeEventListener("focus", loadRoles);
+      window.removeEventListener("focus", loadRolesAndProfile);
     };
   }, [session?.user?.id]);
 
@@ -115,6 +130,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     user: session?.user ?? null,
     session,
     roles,
+    profile,
     loading,
     isAdmin,
     isMinistryAdmin: (id) => isAdmin || roles.some((r) => r.role === "admin_ministerio" && r.ministry_id === id),
