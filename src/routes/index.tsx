@@ -1022,7 +1022,7 @@ function Ministerios() {
                 ease: [0.22, 1, 0.36, 1],
               }}
               viewport={{ once: true, margin: "-60px" }}
-              className="group relative p-8 bg-card border border-border/50 rounded-3xl hover:border-primary/30 transition-all duration-500 overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-primary/5"
+              className="group relative p-8 bg-card/50 backdrop-blur-sm border border-border/50 rounded-3xl hover:border-primary/40 transition-all duration-700 overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-2"
             >
               <div className="relative z-10 flex justify-between items-start mb-8">
                 <div className="h-12 w-12 rounded-2xl bg-primary/5 text-primary grid place-items-center group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-500 rotate-3 group-hover:rotate-0">
@@ -1115,7 +1115,7 @@ function FinalCTA({ cta }: { cta: { to: string; label: string } }) {
             <Button
               asChild
               size="lg"
-              className="group rounded-full h-16 md:h-20 px-10 md:px-14 text-lg md:text-xl bg-background text-foreground border border-transparent hover:bg-transparent hover:text-background hover:border-background transition-all duration-300"
+              className="group rounded-full h-16 md:h-20 px-10 md:px-14 text-lg md:text-xl bg-background text-foreground border border-transparent hover:bg-transparent hover:text-background hover:border-background transition-all duration-700 hover:-translate-y-1 hover:shadow-2xl hover:shadow-background/10"
             >
               <Link to={cta.to}>
                 <span>
