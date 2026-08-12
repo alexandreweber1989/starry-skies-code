@@ -135,8 +135,7 @@ export function CadastroLead() {
     const outrasMesas = listarOutrasMesas(form.perfil, mesaPrincipal);
 
     try {
-      // @ts-ignore
-      await (supabase.from("leads") as any).insert({
+      await supabase.from("leads").insert({
         name: form.nome.trim(),
         phone: numericPhone,
         profile: form.perfil,
@@ -146,12 +145,13 @@ export function CadastroLead() {
         suggested_mesa: mesaPrincipal?.mesa ?? null,
         status: "novo",
       });
-    } catch {
-      // Ignora erro se tabela não existir
+    } catch (err) {
+      console.error("Erro ao salvar lead:", err);
     }
     setResultado({ principal: mesaPrincipal ?? null, outras: outrasMesas });
     setEnviando(false);
   }
+
 
 
   const primeiroNome = form.nome.trim().split(" ")[0] || "";
