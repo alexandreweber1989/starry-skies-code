@@ -911,6 +911,45 @@ export type Database = {
           },
         ]
       }
+      leads: {
+        Row: {
+          city: string | null
+          created_at: string | null
+          id: string
+          name: string
+          neighborhood: string | null
+          phone: string
+          profile: string
+          state: string | null
+          status: string | null
+          suggested_mesa: string | null
+        }
+        Insert: {
+          city?: string | null
+          created_at?: string | null
+          id?: string
+          name: string
+          neighborhood?: string | null
+          phone: string
+          profile: string
+          state?: string | null
+          status?: string | null
+          suggested_mesa?: string | null
+        }
+        Update: {
+          city?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          neighborhood?: string | null
+          phone?: string
+          profile?: string
+          state?: string | null
+          status?: string | null
+          suggested_mesa?: string | null
+        }
+        Relationships: []
+      }
       media_assets: {
         Row: {
           category: string
