@@ -85,24 +85,33 @@ function AuthPage() {
   async function handleGoogle() {
     try {
       setLoading(true);
-      // Usamos o broker nativo do Lovable/TanStack Start
-      // Redirecionamos para a rota de callback dedicada para garantir o processamento da sessão
+      
+      // Construímos a URL de callback completa e estável.
+      // O Supabase exige que a redirect_uri esteja na whitelist.
+      const callbackUrl = `${window.location.origin}/auth/callback`;
+      
+      console.log("Iniciando OAuth com Google. Callback:", callbackUrl);
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: { 
           redirectTo: `${window.location.origin}/auth/callback`,
-          skipBrowserRedirect: false,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          }
         },
       });
       
       if (error) {
-        console.error("Erro no login com Google:", error);
-        toast.error("Não foi possível iniciar o login com Google: " + error.message);
+        console.error("Erro no signInWithOAuth:", error);
+        toast.error("Erro ao conectar com Google: " + error.message);
         setLoading(false);
       }
+      // Se não houver erro, o navegador será redirecionado automaticamente pelo Supabase
     } catch (err) {
-      console.error("Exceção no login com Google:", err);
-      toast.error("Ocorreu um erro ao tentar conectar com o Google.");
+      console.error("Exceção no handleGoogle:", err);
+      toast.error("Erro inesperado no login social.");
       setLoading(false);
     }
   }
