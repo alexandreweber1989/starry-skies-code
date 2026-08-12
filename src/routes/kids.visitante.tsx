@@ -196,9 +196,9 @@ function VisitorPage() {
   }
 
   return (
-    <main className="min-h-screen bg-yellow-50 px-5 py-10 font-kids selection:bg-pink-200 selection:text-pink-900">
+    <main className="min-h-screen bg-yellow-50 px-4 sm:px-5 py-6 sm:py-10 font-kids selection:bg-pink-200 selection:text-pink-900">
       <div className="mx-auto w-full max-w-xl lg:max-w-4xl xl:max-w-5xl">
-        <header className="relative text-center bg-white rounded-[3rem] p-10 lg:p-16 border-4 border-yellow-200 shadow-xl mb-10 overflow-hidden">
+        <header className="relative text-center bg-white rounded-3xl sm:rounded-[3rem] p-6 sm:p-10 lg:p-16 border-4 border-yellow-200 shadow-xl mb-6 sm:mb-10 overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-yellow-400 via-pink-400 to-blue-400" />
 
           {kiosk && (
@@ -214,13 +214,13 @@ function VisitorPage() {
             </Button>
           )}
           <Baby className="h-8 w-8 text-primary mx-auto lg:h-12 lg:w-12" />
-          <h1 className="text-4xl lg:text-5xl mt-4 font-bold text-yellow-600 tracking-tight">Bem-vindo ao Kids! 🎨</h1>
-          <p className="text-muted-foreground mt-4 text-lg lg:text-xl lg:mt-6 leading-relaxed">
+          <h1 className="text-2xl sm:text-4xl lg:text-5xl mt-4 font-bold text-yellow-600 tracking-tight">Bem-vindo ao Kids! 🎨</h1>
+          <p className="text-sm sm:text-lg lg:text-xl mt-4 lg:mt-6 text-muted-foreground leading-relaxed">
             Estamos muito felizes em ter vocês aqui! O cadastro é rapidinho, e logo sua criança estará se divertindo com a gente.
           </p>
         </header>
 
-        <form onSubmit={submit} className="space-y-8 bg-white rounded-[3rem] p-8 sm:p-12 lg:p-20 border-4 border-blue-100 shadow-2xl relative">
+        <form onSubmit={submit} className="space-y-6 sm:space-y-8 bg-white rounded-3xl sm:rounded-[3rem] p-6 sm:p-12 lg:p-20 border-4 border-blue-100 shadow-2xl relative">
           <div className="absolute -top-6 -right-6 w-12 h-12 bg-pink-400 rounded-full flex items-center justify-center text-white text-2xl animate-bounce">✨</div>
           <div className="absolute -bottom-6 -left-6 w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center text-white text-3xl animate-pulse">🧸</div>
 

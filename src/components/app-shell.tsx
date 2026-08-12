@@ -216,7 +216,7 @@ export function PageHeader({
   return (
     <div className={`border-b border-border/40 bg-card/40 backdrop-blur-xl relative overflow-hidden group ${className}`}>
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-      <div className="max-w-6xl mx-auto px-6 lg:px-10 py-16 lg:py-20 flex flex-col md:flex-row md:items-end md:justify-between gap-8 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 lg:py-20 flex flex-col md:flex-row md:items-end md:justify-between gap-6 sm:gap-8 relative z-10">
         <div className="space-y-4">
           {eyebrow && (
             <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-primary font-bold">
@@ -244,7 +244,7 @@ export function PageHeader({
 
 export function PageBody({ children }: { children: ReactNode }) {
   return (
-    <div className="max-w-6xl mx-auto px-6 lg:px-10 py-10 lg:py-12 animate-in fade-in duration-1000">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 lg:py-12 animate-in fade-in duration-1000">
       {children}
     </div>
   );

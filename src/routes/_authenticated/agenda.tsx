@@ -207,7 +207,7 @@ function AgendaPage() {
           </div>
         )}
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatTile label="Eventos futuros" value={upcoming.length} icon={CalendarDays} />
           <StatTile label="Você confirmou" value={mine.length} icon={CheckCircle2} />
           <StatTile
@@ -223,7 +223,7 @@ function AgendaPage() {
           />
         </div>
 
-        <div className="mt-8 grid sm:grid-cols-[1fr_auto_auto] gap-3">
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-[1fr_auto_auto] gap-3">
           <Input
             placeholder="Buscar por título, descrição ou local"
             value={search}
@@ -250,7 +250,7 @@ function AgendaPage() {
         </div>
 
         <Tabs defaultValue="proximos" className="mt-8">
-          <TabsList>
+          <TabsList className="w-full flex overflow-x-auto justify-start sm:justify-center scrollbar-none">
             <TabsTrigger value="proximos">Próximos</TabsTrigger>
             <TabsTrigger value="meus">Meus eventos</TabsTrigger>
             <TabsTrigger value="pendentes">Pendentes</TabsTrigger>

@@ -29,7 +29,7 @@ export function PanelSection({
         </div>
         {action}
       </header>
-      <div className="p-6">{children}</div>
+      <div className="p-4 sm:p-6">{children}</div>
     </section>
   );
 }
@@ -56,7 +56,7 @@ export function StatTile({
           <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
         )}
       </div>
-      <div className="font-serif text-4xl mt-6 leading-none tabular-nums">{value}</div>
+      <div className="font-serif text-3xl sm:text-4xl mt-6 leading-none tabular-nums">{value}</div>
       <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground mt-2">
         {label}
       </div>
@@ -65,7 +65,7 @@ export function StatTile({
   );
 
   const base =
-    "group border border-border bg-card p-6 rounded-sm transition-colors block";
+    "group border border-border bg-card p-4 sm:p-6 rounded-sm transition-colors block";
 
   if (to) {
     return (

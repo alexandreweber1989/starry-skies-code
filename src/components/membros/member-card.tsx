@@ -156,7 +156,7 @@ export function MemberCard({
           {initialsOf(profile.full_name)}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="truncate font-medium leading-tight">
+          <p className="truncate font-medium leading-tight text-sm sm:text-base">
             {displayMemberName(profile.full_name, profile.church_function, profile.gender)}
           </p>
           <p className="truncate text-xs text-muted-foreground">
@@ -204,11 +204,11 @@ export function MemberCard({
       )}
 
       <div className="mt-3 flex flex-wrap gap-1.5">
-        <Badge variant={active ? "default" : "secondary"}>
+        <Badge variant={active ? "default" : "secondary"} className="text-[10px] sm:text-xs">
           {labelOf(MEMBERSHIP_STATUS, profile.membership_status ?? "ativo")}
         </Badge>
-        {age !== null && <Badge variant="outline">{age} anos</Badge>}
-        {profile.is_baptized && <Badge variant="outline">Batizado</Badge>}
+        {age !== null && <Badge variant="outline" className="text-[10px] sm:text-xs">{age} anos</Badge>}
+        {profile.is_baptized && <Badge variant="outline" className="text-[10px] sm:text-xs">Batizado</Badge>}
         {isBirthday && <Badge className="animate-pulse">🎂 Aniversário do mês</Badge>}
       </div>
 

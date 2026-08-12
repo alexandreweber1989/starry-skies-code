@@ -148,7 +148,7 @@ function Dashboard() {
         description="Centro operacional da Igreja Batista Atos. Tudo que precisa de você hoje aparece primeiro."
         actions={
           data?.proximo ? (
-            <div className="border border-border rounded-sm px-4 py-3 bg-background">
+            <div className="border border-border rounded-sm px-4 py-3 bg-background w-full md:w-auto">
               <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
                 Próximo culto · {relativeDayLabel(data.proximo.event_date)}
               </div>
@@ -175,7 +175,7 @@ function Dashboard() {
             <StatGridSkeleton count={4} />
           </LoadingRegion>
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {isAdmin ? (
               <StatTile
                 label="Membros ativos"
@@ -254,7 +254,7 @@ function Dashboard() {
         </div>
 
         <div className="mt-6">
-          <div className="border border-border bg-sidebar text-sidebar-foreground p-8 rounded-sm flex flex-col justify-between">
+          <div className="border border-border bg-sidebar text-sidebar-foreground p-6 sm:p-8 rounded-sm flex flex-col justify-between">
             <div>
               <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-sidebar-primary mb-4">
                 Nossa base
@@ -278,7 +278,7 @@ function Dashboard() {
 
         <div className="mt-6 grid lg:grid-cols-3 gap-6">
           <PanelSection label="Navegação" title="Atalhos" className="lg:col-span-2">
-            <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
               {filteredAtalhos.map((a) => (
                 <Link
                   key={a.to}
