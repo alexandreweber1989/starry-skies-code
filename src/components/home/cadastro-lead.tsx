@@ -387,7 +387,8 @@ export function CadastroLead() {
 }
 
 const inputCls =
-  "w-full rounded-lg lg:rounded-xl border border-border/70 bg-background/60 px-3 lg:px-4 h-10 lg:h-14 text-sm lg:text-base xl:text-lg text-foreground outline-none transition-colors focus:border-foreground focus:bg-background";
+  "w-full rounded-lg lg:rounded-xl border border-border/70 bg-background/60 px-3 lg:px-4 h-10 lg:h-14 text-sm lg:text-base xl:text-lg text-foreground outline-none transition-colors focus:border-foreground focus:bg-background disabled:opacity-50";
+
 
 function Campo({ label, children }: { label: string; children: React.ReactNode }) {
   return (
