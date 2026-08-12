@@ -655,7 +655,7 @@ function Historia() {
           }}
         />
 
-        <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-[200px_1fr] gap-12 lg:gap-32 items-center relative z-10">
+        <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-[200px_1fr] gap-8 sm:gap-12 lg:gap-32 items-center relative z-10">
           {/* Vertical Timeline Navigation */}
           <div className="hidden lg:flex flex-col gap-10 relative py-10">
             {/* Timeline Line */}
@@ -728,8 +728,8 @@ function Historia() {
           </div>
 
           {/* Active Chapter Content */}
-          <div className="relative min-h-[30rem] flex flex-col justify-center">
-            <div className="font-mono text-[11px] uppercase tracking-[0.4em] text-primary/60 mb-12 flex items-center gap-4">
+          <div className="relative min-h-[24rem] sm:min-h-[30rem] flex flex-col justify-center">
+            <div className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.4em] text-primary/60 mb-8 sm:mb-12 flex items-center gap-4">
               <span className="h-px w-8 bg-primary/40" />
               Nossa Gênese
             </div>
@@ -766,7 +766,7 @@ function Historia() {
                     exit: { opacity: 0, y: -20 }
                   }}
                   transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-                  className="font-serif text-5xl md:text-8xl lg:text-9xl leading-[0.9] font-bold tracking-[-0.04em] mb-12 uppercase text-foreground"
+                  className="font-serif text-4xl sm:text-5xl md:text-8xl lg:text-9xl leading-[0.9] font-bold tracking-[-0.04em] mb-8 sm:mb-12 uppercase text-foreground"
                 >
                   {capitulos[ativo].titulo}
                 </motion.h2>
@@ -778,7 +778,7 @@ function Historia() {
                     exit: { opacity: 0, y: 10 }
                   }}
                   transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-                  className="text-lg md:text-2xl text-muted-foreground leading-relaxed max-w-2xl font-medium tracking-tight"
+                  className="text-base sm:text-lg md:text-2xl text-muted-foreground leading-relaxed max-w-2xl font-medium tracking-tight"
                 >
                   {capitulos[ativo].texto}
                 </motion.p>
