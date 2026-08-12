@@ -742,9 +742,9 @@ function Historia() {
                 animate="animate"
                 exit="exit"
                 variants={{
-                  initial: { opacity: 0 },
-                  animate: { opacity: 1, transition: { staggerChildren: 0.15 } },
-                  exit: { opacity: 0, transition: { staggerChildren: 0.05, staggerDirection: -1 } }
+                  initial: { opacity: 0, y: 40 },
+                  animate: { opacity: 1, y: 0, transition: { staggerChildren: 0.15 } },
+                  exit: { opacity: 0, y: -40, transition: { duration: 0.3 } }
                 }}
                 className="will-change-transform"
               >
