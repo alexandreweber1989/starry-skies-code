@@ -112,18 +112,19 @@ export function CadastroLead() {
       value = formatWhatsApp(value);
     }
     
-    if (k === "uf") {
-      buscarCidades(value);
-      setForm((f) => ({ ...f, uf: value, cidadeId: "", cidadeNome: "", bairro: "" }));
+    if (k === "cidadeId") {
+      const city = CIDADES_HABILITADAS.find(c => c.id.toString() === value);
+      buscarBairros(Number(value));
+      setForm((f) => ({ 
+        ...f, 
+        cidadeId: value, 
+        cidadeNome: city?.nome || "", 
+        uf: city?.uf || "",
+        bairro: "" 
+      }));
       return;
     }
 
-    if (k === "cidadeId") {
-      const city = cidades.find(c => c.id.toString() === value);
-      buscarBairros(Number(value));
-      setForm((f) => ({ ...f, cidadeId: value, cidadeNome: city?.nome || "", bairro: "" }));
-      return;
-    }
 
     setForm((f) => ({ ...f, [k]: value }));
     if (k === "bairro" && value !== "Outro") {
