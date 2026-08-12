@@ -58,8 +58,11 @@ export function MemberFormDialog({
   const [form, setForm] = useState<MemberProfile>(EMPTY);
 
   useEffect(() => {
-    if (open && profile) setForm({ ...profile });
-    else if (open) setForm(EMPTY);
+    if (open && profile) {
+      setForm({ ...profile });
+    } else if (open) {
+      setForm(EMPTY);
+    }
   }, [open, profile]);
 
   const set = (key: string) => (value: unknown) =>
