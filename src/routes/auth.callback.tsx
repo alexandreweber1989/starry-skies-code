@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { supabase } from '@/integrations/supabase/client';
+import { useEffect } from 'react';
 
 export const Route = createFileRoute('/auth/callback')({
   component: AuthCallback,
@@ -7,10 +8,6 @@ export const Route = createFileRoute('/auth/callback')({
 
 function AuthCallback() {
   const navigate = Route.useNavigate();
-
-  import { useEffect } from 'react';
-  
-  // ...
 
   useEffect(() => {
     const handleCallback = async () => {
@@ -21,7 +18,7 @@ function AuthCallback() {
       } else {
         const timeout = setTimeout(() => {
           navigate({ to: '/auth', replace: true });
-        }, 2000);
+        }, 3000);
         return () => clearTimeout(timeout);
       }
     };
