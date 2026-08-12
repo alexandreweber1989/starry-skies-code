@@ -53,27 +53,24 @@ export function VersiculoAnimado() {
       timeout = setTimeout(() => {
         setPhase("glitch");
         let frame = 0;
-        const totalFrames = 25;
+        const totalFrames = 22;
         
         const scrambleInterval = setInterval(() => {
           frame++;
           const progress = frame / totalFrames;
           const nextVersiculo = VERSICULOS[(index + 1) % VERSICULOS.length];
           
-          // Efeito de transição: caracteres do atual viram símbolos, depois viram caracteres do próximo
           let out = "";
           const targetLength = Math.max(currentVersiculo.texto.length, nextVersiculo.texto.length);
           
           for (let i = 0; i < targetLength; i++) {
             if (Math.random() > progress) {
-              // Mantém ou distorce o atual
               if (i < currentVersiculo.texto.length) {
                 out += Math.random() > 0.8 ? pool[Math.floor(Math.random() * pool.length)] : currentVersiculo.texto[i];
               } else {
                 out += pool[Math.floor(Math.random() * pool.length)];
               }
             } else {
-              // Começa a revelar o próximo
               if (i < nextVersiculo.texto.length) {
                 out += Math.random() > 0.2 ? pool[Math.floor(Math.random() * pool.length)] : nextVersiculo.texto[i];
               } else {
@@ -92,7 +89,7 @@ export function VersiculoAnimado() {
             setScrambledText("");
             setIndex((prev) => (prev + 1) % VERSICULOS.length);
           }
-        }, 45);
+        }, 40);
       }, 5000);
     }
 
@@ -106,12 +103,18 @@ export function VersiculoAnimado() {
           className="font-serif text-3xl md:text-4xl leading-tight min-h-[140px] text-sidebar-foreground"
         >
           {phase === "glitch" ? (
-            <span className="font-mono text-primary/80 break-words opacity-90 block leading-tight">
+            <span 
+              className="font-mono text-primary break-words block leading-tight relative"
+              style={{ 
+                color: 'var(--color-sidebar-primary)',
+                textShadow: '0 0 8px var(--color-sidebar-primary)' 
+              }}
+            >
               {scrambledText}
             </span>
           ) : (
             <div className="relative">
-              <span className="relative z-10">
+              <span className="relative z-10 block">
                 "{displayText}"
                 {phase === "typing-text" && (
                   <motion.span
