@@ -89,20 +89,6 @@ export function MemberFormDialog({
 
   const save = useMutation({
     mutationFn: async () => {
-      // Prioridade: ID no form state (fallback) > ID do profile passado via prop
-      const targetId = form?.id || profile?.id;
-
-      if (!targetId) {
-        console.error("DEBUG: Save attempt without ID", { profile, form });
-        // Se ainda não temos ID, tentamos uma última vez buscar pelo usuário logado
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          const { error } = await supabase.from("profiles").update(payload as any).eq("id", user.id);
-          if (!error) return;
-        }
-        throw new Error("Sua sessão expirou ou o cadastro não foi localizado. Por favor, recarregue a página.");
-      }
-
       const parsed = schema.safeParse({
         full_name: str("full_name"),
         email: str("email"),
@@ -155,12 +141,26 @@ export function MemberFormDialog({
         bio: clean(form.bio),
         notes: clean(form.notes),
       };
+
       if (canEditMembership) {
         payload.membership_type = clean(form.membership_type);
         payload.membership_status = form.membership_status || "ativo";
         payload.membership_end_date = clean(form.membership_end_date);
-        // Função eclesiástica define o prefixo de tratamento (Pr., Pra., Apasc., Líder).
         payload.church_function = form.church_function || "membro";
+      }
+
+      // Prioridade: ID no form state (fallback) > ID do profile passado via prop
+      let targetId = form?.id || profile?.id;
+
+      if (!targetId) {
+        console.error("DEBUG: Save attempt without ID", { profile, form });
+        // Se ainda não temos ID, tentamos buscar o usuário logado
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          targetId = user.id;
+        } else {
+          throw new Error("Sua sessão expirou ou o cadastro não foi localizado. Por favor, recarregue a página.");
+        }
       }
 
       const { error } = await supabase.from("profiles").update(payload as any).eq("id", targetId);
