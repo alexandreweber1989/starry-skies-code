@@ -84,22 +84,27 @@ function AuthPage() {
    */
   async function handleGoogle() {
     try {
-      // Usamos o broker nativo do Lovable/TanStack Start
-      // Isso inicia o fluxo OAuth gerenciado pelo Lovable
+      setLoading(true);
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: { 
           redirectTo: `${window.location.origin}/auth`,
+          queryParams: {
+            prompt: 'select_account',
+            access_type: 'offline',
+          }
         },
       });
       
       if (error) {
         console.error("Erro no login com Google:", error);
         toast.error("Não foi possível iniciar o login com Google: " + error.message);
+        setLoading(false);
       }
     } catch (err) {
       console.error("Exceção no login com Google:", err);
       toast.error("Ocorreu um erro ao tentar conectar com o Google.");
+      setLoading(false);
     }
   }
 
