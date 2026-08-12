@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { ArrowRight, Check, Loader2 } from "lucide-react";
+import { ArrowRight, Check, Loader2, MapPin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useLocalidades } from "@/hooks/use-localidades";
 
 /* ---------------------------------------------------------------------------
  * DADOS DE EXEMPLO — troque pelos reais depois (líderes, WhatsApp e os
@@ -17,26 +18,22 @@ type Mesa = {
   hora: string;
   local: string;
   bairros: string[];
+  cidade?: string;
   lider: string;
   whatsapp: string;
 };
 
 const MESAS_EXEMPLO: Mesa[] = [
-  { perfil: "homem", rede: "Rede Zadoque", mesa: "Mesa Zadoque 1", dia: "Quarta", hora: "20h", local: "Uvaranas", bairros: ["Uvaranas", "Oficinas", "Chapada"], lider: "Ap. André", whatsapp: "5542999990001" },
-  { perfil: "homem", rede: "Rede Zadoque", mesa: "Mesa Zadoque 2", dia: "Quinta", hora: "20h", local: "Centro", bairros: ["Centro", "Nova Rússia", "Contorno"], lider: "Ap. Rafael", whatsapp: "5542999990002" },
-  { perfil: "mulher", rede: "Rede Sabaoth", mesa: "Mesa Sabaoth 1", dia: "Terça", hora: "20h", local: "Oficinas", bairros: ["Uvaranas", "Oficinas", "Boa Vista"], lider: "Ap. Débora", whatsapp: "5542999990003" },
-  { perfil: "mulher", rede: "Rede Sabaoth", mesa: "Mesa Sabaoth 2", dia: "Quinta", hora: "20h", local: "Centro", bairros: ["Centro", "Jardim Carvalho", "Colônia Dona Luíza"], lider: "Ap. Priscila", whatsapp: "5542999990004" },
-  { perfil: "jovem", rede: "Rede de Jovens", mesa: "Mesa dos Jovens", dia: "Sábado", hora: "19h", local: "Templo", bairros: [], lider: "Líder Lucas", whatsapp: "5542999990005" },
-  { perfil: "adolescente", rede: "Rede de Adolescentes", mesa: "Mesa dos Teens", dia: "Sábado", hora: "16h", local: "Sala Teens", bairros: [], lider: "Líder Ana", whatsapp: "5542999990006" },
+  { perfil: "homem", rede: "Rede Zadoque", mesa: "Mesa Zadoque 1", dia: "Quarta", hora: "20h", local: "Uvaranas", bairros: ["Uvaranas", "Oficinas", "Chapada"], cidade: "Ponta Grossa", lider: "Ap. André", whatsapp: "5542999990001" },
+  { perfil: "homem", rede: "Rede Zadoque", mesa: "Mesa Zadoque 2", dia: "Quinta", hora: "20h", local: "Centro", bairros: ["Centro", "Nova Rússia", "Contorno"], cidade: "Ponta Grossa", lider: "Ap. Rafael", whatsapp: "5542999990002" },
+  { perfil: "mulher", rede: "Rede Sabaoth", mesa: "Mesa Sabaoth 1", dia: "Terça", hora: "20h", local: "Oficinas", bairros: ["Uvaranas", "Oficinas", "Boa Vista"], cidade: "Ponta Grossa", lider: "Ap. Débora", whatsapp: "5542999990003" },
+  { perfil: "mulher", rede: "Rede Sabaoth", mesa: "Mesa Sabaoth 2", dia: "Quinta", hora: "20h", local: "Centro", bairros: ["Centro", "Jardim Carvalho", "Colônia Dona Luíza"], cidade: "Ponta Grossa", lider: "Ap. Priscila", whatsapp: "5542999990004" },
+  { perfil: "jovem", rede: "Rede de Jovens", mesa: "Mesa dos Jovens", dia: "Sábado", hora: "19h", local: "Templo", bairros: [], cidade: "Ponta Grossa", lider: "Líder Lucas", whatsapp: "5542999990005" },
+  { perfil: "adolescente", rede: "Rede de Adolescentes", mesa: "Mesa dos Teens", dia: "Sábado", hora: "16h", local: "Sala Teens", bairros: [], cidade: "Ponta Grossa", lider: "Líder Ana", whatsapp: "5542999990006" },
 ];
 
 // Número geral da igreja (fallback quando não encontramos Mesa) — troque pelo real.
 const WHATSAPP_IGREJA = "5542900000000";
-
-const BAIRROS = [
-  "Parque N. S. das Graças", "Uvaranas", "Oficinas", "Boa Vista", "Centro",
-  "Jardim Carvalho", "Colônia Dona Luíza", "Contorno", "Chapada", "Nova Rússia", "Outro",
-];
 
 const PERFIS = [
   { v: "mulher", label: "Mulher" },
@@ -45,11 +42,24 @@ const PERFIS = [
   { v: "adolescente", label: "Adolescente (7–15)" },
 ];
 
-function acharMesa(perfil: string, bairro: string): Mesa | null {
+function acharMesa(perfil: string, bairro: string, cidade: string): Mesa | null {
   const daRede = MESAS_EXEMPLO.filter((m) => m.perfil === perfil);
   if (daRede.length === 0) return null;
-  const porBairro = daRede.find((m) => m.bairros.includes(bairro));
-  return porBairro ?? daRede[0];
+  
+  // Prioridade 1: Mesmo bairro e cidade
+  const porBairro = daRede.find((m) => m.bairros.includes(bairro) && m.cidade === cidade);
+  if (porBairro) return porBairro;
+
+  // Prioridade 2: Mesma cidade
+  const porCidade = daRede.find((m) => m.cidade === cidade);
+  if (porCidade) return porCidade;
+
+  // Fallback
+  return daRede[0];
+}
+
+function listarOutrasMesas(perfil: string, mesaAtual: Mesa | null): Mesa[] {
+  return MESAS_EXEMPLO.filter(m => m.perfil === perfil && m.mesa !== mesaAtual?.mesa);
 }
 
 function linkWhatsApp(numero: string, msg: string) {
@@ -57,6 +67,7 @@ function linkWhatsApp(numero: string, msg: string) {
 }
 
 const EASE = [0.22, 1, 0.36, 1] as const;
+
 
 export function CadastroLead() {
   const reduce = useReducedMotion();
