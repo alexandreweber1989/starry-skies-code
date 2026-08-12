@@ -69,9 +69,16 @@ function linkWhatsApp(numero: string, msg: string) {
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 
+const CIDADES_HABILITADAS = [
+  { id: 4104808, nome: "Cascavel", uf: "PR" },
+  { id: 4202100, nome: "Barra Velha", uf: "SC" },
+  { id: 4104907, nome: "Castro", uf: "PR" },
+  { id: 4119905, nome: "Ponta Grossa", uf: "PR" },
+];
+
 export function CadastroLead() {
   const reduce = useReducedMotion();
-  const { estados, cidades, bairros, buscarCidades, buscarBairros, loadingCidades, loadingBairros } = useLocalidades();
+  const { bairros, buscarBairros, loadingBairros } = useLocalidades();
   
   const [form, setForm] = useState({ 
     nome: "", 
@@ -83,6 +90,7 @@ export function CadastroLead() {
     bairro: "",
     bairroManual: ""
   });
+
 
   const [enviando, setEnviando] = useState(false);
   const [resultado, setResultado] = useState<{ principal: Mesa | null; outras: Mesa[] } | undefined>(undefined);
@@ -104,18 +112,19 @@ export function CadastroLead() {
       value = formatWhatsApp(value);
     }
     
-    if (k === "uf") {
-      buscarCidades(value);
-      setForm((f) => ({ ...f, uf: value, cidadeId: "", cidadeNome: "", bairro: "" }));
+    if (k === "cidadeId") {
+      const city = CIDADES_HABILITADAS.find(c => c.id.toString() === value);
+      buscarBairros(Number(value));
+      setForm((f) => ({ 
+        ...f, 
+        cidadeId: value, 
+        cidadeNome: city?.nome || "", 
+        uf: city?.uf || "",
+        bairro: "" 
+      }));
       return;
     }
 
-    if (k === "cidadeId") {
-      const city = cidades.find(c => c.id.toString() === value);
-      buscarBairros(Number(value));
-      setForm((f) => ({ ...f, cidadeId: value, cidadeNome: city?.nome || "", bairro: "" }));
-      return;
-    }
 
     setForm((f) => ({ ...f, [k]: value }));
     if (k === "bairro" && value !== "Outro") {
@@ -228,14 +237,6 @@ export function CadastroLead() {
                     ))}
                   </select>
                 </Campo>
-                <Campo label="Estado (UF)">
-                  <select value={form.uf} onChange={set("uf")} className={inputCls}>
-                    <option value="">Selecione o Estado…</option>
-                    {estados.map((e) => (
-                      <option key={e.sigla} value={e.sigla}>{e.nome}</option>
-                    ))}
-                  </select>
-                </Campo>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:gap-6">
@@ -244,14 +245,14 @@ export function CadastroLead() {
                     value={form.cidadeId} 
                     onChange={set("cidadeId")} 
                     className={inputCls}
-                    disabled={!form.uf || loadingCidades}
                   >
-                    <option value="">{loadingCidades ? "Carregando…" : "Selecione a Cidade…"}</option>
-                    {cidades.map((c) => (
-                      <option key={c.id} value={c.id.toString()}>{c.nome}</option>
+                    <option value="">Selecione a Cidade…</option>
+                    {CIDADES_HABILITADAS.map((c) => (
+                      <option key={c.id} value={c.id.toString()}>{c.nome} ({c.uf})</option>
                     ))}
                   </select>
                 </Campo>
+
                 <Campo label="Bairro">
                   <select 
                     value={form.bairro} 
