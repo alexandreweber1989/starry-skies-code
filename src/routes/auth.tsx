@@ -118,7 +118,7 @@ function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground grid lg:grid-cols-2">
+    <div className="min-h-screen bg-background text-foreground grid grid-cols-1 lg:grid-cols-2">
       <aside className="hidden lg:flex flex-col justify-between bg-sidebar text-sidebar-foreground p-12">
         <Link
           to="/"
@@ -143,7 +143,7 @@ function AuthPage() {
         </div>
       </aside>
 
-      <div className="flex items-center justify-center p-6 lg:p-12">
+      <div className="flex items-center justify-center p-4 sm:p-6 lg:p-12">
         <div className="w-full max-w-md">
           <div className="mb-8">
             <div className="font-mono text-[11px] uppercase tracking-[0.25em] text-primary mb-2">
