@@ -254,7 +254,7 @@ function Dashboard() {
         </div>
 
         <div className="mt-6">
-          <div className="border border-border bg-sidebar text-sidebar-foreground p-8 rounded-sm flex flex-col justify-between">
+          <div className="border border-border bg-sidebar text-sidebar-foreground p-6 sm:p-8 rounded-sm flex flex-col justify-between">
             <div>
               <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-sidebar-primary mb-4">
                 Nossa base
