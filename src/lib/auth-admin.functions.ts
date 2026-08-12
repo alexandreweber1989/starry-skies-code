@@ -11,8 +11,6 @@ export const updateUserPassword = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     console.log(`[Auth] Attempting to set password for ${data.email}`);
     
-    // In serverless environments, dynamic imports inside the handler ensure
-    // we don't leak server-only modules into the client bundle.
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     // 1. Get the user ID by email
@@ -46,7 +44,11 @@ export const updateUserPassword = createServerFn({ method: "POST" })
       console.log(`[Auth] Updating password for existing user ${data.email}`);
       const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
         user.id,
-        { password: data.password, email_confirm: true }
+        { 
+          password: data.password, 
+          email_confirm: true,
+          user_metadata: { ...user.user_metadata, email_verified: true }
+        }
       );
 
       if (updateError) {
