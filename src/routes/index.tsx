@@ -582,11 +582,10 @@ function Historia() {
   });
 
   const [ativo, setAtivo] = useState(0);
+  
   useMotionValueEvent(scrollYProgress, "change", (v) => {
-    const idx = Math.min(
-      capitulos.length - 1,
-      Math.max(0, Math.floor(v * capitulos.length)),
-    );
+    const progress = Math.max(0, Math.min(0.999, v));
+    const idx = Math.floor(progress * capitulos.length);
     setAtivo(idx);
   });
 
@@ -621,7 +620,7 @@ function Historia() {
   return (
     <section
       ref={ref}
-      className="relative z-20 bg-background border-t border-border/10 overflow-hidden"
+      className="relative z-20 bg-background border-t border-border/10"
       style={{ height: `${capitulos.length * 100}vh` }}
     >
       <div className="sticky top-0 h-screen overflow-hidden flex items-center px-6 lg:px-10">
@@ -742,9 +741,9 @@ function Historia() {
                 animate="animate"
                 exit="exit"
                 variants={{
-                  initial: { opacity: 0 },
-                  animate: { opacity: 1, transition: { staggerChildren: 0.15 } },
-                  exit: { opacity: 0, transition: { staggerChildren: 0.05, staggerDirection: -1 } }
+                  initial: { opacity: 0, y: 40 },
+                  animate: { opacity: 1, y: 0, transition: { staggerChildren: 0.15 } },
+                  exit: { opacity: 0, y: -40, transition: { duration: 0.3 } }
                 }}
                 className="will-change-transform"
               >
