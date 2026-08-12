@@ -162,7 +162,7 @@ function RedesPage() {
                         </div>
                       )}
                     </div>
-                    <div className="font-serif text-4xl text-muted-foreground text-right shrink-0">
+                    <div className="font-serif text-3xl sm:text-4xl text-muted-foreground sm:text-right shrink-0">
                       {mesas.length.toString().padStart(2, "0")}
                       <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
                         mesas
