@@ -24,6 +24,7 @@ interface AuthState {
   session: Session | null;
   roles: RoleRow[];
   loading: boolean;
+  profile: any;
   isAdmin: boolean;
   isMinistryAdmin: (ministryId: string) => boolean;
   isMesaLeader: (mesaId: string) => boolean;
