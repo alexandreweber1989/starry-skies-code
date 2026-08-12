@@ -144,7 +144,7 @@ export function MemberFormDialog({
         payload.church_function = form.church_function || "membro";
       }
 
-      const { error } = await supabase.from("profiles").update(payload as any).eq("id", profile.id);
+      const { error } = await supabase.from("profiles").update(payload as any).eq("id", targetId);
       if (error) throw error;
     },
     onSuccess: () => {
