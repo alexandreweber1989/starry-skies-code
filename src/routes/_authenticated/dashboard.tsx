@@ -283,7 +283,7 @@ function Dashboard() {
                 <Link
                   key={a.to}
                   to={a.to}
-                  className="group border border-border rounded-sm p-4 hover:border-primary transition-colors"
+                  className="group border border-border bg-card/40 backdrop-blur-sm rounded-xl p-4 hover:border-primary hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300"
                 >
                   <div className="flex items-start justify-between">
                     <a.icon className="h-4 w-4 text-primary" />
