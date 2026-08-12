@@ -29,7 +29,7 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"signin" | "signup" | "admin-setup">("signin");
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -187,13 +187,9 @@ function AuthPage() {
           </div>
 
           <Tabs value={mode} onValueChange={(v) => setMode(v as any)}>
-            <TabsList className="grid grid-cols-3 w-full">
+            <TabsList className="grid grid-cols-2 w-full">
               <TabsTrigger value="signin">Entrar</TabsTrigger>
               <TabsTrigger value="signup">Solicitar</TabsTrigger>
-              <TabsTrigger value="admin-setup">
-                <Key className="h-3.5 w-3.5 mr-2" />
-                Senha Admin
-              </TabsTrigger>
             </TabsList>
 
 
@@ -280,37 +276,6 @@ function AuthPage() {
               </form>
             </TabsContent>
 
-            <TabsContent value="admin-setup">
-              <form onSubmit={handleAdminSetup} className="space-y-4 mt-6">
-                <p className="text-xs text-muted-foreground">
-                  Use esta aba para configurar sua senha inicial de administrador.
-                </p>
-                <div className="space-y-1.5">
-                  <Label htmlFor="admin-email">E-mail</Label>
-                  <Input
-                    id="admin-email"
-                    type="email"
-                    required
-                    value={adminSetupEmail}
-                    onChange={(e) => setAdminSetupEmail(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="admin-password">Nova Senha</Label>
-                  <Input
-                    id="admin-password"
-                    type="password"
-                    required
-                    value={adminSetupPassword}
-                    onChange={(e) => setAdminSetupPassword(e.target.value)}
-                    placeholder="Digite a senha..."
-                  />
-                </div>
-                <Button type="submit" className="w-full" loading={loading}>
-                  {loading ? "Configurando..." : "Configurar Senha"}
-                </Button>
-              </form>
-            </TabsContent>
           </Tabs>
 
 
