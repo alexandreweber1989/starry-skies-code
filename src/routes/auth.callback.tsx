@@ -8,18 +8,17 @@ export const Route = createFileRoute('/auth/callback')({
 function AuthCallback() {
   const navigate = Route.useNavigate();
 
-  Route.useLayoutEffect(() => {
+  import { useEffect } from 'react';
+  
+  // ...
+
+  useEffect(() => {
     const handleCallback = async () => {
-      // O Supabase JS client processa o fragmento da URL (#access_token=...) automaticamente
-      // se detectSessionInUrl estiver ativado (é o padrão).
-      // Apenas aguardamos um pouco para garantir que a sessão foi estabelecida.
       const { data: { session } } = await supabase.auth.getSession();
       
       if (session) {
         navigate({ to: '/dashboard', replace: true });
       } else {
-        // Caso não haja sessão imediata, o onAuthStateChange no AuthProvider cuidará do redirecionamento
-        // ou podemos redirecionar de volta para o login após um curto delay se falhar.
         const timeout = setTimeout(() => {
           navigate({ to: '/auth', replace: true });
         }, 2000);
