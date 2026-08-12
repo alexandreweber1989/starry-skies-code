@@ -148,7 +148,7 @@ function Dashboard() {
         description="Centro operacional da Igreja Batista Atos. Tudo que precisa de você hoje aparece primeiro."
         actions={
           data?.proximo ? (
-            <div className="border border-border rounded-sm px-4 py-3 bg-background w-full md:w-auto">
+            <div className="border border-border rounded-xl px-4 py-3 bg-card/50 backdrop-blur-sm w-full md:w-auto transition-all duration-300 hover:shadow-md hover:border-primary/30">
               <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
                 Próximo culto · {relativeDayLabel(data.proximo.event_date)}
               </div>
@@ -254,7 +254,7 @@ function Dashboard() {
         </div>
 
         <div className="mt-6">
-          <div className="border border-border bg-sidebar text-sidebar-foreground p-6 sm:p-8 rounded-sm flex flex-col justify-between">
+          <div className="border border-border bg-sidebar text-sidebar-foreground p-6 sm:p-8 rounded-xl flex flex-col justify-between transition-all duration-300 hover:shadow-lg hover:shadow-sidebar/10 hover:border-sidebar-border/80">
             <div>
               <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-sidebar-primary mb-4">
                 Nossa base
