@@ -126,10 +126,10 @@ export function CadastroLead() {
               Novo por aqui? 👋
             </div>
             <h3 className="font-serif text-xl lg:text-3xl xl:text-4xl font-bold leading-tight mt-1 lg:mt-3">
-              Encontre o seu lugar em nossa família
+              Encontre uma Mesa perto de você
             </h3>
             <p className="text-xs lg:text-base xl:text-lg text-muted-foreground mt-2 lg:mt-4 mb-4 lg:mb-8">
-              Sem compromisso — queremos apenas te conhecer. Nós cuidamos do resto.
+              A ideia é simples: queremos te ajudar a encontrar um grupo acolhedor para caminhar junto, bem pertinho da sua casa.
             </p>
 
             <div className="space-y-3 lg:space-y-6">
