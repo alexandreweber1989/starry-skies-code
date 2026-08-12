@@ -71,10 +71,19 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 
 export function CadastroLead() {
   const reduce = useReducedMotion();
-  const [form, setForm] = useState({ nome: "", whatsapp: "", perfil: "", bairro: "" });
+  const { estados, cidades, bairros, buscarCidades, buscarBairros, loadingCidades, loadingBairros } = useLocalidades();
+  
+  const [form, setForm] = useState({ 
+    nome: "", 
+    whatsapp: "", 
+    perfil: "", 
+    uf: "",
+    cidadeId: "",
+    cidadeNome: "",
+    bairro: "" 
+  });
   const [enviando, setEnviando] = useState(false);
-  // undefined = ainda no formulário | Mesa = achou | null = fallback (sem Mesa)
-  const [resultado, setResultado] = useState<Mesa | null | undefined>(undefined);
+  const [resultado, setResultado] = useState<{ principal: Mesa | null; outras: Mesa[] } | undefined>(undefined);
 
   const formatWhatsApp = (value: string) => {
     const numbers = value.replace(/\D/g, "");
@@ -92,36 +101,58 @@ export function CadastroLead() {
     if (k === "whatsapp") {
       value = formatWhatsApp(value);
     }
+    
+    if (k === "uf") {
+      buscarCidades(value);
+      setForm((f) => ({ ...f, uf: value, cidadeId: "", cidadeNome: "", bairro: "" }));
+      return;
+    }
+
+    if (k === "cidadeId") {
+      const city = cidades.find(c => c.id.toString() === value);
+      buscarBairros(Number(value));
+      setForm((f) => ({ ...f, cidadeId: value, cidadeNome: city?.nome || "", bairro: "" }));
+      return;
+    }
+
     setForm((f) => ({ ...f, [k]: value }));
   };
 
   const valido =
-    form.nome.trim().length > 1 && form.whatsapp.replace(/\D/g, "").length >= 10 && form.perfil && form.bairro;
+    form.nome.trim().length > 1 && 
+    form.whatsapp.replace(/\D/g, "").length >= 10 && 
+    form.perfil && 
+    form.uf &&
+    form.cidadeId &&
+    form.bairro;
 
   async function enviar(e: React.FormEvent) {
     e.preventDefault();
     if (!valido || enviando) return;
     setEnviando(true);
     const numericPhone = form.whatsapp.replace(/\D/g, "");
-    const mesa = acharMesa(form.perfil, form.bairro);
-    // Melhor esforço: registra o lead (passa a funcionar quando a tabela
-    // "leads" existir no banco). Se ainda não existir, seguimos via WhatsApp.
+    const mesaPrincipal = acharMesa(form.perfil, form.bairro, form.cidadeNome);
+    const outrasMesas = listarOutrasMesas(form.perfil, mesaPrincipal);
+
     try {
-      // @ts-ignore - a tabela leads pode ser criada via migração depois
+      // @ts-ignore
       await (supabase.from("leads") as any).insert({
         name: form.nome.trim(),
         phone: numericPhone,
         profile: form.perfil,
         neighborhood: form.bairro,
-        suggested_mesa: mesa?.mesa ?? null,
+        city: form.cidadeNome,
+        state: form.uf,
+        suggested_mesa: mesaPrincipal?.mesa ?? null,
         status: "novo",
       });
     } catch {
-      /* tabela ainda não criada — ok, o contato acontece pelo WhatsApp */
+      // Ignora erro se tabela não existir
     }
-    setResultado(mesa ?? null);
+    setResultado({ principal: mesaPrincipal ?? null, outras: outrasMesas });
     setEnviando(false);
   }
+
 
   const primeiroNome = form.nome.trim().split(" ")[0] || "";
 
