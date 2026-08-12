@@ -76,6 +76,13 @@ const CIDADES_HABILITADAS = [
   { id: 4119905, nome: "Ponta Grossa", uf: "PR" },
 ];
 
+const BAIRROS_PONTA_GROSSA = [
+  "Boa Vista", "Cará-Cará", "Centro", "Chapada", "Colônia Dona Luíza",
+  "Contorno", "Estrela", "Guaragi", "Itaiacoca", "Jardim Carvalho",
+  "Neves", "Nova Rússia", "Oficinas", "Olarias", "Piriquitos",
+  "Ronda", "Uvaia", "Uvaranas"
+].sort();
+
 export function CadastroLead() {
   const reduce = useReducedMotion();
   const { bairros, buscarBairros, loadingBairros } = useLocalidades();
@@ -261,9 +268,15 @@ export function CadastroLead() {
                     disabled={!form.cidadeId || loadingBairros}
                   >
                     <option value="">{loadingBairros ? "Carregando…" : "Selecione o Bairro…"}</option>
-                    {bairros.length > 0 && bairros.map((b) => (
-                      <option key={b.id} value={b.nome}>{b.nome}</option>
-                    ))}
+                    {form.cidadeId === "4119905" ? (
+                      BAIRROS_PONTA_GROSSA.map((b) => (
+                        <option key={b} value={b}>{b}</option>
+                      ))
+                    ) : (
+                      bairros.length > 0 && bairros.map((b) => (
+                        <option key={b.id} value={b.nome}>{b.nome}</option>
+                      ))
+                    )}
                     {form.cidadeId && !loadingBairros && (
                       <option value="Outro">Digitar outro bairro...</option>
                     )}
