@@ -168,8 +168,9 @@ export function MemberFormDialog({
     },
     onSuccess: () => {
       toast.success("Ficha do membro atualizada.");
-      qc.invalidateQueries({ queryKey: ["profiles"] });
-      qc.invalidateQueries({ queryKey: ["profile"] });
+      qc.invalidateQueries(); // Invalida todas as queries para garantir atualização global
+      qc.refetchQueries({ queryKey: ["profile"] });
+      qc.refetchQueries({ queryKey: ["profiles"] });
       onOpenChange(false);
     },
     onError: (e: Error) => toast.error(e.message),
