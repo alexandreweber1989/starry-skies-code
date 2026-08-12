@@ -101,7 +101,7 @@ export function CadastroLead() {
   const mensagemWhats = (mesa: Mesa | null) =>
     mesa
       ? `Olá! Sou ${form.nome} (${form.bairro}). Vim pelo site e quero participar da ${mesa.mesa} (${mesa.dia} ${mesa.hora}). Pode me ajudar?`
-      : `Olá! Sou ${form.nome} (${form.bairro}). Vim pelo site e quero conhecer a igreja e participar de uma Mesa perto de mim.`;
+      : `Olá! Sou ${form.nome} (${form.bairro}). Vim pelo site e quero conhecer a igreja e participar de uma Mesa.`;
 
   return (
     <div className="w-full lg:max-w-4xl xl:max-w-5xl mx-auto rounded-2xl lg:rounded-3xl border border-border/60 bg-card/80 backdrop-blur-sm p-5 sm:p-6 lg:p-12 xl:p-16 shadow-sm">
@@ -126,10 +126,10 @@ export function CadastroLead() {
               Novo por aqui? 👋
             </div>
             <h3 className="font-serif text-xl lg:text-3xl xl:text-4xl font-bold leading-tight mt-1 lg:mt-3">
-              Vamos te achar uma casa perto de você
+              Encontre o seu lugar em nossa família
             </h3>
             <p className="text-xs lg:text-base xl:text-lg text-muted-foreground mt-2 lg:mt-4 mb-4 lg:mb-8">
-              Sem compromisso — é só um oi. A gente cuida do resto.
+              Sem compromisso — queremos apenas te conhecer. Nós cuidamos do resto.
             </p>
 
             <div className="space-y-3 lg:space-y-6">
@@ -187,7 +187,7 @@ export function CadastroLead() {
               )}
             </button>
             <p className="text-[11px] lg:text-xs xl:text-sm text-muted-foreground/80 text-center mt-3 lg:mt-5">
-              Vamos te conectar à Mesa e ao líder mais próximos.
+              Vamos te conectar à Mesa e à liderança mais próxima.
             </p>
           </motion.form>
         ) : (
@@ -238,8 +238,8 @@ export function CadastroLead() {
             ) : (
               <>
                 <p className="text-xs text-muted-foreground mt-3">
-                  Recebemos seu contato! Vamos te encontrar uma Mesa perto de você.
-                  É só dar um oi que a liderança te acolhe.
+                Recebemos seu contato! Vamos encontrar uma Mesa para você.
+                É só enviar uma mensagem que a liderança te acolherá.
                 </p>
                 <a
                   href={linkWhatsApp(WHATSAPP_IGREJA, mensagemWhats(null))}
