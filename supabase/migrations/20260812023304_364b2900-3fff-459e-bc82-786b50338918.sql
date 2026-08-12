@@ -1,0 +1,1 @@
+UPDATE public.membership_requests SET status = 'aprovado', reviewed_at = now() WHERE email = 'alew15_7@hotmail.com' AND status = 'pendente';
