@@ -331,9 +331,9 @@ function LinhaGlitch({ palavras }: { palavras: string[] }) {
       const larguraA100 = meas.getBoundingClientRect().width;
       meas.remove();
       if (!larguraA100) return;
-      const idealLargura = (disponivel * 0.92) / (larguraA100 / 100);
-      const capAltura = window.innerHeight * 0.24; // evita sobrepor as linhas em paisagem
-      setFontPx(Math.max(28, Math.min(200, idealLargura, capAltura)));
+      const idealLargura = (disponivel * 0.94) / (larguraA100 / 100);
+      const capAltura = window.innerHeight * 0.22; // evita sobrepor as linhas em paisagem
+      setFontPx(Math.max(24, Math.min(200, idealLargura, capAltura)));
     };
 
     calc();

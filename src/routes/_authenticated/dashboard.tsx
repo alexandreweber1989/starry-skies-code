@@ -175,7 +175,7 @@ function Dashboard() {
             <StatGridSkeleton count={4} />
           </LoadingRegion>
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {isAdmin ? (
               <StatTile
                 label="Membros ativos"
@@ -278,7 +278,7 @@ function Dashboard() {
 
         <div className="mt-6 grid lg:grid-cols-3 gap-6">
           <PanelSection label="Navegação" title="Atalhos" className="lg:col-span-2">
-            <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
               {filteredAtalhos.map((a) => (
                 <Link
                   key={a.to}

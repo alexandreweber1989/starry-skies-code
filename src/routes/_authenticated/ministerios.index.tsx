@@ -47,7 +47,7 @@ function MinistriesPage() {
       />
       <PageBody>
         {isLoading && <div className="text-muted-foreground">Carregando...</div>}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {data?.map((m, i) => (
             <div key={m.id} className="relative h-full">
             {isAdmin && (

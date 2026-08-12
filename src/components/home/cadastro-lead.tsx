@@ -206,7 +206,7 @@ export function CadastroLead() {
       : `Olá! Sou ${form.nome} (${form.bairro}). Vim pelo site e quero conhecer a igreja e participar de uma Mesa.`;
 
   return (
-    <div className="w-full lg:max-w-4xl xl:max-w-5xl mx-auto rounded-2xl lg:rounded-3xl border border-border/60 bg-card/80 backdrop-blur-sm p-5 sm:p-6 lg:p-12 xl:p-16 shadow-sm">
+    <div className="w-full lg:max-w-4xl xl:max-w-5xl mx-auto rounded-xl sm:rounded-2xl lg:rounded-3xl border border-border/60 bg-card/80 backdrop-blur-sm p-4 sm:p-6 lg:p-12 xl:p-16 shadow-sm overflow-hidden">
       <AnimatePresence mode="wait">
         {resultado === undefined ? (
           <motion.form
