@@ -210,7 +210,7 @@ export function CadastroLead() {
                   autoComplete="tel"
                 />
               </Campo>
-              <div className="grid grid-cols-2 gap-3 lg:gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:gap-6">
                 <Campo label="Você é">
                   <select value={form.perfil} onChange={set("perfil")} className={inputCls}>
                     <option value="">Selecione…</option>
@@ -219,15 +219,49 @@ export function CadastroLead() {
                     ))}
                   </select>
                 </Campo>
-                <Campo label="Seu bairro">
-                  <select value={form.bairro} onChange={set("bairro")} className={inputCls}>
-                    <option value="">Selecione…</option>
-                    {BAIRROS.map((b) => (
-                      <option key={b} value={b}>{b}</option>
+                <Campo label="Estado (UF)">
+                  <select value={form.uf} onChange={set("uf")} className={inputCls}>
+                    <option value="">Selecione o Estado…</option>
+                    {estados.map((e) => (
+                      <option key={e.sigla} value={e.sigla}>{e.nome}</option>
                     ))}
                   </select>
                 </Campo>
               </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:gap-6">
+                <Campo label="Cidade">
+                  <select 
+                    value={form.cidadeId} 
+                    onChange={set("cidadeId")} 
+                    className={inputCls}
+                    disabled={!form.uf || loadingCidades}
+                  >
+                    <option value="">{loadingCidades ? "Carregando…" : "Selecione a Cidade…"}</option>
+                    {cidades.map((c) => (
+                      <option key={c.id} value={c.id.toString()}>{c.nome}</option>
+                    ))}
+                  </select>
+                </Campo>
+                <Campo label="Bairro">
+                  <select 
+                    value={form.bairro} 
+                    onChange={set("bairro")} 
+                    className={inputCls}
+                    disabled={!form.cidadeId || loadingBairros}
+                  >
+                    <option value="">{loadingBairros ? "Carregando…" : "Selecione o Bairro…"}</option>
+                    {bairros.length > 0 ? (
+                      bairros.map((b) => (
+                        <option key={b.id} value={b.nome}>{b.nome}</option>
+                      ))
+                    ) : form.cidadeId && !loadingBairros ? (
+                      <option value="Outro">Outro / Centro</option>
+                    ) : null}
+                  </select>
+                </Campo>
+              </div>
+
             </div>
 
             <button
