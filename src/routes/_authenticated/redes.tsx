@@ -119,7 +119,7 @@ function RedesPage() {
             <CardGridSkeleton count={3} className="grid gap-6 lg:grid-cols-2" />
           </LoadingRegion>
         ) : (
-          <div className="space-y-8">
+          <div className="grid grid-cols-1 gap-6 sm:gap-8">
             {filtered.map((r, i) => {
               const redeStats = statsOf(stats?.redes, r.id);
               const mesas = mesasByRede?.[r.id] ?? [];
@@ -130,7 +130,7 @@ function RedesPage() {
                   className="border border-border bg-card rounded-sm overflow-hidden"
                   style={{ borderTop: `4px solid ${redeColor}` }}
                 >
-                  <div className="p-6 border-b border-border flex items-start justify-between gap-4">
+                  <div className="p-4 sm:p-6 border-b border-border flex flex-col sm:flex-row items-start justify-between gap-4">
                     <div className="min-w-0">
                       <div
                         className="font-mono text-[11px] uppercase tracking-widest mb-2"
@@ -175,7 +175,7 @@ function RedesPage() {
                       return (
                         <li
                           key={m.id}
-                          className="px-6 py-3 flex flex-wrap items-center justify-between gap-3 text-sm"
+                          className="px-4 sm:px-6 py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-sm"
                         >
                           <div className="min-w-0">
                             <div className="font-serif text-lg">{m.name}</div>
