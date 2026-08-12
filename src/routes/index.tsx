@@ -579,6 +579,7 @@ function Historia() {
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end end"],
+    layoutEffect: false // Adicionado para garantir que o scroll seja calculado corretamente após o layout
   });
 
   const [ativo, setAtivo] = useState(0);
