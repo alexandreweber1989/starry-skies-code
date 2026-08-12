@@ -583,10 +583,10 @@ function Historia() {
 
   const [ativo, setAtivo] = useState(0);
   useMotionValueEvent(scrollYProgress, "change", (v) => {
-    const idx = Math.min(
-      capitulos.length - 1,
-      Math.max(0, Math.floor(v * capitulos.length)),
-    );
+    // Aumentamos a precisão do cálculo dividindo o scroll em fatias exatas
+    // e usando Math.min para não estourar o índice no final do scroll
+    const progress = Math.max(0, Math.min(0.999, v));
+    const idx = Math.floor(progress * capitulos.length);
     setAtivo(idx);
   });
 
