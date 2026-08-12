@@ -89,12 +89,18 @@ export function MemberFormDialog({
 
   const save = useMutation({
     mutationFn: async () => {
-      // Se não temos profile.id, verificamos se o form já tem o ID (fallback)
-      const targetId = profile?.id || form?.id;
-      
+      // Prioridade: ID no form state (fallback) > ID do profile passado via prop
+      const targetId = form?.id || profile?.id;
+
       if (!targetId) {
         console.error("DEBUG: Save attempt without ID", { profile, form });
-        throw new Error("Cadastro não encontrado.");
+        // Se ainda não temos ID, tentamos uma última vez buscar pelo usuário logado
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { error } = await supabase.from("profiles").update(payload as any).eq("id", user.id);
+          if (!error) return;
+        }
+        throw new Error("Sua sessão expirou ou o cadastro não foi localizado. Por favor, recarregue a página.");
       }
 
       const parsed = schema.safeParse({
