@@ -23,13 +23,11 @@ export function VersiculoAnimado() {
   const [index, setIndex] = useState(0);
   const [displayText, setDisplayText] = useState("");
   const [displayRef, setDisplayRef] = useState("");
-  const [phase, setPhase] = useState<"typing-text" | "typing-ref" | "waiting" | "glitch">("typing-text");
-  const [scrambledText, setScrambledText] = useState("");
+  const [phase, setPhase] = useState<"typing-text" | "typing-ref" | "waiting" | "transitioning">("typing-text");
 
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;
     const currentVersiculo = VERSICULOS[index];
-    const pool = "01</>{}[]=+*#\\|!?~:;=ABEFHKMNRSXYZ";
 
     if (phase === "typing-text") {
       if (displayText.length < currentVersiculo.texto.length) {
@@ -51,47 +49,19 @@ export function VersiculoAnimado() {
       }
     } else if (phase === "waiting") {
       timeout = setTimeout(() => {
-        setPhase("glitch");
-        let frame = 0;
-        const totalFrames = 22;
-        
-        const scrambleInterval = setInterval(() => {
-          frame++;
-          const progress = frame / totalFrames;
-          const nextVersiculo = VERSICULOS[(index + 1) % VERSICULOS.length];
-          
-          let out = "";
-          const targetLength = Math.max(currentVersiculo.texto.length, nextVersiculo.texto.length);
-          
-          for (let i = 0; i < targetLength; i++) {
-            if (Math.random() > progress) {
-              if (i < currentVersiculo.texto.length) {
-                out += Math.random() > 0.8 ? pool[Math.floor(Math.random() * pool.length)] : currentVersiculo.texto[i];
-              } else {
-                out += pool[Math.floor(Math.random() * pool.length)];
-              }
-            } else {
-              if (i < nextVersiculo.texto.length) {
-                out += Math.random() > 0.2 ? pool[Math.floor(Math.random() * pool.length)] : nextVersiculo.texto[i];
-              } else {
-                out += " ";
-              }
-            }
-          }
-          
-          setScrambledText(out);
-          
-          if (frame >= totalFrames) {
-            clearInterval(scrambleInterval);
-            setPhase("typing-text");
-            setDisplayText("");
-            setDisplayRef("");
-            setScrambledText("");
-            setIndex((prev) => (prev + 1) % VERSICULOS.length);
-          }
-        }, 40);
+        setPhase("transitioning");
       }, 5000);
+    } else if (phase === "transitioning") {
+      timeout = setTimeout(() => {
+        setPhase("typing-text");
+        setDisplayText("");
+        setDisplayRef("");
+        setIndex((prev) => (prev + 1) % VERSICULOS.length);
+      }, 800);
     }
+
+    return () => clearTimeout(timeout);
+  }, [displayText, displayRef, index, phase]);
 
     return () => clearTimeout(timeout);
   }, [displayText, displayRef, index, phase]);
