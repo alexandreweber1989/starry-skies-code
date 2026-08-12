@@ -14,6 +14,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as KidsVisitanteRouteImport } from './routes/kids.visitante'
+import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as AuthenticatedRedesRouteImport } from './routes/_authenticated/redes'
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
 import { Route as AuthenticatedMidiaRouteImport } from './routes/_authenticated/midia'
@@ -54,6 +55,11 @@ const KidsVisitanteRoute = KidsVisitanteRouteImport.update({
   id: '/kids/visitante',
   path: '/kids/visitante',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/callback',
+  path: '/callback',
+  getParentRoute: () => AuthRoute,
 } as any)
 const AuthenticatedRedesRoute = AuthenticatedRedesRouteImport.update({
   id: '/redes',
@@ -141,7 +147,7 @@ const AuthenticatedKidsRetiradaCheckinIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
+  '/auth': typeof AuthRouteWithChildren
   '/config-vercel': typeof ConfigVercelRoute
   '/agenda': typeof AuthenticatedAgendaRoute
   '/cantina': typeof AuthenticatedCantinaRoute
@@ -155,6 +161,7 @@ export interface FileRoutesByFullPath {
   '/midia': typeof AuthenticatedMidiaRoute
   '/perfil': typeof AuthenticatedPerfilRoute
   '/redes': typeof AuthenticatedRedesRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/kids/visitante': typeof KidsVisitanteRoute
   '/kids-retirada/$checkinId': typeof AuthenticatedKidsRetiradaCheckinIdRoute
   '/ministerios/$slug': typeof AuthenticatedMinisteriosSlugRoute
@@ -163,7 +170,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
+  '/auth': typeof AuthRouteWithChildren
   '/config-vercel': typeof ConfigVercelRoute
   '/agenda': typeof AuthenticatedAgendaRoute
   '/cantina': typeof AuthenticatedCantinaRoute
@@ -177,6 +184,7 @@ export interface FileRoutesByTo {
   '/midia': typeof AuthenticatedMidiaRoute
   '/perfil': typeof AuthenticatedPerfilRoute
   '/redes': typeof AuthenticatedRedesRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/kids/visitante': typeof KidsVisitanteRoute
   '/kids-retirada/$checkinId': typeof AuthenticatedKidsRetiradaCheckinIdRoute
   '/ministerios/$slug': typeof AuthenticatedMinisteriosSlugRoute
@@ -187,7 +195,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/auth': typeof AuthRoute
+  '/auth': typeof AuthRouteWithChildren
   '/config-vercel': typeof ConfigVercelRoute
   '/_authenticated/agenda': typeof AuthenticatedAgendaRoute
   '/_authenticated/cantina': typeof AuthenticatedCantinaRoute
@@ -201,6 +209,7 @@ export interface FileRoutesById {
   '/_authenticated/midia': typeof AuthenticatedMidiaRoute
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
   '/_authenticated/redes': typeof AuthenticatedRedesRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/kids/visitante': typeof KidsVisitanteRoute
   '/_authenticated/kids-retirada/$checkinId': typeof AuthenticatedKidsRetiradaCheckinIdRoute
   '/_authenticated/ministerios/$slug': typeof AuthenticatedMinisteriosSlugRoute
@@ -225,6 +234,7 @@ export interface FileRouteTypes {
     | '/midia'
     | '/perfil'
     | '/redes'
+    | '/auth/callback'
     | '/kids/visitante'
     | '/kids-retirada/$checkinId'
     | '/ministerios/$slug'
@@ -247,6 +257,7 @@ export interface FileRouteTypes {
     | '/midia'
     | '/perfil'
     | '/redes'
+    | '/auth/callback'
     | '/kids/visitante'
     | '/kids-retirada/$checkinId'
     | '/ministerios/$slug'
@@ -270,6 +281,7 @@ export interface FileRouteTypes {
     | '/_authenticated/midia'
     | '/_authenticated/perfil'
     | '/_authenticated/redes'
+    | '/auth/callback'
     | '/kids/visitante'
     | '/_authenticated/kids-retirada/$checkinId'
     | '/_authenticated/ministerios/$slug'
@@ -280,7 +292,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  AuthRoute: typeof AuthRoute
+  AuthRoute: typeof AuthRouteWithChildren
   ConfigVercelRoute: typeof ConfigVercelRoute
   KidsVisitanteRoute: typeof KidsVisitanteRoute
   ApiPublicKidsVisitorRoute: typeof ApiPublicKidsVisitorRoute
@@ -322,6 +334,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/kids/visitante'
       preLoaderRoute: typeof KidsVisitanteRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof AuthRoute
     }
     '/_authenticated/redes': {
       id: '/_authenticated/redes'
@@ -478,10 +497,20 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface AuthRouteChildren {
+  AuthCallbackRoute: typeof AuthCallbackRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthCallbackRoute: AuthCallbackRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  AuthRoute: AuthRoute,
+  AuthRoute: AuthRouteWithChildren,
   ConfigVercelRoute: ConfigVercelRoute,
   KidsVisitanteRoute: KidsVisitanteRoute,
   ApiPublicKidsVisitorRoute: ApiPublicKidsVisitorRoute,
