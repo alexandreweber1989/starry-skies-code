@@ -75,7 +75,7 @@ const atalhos: { to: string; label: string; icon: any; requiredRoles?: AppRole[]
 ];
 
 function Dashboard() {
-  const { user, isAdmin, roles, isLivrariaAdmin, isCantinaAdmin } = useAuth();
+  const { user, profile, isAdmin, roles, isLivrariaAdmin, isCantinaAdmin } = useAuth();
   const podeVerOperacao = isAdmin || isLivrariaAdmin || isCantinaAdmin;
   const isLiderMesaOuRede = roles.some(
     (r) => r.role === "lider_mesa" || r.role === "admin_ministerio",
@@ -138,7 +138,8 @@ function Dashboard() {
     },
   });
 
-  const nome = user?.user_metadata?.["full_name"] || user?.email?.split("@")[0];
+  const nomeCompleto = profile?.full_name || user?.user_metadata?.["full_name"];
+  const nome = nomeCompleto?.trim()?.split(" ")[0] || user?.email?.split("@")[0];
 
   return (
     <>
