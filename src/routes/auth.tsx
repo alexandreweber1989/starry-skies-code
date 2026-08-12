@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Church, ArrowLeft, Key } from "lucide-react";
+import { VersiculoAnimado } from "@/components/auth/VersiculoAnimado";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
@@ -169,12 +170,7 @@ function AuthPage() {
           <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-sidebar-primary mb-4">
             Plataforma interna
           </div>
-          <h2 className="font-serif text-4xl leading-tight">
-            "Perseveravam na doutrina dos apóstolos, na comunhão, no partir do pão e nas orações."
-          </h2>
-          <p className="font-mono text-xs uppercase tracking-widest text-sidebar-foreground/60 mt-6">
-            Atos 2:42
-          </p>
+          <VersiculoAnimado />
         </div>
         <div className="text-xs font-mono uppercase tracking-widest text-sidebar-foreground/40">
           Igreja Batista Atos
