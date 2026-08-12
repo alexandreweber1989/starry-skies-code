@@ -583,31 +583,11 @@ function Historia() {
 
   const [ativo, setAtivo] = useState(0);
   
-  // Usamos useEffect para monitorar o scroll e calcular o índice ativo
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!ref.current) return;
-      const rect = ref.current.getBoundingClientRect();
-      const sectionHeight = ref.current.offsetHeight;
-      const viewportHeight = window.innerHeight;
-      
-      const relativeTop = -rect.top;
-      const scrollableDist = sectionHeight - viewportHeight;
-      
-      if (scrollableDist <= 0) return;
-      
-      const progress = Math.max(0, Math.min(0.999, relativeTop / scrollableDist));
-      const idx = Math.floor(progress * capitulos.length);
-      
-      console.log('Scroll progress:', progress, 'Active index:', idx);
-      setAtivo(idx);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll(); // Initial check
-    
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  useMotionValueEvent(scrollYProgress, "change", (v) => {
+    const progress = Math.max(0, Math.min(0.999, v));
+    const idx = Math.floor(progress * capitulos.length);
+    setAtivo(idx);
+  });
 
   // Fallback sem animação: pilha simples, legível e acessível.
   if (reduce) {
