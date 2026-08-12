@@ -80,8 +80,10 @@ export function CadastroLead() {
     uf: "",
     cidadeId: "",
     cidadeNome: "",
-    bairro: "" 
+    bairro: "",
+    bairroManual: ""
   });
+
   const [enviando, setEnviando] = useState(false);
   const [resultado, setResultado] = useState<{ principal: Mesa | null; outras: Mesa[] } | undefined>(undefined);
 
@@ -116,7 +118,11 @@ export function CadastroLead() {
     }
 
     setForm((f) => ({ ...f, [k]: value }));
+    if (k === "bairro" && value !== "Outro") {
+      setForm(f => ({ ...f, bairroManual: "" }));
+    }
   };
+
 
   const valido =
     form.nome.trim().length > 1 && 
@@ -124,14 +130,16 @@ export function CadastroLead() {
     form.perfil && 
     form.uf &&
     form.cidadeId &&
-    form.bairro;
+    (form.bairro === "Outro" ? form.bairroManual.trim().length > 1 : form.bairro);
+
 
   async function enviar(e: React.FormEvent) {
     e.preventDefault();
     if (!valido || enviando) return;
     setEnviando(true);
     const numericPhone = form.whatsapp.replace(/\D/g, "");
-    const mesaPrincipal = acharMesa(form.perfil, form.bairro, form.cidadeNome);
+    const bairroFinal = form.bairro === "Outro" ? form.bairroManual.trim() : form.bairro;
+    const mesaPrincipal = acharMesa(form.perfil, bairroFinal, form.cidadeNome);
     const outrasMesas = listarOutrasMesas(form.perfil, mesaPrincipal);
 
     try {
@@ -139,7 +147,8 @@ export function CadastroLead() {
         name: form.nome.trim(),
         phone: numericPhone,
         profile: form.perfil,
-        neighborhood: form.bairro,
+        neighborhood: bairroFinal,
+
         city: form.cidadeNome,
         state: form.uf,
         suggested_mesa: mesaPrincipal?.mesa ?? null,
@@ -251,16 +260,27 @@ export function CadastroLead() {
                     disabled={!form.cidadeId || loadingBairros}
                   >
                     <option value="">{loadingBairros ? "Carregando…" : "Selecione o Bairro…"}</option>
-                    {bairros.length > 0 ? (
-                      bairros.map((b) => (
-                        <option key={b.id} value={b.nome}>{b.nome}</option>
-                      ))
-                    ) : form.cidadeId && !loadingBairros ? (
-                      <option value="Outro">Outro / Centro</option>
-                    ) : null}
+                    {bairros.length > 0 && bairros.map((b) => (
+                      <option key={b.id} value={b.nome}>{b.nome}</option>
+                    ))}
+                    {form.cidadeId && !loadingBairros && (
+                      <option value="Outro">Digitar outro bairro...</option>
+                    )}
                   </select>
                 </Campo>
+                {form.bairro === "Outro" && (
+                  <Campo label="Qual o seu bairro?">
+                    <input
+                      type="text"
+                      className={inputCls}
+                      placeholder="Ex: Jardim das Flores"
+                      onChange={(e) => setForm(f => ({ ...f, bairroManual: e.target.value }))}
+                      required
+                    />
+                  </Campo>
+                )}
               </div>
+
 
             </div>
 
