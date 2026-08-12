@@ -621,63 +621,178 @@ function Historia() {
   return (
     <section
       ref={ref}
-      className="relative z-20 bg-background border-t border-border/10"
+      className="relative z-20 bg-background border-t border-border/10 overflow-hidden"
       style={{ height: `${capitulos.length * 100}vh` }}
     >
       <div className="sticky top-0 h-screen overflow-hidden flex items-center px-6 lg:px-10">
-        {/* elemento flutuante de fundo */}
-        <div className="absolute top-1/2 -right-20 -translate-y-1/2 w-[32rem] h-[32rem] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+        {/* Dynamic Atmospheric Light System */}
+        <div className="absolute inset-0 z-0">
+          <motion.div 
+            animate={{ 
+              opacity: [0.1, 0.15, 0.1],
+              scale: [1, 1.1, 1],
+            }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-1/2 -right-40 -translate-y-1/2 w-[40rem] h-[40rem] bg-primary/20 rounded-full blur-[140px] pointer-events-none" 
+          />
+          <motion.div 
+            animate={{ 
+              opacity: [0.05, 0.1, 0.05],
+              scale: [1, 1.2, 1],
+              x: [0, 50, 0]
+            }}
+            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute bottom-0 -left-40 w-[30rem] h-[30rem] bg-primary/10 rounded-full blur-[120px] pointer-events-none" 
+          />
+        </div>
 
-        <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-[auto_1fr] gap-12 lg:gap-24 items-center">
-          {/* Trilho de capítulos */}
-          <div className="flex lg:flex-col gap-6">
+        {/* Background Grid for the section */}
+        <div 
+          className="absolute inset-0 z-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `linear-gradient(to right, var(--foreground) 1px, transparent 1px), linear-gradient(to bottom, var(--foreground) 1px, transparent 1px)`,
+            backgroundSize: '100px 100px',
+            maskImage: 'linear-gradient(to bottom, transparent, black 20%, black 80%, transparent)'
+          }}
+        />
+
+        <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-[200px_1fr] gap-12 lg:gap-32 items-center relative z-10">
+          {/* Vertical Timeline Navigation */}
+          <div className="hidden lg:flex flex-col gap-10 relative py-10">
+            {/* Timeline Line */}
+            <div className="absolute left-[7px] top-0 bottom-0 w-[2px] bg-foreground/5">
+              <motion.div 
+                className="absolute top-0 left-0 w-full bg-primary origin-top"
+                style={{ 
+                  scaleY: scrollYProgress,
+                }}
+              />
+            </div>
+
             {capitulos.map((c, i) => (
               <button
                 key={c.titulo}
                 type="button"
-                aria-label={c.titulo}
-                className="flex items-center gap-4 text-left group"
+                onClick={() => {
+                  const targetScroll = (i / capitulos.length) * ref.current!.offsetHeight;
+                  window.scrollTo({
+                    top: ref.current!.offsetTop + targetScroll,
+                    behavior: 'smooth'
+                  });
+                }}
+                className="relative flex items-center gap-8 group text-left outline-none"
               >
-                <span
-                  className={`font-mono text-[10px] transition-colors duration-500 ${
-                    i === ativo ? "text-primary" : "text-muted-foreground/40"
+                <div 
+                  className={`relative z-10 w-4 h-4 rounded-full border-2 transition-all duration-500 flex items-center justify-center ${
+                    i <= ativo 
+                      ? "bg-primary border-primary scale-110 shadow-[0_0_15px_rgba(var(--primary),0.5)]" 
+                      : "bg-background border-foreground/20 group-hover:border-primary/40"
                   }`}
                 >
-                  0{i + 1}
-                </span>
-                <span
-                  className={`h-px transition-all duration-500 ${
-                    i === ativo
-                      ? "w-12 bg-primary"
-                      : "w-6 bg-muted-foreground/20"
-                  }`}
-                />
+                  {i === ativo && (
+                    <motion.div 
+                      layoutId="active-dot-glow"
+                      className="absolute inset-0 rounded-full bg-primary blur-[4px]" 
+                    />
+                  )}
+                </div>
+                <div className="flex flex-col">
+                  <span
+                    className={`font-mono text-[10px] uppercase tracking-[0.2em] transition-colors duration-500 ${
+                      i === ativo ? "text-primary" : "text-muted-foreground/40"
+                    }`}
+                  >
+                    Cap. 0{i + 1}
+                  </span>
+                  <span
+                    className={`font-serif text-sm font-semibold transition-all duration-500 ${
+                      i === ativo ? "text-foreground opacity-100" : "text-muted-foreground opacity-0 -translate-x-2"
+                    }`}
+                  >
+                    {c.titulo}
+                  </span>
+                </div>
               </button>
             ))}
           </div>
 
-          {/* Painel do capítulo ativo */}
-          <div className="relative min-h-[16rem]">
-            <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-8">
-              § 01 — Nossa Gênese
+          {/* Mobile Navigation */}
+          <div className="lg:hidden flex justify-center gap-4 mb-8">
+            {capitulos.map((_, i) => (
+              <div 
+                key={i}
+                className={`h-1.5 rounded-full transition-all duration-500 ${
+                  i === ativo ? "w-8 bg-primary" : "w-2 bg-foreground/10"
+                }`}
+              />
+            ))}
+          </div>
+
+          {/* Active Chapter Content */}
+          <div className="relative min-h-[30rem] flex flex-col justify-center">
+            <div className="font-mono text-[11px] uppercase tracking-[0.4em] text-primary/60 mb-12 flex items-center gap-4">
+              <span className="h-px w-8 bg-primary/40" />
+              Nossa Gênese
             </div>
+            
             <AnimatePresence mode="wait">
               <motion.div
                 key={ativo}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -30 }}
-                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                variants={{
+                  initial: { opacity: 0 },
+                  animate: { opacity: 1, transition: { staggerChildren: 0.15 } },
+                  exit: { opacity: 0, transition: { staggerChildren: 0.05, staggerDirection: -1 } }
+                }}
+                className="will-change-transform"
               >
-                <div className="font-serif text-primary text-2xl md:text-3xl mb-4">
+                <motion.div 
+                  variants={{
+                    initial: { opacity: 0, x: -20 },
+                    animate: { opacity: 1, x: 0 },
+                    exit: { opacity: 0, x: 10 }
+                  }}
+                  transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                  className="font-serif text-primary text-3xl md:text-5xl font-light mb-6 italic tracking-tight"
+                >
                   {capitulos[ativo].marca}
-                </div>
-                <h2 className="font-serif text-4xl md:text-6xl lg:text-7xl leading-[1.05] mb-8">
+                </motion.div>
+                
+                <motion.h2 
+                  variants={{
+                    initial: { opacity: 0, y: 30 },
+                    animate: { opacity: 1, y: 0 },
+                    exit: { opacity: 0, y: -20 }
+                  }}
+                  transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+                  className="font-serif text-5xl md:text-8xl lg:text-9xl leading-[0.9] font-bold tracking-[-0.04em] mb-12 uppercase text-foreground"
+                >
                   {capitulos[ativo].titulo}
-                </h2>
-                <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-2xl">
+                </motion.h2>
+                
+                <motion.p 
+                  variants={{
+                    initial: { opacity: 0, y: 20 },
+                    animate: { opacity: 1, y: 0 },
+                    exit: { opacity: 0, y: 10 }
+                  }}
+                  transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+                  className="text-lg md:text-2xl text-muted-foreground leading-relaxed max-w-2xl font-medium tracking-tight"
+                >
                   {capitulos[ativo].texto}
-                </p>
+                </motion.p>
+
+                <motion.div
+                  variants={{
+                    initial: { opacity: 0, scaleX: 0 },
+                    animate: { opacity: 1, scaleX: 1 },
+                    exit: { opacity: 0, scaleX: 0 }
+                  }}
+                  transition={{ duration: 1, delay: 0.4 }}
+                  className="h-px w-24 bg-primary/30 mt-16 origin-left"
+                />
               </motion.div>
             </AnimatePresence>
           </div>
