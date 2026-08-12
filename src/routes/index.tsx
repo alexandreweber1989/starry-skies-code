@@ -621,7 +621,7 @@ function Historia() {
   return (
     <section
       ref={ref}
-      className="relative z-20 bg-background border-t border-border/10 overflow-hidden"
+      className="relative z-20 bg-background border-t border-border/10 overflow-visible"
       style={{ height: `${capitulos.length * 100}vh` }}
     >
       <div className="sticky top-0 h-screen overflow-hidden flex items-center px-6 lg:px-10">
