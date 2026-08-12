@@ -58,10 +58,20 @@ export function MemberFormDialog({
   const [form, setForm] = useState<MemberProfile>(EMPTY);
 
   useEffect(() => {
-    if (open && profile) {
-      setForm({ ...profile });
-    } else if (open) {
-      setForm(EMPTY);
+    if (open) {
+      if (profile && profile.id) {
+        setForm({ ...profile });
+      } else {
+        // Fallback: carregar o perfil atual do usuário logado se profile vier vazio
+        const loadSelf = async () => {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            const { data } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
+            if (data) setForm(data);
+          }
+        };
+        void loadSelf();
+      }
     }
   }, [open, profile]);
 
