@@ -76,12 +76,31 @@ const CIDADES_HABILITADAS = [
   { id: 4119905, nome: "Ponta Grossa", uf: "PR" },
 ];
 
-const BAIRROS_PONTA_GROSSA = [
-  "Boa Vista", "Cará-Cará", "Centro", "Chapada", "Colônia Dona Luíza",
-  "Contorno", "Estrela", "Guaragi", "Itaiacoca", "Jardim Carvalho",
-  "Neves", "Nova Rússia", "Oficinas", "Olarias", "Piriquitos",
-  "Ronda", "Uvaia", "Uvaranas"
-].sort();
+const BAIRROS_POR_CIDADE: Record<string, string[]> = {
+  "4104808": [ // Cascavel
+    "14 de Novembro", "Alto Alegre", "Brasmadeira", "Cancelli", "Caravelle", 
+    "Cascavel Velho", "Centro", "Coqueiral", "Country", "Esmeralda", "Fag", 
+    "Floresta", "Guarujá", "Interlagos", "Jardim Itália", "Maria Luiza", "Neva", 
+    "Pacaembu", "Parque São Paulo", "Parque Verde", "Pioneiros", 
+    "Região do Lago", "Santa Cruz", "Santa Felicidade", "Santo Onofre", 
+    "Santos Dumont", "São Cristóvão", "Universitário"
+  ],
+  "4202100": [ // Barra Velha
+    "Centro", "Escalvado", "Icaraí", "Itajuba", "Medeiros", "Pedreiras", 
+    "Quinta dos Açorianos", "São Cristóvão", "Tabuleiro", "Vila Nova"
+  ],
+  "4104907": [ // Castro
+    "Alvorada", "Cantagalo", "Centro", "Invernada", "Jardim Araucária", 
+    "Jardim Arapongas", "Jardim Colonial", "Jardim Primavera", "Jardim das Agulhas", 
+    "Jardim das Flores", "Jardim das Nações", "Morada do Sol", "Santa Cruz", "Vila Rio Branco"
+  ],
+  "4119905": [ // Ponta Grossa
+    "Boa Vista", "Cará-Cará", "Centro", "Chapada", "Colônia Dona Luíza",
+    "Contorno", "Estrela", "Guaragi", "Itaiacoca", "Jardim Carvalho",
+    "Neves", "Nova Rússia", "Oficinas", "Olarias", "Piriquitos",
+    "Ronda", "Uvaia", "Uvaranas"
+  ]
+};
 
 export function CadastroLead() {
   const reduce = useReducedMotion();
@@ -268,8 +287,8 @@ export function CadastroLead() {
                     disabled={!form.cidadeId || loadingBairros}
                   >
                     <option value="">{loadingBairros ? "Carregando…" : "Selecione o Bairro…"}</option>
-                    {form.cidadeId === "4119905" ? (
-                      BAIRROS_PONTA_GROSSA.map((b) => (
+                    {BAIRROS_POR_CIDADE[form.cidadeId] ? (
+                      BAIRROS_POR_CIDADE[form.cidadeId].sort().map((b) => (
                         <option key={b} value={b}>{b}</option>
                       ))
                     ) : (
