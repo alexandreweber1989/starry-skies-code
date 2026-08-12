@@ -32,8 +32,8 @@ type Profile = Record<string, any>;
 function Line({ label, value }: { label: string; value?: ReactNode }) {
   if (value === null || value === undefined || value === "" || value === false) return null;
   return (
-    <div className="flex gap-3 py-1.5 text-sm border-b border-border/50 last:border-0">
-      <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground w-40 shrink-0 pt-1">
+    <div className="flex flex-col sm:flex-row gap-1 sm:gap-3 py-1.5 text-sm border-b border-border/50 last:border-0">
+      <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-widest text-muted-foreground w-full sm:w-40 shrink-0 pt-1">
         {label}
       </span>
       <span className="flex-1 break-words">{value}</span>
