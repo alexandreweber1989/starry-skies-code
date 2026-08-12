@@ -76,7 +76,14 @@ export function MemberFormDialog({
 
   const save = useMutation({
     mutationFn: async () => {
-      if (!profile?.id) throw new Error("Cadastro não encontrado.");
+      // Se não temos profile.id, verificamos se o form já tem o ID (fallback)
+      const targetId = profile?.id || form?.id;
+      
+      if (!targetId) {
+        console.error("DEBUG: Save attempt without ID", { profile, form });
+        throw new Error("Cadastro não encontrado.");
+      }
+
       const parsed = schema.safeParse({
         full_name: str("full_name"),
         email: str("email"),
