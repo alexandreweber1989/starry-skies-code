@@ -69,9 +69,16 @@ function linkWhatsApp(numero: string, msg: string) {
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 
+const CIDADES_HABILITADAS = [
+  { id: 4104808, nome: "Cascavel", uf: "PR" },
+  { id: 4202100, nome: "Barra Velha", uf: "SC" },
+  { id: 4104907, nome: "Castro", uf: "PR" },
+  { id: 4119905, nome: "Ponta Grossa", uf: "PR" },
+];
+
 export function CadastroLead() {
   const reduce = useReducedMotion();
-  const { estados, cidades, bairros, buscarCidades, buscarBairros, loadingCidades, loadingBairros } = useLocalidades();
+  const { bairros, buscarBairros, loadingBairros } = useLocalidades();
   
   const [form, setForm] = useState({ 
     nome: "", 
@@ -83,6 +90,7 @@ export function CadastroLead() {
     bairro: "",
     bairroManual: ""
   });
+
 
   const [enviando, setEnviando] = useState(false);
   const [resultado, setResultado] = useState<{ principal: Mesa | null; outras: Mesa[] } | undefined>(undefined);
