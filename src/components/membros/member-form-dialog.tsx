@@ -58,8 +58,21 @@ export function MemberFormDialog({
   const [form, setForm] = useState<MemberProfile>(EMPTY);
 
   useEffect(() => {
-    if (open && profile) setForm({ ...profile });
-    else if (open) setForm(EMPTY);
+    if (open) {
+      if (profile && profile.id) {
+        setForm({ ...profile });
+      } else {
+        // Fallback: carregar o perfil atual do usuário logado se profile vier vazio
+        const loadSelf = async () => {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            const { data } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
+            if (data) setForm(data);
+          }
+        };
+        void loadSelf();
+      }
+    }
   }, [open, profile]);
 
   const set = (key: string) => (value: unknown) =>
@@ -76,7 +89,14 @@ export function MemberFormDialog({
 
   const save = useMutation({
     mutationFn: async () => {
-      if (!profile?.id) throw new Error("Cadastro não encontrado.");
+      // Se não temos profile.id, verificamos se o form já tem o ID (fallback)
+      const targetId = profile?.id || form?.id;
+      
+      if (!targetId) {
+        console.error("DEBUG: Save attempt without ID", { profile, form });
+        throw new Error("Cadastro não encontrado.");
+      }
+
       const parsed = schema.safeParse({
         full_name: str("full_name"),
         email: str("email"),
@@ -137,7 +157,7 @@ export function MemberFormDialog({
         payload.church_function = form.church_function || "membro";
       }
 
-      const { error } = await supabase.from("profiles").update(payload as any).eq("id", profile.id);
+      const { error } = await supabase.from("profiles").update(payload as any).eq("id", targetId);
       if (error) throw error;
     },
     onSuccess: () => {
