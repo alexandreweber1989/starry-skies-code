@@ -85,10 +85,13 @@ function AuthPage() {
   async function handleGoogle() {
     try {
       setLoading(true);
+      // Usamos o broker nativo do Lovable/TanStack Start
+      // Redirecionamos para a rota de callback dedicada para garantir o processamento da sessão
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: { 
-          redirectTo: `${window.location.origin}/auth`,
+          redirectTo: `${window.location.origin}/auth/callback`,
+          skipBrowserRedirect: false,
         },
       });
       
