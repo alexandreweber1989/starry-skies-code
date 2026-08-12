@@ -19,7 +19,7 @@ export function PanelSection({
   children: ReactNode;
 }) {
   return (
-    <section className={cn("border border-border bg-card rounded-sm", className)}>
+    <section className={cn("border border-border bg-card/50 backdrop-blur-sm rounded-xl shadow-sm transition-all duration-300 hover:shadow-md hover:border-border/80", className)}>
       <header className="flex flex-wrap items-end justify-between gap-3 px-6 pt-6 pb-4 border-b border-border">
         <div>
           <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
@@ -65,7 +65,7 @@ export function StatTile({
   );
 
   const base =
-    "group border border-border bg-card p-4 sm:p-6 rounded-sm transition-colors block";
+    "group border border-border bg-card/50 backdrop-blur-sm p-4 sm:p-6 rounded-xl transition-all duration-300 block hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5";
 
   if (to) {
     return (
