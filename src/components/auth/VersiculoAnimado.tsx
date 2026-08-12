@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Versiculo {
   texto: string;
@@ -23,13 +23,11 @@ export function VersiculoAnimado() {
   const [index, setIndex] = useState(0);
   const [displayText, setDisplayText] = useState("");
   const [displayRef, setDisplayRef] = useState("");
-  const [phase, setPhase] = useState<"typing-text" | "typing-ref" | "waiting" | "glitch">("typing-text");
-  const [scrambledText, setScrambledText] = useState("");
+  const [phase, setPhase] = useState<"typing-text" | "typing-ref" | "waiting" | "transitioning">("typing-text");
 
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;
     const currentVersiculo = VERSICULOS[index];
-    const pool = "01</>{}[]=+*#\\|!?~:;=ABEFHKMNRSXYZ";
 
     if (phase === "typing-text") {
       if (displayText.length < currentVersiculo.texto.length) {
@@ -51,68 +49,36 @@ export function VersiculoAnimado() {
       }
     } else if (phase === "waiting") {
       timeout = setTimeout(() => {
-        setPhase("glitch");
-        let frame = 0;
-        const totalFrames = 22;
-        
-        const scrambleInterval = setInterval(() => {
-          frame++;
-          const progress = frame / totalFrames;
-          const nextVersiculo = VERSICULOS[(index + 1) % VERSICULOS.length];
-          
-          let out = "";
-          const targetLength = Math.max(currentVersiculo.texto.length, nextVersiculo.texto.length);
-          
-          for (let i = 0; i < targetLength; i++) {
-            if (Math.random() > progress) {
-              if (i < currentVersiculo.texto.length) {
-                out += Math.random() > 0.8 ? pool[Math.floor(Math.random() * pool.length)] : currentVersiculo.texto[i];
-              } else {
-                out += pool[Math.floor(Math.random() * pool.length)];
-              }
-            } else {
-              if (i < nextVersiculo.texto.length) {
-                out += Math.random() > 0.2 ? pool[Math.floor(Math.random() * pool.length)] : nextVersiculo.texto[i];
-              } else {
-                out += " ";
-              }
-            }
-          }
-          
-          setScrambledText(out);
-          
-          if (frame >= totalFrames) {
-            clearInterval(scrambleInterval);
-            setPhase("typing-text");
-            setDisplayText("");
-            setDisplayRef("");
-            setScrambledText("");
-            setIndex((prev) => (prev + 1) % VERSICULOS.length);
-          }
-        }, 40);
+        setPhase("transitioning");
       }, 5000);
+    } else if (phase === "transitioning") {
+      timeout = setTimeout(() => {
+        setPhase("typing-text");
+        setDisplayText("");
+        setDisplayRef("");
+        setIndex((prev) => (prev + 1) % VERSICULOS.length);
+      }, 1000);
     }
 
     return () => clearTimeout(timeout);
   }, [displayText, displayRef, index, phase]);
 
   return (
-    <div className="min-h-[220px] flex flex-col justify-center">
-      <div className="relative">
-        <h2 
-          className="font-serif text-3xl md:text-4xl leading-tight min-h-[140px] text-sidebar-foreground"
+    <div className="min-h-[220px] flex flex-col justify-center overflow-hidden">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={index}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ 
+            opacity: phase === "transitioning" ? 0 : 1, 
+            y: phase === "transitioning" ? -20 : 0,
+            filter: phase === "transitioning" ? "blur(10px)" : "blur(0px)"
+          }}
+          exit={{ opacity: 0, y: -20, filter: "blur(10px)" }}
+          transition={{ duration: 0.8, ease: "easeInOut" }}
+          className="relative"
         >
-          {phase === "glitch" ? (
-            <span 
-              className="font-mono text-primary break-words block leading-tight relative"
-              style={{ 
-                color: 'var(--color-sidebar-primary)',
-                textShadow: '0 0 8px var(--color-sidebar-primary)' 
-              }}
-            >
-              {scrambledText}
-            </span>
-          ) : (
+          <h2 className="font-serif text-3xl md:text-4xl leading-tight min-h-[140px] text-sidebar-foreground">
             <div className="relative">
               <span className="relative z-10 block">
                 "{displayText}"
@@ -125,25 +91,21 @@ export function VersiculoAnimado() {
                 )}
               </span>
             </div>
-          )}
-        </h2>
-        <div className="mt-6 flex items-center gap-2">
-          {phase !== "glitch" && (
-            <>
-              <p className="font-mono text-xs uppercase tracking-widest text-sidebar-foreground/60 min-h-[20px]">
-                {displayRef}
-              </p>
-              {phase === "typing-ref" && (
-                <motion.span
-                  animate={{ opacity: [1, 0] }}
-                  transition={{ repeat: Infinity, duration: 0.8 }}
-                  className="inline-block w-0.5 h-4 bg-sidebar-primary align-middle"
-                />
-              )}
-            </>
-          )}
-        </div>
-      </div>
+          </h2>
+          <div className="mt-6 flex items-center gap-2">
+            <p className="font-mono text-xs uppercase tracking-widest text-sidebar-foreground/60 min-h-[20px]">
+              {displayRef}
+            </p>
+            {phase === "typing-ref" && (
+              <motion.span
+                animate={{ opacity: [1, 0] }}
+                transition={{ repeat: Infinity, duration: 0.8 }}
+                className="inline-block w-0.5 h-4 bg-sidebar-primary align-middle"
+              />
+            )}
+          </div>
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }
