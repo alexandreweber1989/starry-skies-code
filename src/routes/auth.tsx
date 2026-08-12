@@ -122,8 +122,13 @@ function AuthPage() {
       redirectTo: `${window.location.origin}/auth`,
     });
     setLoading(false);
-    if (error) return toast.error(error.message);
-    toast.success("Enviamos um link de redefinição para o seu e-mail.");
+    if (error) {
+      if (error.message.includes("Email rate limit exceeded")) {
+        return toast.error("Limite de envios atingido. Tente novamente em alguns minutos ou verifique sua caixa de spam.");
+      }
+      return toast.error(error.message);
+    }
+    toast.success("Enviamos um link de redefinição para o seu e-mail. Verifique também a pasta de Spam.");
   }
 
   return (
