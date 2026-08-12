@@ -65,17 +65,33 @@ export function CadastroLead() {
   // undefined = ainda no formulário | Mesa = achou | null = fallback (sem Mesa)
   const [resultado, setResultado] = useState<Mesa | null | undefined>(undefined);
 
+  const formatWhatsApp = (value: string) => {
+    const numbers = value.replace(/\D/g, "");
+    if (numbers.length <= 2) return numbers;
+    if (numbers.length <= 3) return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
+    if (numbers.length <= 7) return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 3)} ${numbers.slice(3)}`;
+    if (numbers.length <= 11) return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 3)} ${numbers.slice(3, 7)}-${numbers.slice(7)}`;
+    return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 3)} ${numbers.slice(3, 7)}-${numbers.slice(7, 11)}`;
+  };
+
   const set = (k: keyof typeof form) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) => setForm((f) => ({ ...f, [k]: e.target.value }));
+  ) => {
+    let value = e.target.value;
+    if (k === "whatsapp") {
+      value = formatWhatsApp(value);
+    }
+    setForm((f) => ({ ...f, [k]: value }));
+  };
 
   const valido =
-    form.nome.trim().length > 1 && form.whatsapp.trim().length >= 8 && form.perfil && form.bairro;
+    form.nome.trim().length > 1 && form.whatsapp.replace(/\D/g, "").length >= 10 && form.perfil && form.bairro;
 
   async function enviar(e: React.FormEvent) {
     e.preventDefault();
     if (!valido || enviando) return;
     setEnviando(true);
+    const numericPhone = form.whatsapp.replace(/\D/g, "");
     const mesa = acharMesa(form.perfil, form.bairro);
     // Melhor esforço: registra o lead (passa a funcionar quando a tabela
     // "leads" existir no banco). Se ainda não existir, seguimos via WhatsApp.
@@ -83,7 +99,7 @@ export function CadastroLead() {
       // @ts-ignore - a tabela leads pode ser criada via migração depois
       await (supabase.from("leads") as any).insert({
         name: form.nome.trim(),
-        phone: form.whatsapp.trim(),
+        phone: numericPhone,
         profile: form.perfil,
         neighborhood: form.bairro,
         suggested_mesa: mesa?.mesa ?? null,
