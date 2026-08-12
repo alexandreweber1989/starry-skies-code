@@ -54,11 +54,19 @@ export function useLocalidades() {
     }
     setLoadingBairros(true);
     try {
-      // Nota: A API do IBGE nem sempre tem bairros para todas as cidades.
-      // Usamos o endpoint de distritos ou subdistritos como alternativa se necessário.
-      const res = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/municipios/${cidadeId}/distritos?orderBy=nome`);
-      const data = await res.json();
+      // A API do IBGE é limitada para bairros em muitas cidades.
+      // Primeiro tentamos o endpoint de subdistritos (que costuma ter bairros em cidades grandes)
+      // Se não houver, tentamos o de distritos.
+      const resSub = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/municipios/${cidadeId}/subdistritos?orderBy=nome`);
+      let data = await resSub.json();
+      
+      if (!data || data.length === 0) {
+        const resDist = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/municipios/${cidadeId}/distritos?orderBy=nome`);
+        data = await resDist.json();
+      }
+      
       setBairros(data);
+
     } catch (err) {
       console.error("Erro ao buscar bairros:", err);
     } finally {
