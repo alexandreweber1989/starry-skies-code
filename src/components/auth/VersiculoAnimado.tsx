@@ -24,7 +24,7 @@ export function VersiculoAnimado() {
   const [displayText, setDisplayText] = useState("");
   const [displayRef, setDisplayRef] = useState("");
   const [phase, setPhase] = useState<"typing-text" | "typing-ref" | "waiting" | "glitch">("typing-text");
-  const [glitchText, setGlitchText] = useState("");
+  const [scrambledText, setScrambledText] = useState("");
 
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;
@@ -53,23 +53,46 @@ export function VersiculoAnimado() {
       timeout = setTimeout(() => {
         setPhase("glitch");
         let frame = 0;
-        const totalFrames = 20;
+        const totalFrames = 25;
+        
         const scrambleInterval = setInterval(() => {
           frame++;
+          const progress = frame / totalFrames;
+          const nextVersiculo = VERSICULOS[(index + 1) % VERSICULOS.length];
+          
+          // Efeito de transição: caracteres do atual viram símbolos, depois viram caracteres do próximo
           let out = "";
-          for (let i = 0; i < currentVersiculo.texto.length; i++) {
-            out += pool[Math.floor(Math.random() * pool.length)];
+          const targetLength = Math.max(currentVersiculo.texto.length, nextVersiculo.texto.length);
+          
+          for (let i = 0; i < targetLength; i++) {
+            if (Math.random() > progress) {
+              // Mantém ou distorce o atual
+              if (i < currentVersiculo.texto.length) {
+                out += Math.random() > 0.8 ? pool[Math.floor(Math.random() * pool.length)] : currentVersiculo.texto[i];
+              } else {
+                out += pool[Math.floor(Math.random() * pool.length)];
+              }
+            } else {
+              // Começa a revelar o próximo
+              if (i < nextVersiculo.texto.length) {
+                out += Math.random() > 0.2 ? pool[Math.floor(Math.random() * pool.length)] : nextVersiculo.texto[i];
+              } else {
+                out += " ";
+              }
+            }
           }
-          setGlitchText(out);
+          
+          setScrambledText(out);
+          
           if (frame >= totalFrames) {
             clearInterval(scrambleInterval);
             setPhase("typing-text");
             setDisplayText("");
             setDisplayRef("");
-            setGlitchText("");
+            setScrambledText("");
             setIndex((prev) => (prev + 1) % VERSICULOS.length);
           }
-        }, 40);
+        }, 45);
       }, 5000);
     }
 
@@ -80,22 +103,25 @@ export function VersiculoAnimado() {
     <div className="min-h-[220px] flex flex-col justify-center">
       <div className="relative">
         <h2 
-          className="font-serif text-3xl md:text-4xl leading-tight min-h-[140px] text-sidebar-foreground transition-all duration-300"
-          style={{ opacity: phase === "glitch" ? 0.8 : 1 }}
+          className="font-serif text-3xl md:text-4xl leading-tight min-h-[140px] text-sidebar-foreground"
         >
           {phase === "glitch" ? (
-            <span className="font-mono text-primary/70 break-all">{glitchText}</span>
+            <span className="font-mono text-primary/80 break-words opacity-90 block leading-tight">
+              {scrambledText}
+            </span>
           ) : (
-            <>
-              "{displayText}"
-              {phase === "typing-text" && (
-                <motion.span
-                  animate={{ opacity: [1, 0] }}
-                  transition={{ repeat: Infinity, duration: 0.8 }}
-                  className="inline-block w-0.5 h-8 bg-sidebar-primary ml-1 align-middle"
-                />
-              )}
-            </>
+            <div className="relative">
+              <span className="relative z-10">
+                "{displayText}"
+                {phase === "typing-text" && (
+                  <motion.span
+                    animate={{ opacity: [1, 0] }}
+                    transition={{ repeat: Infinity, duration: 0.8 }}
+                    className="inline-block w-0.5 h-8 bg-sidebar-primary ml-1 align-middle"
+                  />
+                )}
+              </span>
+            </div>
           )}
         </h2>
         <div className="mt-6 flex items-center gap-2">
