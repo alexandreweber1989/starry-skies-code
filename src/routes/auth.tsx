@@ -86,16 +86,13 @@ function AuthPage() {
     try {
       setLoading(true);
       
-      // Construímos a URL de callback completa e estável.
-      // O Supabase exige que a redirect_uri esteja na whitelist.
       const callbackUrl = `${window.location.origin}/auth/callback`;
-      
       console.log("Iniciando OAuth com Google. Callback:", callbackUrl);
 
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: { 
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: callbackUrl,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -108,7 +105,6 @@ function AuthPage() {
         toast.error("Erro ao conectar com Google: " + error.message);
         setLoading(false);
       }
-      // Se não houver erro, o navegador será redirecionado automaticamente pelo Supabase
     } catch (err) {
       console.error("Exceção no handleGoogle:", err);
       toast.error("Erro inesperado no login social.");
