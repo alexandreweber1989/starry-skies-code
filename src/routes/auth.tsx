@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Church, ArrowLeft } from "lucide-react";
+import { Church, ArrowLeft, Key } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { useServerFn } from "@tanstack/react-start";
+import { updateUserPassword } from "@/lib/auth-admin.functions";
+
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -25,13 +28,17 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [mode, setMode] = useState<"signin" | "signup" | "admin-setup">("signin");
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [notes, setNotes] = useState("");
+  const [adminSetupEmail, setAdminSetupEmail] = useState("alew15_7@hotmail.com");
+  const [adminSetupPassword, setAdminSetupPassword] = useState("");
+  const updatePasswordFn = useServerFn(updateUserPassword);
+
 
   useEffect(() => {
     if (user) navigate({ to: "/dashboard", replace: true });
@@ -131,6 +138,23 @@ function AuthPage() {
     toast.success("Enviamos um link de redefinição para o seu e-mail. Verifique também a pasta de Spam.");
   }
 
+  async function handleAdminSetup(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await updatePasswordFn({ data: { email: adminSetupEmail, password: adminSetupPassword } });
+      toast.success("Senha configurada com sucesso! Agora você já pode entrar.");
+      setMode("signin");
+      setEmail(adminSetupEmail);
+      setPassword(adminSetupPassword);
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao configurar senha.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+
   return (
     <div className="min-h-screen bg-background text-foreground grid grid-cols-1 lg:grid-cols-2">
       <aside className="hidden lg:flex flex-col justify-between bg-sidebar text-sidebar-foreground p-12">
@@ -166,11 +190,16 @@ function AuthPage() {
             <h1 className="font-serif text-3xl">Bem-vindo(a) de volta</h1>
           </div>
 
-          <Tabs value={mode} onValueChange={(v) => setMode(v as "signin" | "signup")}>
-            <TabsList className="grid grid-cols-2 w-full">
+          <Tabs value={mode} onValueChange={(v) => setMode(v as any)}>
+            <TabsList className="grid grid-cols-3 w-full">
               <TabsTrigger value="signin">Entrar</TabsTrigger>
-              <TabsTrigger value="signup">Solicitar cadastro</TabsTrigger>
+              <TabsTrigger value="signup">Solicitar</TabsTrigger>
+              <TabsTrigger value="admin-setup">
+                <Key className="h-3.5 w-3.5 mr-2" />
+                Senha Admin
+              </TabsTrigger>
             </TabsList>
+
 
             <TabsContent value="signin">
               <form onSubmit={handleSignIn} className="space-y-4 mt-6">
@@ -254,7 +283,40 @@ function AuthPage() {
                 </Button>
               </form>
             </TabsContent>
+
+            <TabsContent value="admin-setup">
+              <form onSubmit={handleAdminSetup} className="space-y-4 mt-6">
+                <p className="text-xs text-muted-foreground">
+                  Use esta aba para configurar sua senha inicial de administrador.
+                </p>
+                <div className="space-y-1.5">
+                  <Label htmlFor="admin-email">E-mail</Label>
+                  <Input
+                    id="admin-email"
+                    type="email"
+                    required
+                    value={adminSetupEmail}
+                    onChange={(e) => setAdminSetupEmail(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="admin-password">Nova Senha</Label>
+                  <Input
+                    id="admin-password"
+                    type="password"
+                    required
+                    value={adminSetupPassword}
+                    onChange={(e) => setAdminSetupPassword(e.target.value)}
+                    placeholder="Digite a senha..."
+                  />
+                </div>
+                <Button type="submit" className="w-full" loading={loading}>
+                  {loading ? "Configurando..." : "Configurar Senha"}
+                </Button>
+              </form>
+            </TabsContent>
           </Tabs>
+
 
           <div className="my-6 flex items-center gap-3 text-xs text-muted-foreground">
             <div className="h-px flex-1 bg-border" />
