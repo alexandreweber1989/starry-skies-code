@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface Versiculo {
@@ -19,11 +19,20 @@ const VERSICULOS: Versiculo[] = [
   { texto: "E sabemos que todas as coisas contribuem juntamente para o bem daqueles que amam a Deus, daqueles que são chamados segundo o seu propósito.", referencia: "Romanos 8:28" },
 ];
 
+type TransitionType = "particles" | "hacker" | "cinematic" | "slide";
+
 export function VersiculoAnimado() {
   const [index, setIndex] = useState(0);
   const [displayText, setDisplayText] = useState("");
   const [displayRef, setDisplayRef] = useState("");
   const [phase, setPhase] = useState<"typing-text" | "typing-ref" | "waiting" | "transitioning">("typing-text");
+  const [transitionType, setTransitionType] = useState<TransitionType>("cinematic");
+  const [hackerText, setHackerText] = useState("");
+
+  const getRandomTransition = useCallback((): TransitionType => {
+    const types: TransitionType[] = ["particles", "hacker", "cinematic", "slide"];
+    return types[Math.floor(Math.random() * types.length)];
+  }, []);
 
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;
@@ -33,7 +42,7 @@ export function VersiculoAnimado() {
       if (displayText.length < currentVersiculo.texto.length) {
         timeout = setTimeout(() => {
           setDisplayText(currentVersiculo.texto.slice(0, displayText.length + 1));
-        }, 40);
+        }, 30);
       } else {
         timeout = setTimeout(() => {
           setPhase("typing-ref");
@@ -43,7 +52,7 @@ export function VersiculoAnimado() {
       if (displayRef.length < currentVersiculo.referencia.length) {
         timeout = setTimeout(() => {
           setDisplayRef(currentVersiculo.referencia.slice(0, displayRef.length + 1));
-        }, 30);
+        }, 20);
       } else {
         setPhase("waiting");
       }
@@ -52,36 +61,96 @@ export function VersiculoAnimado() {
         setPhase("transitioning");
       }, 5000);
     } else if (phase === "transitioning") {
+      if (transitionType === "hacker") {
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
+        let iterations = 0;
+        const interval = setInterval(() => {
+          setHackerText(
+            currentVersiculo.texto
+              .split("")
+              .map((char, i) => {
+                if (i < iterations) return char;
+                return chars[Math.floor(Math.random() * chars.length)];
+              })
+              .join("")
+          );
+          iterations += currentVersiculo.texto.length / 10;
+          if (iterations >= currentVersiculo.texto.length) {
+            clearInterval(interval);
+          }
+        }, 50);
+      }
+
       timeout = setTimeout(() => {
         setPhase("typing-text");
         setDisplayText("");
         setDisplayRef("");
+        setHackerText("");
+        setTransitionType(getRandomTransition());
         setIndex((prev) => (prev + 1) % VERSICULOS.length);
-      }, 1000);
+      }, 1200);
     }
 
     return () => clearTimeout(timeout);
-  }, [displayText, displayRef, index, phase]);
+  }, [displayText, displayRef, index, phase, transitionType, getRandomTransition]);
+
+  const getTransitionVariants = () => {
+    switch (transitionType) {
+      case "particles":
+        return {
+          initial: { opacity: 0, scale: 0.8, filter: "blur(20px)" },
+          animate: { opacity: 1, scale: 1, filter: "blur(0px)" },
+          exit: { 
+            opacity: 0, 
+            scale: 1.2, 
+            filter: "blur(20px)",
+            transition: { duration: 0.8 }
+          }
+        };
+      case "hacker":
+        return {
+          initial: { opacity: 0, x: -10 },
+          animate: { opacity: 1, x: 0 },
+          exit: { opacity: 0, x: 10 }
+        };
+      case "cinematic":
+        return {
+          initial: { opacity: 0, scale: 1.1, filter: "blur(10px)" },
+          animate: { opacity: 1, scale: 1, filter: "blur(0px)" },
+          exit: { opacity: 0, scale: 0.9, filter: "blur(10px)" }
+        };
+      case "slide":
+        return {
+          initial: { opacity: 0, x: 100 },
+          animate: { opacity: 1, x: 0 },
+          exit: { opacity: 0, x: -100 }
+        };
+      default:
+        return {
+          initial: { opacity: 0 },
+          animate: { opacity: 1 },
+          exit: { opacity: 0 }
+        };
+    }
+  };
+
+  const variants = getTransitionVariants();
 
   return (
     <div className="min-h-[220px] flex flex-col justify-center overflow-hidden">
       <AnimatePresence mode="wait">
         <motion.div
-          key={index}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ 
-            opacity: phase === "transitioning" ? 0 : 1, 
-            y: phase === "transitioning" ? -20 : 0,
-            filter: phase === "transitioning" ? "blur(10px)" : "blur(0px)"
-          }}
-          exit={{ opacity: 0, y: -20, filter: "blur(10px)" }}
-          transition={{ duration: 0.8, ease: "easeInOut" }}
+          key={`${index}-${transitionType}`}
+          initial={variants.initial}
+          animate={variants.animate}
+          exit={variants.exit}
+          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
           className="relative"
         >
           <h2 className="font-serif text-3xl md:text-4xl leading-tight min-h-[140px] text-sidebar-foreground">
             <div className="relative">
               <span className="relative z-10 block">
-                "{displayText}"
+                "{transitionType === "hacker" && phase === "transitioning" ? hackerText : displayText}"
                 {phase === "typing-text" && (
                   <motion.span
                     animate={{ opacity: [1, 0] }}
