@@ -298,33 +298,33 @@ export function CadastroLead() {
               </span>
             </div>
 
-            {resultado ? (
+            {resultado.principal ? (
               <>
                 <p className="text-xs text-muted-foreground mt-3">
                   Sua Mesa mais próxima é:
                 </p>
                 <div className="mt-2 rounded-xl bg-foreground text-background p-4">
                   <div className="font-mono text-[9px] uppercase tracking-[0.2em] text-background/55">
-                    {resultado.rede}
+                    {resultado.principal.rede}
                   </div>
-                  <div className="font-serif text-lg font-bold mt-0.5">{resultado.mesa}</div>
+                  <div className="font-serif text-lg font-bold mt-0.5">{resultado.principal.mesa}</div>
                   <div className="text-xs text-background/70 mt-0.5">
-                    {resultado.dia} · {resultado.hora} · {resultado.local}
+                    {resultado.principal.dia} · {resultado.principal.hora} · {resultado.principal.local}
                   </div>
                   <div className="flex items-center gap-2 mt-3 text-xs text-background/85">
                     <span className="grid place-items-center h-6 w-6 rounded-full bg-background text-foreground font-serif text-[10px] font-bold">
-                      {resultado.lider.replace(/[^A-Za-zÀ-ÿ]/g, "").slice(0, 2).toUpperCase()}
+                      {resultado.principal.lider.replace(/[^A-Za-zÀ-ÿ]/g, "").slice(0, 2).toUpperCase()}
                     </span>
-                    Responsável: {resultado.lider}
+                    Responsável: {resultado.principal.lider}
                   </div>
                 </div>
                 <a
-                  href={linkWhatsApp(resultado.whatsapp, mensagemWhats(resultado))}
+                  href={linkWhatsApp(resultado.principal.whatsapp, mensagemWhats(resultado.principal))}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-3 w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary text-primary-foreground font-semibold text-sm h-11 px-6 hover:opacity-90 transition-opacity"
                 >
-                  Falar com {resultado.lider.split(" ").slice(-1)[0]} no WhatsApp
+                  Falar com {resultado.principal.lider.split(" ").slice(-1)[0]} no WhatsApp
                 </a>
               </>
             ) : (
@@ -344,13 +344,41 @@ export function CadastroLead() {
               </>
             )}
 
+            {resultado.outras.length > 0 && (
+              <div className="mt-6">
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                  Outras opções de Mesas para você:
+                </p>
+                <div className="mt-2 space-y-2 max-h-40 overflow-y-auto pr-2 scrollbar-thin">
+                  {resultado.outras.map((outra) => (
+                    <div key={outra.mesa} className="p-3 rounded-lg border border-border/40 bg-card/50 flex justify-between items-center group">
+                      <div>
+                        <div className="text-[10px] font-bold text-primary uppercase">{outra.rede}</div>
+                        <div className="text-sm font-serif font-bold">{outra.mesa}</div>
+                        <div className="text-[10px] text-muted-foreground">{outra.dia} · {outra.hora}</div>
+                      </div>
+                      <a
+                        href={linkWhatsApp(outra.whatsapp, mensagemWhats(outra))}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="h-8 w-8 rounded-full bg-muted flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors"
+                      >
+                        <ArrowRight className="h-4 w-4" />
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <button
               type="button"
               onClick={() => setResultado(undefined)}
-              className="mt-3 w-full text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+              className="mt-6 w-full text-[11px] text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center gap-1"
             >
-              ← Voltar
+              ← Voltar ao início
             </button>
+
           </motion.div>
         )}
       </AnimatePresence>
