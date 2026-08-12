@@ -55,9 +55,7 @@ export function useLocalidades() {
     setLoadingBairros(true);
     try {
       // Nota: A API do IBGE nem sempre tem bairros para todas as cidades.
-      // Usamos o endpoint de distritos ou subdistritos como alternativa se necessário,
-      // mas o ideal para "bairros" em produção seria uma base de CEPs ou similar.
-      // Aqui tentaremos distritos que costumam representar bairros/regiões.
+      // Usamos o endpoint de distritos ou subdistritos como alternativa se necessário.
       const res = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/municipios/${cidadeId}/distritos?orderBy=nome`);
       const data = await res.json();
       setBairros(data);
