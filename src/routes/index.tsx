@@ -591,8 +591,6 @@ function Historia() {
       const sectionHeight = ref.current.offsetHeight;
       const viewportHeight = window.innerHeight;
       
-      // Calculamos o progresso relativo ao topo da seção estar no topo do viewport
-      // e o fundo da seção estar no fundo do viewport
       const relativeTop = -rect.top;
       const scrollableDist = sectionHeight - viewportHeight;
       
@@ -601,6 +599,7 @@ function Historia() {
       const progress = Math.max(0, Math.min(0.999, relativeTop / scrollableDist));
       const idx = Math.floor(progress * capitulos.length);
       
+      console.log('Scroll progress:', progress, 'Active index:', idx);
       setAtivo(idx);
     };
 
