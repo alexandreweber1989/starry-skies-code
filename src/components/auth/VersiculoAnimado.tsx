@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Versiculo {
   texto: string;
@@ -57,32 +57,28 @@ export function VersiculoAnimado() {
         setDisplayText("");
         setDisplayRef("");
         setIndex((prev) => (prev + 1) % VERSICULOS.length);
-      }, 800);
+      }, 1000);
     }
 
     return () => clearTimeout(timeout);
   }, [displayText, displayRef, index, phase]);
 
-    return () => clearTimeout(timeout);
-  }, [displayText, displayRef, index, phase]);
-
   return (
-    <div className="min-h-[220px] flex flex-col justify-center">
-      <div className="relative">
-        <h2 
-          className="font-serif text-3xl md:text-4xl leading-tight min-h-[140px] text-sidebar-foreground"
+    <div className="min-h-[220px] flex flex-col justify-center overflow-hidden">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={index}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ 
+            opacity: phase === "transitioning" ? 0 : 1, 
+            y: phase === "transitioning" ? -20 : 0,
+            filter: phase === "transitioning" ? "blur(10px)" : "blur(0px)"
+          }}
+          exit={{ opacity: 0, y: -20, filter: "blur(10px)" }}
+          transition={{ duration: 0.8, ease: "easeInOut" }}
+          className="relative"
         >
-          {phase === "glitch" ? (
-            <span 
-              className="font-mono text-primary break-words block leading-tight relative"
-              style={{ 
-                color: 'var(--color-sidebar-primary)',
-                textShadow: '0 0 8px var(--color-sidebar-primary)' 
-              }}
-            >
-              {scrambledText}
-            </span>
-          ) : (
+          <h2 className="font-serif text-3xl md:text-4xl leading-tight min-h-[140px] text-sidebar-foreground">
             <div className="relative">
               <span className="relative z-10 block">
                 "{displayText}"
@@ -95,25 +91,21 @@ export function VersiculoAnimado() {
                 )}
               </span>
             </div>
-          )}
-        </h2>
-        <div className="mt-6 flex items-center gap-2">
-          {phase !== "glitch" && (
-            <>
-              <p className="font-mono text-xs uppercase tracking-widest text-sidebar-foreground/60 min-h-[20px]">
-                {displayRef}
-              </p>
-              {phase === "typing-ref" && (
-                <motion.span
-                  animate={{ opacity: [1, 0] }}
-                  transition={{ repeat: Infinity, duration: 0.8 }}
-                  className="inline-block w-0.5 h-4 bg-sidebar-primary align-middle"
-                />
-              )}
-            </>
-          )}
-        </div>
-      </div>
+          </h2>
+          <div className="mt-6 flex items-center gap-2">
+            <p className="font-mono text-xs uppercase tracking-widest text-sidebar-foreground/60 min-h-[20px]">
+              {displayRef}
+            </p>
+            {phase === "typing-ref" && (
+              <motion.span
+                animate={{ opacity: [1, 0] }}
+                transition={{ repeat: Infinity, duration: 0.8 }}
+                className="inline-block w-0.5 h-4 bg-sidebar-primary align-middle"
+              />
+            )}
+          </div>
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }
