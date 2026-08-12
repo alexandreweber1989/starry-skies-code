@@ -237,14 +237,6 @@ export function CadastroLead() {
                     ))}
                   </select>
                 </Campo>
-                <Campo label="Estado (UF)">
-                  <select value={form.uf} onChange={set("uf")} className={inputCls}>
-                    <option value="">Selecione o Estado…</option>
-                    {estados.map((e) => (
-                      <option key={e.sigla} value={e.sigla}>{e.nome}</option>
-                    ))}
-                  </select>
-                </Campo>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:gap-6">
@@ -253,14 +245,14 @@ export function CadastroLead() {
                     value={form.cidadeId} 
                     onChange={set("cidadeId")} 
                     className={inputCls}
-                    disabled={!form.uf || loadingCidades}
                   >
-                    <option value="">{loadingCidades ? "Carregando…" : "Selecione a Cidade…"}</option>
-                    {cidades.map((c) => (
-                      <option key={c.id} value={c.id.toString()}>{c.nome}</option>
+                    <option value="">Selecione a Cidade…</option>
+                    {CIDADES_HABILITADAS.map((c) => (
+                      <option key={c.id} value={c.id.toString()}>{c.nome} ({c.uf})</option>
                     ))}
                   </select>
                 </Campo>
+
                 <Campo label="Bairro">
                   <select 
                     value={form.bairro} 
