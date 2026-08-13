@@ -17,6 +17,7 @@ import { Route as KidsVisitanteRouteImport } from './routes/kids.visitante'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as AuthenticatedRedesRouteImport } from './routes/_authenticated/redes'
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
+import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedMidiaRouteImport } from './routes/_authenticated/midia'
 import { Route as AuthenticatedMesasRouteImport } from './routes/_authenticated/mesas'
 import { Route as AuthenticatedMembrosRouteImport } from './routes/_authenticated/membros'
@@ -70,6 +71,11 @@ const AuthenticatedRedesRoute = AuthenticatedRedesRouteImport.update({
 const AuthenticatedPerfilRoute = AuthenticatedPerfilRouteImport.update({
   id: '/perfil',
   path: '/perfil',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedMidiaRoute = AuthenticatedMidiaRouteImport.update({
@@ -166,6 +172,7 @@ export interface FileRoutesByFullPath {
   '/membros': typeof AuthenticatedMembrosRoute
   '/mesas': typeof AuthenticatedMesasRoute
   '/midia': typeof AuthenticatedMidiaRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
   '/perfil': typeof AuthenticatedPerfilRoute
   '/redes': typeof AuthenticatedRedesRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -190,6 +197,7 @@ export interface FileRoutesByTo {
   '/membros': typeof AuthenticatedMembrosRoute
   '/mesas': typeof AuthenticatedMesasRoute
   '/midia': typeof AuthenticatedMidiaRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
   '/perfil': typeof AuthenticatedPerfilRoute
   '/redes': typeof AuthenticatedRedesRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -216,6 +224,7 @@ export interface FileRoutesById {
   '/_authenticated/membros': typeof AuthenticatedMembrosRoute
   '/_authenticated/mesas': typeof AuthenticatedMesasRoute
   '/_authenticated/midia': typeof AuthenticatedMidiaRoute
+  '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
   '/_authenticated/redes': typeof AuthenticatedRedesRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -242,6 +251,7 @@ export interface FileRouteTypes {
     | '/membros'
     | '/mesas'
     | '/midia'
+    | '/onboarding'
     | '/perfil'
     | '/redes'
     | '/auth/callback'
@@ -266,6 +276,7 @@ export interface FileRouteTypes {
     | '/membros'
     | '/mesas'
     | '/midia'
+    | '/onboarding'
     | '/perfil'
     | '/redes'
     | '/auth/callback'
@@ -291,6 +302,7 @@ export interface FileRouteTypes {
     | '/_authenticated/membros'
     | '/_authenticated/mesas'
     | '/_authenticated/midia'
+    | '/_authenticated/onboarding'
     | '/_authenticated/perfil'
     | '/_authenticated/redes'
     | '/auth/callback'
@@ -366,6 +378,13 @@ declare module '@tanstack/react-router' {
       path: '/perfil'
       fullPath: '/perfil'
       preLoaderRoute: typeof AuthenticatedPerfilRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/onboarding': {
+      id: '/_authenticated/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/midia': {
@@ -488,6 +507,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMembrosRoute: typeof AuthenticatedMembrosRoute
   AuthenticatedMesasRoute: typeof AuthenticatedMesasRoute
   AuthenticatedMidiaRoute: typeof AuthenticatedMidiaRoute
+  AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
   AuthenticatedRedesRoute: typeof AuthenticatedRedesRoute
   AuthenticatedKidsRetiradaCheckinIdRoute: typeof AuthenticatedKidsRetiradaCheckinIdRoute
@@ -507,6 +527,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMembrosRoute: AuthenticatedMembrosRoute,
   AuthenticatedMesasRoute: AuthenticatedMesasRoute,
   AuthenticatedMidiaRoute: AuthenticatedMidiaRoute,
+  AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
   AuthenticatedRedesRoute: AuthenticatedRedesRoute,
   AuthenticatedKidsRetiradaCheckinIdRoute:
