@@ -68,7 +68,7 @@ export function MemberDetailSheet({
   canSeeNotes: boolean;
 }) {
   const id = profile?.id as string | undefined;
-  const { isAdmin } = useAuth();
+  const { isAdmin, isPastoral, isLeadership } = useAuth();
 
   const { data: links } = useQuery({
     queryKey: ["member-links", id],
