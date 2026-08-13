@@ -560,8 +560,8 @@ function CadastroSection() {
             Dê o seu próximo passo
           </h2>
           <p className="text-muted-foreground text-sm md:text-base lg:text-xl max-w-2xl mx-auto">
-            Queremos te conhecer. Preencha os dados e vamos te conectar à Mesa
-            mais próxima de você.
+            Acreditamos que ninguém deve caminhar sozinho. Preencha os dados e
+            te ajudaremos a encontrar a Mesa mais próxima da sua casa.
           </p>
         </motion.div>
 

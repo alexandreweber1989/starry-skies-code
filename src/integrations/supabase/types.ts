@@ -1229,39 +1229,6 @@ export type Database = {
           },
         ]
       }
-      leader_touchpoints: {
-        Row: {
-          channel: string
-          created_at: string
-          id: string
-          leader_id: string
-          member_id: string
-          mesa_id: string
-          note: string | null
-          week_start: string
-        }
-        Insert: {
-          channel?: string
-          created_at?: string
-          id?: string
-          leader_id: string
-          member_id: string
-          mesa_id: string
-          note?: string | null
-          week_start: string
-        }
-        Update: {
-          channel?: string
-          created_at?: string
-          id?: string
-          leader_id?: string
-          member_id?: string
-          mesa_id?: string
-          note?: string | null
-          week_start?: string
-        }
-        Relationships: []
-      }
       leads: {
         Row: {
           city: string | null
@@ -2233,60 +2200,6 @@ export type Database = {
           },
         ]
       }
-      sermons: {
-        Row: {
-          base_verse: string | null
-          church_id: string | null
-          created_at: string
-          created_by: string | null
-          dark: boolean
-          id: string
-          points: Json
-          preached_on: string | null
-          preacher: string | null
-          summary: string | null
-          tags: string[]
-          template: string
-          theme: string | null
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          base_verse?: string | null
-          church_id?: string | null
-          created_at?: string
-          created_by?: string | null
-          dark?: boolean
-          id?: string
-          points?: Json
-          preached_on?: string | null
-          preacher?: string | null
-          summary?: string | null
-          tags?: string[]
-          template?: string
-          theme?: string | null
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          base_verse?: string | null
-          church_id?: string | null
-          created_at?: string
-          created_by?: string | null
-          dark?: boolean
-          id?: string
-          points?: Json
-          preached_on?: string | null
-          preacher?: string | null
-          summary?: string | null
-          tags?: string[]
-          template?: string
-          theme?: string | null
-          title?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
       setlist_songs: {
         Row: {
           created_at: string | null
@@ -2985,6 +2898,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      can_view_mesa: {
+        Args: { _mesa_id: string; _user_id: string }
+        Returns: boolean
+      }
+      can_view_rede: {
+        Args: { _rede_id: string; _user_id: string }
+        Returns: boolean
+      }
       claim_first_admin: { Args: { _user_id: string }; Returns: boolean }
       gen_pickup_code: { Args: { _prefix: string }; Returns: string }
       has_mesa_role: {
@@ -3017,7 +2938,15 @@ export type Database = {
       is_kids_admin: { Args: { _user_id: string }; Returns: boolean }
       is_leadership: { Args: { _user_id: string }; Returns: boolean }
       is_livraria_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_mesa_member: {
+        Args: { _mesa_id: string; _user_id: string }
+        Returns: boolean
+      }
       is_pastoral: { Args: { _user_id: string }; Returns: boolean }
+      is_rede_member: {
+        Args: { _rede_id: string; _user_id: string }
+        Returns: boolean
+      }
       kids_find_family_by_phone: {
         Args: { _phone: string }
         Returns: {

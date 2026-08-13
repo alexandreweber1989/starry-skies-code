@@ -228,7 +228,7 @@ export function CadastroLead() {
               Novo por aqui? 👋
             </div>
             <h3 className="font-serif text-2xl sm:text-3xl xl:text-4xl font-bold leading-tight mt-1 lg:mt-3">
-              Encontre uma Mesa perto de você
+              Participe de uma Mesa perto de você
             </h3>
             <p className="text-sm lg:text-base xl:text-lg text-muted-foreground mt-2 lg:mt-4 mb-6 lg:mb-8">
               A ideia é simples: queremos te ajudar a encontrar um grupo acolhedor para caminhar junto, bem pertinho da sua casa.
@@ -383,8 +383,8 @@ export function CadastroLead() {
             ) : (
               <>
                 <p className="text-xs text-muted-foreground mt-3">
-                Recebemos seu contato! Vamos encontrar uma Mesa para você.
-                É só enviar uma mensagem que a liderança te acolherá.
+                  Recebemos seu contato! Vamos encontrar a melhor Mesa para você.
+                  Envie uma mensagem para que a nossa liderança possa te acolher.
                 </p>
                 <a
                   href={linkWhatsApp(WHATSAPP_IGREJA, mensagemWhats(null))}
