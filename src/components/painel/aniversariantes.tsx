@@ -135,9 +135,10 @@ export function Aniversariantes() {
           const dia = Number(p.birth_date!.slice(8, 10));
           const hoje = dia === hojeDia;
           const phone = String(p.phone ?? "").replace(/\D/g, "");
+          const idade = ageFrom(p.birth_date);
           const link = phone
             ? `https://wa.me/55${phone}?text=${encodeURIComponent(
-                buildMessage(template ?? DEFAULT_TEMPLATE, p.full_name),
+                buildMessage(templateForAge(templates ?? {}, idade), p.full_name),
               )}`
             : null;
           return (
