@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Music, Pencil, Plus, Search, Trash2, Youtube, FileText, ChevronRight } from "lucide-react";
+import { Music, Pencil, Plus, Search, Trash2, Youtube, FileText, ChevronRight, ListMusic } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { LOUVOR_MINISTRY_ID, SONG_KEYS, TEMPO_LABELS } from "@/lib/louvor";
@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SongDialog, emptySong, type SongDraft } from "./song-dialog";
+import { BulkImportDialog } from "./bulk-import-dialog";
 import { SongSheet, type SongRecord } from "./song-sheet";
 import { Badge } from "@/components/ui/badge";
 
@@ -87,16 +88,27 @@ export function Repertorio() {
             onChange={(e) => setQ(e.target.value)}
           />
         </div>
-        {canManage && (
-          <SongDialog 
-            initial={emptySong} 
-            trigger={
-              <Button className="h-11 px-6 shadow-lg shadow-primary/10 transition-all hover:scale-[1.02] active:scale-[0.98]">
-                <Plus className="h-4 w-4 mr-2" /> Nova música
-              </Button>
-            } 
-          />
-        )}
+        <div className="flex gap-2">
+          {canManage && (
+            <BulkImportDialog 
+              trigger={
+                <Button variant="outline" className="h-11 px-4">
+                  <ListMusic className="h-4 w-4 mr-2" /> Importação em massa
+                </Button>
+              }
+            />
+          )}
+          {canManage && (
+            <SongDialog 
+              initial={emptySong} 
+              trigger={
+                <Button className="h-11 px-6 shadow-lg shadow-primary/10 transition-all hover:scale-[1.02] active:scale-[0.98]">
+                  <Plus className="h-4 w-4 mr-2" /> Nova música
+                </Button>
+              } 
+            />
+          )}
+        </div>
       </div>
 
       {isLoading ? (
