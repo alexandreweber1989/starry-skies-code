@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Music, Pencil, Plus, Search, Trash2, Youtube, ExternalLink, FileText, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
