@@ -25,7 +25,8 @@ import { Input } from "@/components/ui/input";
 import { useState, useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LiveStreamCard } from "@/components/midia/live-stream-card";
-import { Youtube, MonitorPlay } from "lucide-react";
+import { Youtube, MonitorPlay, Play } from "lucide-react";
+
 
 
 export const Route = createFileRoute("/_authenticated/midia")({
