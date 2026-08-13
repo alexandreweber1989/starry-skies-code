@@ -2233,6 +2233,60 @@ export type Database = {
           },
         ]
       }
+      sermons: {
+        Row: {
+          base_verse: string | null
+          church_id: string | null
+          created_at: string
+          created_by: string | null
+          dark: boolean
+          id: string
+          points: Json
+          preached_on: string | null
+          preacher: string | null
+          summary: string | null
+          tags: string[]
+          template: string
+          theme: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          base_verse?: string | null
+          church_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          dark?: boolean
+          id?: string
+          points?: Json
+          preached_on?: string | null
+          preacher?: string | null
+          summary?: string | null
+          tags?: string[]
+          template?: string
+          theme?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          base_verse?: string | null
+          church_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          dark?: boolean
+          id?: string
+          points?: Json
+          preached_on?: string | null
+          preacher?: string | null
+          summary?: string | null
+          tags?: string[]
+          template?: string
+          theme?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       setlist_songs: {
         Row: {
           created_at: string | null
