@@ -1137,6 +1137,54 @@ export type Database = {
         }
         Relationships: []
       }
+      member_onboarding_steps: {
+        Row: {
+          completed_at: string | null
+          completed_by: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          person_id: string
+          step_id: string
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          person_id: string
+          step_id: string
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          person_id?: string
+          step_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_onboarding_steps_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_onboarding_steps_step_id_fkey"
+            columns: ["step_id"]
+            isOneToOne: false
+            referencedRelation: "onboarding_steps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       membership_requests: {
         Row: {
           created_at: string
@@ -1359,6 +1407,36 @@ export type Database = {
           },
         ]
       }
+      onboarding_steps: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          position: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          position?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          position?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           created_at: string
@@ -1448,6 +1526,50 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      pastoral_notes: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string
+          happened_on: string
+          id: string
+          kind: string
+          person_id: string
+          updated_at: string
+          visibility: string
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string
+          happened_on?: string
+          id?: string
+          kind?: string
+          person_id: string
+          updated_at?: string
+          visibility?: string
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string
+          happened_on?: string
+          id?: string
+          kind?: string
+          person_id?: string
+          updated_at?: string
+          visibility?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pastoral_notes_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       products: {
         Row: {
@@ -2274,7 +2396,9 @@ export type Database = {
         Returns: boolean
       }
       is_kids_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_leadership: { Args: { _user_id: string }; Returns: boolean }
       is_livraria_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_pastoral: { Args: { _user_id: string }; Returns: boolean }
       kids_find_family_by_phone: {
         Args: { _phone: string }
         Returns: {

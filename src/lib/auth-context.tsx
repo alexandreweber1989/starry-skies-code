@@ -32,7 +32,12 @@ interface AuthState {
   isCantinaAdmin: boolean;
   /** Admin geral ou admin do Ministério Infantil. */
   isKidsAdmin: boolean;
+  /** Equipe pastoral: admin geral, pastores e apascentadores. */
+  isPastoral: boolean;
+  /** Qualquer nível de liderança (equipe pastoral + líderes de mesa). */
+  isLeadership: boolean;
   signOut: () => Promise<void>;
+
 }
 
 const AuthContext = createContext<AuthState | null>(null);
@@ -125,6 +130,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const isAdmin = roles.some((r) => r.role === "admin_geral");
   const isKidsAdmin = isAdmin || roles.some((r) => r.role === "admin_kids");
+  const churchFunction = (profile?.church_function ?? "") as string;
+  const isPastoral = isAdmin || ["pastor", "apascentador"].includes(churchFunction);
+  const isLeadership =
+    isPastoral ||
+    churchFunction === "lider" ||
+    roles.some((r) => r.role === "lider_mesa" || r.role === "admin_ministerio");
+
+
 
   const value: AuthState = {
     user: session?.user ?? null,
@@ -138,6 +151,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isLivrariaAdmin: isAdmin || roles.some((r) => r.role === "admin_livraria"),
     isCantinaAdmin: isAdmin || roles.some((r) => r.role === "admin_cantina"),
     isKidsAdmin,
+    isPastoral,
+    isLeadership,
+
     signOut: async () => {
       await qc.cancelQueries();
       qc.clear();

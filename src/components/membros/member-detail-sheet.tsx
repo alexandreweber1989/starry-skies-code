@@ -16,7 +16,10 @@ import { FamilySummary } from "./family-summary";
 import { MemberTimeline } from "./member-timeline";
 import { MemberCredentialsDialog } from "./credentials-dialog";
 import { MemberRolesDialog } from "./roles-dialog";
+import { OnboardingTracker } from "./onboarding-tracker";
+import { PastoralNotes } from "./pastoral-notes";
 import { useAuth } from "@/lib/auth-context";
+
 import {
   MARITAL_STATUS,
   MEMBERSHIP_STATUS,
@@ -65,7 +68,7 @@ export function MemberDetailSheet({
   canSeeNotes: boolean;
 }) {
   const id = profile?.id as string | undefined;
-  const { isAdmin } = useAuth();
+  const { isAdmin, isPastoral, isLeadership } = useAuth();
 
   const { data: links } = useQuery({
     queryKey: ["member-links", id],
@@ -165,6 +168,10 @@ export function MemberDetailSheet({
             <Line label="Disponibilidade" value={profile.availability} />
           </Block>
           <Separator />
+          <Block title="Trilha de integração">
+            {id && <OnboardingTracker personId={id} enabled={open} canEdit={isLeadership} />}
+          </Block>
+          <Separator />
           <Block title="Caminhada na igreja">
             {id && <MemberTimeline personId={id} enabled={open} />}
           </Block>
@@ -173,6 +180,15 @@ export function MemberDetailSheet({
             <Line label="Mesas" value={links?.mesas.length ? links.mesas.join(", ") : "—"} />
             <Line label="Ministérios" value={links?.ministries.length ? links.ministries.join(" | ") : "—"} />
           </Block>
+          {isPastoral && (
+            <>
+              <Separator />
+              <Block title="Histórico pastoral">
+                {id && <PastoralNotes personId={id} enabled={open} />}
+              </Block>
+            </>
+          )}
+
           {canSeeNotes && (
             <>
               <Separator />

@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Cake } from "lucide-react";
+import { Cake, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ageFrom, initialsOf } from "@/lib/painel";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,14 @@ interface BirthdayRow {
   full_name: string;
   birth_date: string | null;
   phone: string | null;
+}
+
+const DEFAULT_TEMPLATE =
+  "Feliz aniversário, {nome}! 🎉 Que Deus continue abençoando a sua vida. Toda a família da Igreja Batista Atos celebra com você hoje!";
+
+/** Monta a mensagem de parabéns a partir do modelo salvo pela liderança. */
+function buildMessage(template: string, nome: string) {
+  return template.replace(/\{nome\}/g, nome.split(" ")[0] ?? nome);
 }
 
 /** Aniversariantes do mês corrente, ordenados por dia. */
@@ -28,12 +36,26 @@ export function Aniversariantes() {
     },
   });
 
+  const { data: template } = useQuery({
+    queryKey: ["birthday-template"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("app_settings")
+        .select("value")
+        .eq("key", "birthday_message")
+        .maybeSingle();
+      return (data?.value ?? DEFAULT_TEMPLATE) as string;
+    },
+  });
+
   const mes = String(new Date().getMonth() + 1).padStart(2, "0");
   const hojeDia = new Date().getDate();
 
   const lista = (data ?? [])
     .filter((p) => p.birth_date?.slice(5, 7) === mes)
     .sort((a, b) => (a.birth_date ?? "").slice(8, 10).localeCompare((b.birth_date ?? "").slice(8, 10)));
+
+  const aniversariantesHoje = lista.filter((p) => Number(p.birth_date!.slice(8, 10)) === hojeDia);
 
   return (
     <PanelSection
@@ -47,10 +69,27 @@ export function Aniversariantes() {
     >
       {isLoading && <EmptyLine>Carregando…</EmptyLine>}
       {!isLoading && lista.length === 0 && <EmptyLine>Nenhum aniversariante neste mês.</EmptyLine>}
+
+      {aniversariantesHoje.length > 0 && (
+        <p className="text-sm mb-4">
+          Hoje é aniversário de{" "}
+          <span className="text-primary">
+            {aniversariantesHoje.map((p) => p.full_name.split(" ")[0]).join(", ")}
+          </span>
+          . Que tal enviar uma mensagem?
+        </p>
+      )}
+
       <ul className="grid sm:grid-cols-2 gap-3">
         {lista.slice(0, 8).map((p) => {
           const dia = Number(p.birth_date!.slice(8, 10));
           const hoje = dia === hojeDia;
+          const phone = String(p.phone ?? "").replace(/\D/g, "");
+          const link = phone
+            ? `https://wa.me/55${phone}?text=${encodeURIComponent(
+                buildMessage(template ?? DEFAULT_TEMPLATE, p.full_name),
+              )}`
+            : null;
           return (
             <li
               key={p.id}
@@ -66,7 +105,20 @@ export function Aniversariantes() {
                   {ageFrom(p.birth_date) !== null ? ` · ${ageFrom(p.birth_date)} anos` : ""}
                 </div>
               </div>
-              {hoje && <Cake className="h-4 w-4 text-primary" />}
+              {hoje && <Cake className="h-4 w-4 text-primary shrink-0" />}
+              {link && (
+                <Button
+                  asChild
+                  size="sm"
+                  variant={hoje ? "default" : "ghost"}
+                  className="h-8 px-2 shrink-0"
+                >
+                  <a href={link} target="_blank" rel="noreferrer" aria-label={`Parabenizar ${p.full_name}`}>
+                    <MessageCircle className="h-3.5 w-3.5" />
+                    <span className="sr-only sm:not-sr-only sm:ml-1 text-xs">Parabenizar</span>
+                  </a>
+                </Button>
+              )}
             </li>
           );
         })}

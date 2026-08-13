@@ -17,9 +17,11 @@ import { Route as KidsVisitanteRouteImport } from './routes/kids.visitante'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as AuthenticatedRedesRouteImport } from './routes/_authenticated/redes'
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
+import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedMidiaRouteImport } from './routes/_authenticated/midia'
 import { Route as AuthenticatedMesasRouteImport } from './routes/_authenticated/mesas'
 import { Route as AuthenticatedMembrosRouteImport } from './routes/_authenticated/membros'
+import { Route as AuthenticatedMapaRouteImport } from './routes/_authenticated/mapa'
 import { Route as AuthenticatedLouvorRouteImport } from './routes/_authenticated/louvor'
 import { Route as AuthenticatedLivrariaRouteImport } from './routes/_authenticated/livraria'
 import { Route as AuthenticatedKidsRouteImport } from './routes/_authenticated/kids'
@@ -72,6 +74,11 @@ const AuthenticatedPerfilRoute = AuthenticatedPerfilRouteImport.update({
   path: '/perfil',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedMidiaRoute = AuthenticatedMidiaRouteImport.update({
   id: '/midia',
   path: '/midia',
@@ -85,6 +92,11 @@ const AuthenticatedMesasRoute = AuthenticatedMesasRouteImport.update({
 const AuthenticatedMembrosRoute = AuthenticatedMembrosRouteImport.update({
   id: '/membros',
   path: '/membros',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMapaRoute = AuthenticatedMapaRouteImport.update({
+  id: '/mapa',
+  path: '/mapa',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedLouvorRoute = AuthenticatedLouvorRouteImport.update({
@@ -163,9 +175,11 @@ export interface FileRoutesByFullPath {
   '/kids': typeof AuthenticatedKidsRoute
   '/livraria': typeof AuthenticatedLivrariaRoute
   '/louvor': typeof AuthenticatedLouvorRoute
+  '/mapa': typeof AuthenticatedMapaRoute
   '/membros': typeof AuthenticatedMembrosRoute
   '/mesas': typeof AuthenticatedMesasRoute
   '/midia': typeof AuthenticatedMidiaRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
   '/perfil': typeof AuthenticatedPerfilRoute
   '/redes': typeof AuthenticatedRedesRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -187,9 +201,11 @@ export interface FileRoutesByTo {
   '/kids': typeof AuthenticatedKidsRoute
   '/livraria': typeof AuthenticatedLivrariaRoute
   '/louvor': typeof AuthenticatedLouvorRoute
+  '/mapa': typeof AuthenticatedMapaRoute
   '/membros': typeof AuthenticatedMembrosRoute
   '/mesas': typeof AuthenticatedMesasRoute
   '/midia': typeof AuthenticatedMidiaRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
   '/perfil': typeof AuthenticatedPerfilRoute
   '/redes': typeof AuthenticatedRedesRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -213,9 +229,11 @@ export interface FileRoutesById {
   '/_authenticated/kids': typeof AuthenticatedKidsRoute
   '/_authenticated/livraria': typeof AuthenticatedLivrariaRoute
   '/_authenticated/louvor': typeof AuthenticatedLouvorRoute
+  '/_authenticated/mapa': typeof AuthenticatedMapaRoute
   '/_authenticated/membros': typeof AuthenticatedMembrosRoute
   '/_authenticated/mesas': typeof AuthenticatedMesasRoute
   '/_authenticated/midia': typeof AuthenticatedMidiaRoute
+  '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
   '/_authenticated/redes': typeof AuthenticatedRedesRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -239,9 +257,11 @@ export interface FileRouteTypes {
     | '/kids'
     | '/livraria'
     | '/louvor'
+    | '/mapa'
     | '/membros'
     | '/mesas'
     | '/midia'
+    | '/onboarding'
     | '/perfil'
     | '/redes'
     | '/auth/callback'
@@ -263,9 +283,11 @@ export interface FileRouteTypes {
     | '/kids'
     | '/livraria'
     | '/louvor'
+    | '/mapa'
     | '/membros'
     | '/mesas'
     | '/midia'
+    | '/onboarding'
     | '/perfil'
     | '/redes'
     | '/auth/callback'
@@ -288,9 +310,11 @@ export interface FileRouteTypes {
     | '/_authenticated/kids'
     | '/_authenticated/livraria'
     | '/_authenticated/louvor'
+    | '/_authenticated/mapa'
     | '/_authenticated/membros'
     | '/_authenticated/mesas'
     | '/_authenticated/midia'
+    | '/_authenticated/onboarding'
     | '/_authenticated/perfil'
     | '/_authenticated/redes'
     | '/auth/callback'
@@ -368,6 +392,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPerfilRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/onboarding': {
+      id: '/_authenticated/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/midia': {
       id: '/_authenticated/midia'
       path: '/midia'
@@ -387,6 +418,13 @@ declare module '@tanstack/react-router' {
       path: '/membros'
       fullPath: '/membros'
       preLoaderRoute: typeof AuthenticatedMembrosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/mapa': {
+      id: '/_authenticated/mapa'
+      path: '/mapa'
+      fullPath: '/mapa'
+      preLoaderRoute: typeof AuthenticatedMapaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/louvor': {
@@ -485,9 +523,11 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedKidsRoute: typeof AuthenticatedKidsRoute
   AuthenticatedLivrariaRoute: typeof AuthenticatedLivrariaRoute
   AuthenticatedLouvorRoute: typeof AuthenticatedLouvorRoute
+  AuthenticatedMapaRoute: typeof AuthenticatedMapaRoute
   AuthenticatedMembrosRoute: typeof AuthenticatedMembrosRoute
   AuthenticatedMesasRoute: typeof AuthenticatedMesasRoute
   AuthenticatedMidiaRoute: typeof AuthenticatedMidiaRoute
+  AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
   AuthenticatedRedesRoute: typeof AuthenticatedRedesRoute
   AuthenticatedKidsRetiradaCheckinIdRoute: typeof AuthenticatedKidsRetiradaCheckinIdRoute
@@ -504,9 +544,11 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedKidsRoute: AuthenticatedKidsRoute,
   AuthenticatedLivrariaRoute: AuthenticatedLivrariaRoute,
   AuthenticatedLouvorRoute: AuthenticatedLouvorRoute,
+  AuthenticatedMapaRoute: AuthenticatedMapaRoute,
   AuthenticatedMembrosRoute: AuthenticatedMembrosRoute,
   AuthenticatedMesasRoute: AuthenticatedMesasRoute,
   AuthenticatedMidiaRoute: AuthenticatedMidiaRoute,
+  AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
   AuthenticatedRedesRoute: AuthenticatedRedesRoute,
   AuthenticatedKidsRetiradaCheckinIdRoute:
