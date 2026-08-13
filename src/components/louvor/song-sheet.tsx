@@ -51,8 +51,8 @@ export function SongSheet({
                     <Button variant="outline" size="sm"><Youtube className="h-4 w-4" /> Referência</Button>
                   </a>
                 )}
-                {song.sheet_url && (
-                  <a href={song.sheet_url} target="_blank" rel="noreferrer">
+                {(song.sheet_url || song.chords_url) && (
+                  <a href={(song.sheet_url || song.chords_url)!} target="_blank" rel="noreferrer">
                     <Button variant="outline" size="sm"><FileText className="h-4 w-4" /> Partitura</Button>
                   </a>
                 )}
