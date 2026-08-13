@@ -150,6 +150,10 @@ function RootComponent() {
   const router = useRouter();
   const state = router.state;
   const prefersReducedMotion = useReducedMotion();
+  
+  // Registrar tokens de notificação push ao carregar o app se o usuário estiver logado
+  const { usePushNotifications } = await import("@/hooks/use-push-notifications");
+  usePushNotifications();
 
   return (
     <QueryClientProvider client={queryClient}>
