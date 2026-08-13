@@ -17,7 +17,8 @@ export interface GroupStats {
 }
 
 const EMPTY: GroupStats = { total: 0, leaders: [] };
-const LEADER_ROLES = new Set(["pastor", "apascentador", "lider"]);
+const LEADER_ROLES = new Set(["pastor", "apascentador", "lider", "lider_mesa", "lider_rede", "lider_ministerio"]);
+
 
 /** Papel exercido no grupo tem prioridade; o card mostra quem lidera. */
 function collect(rows: any[], groupKey: string): Record<string, GroupStats> {
