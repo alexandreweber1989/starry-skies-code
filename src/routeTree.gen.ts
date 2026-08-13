@@ -26,6 +26,7 @@ import { Route as AuthenticatedKidsRouteImport } from './routes/_authenticated/k
 import { Route as AuthenticatedIgrejasRouteImport } from './routes/_authenticated/igrejas'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCantinaRouteImport } from './routes/_authenticated/cantina'
+import { Route as AuthenticatedAvisosRouteImport } from './routes/_authenticated/avisos'
 import { Route as AuthenticatedAgendaRouteImport } from './routes/_authenticated/agenda'
 import { Route as AuthenticatedMinisteriosIndexRouteImport } from './routes/_authenticated/ministerios.index'
 import { Route as ApiPublicKidsVisitorRouteImport } from './routes/api/public/kids-visitor'
@@ -116,6 +117,11 @@ const AuthenticatedCantinaRoute = AuthenticatedCantinaRouteImport.update({
   path: '/cantina',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAvisosRoute = AuthenticatedAvisosRouteImport.update({
+  id: '/avisos',
+  path: '/avisos',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAgendaRoute = AuthenticatedAgendaRouteImport.update({
   id: '/agenda',
   path: '/agenda',
@@ -150,6 +156,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteWithChildren
   '/config-vercel': typeof ConfigVercelRoute
   '/agenda': typeof AuthenticatedAgendaRoute
+  '/avisos': typeof AuthenticatedAvisosRoute
   '/cantina': typeof AuthenticatedCantinaRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/igrejas': typeof AuthenticatedIgrejasRoute
@@ -173,6 +180,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
   '/config-vercel': typeof ConfigVercelRoute
   '/agenda': typeof AuthenticatedAgendaRoute
+  '/avisos': typeof AuthenticatedAvisosRoute
   '/cantina': typeof AuthenticatedCantinaRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/igrejas': typeof AuthenticatedIgrejasRoute
@@ -198,6 +206,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRouteWithChildren
   '/config-vercel': typeof ConfigVercelRoute
   '/_authenticated/agenda': typeof AuthenticatedAgendaRoute
+  '/_authenticated/avisos': typeof AuthenticatedAvisosRoute
   '/_authenticated/cantina': typeof AuthenticatedCantinaRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/igrejas': typeof AuthenticatedIgrejasRoute
@@ -223,6 +232,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/config-vercel'
     | '/agenda'
+    | '/avisos'
     | '/cantina'
     | '/dashboard'
     | '/igrejas'
@@ -246,6 +256,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/config-vercel'
     | '/agenda'
+    | '/avisos'
     | '/cantina'
     | '/dashboard'
     | '/igrejas'
@@ -270,6 +281,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/config-vercel'
     | '/_authenticated/agenda'
+    | '/_authenticated/avisos'
     | '/_authenticated/cantina'
     | '/_authenticated/dashboard'
     | '/_authenticated/igrejas'
@@ -419,6 +431,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCantinaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/avisos': {
+      id: '/_authenticated/avisos'
+      path: '/avisos'
+      fullPath: '/avisos'
+      preLoaderRoute: typeof AuthenticatedAvisosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/agenda': {
       id: '/_authenticated/agenda'
       path: '/agenda'
@@ -459,6 +478,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAgendaRoute: typeof AuthenticatedAgendaRoute
+  AuthenticatedAvisosRoute: typeof AuthenticatedAvisosRoute
   AuthenticatedCantinaRoute: typeof AuthenticatedCantinaRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedIgrejasRoute: typeof AuthenticatedIgrejasRoute
@@ -477,6 +497,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAgendaRoute: AuthenticatedAgendaRoute,
+  AuthenticatedAvisosRoute: AuthenticatedAvisosRoute,
   AuthenticatedCantinaRoute: AuthenticatedCantinaRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedIgrejasRoute: AuthenticatedIgrejasRoute,
