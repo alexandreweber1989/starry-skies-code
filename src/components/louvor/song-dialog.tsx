@@ -73,7 +73,7 @@ export function SongDialog({ initial, trigger }: { initial: SongDraft; trigger: 
     onSuccess: () => {
       toast.success("Música salva no repertório.");
       setOpen(false);
-      qc.invalidateQueries({ queryKey: ["worship-songs"] });
+      qc.invalidateQueries({ queryKey: ["songs"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
