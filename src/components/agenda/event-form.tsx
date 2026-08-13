@@ -168,7 +168,7 @@ export function EventForm({
       if (form.scope !== "igreja" && !form.target_id)
         throw new Error(`Selecione ${SCOPE_LABEL[form.scope].toLowerCase()} do evento.`);
 
-      const payload = {
+      const payload: any = {
         title: form.title.trim(),
         description: form.description.trim() || null,
         kind: form.kind,
