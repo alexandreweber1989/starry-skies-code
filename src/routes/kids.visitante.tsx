@@ -393,7 +393,33 @@ function VisitorPage() {
                 className="lg:text-xl lg:rounded-2xl"
               />
             </Field>
-            <label className="flex items-start gap-3 cursor-pointer">
+            
+            <div className="space-y-2">
+              <Label className="text-sm lg:text-lg">Documento da Criança (Foto ou PDF)</Label>
+              <div className="flex items-center gap-4">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  className="w-full lg:h-14 lg:rounded-2xl border-dashed border-2 hover:bg-primary/5"
+                  onClick={() => document.getElementById('doc-upload')?.click()}
+                >
+                  <Download className="h-4 w-4 mr-2 rotate-180" /> Fazer upload do documento
+                </Button>
+                <input 
+                  id="doc-upload" 
+                  type="file" 
+                  className="hidden" 
+                  accept="image/*,.pdf"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) toast.info(`Arquivo "${file.name}" selecionado. (Funcionalidade de upload em implementação)`);
+                  }}
+                />
+              </div>
+              <p className="text-[10px] text-muted-foreground">Opcional. Ajuda na segurança e conferência.</p>
+            </div>
+
+            <label className="flex items-start gap-3 cursor-pointer mt-4">
               <Checkbox
                 checked={form.photo_consent}
                 onCheckedChange={(v) => set("photo_consent", v === true)}
