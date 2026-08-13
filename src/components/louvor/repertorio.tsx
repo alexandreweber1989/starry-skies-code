@@ -118,9 +118,9 @@ export function Repertorio() {
               <button className="text-left flex-1 space-y-3 cursor-pointer" onClick={() => setSelected(song)}>
                 <div className="flex items-center justify-between">
                   <div className="flex gap-2">
-                    {song.song_key && (
+                    {(song.song_key || song.original_key) && (
                       <Badge variant="outline" className="font-mono text-[10px] tracking-wider uppercase bg-primary/5 text-primary border-primary/20">
-                        {song.song_key}
+                        {song.song_key || song.original_key}
                       </Badge>
                     )}
                     {song.bpm && (
