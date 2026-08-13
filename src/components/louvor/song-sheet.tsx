@@ -9,6 +9,7 @@ export interface SongRecord {
   title: string;
   artist: string | null;
   song_key: string | null;
+  original_key?: string | null;
   bpm: number | null;
   tempo: string | null;
   theme: string | null;
@@ -17,6 +18,7 @@ export interface SongRecord {
   chords: string | null;
   youtube_url: string | null;
   sheet_url: string | null;
+  chords_url?: string | null;
   is_active: boolean;
 }
 
