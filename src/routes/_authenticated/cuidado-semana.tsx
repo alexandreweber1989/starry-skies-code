@@ -200,7 +200,7 @@ function CuidadoSemanaPage() {
     queryKey: ["cuidado-touchpoints", activeMesa, user?.id],
     enabled: Boolean(activeMesa && user?.id),
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("leader_touchpoints")
         .select("member_id, week_start, created_at, channel, note")
         .eq("leader_id", user!.id)
@@ -225,7 +225,7 @@ function CuidadoSemanaPage() {
   const registrar = useMutation({
     mutationFn: async () => {
       if (!target || !user) return;
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("leader_touchpoints")
         .upsert(
           {
@@ -253,7 +253,7 @@ function CuidadoSemanaPage() {
   const desfazer = useMutation({
     mutationFn: async (memberId: string) => {
       if (!user) return;
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("leader_touchpoints")
         .delete()
         .eq("leader_id", user.id)

@@ -98,7 +98,7 @@ function PregacoesPage() {
     queryKey: ["sermons"],
     enabled: isAdmin,
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("sermons")
         .select("*")
         .order("preached_on", { ascending: false, nullsFirst: false });
@@ -123,11 +123,11 @@ function PregacoesPage() {
         dark: draft.dark,
       };
       if (editingId) {
-        const { error } = await supabase.from("sermons").update(payload).eq("id", editingId);
+        const { error } = await (supabase as any).from("sermons").update(payload).eq("id", editingId);
         if (error) throw error;
         return editingId;
       }
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("sermons")
         .insert(payload)
         .select("id")
@@ -145,7 +145,7 @@ function PregacoesPage() {
 
   const remove = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("sermons").delete().eq("id", id);
+      const { error } = await (supabase as any).from("sermons").delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
