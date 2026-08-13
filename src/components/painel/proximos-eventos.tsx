@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { CalendarDays, MapPin, ArrowUpRight } from "lucide-react";
+import { CalendarDays, MapPin, ArrowUpRight, Navigation } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PanelSection } from "@/components/painel/ui";
 import { KIND_LABEL, type EventKind } from "@/lib/agenda";
@@ -85,6 +85,16 @@ export function ProximosEventos() {
                 {e.location && (
                   <span className="flex items-center gap-1 text-xs text-muted-foreground">
                     <MapPin className="h-3 w-3" /> {e.location}
+                    <button 
+                      onClick={(evt) => {
+                        evt.preventDefault();
+                        window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(e.location!)}`, "_blank");
+                      }}
+                      className="ml-1 p-1 hover:bg-primary/10 rounded-full transition-colors"
+                      title="Abrir no GPS"
+                    >
+                      <Navigation className="h-3 w-3 text-primary" />
+                    </button>
                   </span>
                 )}
               </div>

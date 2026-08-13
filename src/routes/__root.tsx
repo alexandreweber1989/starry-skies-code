@@ -125,6 +125,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Syne:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap",
       },
+      {
+        rel: "preload",
+        as: "script",
+        href: "https://maps.googleapis.com/maps/api/js?key=AIzaSyA-PLACEHOLDER&libraries=places&language=pt-BR&region=BR",
+      },
     ],
   }),
   shellComponent: RootShell,
