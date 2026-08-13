@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { 
-  Github as Github as GitHub, 
+  Github as GitHub, 
   ExternalLink, 
   Zap, 
   Settings, 
