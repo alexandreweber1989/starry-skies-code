@@ -148,7 +148,7 @@ export function SongDialog({ initial, trigger }: { initial: SongDraft; trigger: 
                   type="button"
                   variant="secondary"
                   size="icon"
-                  disabled={isImporting || !draft.sheet_url.includes("cifraclub.com.br")}
+                  disabled={isImporting || (!draft.sheet_url.includes("cifraclub.com.br") && !draft.sheet_url.includes("cifras.com.br"))}
                   onClick={async () => {
                     setIsImporting(true);
                     try {
