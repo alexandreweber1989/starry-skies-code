@@ -88,6 +88,9 @@ function fromEvent(e: ChurchEvent): FormState {
     is_featured: e.is_featured,
     status: e.status,
     image_url: e.image_url ?? "",
+    reminder_enabled: e.reminder_settings?.enabled ?? false,
+    reminder_lead_time: String(e.reminder_settings?.lead_time ?? 30),
+    reminder_type: e.reminder_settings?.type ?? "push",
   };
 }
 
