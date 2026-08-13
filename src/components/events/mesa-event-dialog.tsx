@@ -37,7 +37,15 @@ export function MesaEventDialog({ mesa }: { mesa: any }) {
         .select("*")
         .eq("mesa_id", mesa.id);
       if (error) throw error;
-      return data as any[];
+      const dataArray = data as any[];
+      
+      // Auto-selecionar o endereço principal se nenhum estiver selecionado
+      if (!addressId && dataArray.length > 0) {
+        const main = dataArray.find(a => a.is_main);
+        if (main) setAddressId(main.id);
+      }
+      
+      return dataArray;
     },
   });
 
@@ -135,7 +143,10 @@ export function MesaEventDialog({ mesa }: { mesa: any }) {
               <SelectContent>
                 {addresses?.map((addr) => (
                   <SelectItem key={addr.id} value={addr.id}>
-                    {addr.label}: {addr.street}, {addr.number}
+                    <div className="flex items-center gap-2">
+                      {addr.label}: {addr.street}, {addr.number}
+                      {addr.is_main && <span className="text-[10px] bg-primary/20 text-primary px-1 rounded font-bold uppercase">Padrão</span>}
+                    </div>
                   </SelectItem>
                 ))}
                 {!loadingAddresses && addresses?.length === 0 && (
