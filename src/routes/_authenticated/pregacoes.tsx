@@ -14,7 +14,7 @@ import {
   Presentation,
   Pencil,
   CalendarDays,
-  Youtube,
+  Video, 
   Send,
   Loader2,
   CheckCircle2,
@@ -441,7 +441,7 @@ function PregacoesPage() {
           <div className="space-y-5">
             <div className="space-y-2 rounded-xl border border-border bg-card/40 p-4">
               <Label className="flex items-center gap-2">
-                <Youtube className="h-4 w-4 text-red-600" /> Link do YouTube da pregação
+                <Video className="h-4 w-4 text-red-600" /> Link do YouTube da pregação
               </Label>
               <div className="flex gap-2">
                 <Input

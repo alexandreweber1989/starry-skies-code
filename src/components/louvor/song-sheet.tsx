@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Minus, Plus, Youtube, FileText } from "lucide-react";
+import { Minus, Plus, Video, FileText } from "lucide-react";
 import { transposeChords, TEMPO_LABELS } from "@/lib/louvor";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -48,7 +48,7 @@ export function SongSheet({
               <div className="flex flex-wrap items-center gap-2">
                 {song.youtube_url && (
                   <a href={song.youtube_url} target="_blank" rel="noreferrer">
-                    <Button variant="outline" size="sm"><Youtube className="h-4 w-4" /> Referência</Button>
+                    <Button variant="outline" size="sm"><Video className="h-4 w-4" /> Referência</Button>
                   </a>
                 )}
                 {(song.sheet_url || song.chords_url) && (
