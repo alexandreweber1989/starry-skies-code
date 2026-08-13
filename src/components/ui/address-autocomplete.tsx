@@ -101,19 +101,18 @@ export function AddressAutocomplete({ value, onChange, onAddressSelect, placehol
               }));
               setSuggestions(mapped);
               setOpen(true);
+              setLoading(false);
             } else {
-              // Se falhar ou não encontrar, tenta o fallback
-              this?.fetchFallback(input);
+              fetchFallback(input);
             }
-            setLoading(false);
           }
         );
       } else {
-        await fetchFallback(input);
+        fetchFallback(input);
       }
     } catch (error) {
       console.error("Error fetching suggestions:", error);
-      await fetchFallback(input);
+      fetchFallback(input);
     }
   }, []);
 
