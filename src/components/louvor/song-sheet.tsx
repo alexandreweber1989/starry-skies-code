@@ -41,7 +41,7 @@ export function SongSheet({
             </SheetHeader>
             <div className="px-4 pb-10 space-y-6">
               <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                {[song.artist, song.song_key && `Tom ${song.song_key}`, song.bpm && `${song.bpm} BPM`,
+                {[song.artist, (song.song_key || song.original_key) && `Tom ${song.song_key || song.original_key}`, song.bpm && `${song.bpm} BPM`,
                   song.tempo && TEMPO_LABELS[song.tempo]].filter(Boolean).join(" · ")}
               </div>
 
