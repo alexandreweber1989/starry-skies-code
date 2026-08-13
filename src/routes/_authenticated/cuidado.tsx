@@ -5,7 +5,9 @@ import { PrayerRequestForm } from "@/components/cuidado/prayer-request-form";
 import { SocialAssistanceForm } from "@/components/cuidado/social-assistance-form";
 import { PrayerManagement } from "@/components/cuidado/prayer-management";
 import { SocialManagement } from "@/components/cuidado/social-management";
+import { DonationWidget } from "@/components/cuidado/donation-widget";
 import { useAuth } from "@/lib/auth-context";
+
 import { HeartPulse, HandHelping, ClipboardList, ShieldCheck } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";

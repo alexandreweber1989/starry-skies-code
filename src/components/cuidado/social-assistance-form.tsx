@@ -5,6 +5,8 @@ import * as z from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { sendUrgentNotification } from "@/lib/notifications.functions";
 import {
   Form,
   FormControl,
@@ -17,20 +19,18 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { Heart, HandHelping } from "lucide-react";
+import { Heart, HandHelping, AlertTriangle } from "lucide-react";
 
 const formSchema = z.object({
   needs_food: z.boolean(),
   description: z.string().min(10, "Por favor, descreva brevemente a necessidade (mínimo 10 caracteres)."),
+  urgent: z.boolean().default(false),
 });
 
-type FormValues = {
-  needs_food: boolean;
-  description: string;
-};
+type FormValues = z.infer<typeof formSchema>;
 
 export function SocialAssistanceForm({ onSuccess }: { onSuccess?: () => void }) {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [loading, setLoading] = useState(false);
 
   const form = useForm<FormValues>({
@@ -38,6 +38,7 @@ export function SocialAssistanceForm({ onSuccess }: { onSuccess?: () => void }) 
     defaultValues: {
       needs_food: false,
       description: "",
+      urgent: false,
     },
   });
 
@@ -53,7 +54,19 @@ export function SocialAssistanceForm({ onSuccess }: { onSuccess?: () => void }) 
 
       if (error) throw error;
 
-      toast.success("Solicitação enviada ao Atos de Amor!");
+      if (values.urgent || values.needs_food) {
+        await sendUrgentNotification({
+          data: {
+            type: "social",
+            content: values.description,
+            userName: profile?.full_name || "Membro",
+            mesaId: profile?.mesa_id,
+            urgent: true,
+          }
+        });
+      }
+
+      toast.success(values.urgent ? "Pedido URGENTE enviado e assistência notificada!" : "Solicitação enviada ao Atos de Amor!");
       form.reset();
       onSuccess?.();
     } catch (error: any) {
@@ -93,7 +106,7 @@ export function SocialAssistanceForm({ onSuccess }: { onSuccess?: () => void }) 
                     Preciso de auxílio com alimentação (Cesta Básica)
                   </FormLabel>
                   <FormDescription>
-                    Marque esta opção se sua necessidade imediata for alimento.
+                    Marque esta opção se sua necessidade imediata for alimento. (Notificação Automática)
                   </FormDescription>
                 </div>
               </FormItem>
@@ -114,6 +127,30 @@ export function SocialAssistanceForm({ onSuccess }: { onSuccess?: () => void }) 
                   />
                 </FormControl>
                 <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="urgent"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border border-orange-200 bg-orange-50/50 p-4 dark:bg-orange-950/10 dark:border-orange-900/20">
+                <div className="space-y-0.5">
+                  <FormLabel className="text-base flex items-center gap-2 text-orange-700 dark:text-orange-400">
+                    <AlertTriangle className="h-4 w-4" />
+                    Pedido Urgente?
+                  </FormLabel>
+                  <FormDescription className="text-orange-600/80 dark:text-orange-500/80">
+                    Notificar a equipe do Atos de Amor imediatamente.
+                  </FormDescription>
+                </div>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
               </FormItem>
             )}
           />

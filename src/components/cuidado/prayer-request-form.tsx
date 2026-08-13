@@ -7,7 +7,6 @@ import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { sendUrgentNotification } from "@/lib/notifications.functions";
-
 import {
   Form,
   FormControl,
@@ -26,7 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { ShieldCheck, HeartPulse } from "lucide-react";
+import { ShieldCheck, HeartPulse, AlertTriangle } from "lucide-react";
 
 const formSchema = z.object({
   category: z.enum(["prayer", "counseling"]),
@@ -34,20 +33,22 @@ const formSchema = z.object({
   urgent: z.boolean().default(false),
 });
 
+type FormValues = z.infer<typeof formSchema>;
 
 export function PrayerRequestForm({ onSuccess }: { onSuccess?: () => void }) {
   const { profile } = useAuth();
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       category: "prayer",
       content: "",
+      urgent: false,
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: FormValues) {
     if (!profile) return;
     setLoading(true);
     try {
@@ -61,7 +62,19 @@ export function PrayerRequestForm({ onSuccess }: { onSuccess?: () => void }) {
 
       if (error) throw error;
 
-      toast.success("Pedido enviado com sucesso!");
+      if (values.urgent) {
+        await sendUrgentNotification({
+          data: {
+            type: "prayer",
+            content: values.content,
+            userName: profile.full_name || "Membro",
+            mesaId: profile.mesa_id,
+            urgent: true,
+          }
+        });
+      }
+
+      toast.success(values.urgent ? "Pedido URGENTE enviado e líderes notificados!" : "Pedido enviado com sucesso!");
       form.reset();
       onSuccess?.();
     } catch (error: any) {
@@ -127,6 +140,30 @@ export function PrayerRequestForm({ onSuccess }: { onSuccess?: () => void }) {
                   Seja específico para que seu líder possa te acompanhar melhor.
                 </FormDescription>
                 <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="urgent"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border border-orange-200 bg-orange-50/50 p-4 dark:bg-orange-950/10 dark:border-orange-900/20">
+                <div className="space-y-0.5">
+                  <FormLabel className="text-base flex items-center gap-2 text-orange-700 dark:text-orange-400">
+                    <AlertTriangle className="h-4 w-4" />
+                    Pedido Urgente?
+                  </FormLabel>
+                  <FormDescription className="text-orange-600/80 dark:text-orange-500/80">
+                    Ative para notificar seus líderes imediatamente via WhatsApp.
+                  </FormDescription>
+                </div>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
               </FormItem>
             )}
           />
