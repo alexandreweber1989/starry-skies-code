@@ -34,7 +34,7 @@ export function PrayerManagement() {
     queryFn: async () => {
       let query = supabase
         .from("prayer_requests")
-        .select("*, profile:profiles(full_name)")
+        .select("*, profiles!prayer_requests_user_id_fkey(full_name)")
         .order("created_at", { ascending: false });
 
       if (!isAdmin) {
@@ -69,7 +69,7 @@ export function PrayerManagement() {
     },
   });
 
-  if (isLoading) return <LoadingRegion label="Carregando pedidos de oração..." />;
+  if (isLoading) return <LoadingRegion label="Carregando pedidos de oração..." children={<div />} />;
 
   if (!requests || requests.length === 0) {
     return (
@@ -86,7 +86,7 @@ export function PrayerManagement() {
           <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
             <div className="space-y-1">
               <CardTitle className="text-base font-medium">
-                {request.profile?.full_name || "Membro"}
+                {(request.profiles as any)?.full_name || "Membro"}
               </CardTitle>
               <CardDescription>
                 {format(new Date(request.created_at), "PPP 'às' p", { locale: ptBR })}
@@ -110,9 +110,11 @@ export function PrayerManagement() {
               <div className="mt-4 bg-muted/50 p-3 rounded-lg border">
                 <p className="text-xs font-semibold text-primary mb-1">Sua resposta:</p>
                 <p className="text-sm italic">"{request.response}"</p>
-                <p className="text-[10px] text-muted-foreground mt-2">
-                  Em {format(new Date(request.responded_at), "PPP 'às' p", { locale: ptBR })}
-                </p>
+                {request.responded_at && (
+                  <p className="text-[10px] text-muted-foreground mt-2">
+                    Em {format(new Date(request.responded_at), "PPP 'às' p", { locale: ptBR })}
+                  </p>
+                )}
               </div>
             )}
           </CardContent>

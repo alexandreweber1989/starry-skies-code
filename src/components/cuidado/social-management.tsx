@@ -31,7 +31,7 @@ export function SocialManagement() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("social_assistance_requests")
-        .select("*, profile:profiles(full_name, phone)")
+        .select("*, profiles!social_assistance_requests_user_id_fkey(full_name, phone)")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -41,7 +41,7 @@ export function SocialManagement() {
   });
 
   const updateStatusMutation = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+    mutationFn: async ({ id, status }: { id: string; status: any }) => {
       const { error } = await supabase
         .from("social_assistance_requests")
         .update({ status })
@@ -54,7 +54,7 @@ export function SocialManagement() {
     },
   });
 
-  if (isLoading) return <LoadingRegion label="Carregando solicitações de assistência..." />;
+  if (isLoading) return <LoadingRegion label="Carregando solicitações de assistência..." children={<div />} />;
 
   if (!requests || requests.length === 0) {
     return (
@@ -71,11 +71,11 @@ export function SocialManagement() {
           <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
             <div className="space-y-1">
               <CardTitle className="text-base font-medium">
-                {request.profile?.full_name || "Membro"}
+                {(request.profiles as any)?.full_name || "Membro"}
               </CardTitle>
               <CardDescription>
                 Solicitado em {format(new Date(request.created_at), "PPP", { locale: ptBR })}
-                {request.profile?.phone && ` • ${request.profile.phone}`}
+                {(request.profiles as any)?.phone && ` • ${(request.profiles as any).phone}`}
               </CardDescription>
             </div>
             <div className="flex gap-2">
