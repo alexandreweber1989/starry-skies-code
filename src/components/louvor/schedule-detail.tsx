@@ -106,8 +106,8 @@ export function ScheduleDetail({ scheduleId, canManage }: { scheduleId: string; 
       if (!songId) throw new Error("Selecione a música.");
       const song = songs?.find((s) => s.id === songId);
       const position = (detail?.setlist?.length ?? 0) + 1;
-      const { error } = await supabase
-        .from("worship_setlist_items")
+      const { error } = await (supabase
+        .from("setlist_songs") as any)
         .insert({ schedule_id: scheduleId, song_id: songId, position, song_key: song?.song_key ?? null });
       if (error) throw error;
     },
@@ -117,7 +117,7 @@ export function ScheduleDetail({ scheduleId, canManage }: { scheduleId: string; 
 
   const removeSong = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("worship_setlist_items").delete().eq("id", id);
+      const { error } = await (supabase.from("setlist_songs") as any).delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: detailKey }),
