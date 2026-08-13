@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, Plus, Users, ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar, Clock, Plus, Users, ChevronLeft, ChevronRight, Camera, Trash2, Image as ImageIcon } from "lucide-react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isFriday, addMonths, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useAuth } from "@/lib/auth-context";
@@ -16,6 +16,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const Route = createFileRoute("/_authenticated/faxina")({
   component: CleaningSchedulePage,
@@ -41,7 +43,7 @@ function CleaningSchedulePage() {
         .select(`
           *,
           mesa:mesas(id, name),
-          tasks:cleaning_tasks(*)
+          tasks:cleaning_tasks(*, photos:cleaning_photos(*))
         `)
         .gte("date", format(monthStart, "yyyy-MM-dd"))
         .lte("date", format(monthEnd, "yyyy-MM-dd"))
@@ -103,6 +105,54 @@ function CleaningSchedulePage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cleaning-schedules"] });
       toast.success("Tarefa adicionada!");
+    },
+  });
+
+  const uploadPhoto = useMutation({
+    mutationFn: async ({ taskId, scheduleId, file, type }: { taskId: string; scheduleId: string; file: File; type: 'before' | 'after' }) => {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${scheduleId}/${taskId}/${type}_${Math.random()}.${fileExt}`;
+      const filePath = `cleaning-photos/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('kids-documents-v2') // Using existing bucket or creating one
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('kids-documents-v2')
+        .getPublicUrl(filePath);
+
+      const { error: dbError } = await supabase
+        .from('cleaning_photos' as any)
+        .insert({
+          schedule_id: scheduleId,
+          task_id: taskId,
+          url: publicUrl,
+          type,
+          created_by: user?.id
+        } as any);
+
+      if (dbError) throw dbError;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cleaning-schedules"] });
+      toast.success("Foto enviada com sucesso!");
+    },
+  });
+
+  const deletePhoto = useMutation({
+    mutationFn: async (photoId: string) => {
+      const { error } = await supabase
+        .from('cleaning_photos' as any)
+        .delete()
+        .eq('id', photoId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cleaning-schedules"] });
+      toast.success("Foto removida!");
     },
   });
 
@@ -228,21 +278,30 @@ function CleaningSchedulePage() {
                             <p className="text-xs text-muted-foreground italic">Nenhuma tarefa listada para este dia.</p>
                           )}
                           {(schedule.tasks || []).map((task: any) => (
-                            <div key={task.id} className="flex items-center gap-3 p-3 rounded-sm bg-muted/20 border border-border/10 hover:border-primary/20 transition-all group">
-                              <Checkbox 
-                                checked={task.is_completed}
-                                onCheckedChange={(val) => toggleTask.mutate({ taskId: task.id, isCompleted: !!val })}
-                                disabled={!isAdmin}
-                              />
-                              <div className="flex-1 min-w-0">
-                                <p className={`text-sm ${task.is_completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
-                                  {task.title}
-                                </p>
-                                {task.is_completed && task.completed_at && (
-                                  <p className="text-[10px] text-primary/60 font-mono uppercase">
-                                    Concluído em {format(new Date(task.completed_at), "HH:mm")}
+                            <div key={task.id} className="flex flex-col gap-2 p-3 rounded-sm bg-muted/20 border border-border/10 hover:border-primary/20 transition-all group">
+                              <div className="flex items-center gap-3">
+                                <Checkbox 
+                                  checked={task.is_completed}
+                                  onCheckedChange={(val) => toggleTask.mutate({ taskId: task.id, isCompleted: !!val })}
+                                  disabled={!isAdmin && !useAuth().isMesaLeader(schedule.mesa_id)}
+                                />
+                                <div className="flex-1 min-w-0">
+                                  <p className={`text-sm ${task.is_completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
+                                    {task.title}
                                   </p>
-                                )}
+                                  {task.is_completed && task.completed_at && (
+                                    <p className="text-[10px] text-primary/60 font-mono uppercase">
+                                      Concluído em {format(new Date(task.completed_at), "HH:mm")}
+                                    </p>
+                                  )}
+                                </div>
+                                <PhotoGallery 
+                                  task={task} 
+                                  scheduleId={schedule.id}
+                                  onUpload={(file: File, type: 'before' | 'after') => uploadPhoto.mutate({ taskId: task.id, scheduleId: schedule.id, file, type })}
+                                  onDelete={(id: string) => deletePhoto.mutate(id)}
+                                  canEdit={isAdmin || useAuth().isMesaLeader(schedule.mesa_id)}
+                                />
                               </div>
                             </div>
                           ))}
@@ -325,5 +384,112 @@ function AddTaskButton({ scheduleId, onAdd }: { scheduleId: string, onAdd: (titl
         </div>
       </SheetContent>
     </Sheet>
+  );
+}
+
+function PhotoGallery({ task, scheduleId, onUpload, onDelete, canEdit }: { 
+  task: any, 
+  scheduleId: string, 
+  onUpload: (file: File, type: 'before' | 'after') => void,
+  onDelete: (id: string) => void,
+  canEdit: boolean
+}) {
+  const photos = task.photos || [];
+  const beforePhotos = photos.filter((p: any) => p.type === 'before');
+  const afterPhotos = photos.filter((p: any) => p.type === 'after');
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="ghost" size="icon" className="h-8 w-8 relative">
+          <ImageIcon className="h-4 w-4" />
+          {photos.length > 0 && (
+            <span className="absolute -top-1 -right-1 bg-primary text-[8px] text-white rounded-full w-3 h-3 flex items-center justify-center font-bold">
+              {photos.length}
+            </span>
+          )}
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="font-serif">Galeria - {task.title}</DialogTitle>
+        </DialogHeader>
+        
+        <Tabs defaultValue="before" className="mt-4">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="before">Antes</TabsTrigger>
+            <TabsTrigger value="after">Depois</TabsTrigger>
+          </TabsList>
+          
+          <PhotoTabContent 
+            type="before" 
+            photos={beforePhotos} 
+            onUpload={onUpload} 
+            onDelete={onDelete}
+            canEdit={canEdit}
+          />
+          <PhotoTabContent 
+            type="after" 
+            photos={afterPhotos} 
+            onUpload={onUpload} 
+            onDelete={onDelete}
+            canEdit={canEdit}
+          />
+        </Tabs>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function PhotoTabContent({ type, photos, onUpload, onDelete, canEdit }: { 
+  type: 'before' | 'after', 
+  photos: any[], 
+  onUpload: (file: File, type: 'before' | 'after') => void,
+  onDelete: (id: string) => void,
+  canEdit: boolean
+}) {
+  return (
+    <TabsContent value={type} className="space-y-4 mt-4">
+      {canEdit && (
+        <div className="flex items-center gap-4 p-4 border-2 border-dashed border-border/20 rounded-sm">
+          <label className="flex flex-col items-center justify-center w-full cursor-pointer hover:bg-muted/30 transition-colors py-4">
+            <Camera className="h-6 w-6 mb-2 text-muted-foreground" />
+            <span className="text-xs font-mono uppercase tracking-widest text-muted-foreground">Adicionar Foto</span>
+            <input 
+              type="file" 
+              className="hidden" 
+              accept="image/*" 
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) onUpload(file, type);
+              }}
+            />
+          </label>
+        </div>
+      )}
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        {photos.map((photo: any) => (
+          <div key={photo.id} className="relative aspect-square group rounded-sm overflow-hidden border border-border/10">
+            <img src={photo.url} alt="Faxina" className="object-cover w-full h-full" />
+            {canEdit && (
+              <Button 
+                variant="destructive" 
+                size="icon" 
+                className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={() => onDelete(photo.id)}
+              >
+                <Trash2 className="h-3 w-3" />
+              </Button>
+            )}
+          </div>
+        ))}
+        {photos.length === 0 && (
+          <div className="col-span-full py-8 text-center bg-muted/10 rounded-sm">
+            <p className="text-xs text-muted-foreground font-mono uppercase tracking-widest">Nenhuma foto enviada</p>
+          </div>
+        )}
+      </div>
+    </TabsContent>
   );
 }
