@@ -6,6 +6,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useProfileOptions } from "@/lib/use-profiles";
 import { ChurchSelect } from "./church-select";
 import { MemberPicker } from "./member-picker";
+import { AddressManager } from "./address-manager";
+
 
 
 import {
@@ -253,13 +255,20 @@ export function MesaDialog({
             </div>
           </div>
           <div className="space-y-2">
-            <Label>Local</Label>
+            <Label>Ponto de referência ou descrição do local</Label>
             <Input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Casa da família Silva" />
           </div>
           <div className="space-y-2">
             <Label>Descrição</Label>
-            <Textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)} />
+            <Textarea rows={2} value={description} onChange={(e) => setDescription(e.target.value)} className="resize-none" />
           </div>
+
+          {isEdit && (
+            <div className="pt-4 border-t border-border/40">
+              <AddressManager mesaId={mesa!.id} />
+            </div>
+          )}
+
           <Button className="w-full" disabled={save.isPending} onClick={() => save.mutate()}>
             {isEdit ? "Salvar alterações" : "Criar mesa"}
           </Button>

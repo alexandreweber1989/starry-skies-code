@@ -10,6 +10,8 @@ interface Suggestion {
     main_text: string;
     secondary_text: string;
   };
+  raw?: any;
+
 }
 
 interface Props {
@@ -56,20 +58,39 @@ export function AddressAutocomplete({ value, onChange, onAddressSelect, placehol
       if (typeof window !== "undefined" && (window as any).google) {
         const service = new (window as any).google.maps.places.AutocompleteService();
         service.getPlacePredictions(
-          { input, componentRestrictions: { country: "br" } },
+          { input, componentRestrictions: { country: "br" }, types: ["address"] },
           (predictions: any, status: any) => {
             if (status === "OK" && predictions) {
               setSuggestions(predictions);
               setOpen(true);
+            } else {
+              setSuggestions([]);
             }
             setLoading(false);
           }
         );
       } else {
-        // Fallback para uma busca simples ou mensagem de erro
-        console.warn("Google Maps Places API not loaded");
+        // Fallback robusto usando OpenStreetMap Nominatim se Google não carregar
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&countrycodes=br&q=${encodeURIComponent(input)}`);
+          const data = await res.json();
+          const mapped: Suggestion[] = data.map((item: any) => ({
+            description: item.display_name,
+            place_id: item.place_id.toString(),
+            structured_formatting: {
+              main_text: item.address.road || item.display_name.split(",")[0],
+              secondary_text: item.display_name.split(",").slice(1).join(",").trim(),
+            },
+            raw: item
+          }));
+          setSuggestions(mapped);
+          setOpen(true);
+        } catch (e) {
+          console.error("Maps API and fallback failed", e);
+        }
         setLoading(false);
       }
+
     } catch (error) {
       console.error("Error fetching suggestions:", error);
       setLoading(false);
@@ -80,26 +101,39 @@ export function AddressAutocomplete({ value, onChange, onAddressSelect, placehol
     onChange(suggestion.structured_formatting.main_text);
     setOpen(false);
     
-    if (onAddressSelect && (window as any).google) {
-      const geocoder = new (window as any).google.maps.Geocoder();
-      geocoder.geocode({ placeId: suggestion.place_id }, (results: any, status: any) => {
-        if (status === "OK" && results[0]) {
-          const res = results[0];
-          const components = res.address_components;
-          
-          const getComp = (type: string) => 
-            components.find((c: any) => c.types.includes(type))?.long_name;
+    if (onAddressSelect) {
+      if ((window as any).google) {
+        const geocoder = new (window as any).google.maps.Geocoder();
+        geocoder.geocode({ placeId: suggestion.place_id }, (results: any, status: any) => {
+          if (status === "OK" && results[0]) {
+            const res = results[0];
+            const components = res.address_components;
+            
+            const getComp = (type: string) => 
+              components.find((c: any) => c.types.includes(type))?.long_name;
 
-          onAddressSelect({
-            street: getComp("route") || suggestion.structured_formatting.main_text,
-            neighborhood: getComp("sublocality_level_1"),
-            city: getComp("administrative_area_level_2"),
-            state: getComp("administrative_area_level_1"),
-            full: res.formatted_address
-          });
-        }
-      });
+            onAddressSelect({
+              street: getComp("route") || suggestion.structured_formatting.main_text,
+              neighborhood: getComp("sublocality_level_1") || getComp("neighborhood"),
+              city: getComp("administrative_area_level_2") || getComp("locality"),
+              state: getComp("administrative_area_level_1"),
+              full: res.formatted_address
+            });
+          }
+        });
+      } else if (suggestion.raw) {
+        // Mapeamento para o fallback OpenStreetMap
+        const addr = suggestion.raw.address;
+        onAddressSelect({
+          street: addr.road || suggestion.structured_formatting.main_text,
+          neighborhood: addr.suburb || addr.neighbourhood || addr.city_district,
+          city: addr.city || addr.town || addr.village,
+          state: addr.state,
+          full: suggestion.raw.display_name
+        });
+      }
     }
+
   };
 
   return (
