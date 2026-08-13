@@ -151,6 +151,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isLivrariaAdmin: isAdmin || roles.some((r) => r.role === "admin_livraria"),
     isCantinaAdmin: isAdmin || roles.some((r) => r.role === "admin_cantina"),
     isKidsAdmin,
+    isPastoral,
+    isLeadership,
+
     signOut: async () => {
       await qc.cancelQueries();
       qc.clear();
