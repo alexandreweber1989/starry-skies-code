@@ -60,11 +60,7 @@ export function SongDialog({ initial, trigger }: { initial: SongDraft; trigger: 
         artist: draft.artist || null,
         original_key: draft.song_key || null,
         bpm: draft.bpm ? Number(draft.bpm) : null,
-        // tempo: draft.tempo || null, // Not in new table
-        // theme: draft.theme || null, // Not in new table
-        // tags: draft.tags.split(",").map((t) => t.trim()).filter(Boolean), // Not in new table
         lyrics: draft.lyrics || null,
-        // chords: draft.chords || null, // Not in new table
         youtube_url: draft.youtube_url || null,
         chords_url: draft.sheet_url || null,
         is_active: draft.is_active,
