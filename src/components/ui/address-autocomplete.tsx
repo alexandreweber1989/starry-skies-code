@@ -188,7 +188,7 @@ export function AddressAutocomplete({ value, onChange, onAddressSelect, placehol
       full: suggestion.description
     };
 
-    if ((window as any).google) {
+    if (typeof window !== "undefined" && (window as any).google && suggestion.place_id.length > 20) {
       const geocoder = new (window as any).google.maps.Geocoder();
       geocoder.geocode({ placeId: suggestion.place_id }, (results: any, status: any) => {
         if (status === "OK" && results[0]) {
@@ -208,19 +208,28 @@ export function AddressAutocomplete({ value, onChange, onAddressSelect, placehol
           
           onChange(formatAddressString(finalAddress));
           onAddressSelect?.(finalAddress);
+        } else {
+          // Se falhar o geocode detalhado, usa o que já temos
+          onChange(formatAddressString(finalAddress));
+          onAddressSelect?.(finalAddress);
         }
       });
     } else if (suggestion.raw) {
-      const addr = suggestion.raw.address;
+      // Trata dados do Nominatim ou Google (fallback)
+      const addr = suggestion.raw.address || {};
       finalAddress = {
-        street: addr.road || finalAddress.street,
+        street: addr.road || addr.pedestrian || finalAddress.street,
         number: addr.house_number || finalAddress.number,
         neighborhood: addr.suburb || addr.neighbourhood || addr.city_district || "",
         city: addr.city || addr.town || addr.village || "",
         state: addr.state || "",
-        full: suggestion.raw.display_name
+        full: suggestion.description
       };
       
+      onChange(formatAddressString(finalAddress));
+      onAddressSelect?.(finalAddress);
+    } else {
+      // Caso genérico
       onChange(formatAddressString(finalAddress));
       onAddressSelect?.(finalAddress);
     }
