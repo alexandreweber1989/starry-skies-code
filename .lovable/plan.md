@@ -1,46 +1,29 @@
-# Plano de Implementação: Gestão de Endereços Inteligente e Eventos de Mesa
+# Plan - Implement Map-based Address Picker for Mesas
 
-Este plano detalha a implementação de um sistema robusto de endereços para "Mesas", integrando a API do Google Maps para autocompletar, suporte a múltiplos locais por grupo, e um fluxo de agendamento de eventos com notificações push.
+The user wants a map interface where they can pick an address using a pin, specifically because the current address autocomplete is not working as expected. I will implement a visual map selector using Leaflet (since Google Maps API is not currently loaded in the root) and integrate it into the address management flow.
 
-## Alterações Estruturais
+## Proposed Changes
 
-### 1. Banco de Dados (Supabase)
-- **Nova Tabela `mesa_addresses`**: Armazenará múltiplos endereços para cada Mesa.
-    - Colunas: `id`, `mesa_id`, `label` (ex: Principal, Casa do Líder), `street`, `number`, `neighborhood`, `city`, `state`, `postal_code`, `complement`, `full_address`, `geo_coords` (opcional).
-    - RLS: Membros da mesa podem visualizar; Admins e Líderes podem gerenciar.
-- **Extensão da Tabela `events`**: Adição da coluna `mesa_address_id` para vincular um evento a um endereço específico da mesa.
+### UI Components
+- **`src/components/ui/map-picker.tsx`**: Create a new component using Leaflet that allows users to search for an address and/or drag a pin to select a location.
+- **`src/components/ui/address-autocomplete.tsx`**: Fix the autocomplete logic (it currently relies on `window.google` which is missing, and the fallback needs verification) and add a button to open the map picker.
+- **`src/components/admin/address-manager.tsx`**: Add a "Select on Map" button that opens a dialog with the map picker.
 
-### 2. Componentes de Interface
-- **AddressAutocomplete**: Novo componente reutilizável que utiliza `google.maps.places.AutocompleteService` para sugerir nomes de ruas enquanto o usuário digita.
-- **AddressManager**: Interface dentro do diálogo de edição da Mesa para gerenciar a lista de endereços.
-- **MesaEventDialog**: Extensão do formulário de eventos para permitir a seleção de um endereço cadastrado quando o escopo for "Mesa".
+### Data & Logic
+- Update the address selection logic to handle coordinates (latitude/longitude) if needed, though the primary goal is capturing the street, number, neighborhood, and city.
+- Ensure the selected address from the map is correctly populated into the address form.
 
-## Funcionalidades e Fluxos
+### External Dependencies
+- Add `leaflet` and `react-leaflet` to `package.json`.
+- Add Leaflet CSS to `src/routes/__root.tsx`.
 
-### Gestão de Endereços (CRUD)
-- Ao criar/editar uma Mesa, o usuário poderá adicionar endereços usando o autocompletar.
-- O campo de número será posicionado na mesma linha da rua para agilidade.
-- Cada endereço terá um botão "Abrir no GPS" (link `https://www.google.com/maps/dir/?api=1&destination=...`).
+## Technical Details
+- Use **OpenStreetMap Nominatim** for reverse geocoding when the pin is dropped.
+- Use `ClientOnly` to wrap the Leaflet map to prevent SSR issues.
+- The map picker will return a structured address object compatible with the existing `mesa_addresses` table.
 
-### Agendamento de Compromissos
-- Um novo botão "Agendar Reunião" será adicionado à lista de Mesas.
-- Ao clicar, abrirá um diálogo para gerar o evento daquela semana.
-- O usuário deve escolher um dos endereços pré-cadastrados daquela Mesa.
-- O evento herdará as informações da Mesa (dia/horário) mas permitirá ajustes.
-
-### Notificações e Experiência do Usuário
-- **Push Notifications**: Integração com o sistema de lembretes existente para enviar alertas aos membros da mesa sobre o local e horário da reunião.
-- **Deep Linking**: O link do endereço nos detalhes do evento abrirá diretamente no aplicativo de mapas do celular.
-
-## Detalhes Técnicos (Para Desenvolvedores)
-
-- **Frontend**: React 19, Framer Motion para transições de diálogo, TanStack Query para sincronização de endereços.
-- **Geocoding**: Utilização da biblioteca `@googlemaps/js-api-loader` para carregar a API do Maps com segurança.
-- **RLS**: Implementação de políticas que garantem que apenas líderes da respectiva mesa ou admins gerais possam alterar a lista de endereços.
-- **Push**: Utilização da trigger de banco de dados e função servidora já existente (`event_reminders`) para processar os envios.
-
-## Verificação e Qualidade
-
-- Testar autocompletar em conexões lentas (debouncing).
-- Validar se a seleção de endereço no evento atualiza corretamente o local exibido no painel.
-- Verificar responsividade do formulário de endereço em dispositivos móveis.
+## Verification Plan
+- **Manual Verification**: Test the search functionality in the autocomplete field.
+- **Manual Verification**: Open the map picker, drag the pin, and verify the address fields (street, number, etc.) are populated.
+- **Visual Check**: Ensure the map renders correctly and is responsive.
+- **Build Check**: Run `bun run build` to ensure no regressions.
