@@ -310,7 +310,7 @@ export function AddressAutocomplete({ value, onChange, onAddressSelect, placehol
         </DialogContent>
       </Dialog>
 
-      {open && filteredSuggestions.length > 0 && (
+      {open && (
         <div className="absolute z-[100] w-full mt-2 bg-popover border border-border rounded-lg shadow-xl max-h-[300px] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
           <div className="p-2 bg-muted/30 border-b flex items-center justify-between">
             <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground px-1">
@@ -321,27 +321,33 @@ export function AddressAutocomplete({ value, onChange, onAddressSelect, placehol
             </span>
           </div>
           <ul className="overflow-y-auto max-h-[250px] py-1">
-            {filteredSuggestions.map((s, index) => (
-              <li
-                key={s.place_id}
-                onClick={() => handleSelect(s)}
-                onMouseEnter={() => setActiveIndex(index)}
-                className={cn(
-                  "px-4 py-3 cursor-pointer text-sm flex gap-3 transition-colors",
-                  activeIndex === index ? "bg-primary/10 text-primary" : "hover:bg-muted text-foreground"
-                )}
-              >
-                <div className="shrink-0 mt-0.5">
-                  <MapPin className={cn("h-4 w-4", activeIndex === index ? "text-primary" : "text-muted-foreground")} />
-                </div>
-                <div className="flex flex-col min-w-0">
-                  <span className="font-semibold truncate">{s.structured_formatting.main_text}</span>
-                  <span className="text-xs opacity-70 truncate">
-                    {s.structured_formatting.secondary_text}
-                  </span>
-                </div>
+            {filteredSuggestions.length > 0 ? (
+              filteredSuggestions.map((s, index) => (
+                <li
+                  key={s.place_id}
+                  onClick={() => handleSelect(s)}
+                  onMouseEnter={() => setActiveIndex(index)}
+                  className={cn(
+                    "px-4 py-3 cursor-pointer text-sm flex gap-3 transition-colors",
+                    activeIndex === index ? "bg-primary/10 text-primary" : "hover:bg-muted text-foreground"
+                  )}
+                >
+                  <div className="shrink-0 mt-0.5">
+                    <MapPin className={cn("h-4 w-4", activeIndex === index ? "text-primary" : "text-muted-foreground")} />
+                  </div>
+                  <div className="flex flex-col min-w-0">
+                    <span className="font-semibold truncate">{s.structured_formatting.main_text}</span>
+                    <span className="text-xs opacity-70 truncate">
+                      {s.structured_formatting.secondary_text}
+                    </span>
+                  </div>
+                </li>
+              ))
+            ) : (
+              <li className="px-4 py-8 text-center text-sm text-muted-foreground italic">
+                {loading ? "Buscando..." : "Nenhuma sugestão encontrada para este termo."}
               </li>
-            ))}
+            )}
           </ul>
         </div>
       )}
