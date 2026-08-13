@@ -25,7 +25,7 @@ import { Input } from "@/components/ui/input";
 import { useState, useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LiveStreamCard } from "@/components/midia/live-stream-card";
-import { Youtube, MonitorPlay, Play } from "lucide-react";
+import { Youtube as YouTube, MonitorPlay, Play } from "lucide-react";
 
 
 
@@ -303,7 +303,7 @@ function MediaModule() {
                   <Card className="bg-muted/30 border-none shadow-none">
                     <CardHeader>
                       <CardTitle className="text-sm font-mono uppercase tracking-widest text-primary flex items-center gap-2">
-                        <Youtube className="h-4 w-4" /> Playlist
+                        <YouTube className="h-4 w-4" /> Playlist
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">

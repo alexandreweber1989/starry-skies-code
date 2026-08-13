@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Music, Pencil, Plus, Search, Trash2, Youtube, FileText, ChevronRight, ListMusic } from "lucide-react";
+import { Music, Pencil, Plus, Search, Trash2, Youtube as YouTube, FileText, ChevronRight, ListMusic } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { LOUVOR_MINISTRY_ID, SONG_KEYS, TEMPO_LABELS } from "@/lib/louvor";
@@ -162,7 +162,7 @@ export function Repertorio() {
                 <div className="flex items-center gap-3">
                   {song.youtube_url && (
                     <a href={song.youtube_url} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-red-500 transition-colors">
-                      <Youtube className="h-4 w-4" />
+                      <YouTube className="h-4 w-4" />
                     </a>
                   )}
                   {(song.sheet_url || song.chords_url) && (
