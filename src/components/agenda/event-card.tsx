@@ -1,7 +1,8 @@
-import { MapPin, Clock, Users, Pencil, Trash2, Star } from "lucide-react";
+import { MapPin, Clock, Users, Pencil, Trash2, Star, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { EventArt } from "@/components/agenda/event-art";
+import { AddToCalendar } from "@/components/agenda/add-to-calendar";
 import {
   KIND_LABEL,
   RSVP_LABEL,
