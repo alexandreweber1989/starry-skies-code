@@ -33,7 +33,7 @@ export const Route = createFileRoute('/api/public/kids-visitor')({
           // sem expor a chave no cliente. A tabela kids_visitor_requests tem RLS restrito.
           const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
           
-          const { error } = await supabaseAdmin.from('kids_visitor_requests').insert({
+          const { error } = await (supabaseAdmin.from('kids_visitor_requests') as any).insert({
             ...validated,
             status: 'pendente'
           })
