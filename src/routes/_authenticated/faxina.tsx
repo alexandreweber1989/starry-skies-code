@@ -298,8 +298,8 @@ function CleaningSchedulePage() {
                                 <PhotoGallery 
                                   task={task} 
                                   scheduleId={schedule.id}
-                                  onUpload={(file, type) => uploadPhoto.mutate({ taskId: task.id, scheduleId: schedule.id, file, type })}
-                                  onDelete={(id) => deletePhoto.mutate(id)}
+                                  onUpload={(file: File, type: 'before' | 'after') => uploadPhoto.mutate({ taskId: task.id, scheduleId: schedule.id, file, type })}
+                                  onDelete={(id: string) => deletePhoto.mutate(id)}
                                   canEdit={isAdmin || useAuth().isMesaLeader(schedule.mesa_id)}
                                 />
                               </div>
