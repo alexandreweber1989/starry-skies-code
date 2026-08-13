@@ -18,6 +18,7 @@ const visitorRequestSchema = z.object({
   photo_consent: z.boolean(),
   other_pickup: z.string().trim().max(300).nullable().optional(),
   notes: z.string().trim().max(500).nullable().optional(),
+  document_url: z.string().nullable().optional(),
 })
 
 export const Route = createFileRoute('/api/public/kids-visitor')({

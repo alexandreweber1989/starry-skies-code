@@ -65,8 +65,37 @@ export function EmergencyAlertButton({ child, session }: EmergencyAlertButtonPro
 
       if (aError) throw aError;
 
-      // Simulação de disparo (futuramente integrar com Edge Function para Push/SMS/WhatsApp)
-      console.log("Alerta enviado para:", guardians.full_name, guardians.phone);
+      // Disparo real via Edge Function (Rota de API)
+      await fetch('/api/public/sms-whatsapp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: guardians.phone,
+          message: `[EMERGÊNCIA KIDS] ${child.full_name}: ${message.trim()}`,
+          type: 'both'
+        })
+      });
+
+      // Disparo de Push Notification se houver profile_id
+      const { data: profileData } = await supabase
+        .from('kids_guardians')
+        .select('profile_id')
+        .eq('id', guardians.id)
+        .single();
+
+      if (profileData?.profile_id) {
+        await fetch('/api/public/notifications', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userIds: [profileData.profile_id],
+            title: '⚠️ Emergência no Kids',
+            body: `Seu filho(a) ${child.full_name} precisa de você na sala ${session.classroom}.`,
+            type: 'emergency',
+            data: { childId: child.id, sessionId: session.id }
+          })
+        });
+      }
       
       return alert;
     },
