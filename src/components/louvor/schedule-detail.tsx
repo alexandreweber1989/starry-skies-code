@@ -61,7 +61,7 @@ export function ScheduleDetail({ scheduleId, canManage }: { scheduleId: string; 
       const { data, error } = await supabase
         .from("worship_schedules")
         .select(
-          "id, assignments:worship_schedule_assignments(id, function_name, status, response_note, user_id, profiles:profiles!inner(full_name)), setlist:worship_setlist_items(id, position, song_key, notes, song:worship_songs!inner(id, title, artist))",
+          "id, assignments:worship_schedule_assignments(id, function_name, status, response_note, user_id, profiles:profiles!inner(full_name)), setlist:setlist_songs(id, position, song_key, notes, song:songs!inner(id, title, artist))",
         )
         .eq("id", scheduleId)
         .single();
