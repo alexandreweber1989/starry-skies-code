@@ -58,18 +58,36 @@ export function AddressAutocomplete({ value, onChange, onAddressSelect, placehol
       if (typeof window !== "undefined" && (window as any).google) {
         const service = new (window as any).google.maps.places.AutocompleteService();
         service.getPlacePredictions(
-          { input, componentRestrictions: { country: "br" } },
+          { input, componentRestrictions: { country: "br" }, types: ["address"] },
           (predictions: any, status: any) => {
             if (status === "OK" && predictions) {
               setSuggestions(predictions);
               setOpen(true);
+            } else {
+              setSuggestions([]);
             }
             setLoading(false);
           }
         );
       } else {
-        // Fallback para uma busca simples ou mensagem de erro
-        console.warn("Google Maps Places API not loaded");
+        // Fallback robusto usando OpenStreetMap Nominatim se Google não carregar
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&countrycodes=br&q=${encodeURIComponent(input)}`);
+          const data = await res.json();
+          const mapped: Suggestion[] = data.map((item: any) => ({
+            description: item.display_name,
+            place_id: item.place_id.toString(),
+            structured_formatting: {
+              main_text: item.address.road || item.display_name.split(",")[0],
+              secondary_text: item.display_name.split(",").slice(1).join(",").trim(),
+            },
+            raw: item
+          }));
+          setSuggestions(mapped);
+          setOpen(true);
+        } catch (e) {
+          console.error("Maps API and fallback failed", e);
+        }
         setLoading(false);
       }
     } catch (error) {

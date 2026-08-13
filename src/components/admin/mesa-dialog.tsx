@@ -202,15 +202,15 @@ export function MesaDialog({
       <DialogTrigger asChild>
         {trigger ?? (
           compact ? (
-            <Button variant="outline" size="sm"><Plus className="h-4 w-4" /> Nova mesa nesta rede</Button>
+            <Button variant="outline" size="sm" className="font-mono text-[10px] uppercase tracking-wider"><Plus className="h-3 w-3 mr-1" /> Nova mesa</Button>
           ) : (
-            <Button><Plus className="h-4 w-4" /> Nova mesa</Button>
+            <Button className="font-serif"><Plus className="h-4 w-4" /> Nova mesa</Button>
           )
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="font-serif text-3xl">{isEdit ? "Editar mesa" : "Nova mesa"}</DialogTitle>
+          <DialogTitle className="font-serif text-3xl tracking-tight">{isEdit ? "Editar mesa" : "Nova mesa"}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
