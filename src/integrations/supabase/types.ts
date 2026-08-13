@@ -1229,39 +1229,6 @@ export type Database = {
           },
         ]
       }
-      leader_touchpoints: {
-        Row: {
-          channel: string
-          created_at: string
-          id: string
-          leader_id: string
-          member_id: string
-          mesa_id: string
-          note: string | null
-          week_start: string
-        }
-        Insert: {
-          channel?: string
-          created_at?: string
-          id?: string
-          leader_id: string
-          member_id: string
-          mesa_id: string
-          note?: string | null
-          week_start: string
-        }
-        Update: {
-          channel?: string
-          created_at?: string
-          id?: string
-          leader_id?: string
-          member_id?: string
-          mesa_id?: string
-          note?: string | null
-          week_start?: string
-        }
-        Relationships: []
-      }
       leads: {
         Row: {
           city: string | null
@@ -2232,60 +2199,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      sermons: {
-        Row: {
-          base_verse: string | null
-          church_id: string | null
-          created_at: string
-          created_by: string | null
-          dark: boolean
-          id: string
-          points: Json
-          preached_on: string | null
-          preacher: string | null
-          summary: string | null
-          tags: string[]
-          template: string
-          theme: string | null
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          base_verse?: string | null
-          church_id?: string | null
-          created_at?: string
-          created_by?: string | null
-          dark?: boolean
-          id?: string
-          points?: Json
-          preached_on?: string | null
-          preacher?: string | null
-          summary?: string | null
-          tags?: string[]
-          template?: string
-          theme?: string | null
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          base_verse?: string | null
-          church_id?: string | null
-          created_at?: string
-          created_by?: string | null
-          dark?: boolean
-          id?: string
-          points?: Json
-          preached_on?: string | null
-          preacher?: string | null
-          summary?: string | null
-          tags?: string[]
-          template?: string
-          theme?: string | null
-          title?: string
-          updated_at?: string
-        }
-        Relationships: []
       }
       setlist_songs: {
         Row: {

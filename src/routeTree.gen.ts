@@ -9,49 +9,45 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
-import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ConfigVercelRouteImport } from './routes/config-vercel'
-import { Route as AuthenticatedAgendaRouteImport } from './routes/_authenticated/agenda'
-import { Route as AuthenticatedAvisosRouteImport } from './routes/_authenticated/avisos'
-import { Route as AuthenticatedCantinaRouteImport } from './routes/_authenticated/cantina'
-import { Route as AuthenticatedCuidadoRouteImport } from './routes/_authenticated/cuidado'
-import { Route as AuthenticatedCuidadoSemanaRouteImport } from './routes/_authenticated/cuidado-semana'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-import { Route as AuthenticatedFaxinaRouteImport } from './routes/_authenticated/faxina'
-import { Route as AuthenticatedIgrejasRouteImport } from './routes/_authenticated/igrejas'
-import { Route as AuthenticatedKidsRouteImport } from './routes/_authenticated/kids'
-import { Route as AuthenticatedLivrariaRouteImport } from './routes/_authenticated/livraria'
-import { Route as AuthenticatedLouvorRouteImport } from './routes/_authenticated/louvor'
-import { Route as AuthenticatedMapaRouteImport } from './routes/_authenticated/mapa'
-import { Route as AuthenticatedMembrosRouteImport } from './routes/_authenticated/membros'
-import { Route as AuthenticatedMesasRouteImport } from './routes/_authenticated/mesas'
-import { Route as AuthenticatedMidiaRouteImport } from './routes/_authenticated/midia'
-import { Route as AuthenticatedNoticiasRouteImport } from './routes/_authenticated/noticias'
-import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
-import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
-import { Route as AuthenticatedPregacoesRouteImport } from './routes/_authenticated/pregacoes'
-import { Route as AuthenticatedRedesRouteImport } from './routes/_authenticated/redes'
-import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as KidsVisitanteRouteImport } from './routes/kids.visitante'
-import { Route as AuthenticatedKidsRetiradaCheckinIdRouteImport } from './routes/_authenticated/kids-retirada.$checkinId'
-import { Route as AuthenticatedKidsRelatoriosRouteImport } from './routes/_authenticated/kids.relatorios'
+import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
+import { Route as AuthenticatedRedesRouteImport } from './routes/_authenticated/redes'
+import { Route as AuthenticatedPregacoesRouteImport } from './routes/_authenticated/pregacoes'
+import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
+import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedNoticiasRouteImport } from './routes/_authenticated/noticias'
+import { Route as AuthenticatedMidiaRouteImport } from './routes/_authenticated/midia'
+import { Route as AuthenticatedMesasRouteImport } from './routes/_authenticated/mesas'
+import { Route as AuthenticatedMembrosRouteImport } from './routes/_authenticated/membros'
+import { Route as AuthenticatedMapaRouteImport } from './routes/_authenticated/mapa'
+import { Route as AuthenticatedLouvorRouteImport } from './routes/_authenticated/louvor'
+import { Route as AuthenticatedLivrariaRouteImport } from './routes/_authenticated/livraria'
+import { Route as AuthenticatedKidsRouteImport } from './routes/_authenticated/kids'
+import { Route as AuthenticatedIgrejasRouteImport } from './routes/_authenticated/igrejas'
+import { Route as AuthenticatedFaxinaRouteImport } from './routes/_authenticated/faxina'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedCuidadoSemanaRouteImport } from './routes/_authenticated/cuidado-semana'
+import { Route as AuthenticatedCuidadoRouteImport } from './routes/_authenticated/cuidado'
+import { Route as AuthenticatedCantinaRouteImport } from './routes/_authenticated/cantina'
+import { Route as AuthenticatedAvisosRouteImport } from './routes/_authenticated/avisos'
+import { Route as AuthenticatedAgendaRouteImport } from './routes/_authenticated/agenda'
 import { Route as AuthenticatedMinisteriosIndexRouteImport } from './routes/_authenticated/ministerios.index'
-import { Route as AuthenticatedMinisteriosSlugRouteImport } from './routes/_authenticated/ministerios.$slug'
-import { Route as ApiPublicImportCifraRouteImport } from './routes/api/public/import-cifra'
-import { Route as ApiPublicKidsVisitorRouteImport } from './routes/api/public/kids-visitor'
-import { Route as ApiPublicLiveStatusRouteImport } from './routes/api/public/live-status'
-import { Route as ApiPublicNotificationsRouteImport } from './routes/api/public/notifications'
 import { Route as ApiPublicSmsWhatsappRouteImport } from './routes/api/public/sms-whatsapp'
+import { Route as ApiPublicNotificationsRouteImport } from './routes/api/public/notifications'
+import { Route as ApiPublicLiveStatusRouteImport } from './routes/api/public/live-status'
+import { Route as ApiPublicKidsVisitorRouteImport } from './routes/api/public/kids-visitor'
+import { Route as ApiPublicImportCifraRouteImport } from './routes/api/public/import-cifra'
+import { Route as AuthenticatedMinisteriosSlugRouteImport } from './routes/_authenticated/ministerios.$slug'
+import { Route as AuthenticatedKidsRelatoriosRouteImport } from './routes/_authenticated/kids.relatorios'
+import { Route as AuthenticatedKidsRetiradaCheckinIdRouteImport } from './routes/_authenticated/kids-retirada.$checkinId'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
+const ConfigVercelRoute = ConfigVercelRouteImport.update({
+  id: '/config-vercel',
+  path: '/config-vercel',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -59,29 +55,98 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ConfigVercelRoute = ConfigVercelRouteImport.update({
-  id: '/config-vercel',
-  path: '/config-vercel',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedAgendaRoute = AuthenticatedAgendaRouteImport.update({
-  id: '/agenda',
-  path: '/agenda',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KidsVisitanteRoute = KidsVisitanteRouteImport.update({
+  id: '/kids/visitante',
+  path: '/kids/visitante',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/callback',
+  path: '/callback',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthenticatedRedesRoute = AuthenticatedRedesRouteImport.update({
+  id: '/redes',
+  path: '/redes',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedAvisosRoute = AuthenticatedAvisosRouteImport.update({
-  id: '/avisos',
-  path: '/avisos',
+const AuthenticatedPregacoesRoute = AuthenticatedPregacoesRouteImport.update({
+  id: '/pregacoes',
+  path: '/pregacoes',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedCantinaRoute = AuthenticatedCantinaRouteImport.update({
-  id: '/cantina',
-  path: '/cantina',
+const AuthenticatedPerfilRoute = AuthenticatedPerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedCuidadoRoute = AuthenticatedCuidadoRouteImport.update({
-  id: '/cuidado',
-  path: '/cuidado',
+const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedNoticiasRoute = AuthenticatedNoticiasRouteImport.update({
+  id: '/noticias',
+  path: '/noticias',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMidiaRoute = AuthenticatedMidiaRouteImport.update({
+  id: '/midia',
+  path: '/midia',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMesasRoute = AuthenticatedMesasRouteImport.update({
+  id: '/mesas',
+  path: '/mesas',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMembrosRoute = AuthenticatedMembrosRouteImport.update({
+  id: '/membros',
+  path: '/membros',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMapaRoute = AuthenticatedMapaRouteImport.update({
+  id: '/mapa',
+  path: '/mapa',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedLouvorRoute = AuthenticatedLouvorRouteImport.update({
+  id: '/louvor',
+  path: '/louvor',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedLivrariaRoute = AuthenticatedLivrariaRouteImport.update({
+  id: '/livraria',
+  path: '/livraria',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedKidsRoute = AuthenticatedKidsRouteImport.update({
+  id: '/kids',
+  path: '/kids',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedIgrejasRoute = AuthenticatedIgrejasRouteImport.update({
+  id: '/igrejas',
+  path: '/igrejas',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedFaxinaRoute = AuthenticatedFaxinaRouteImport.update({
+  id: '/faxina',
+  path: '/faxina',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedCuidadoSemanaRoute =
@@ -90,95 +155,61 @@ const AuthenticatedCuidadoSemanaRoute =
     path: '/cuidado-semana',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const AuthenticatedCuidadoRoute = AuthenticatedCuidadoRouteImport.update({
+  id: '/cuidado',
+  path: '/cuidado',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedFaxinaRoute = AuthenticatedFaxinaRouteImport.update({
-  id: '/faxina',
-  path: '/faxina',
+const AuthenticatedCantinaRoute = AuthenticatedCantinaRouteImport.update({
+  id: '/cantina',
+  path: '/cantina',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedIgrejasRoute = AuthenticatedIgrejasRouteImport.update({
-  id: '/igrejas',
-  path: '/igrejas',
+const AuthenticatedAvisosRoute = AuthenticatedAvisosRouteImport.update({
+  id: '/avisos',
+  path: '/avisos',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedKidsRoute = AuthenticatedKidsRouteImport.update({
-  id: '/kids',
-  path: '/kids',
+const AuthenticatedAgendaRoute = AuthenticatedAgendaRouteImport.update({
+  id: '/agenda',
+  path: '/agenda',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedLivrariaRoute = AuthenticatedLivrariaRouteImport.update({
-  id: '/livraria',
-  path: '/livraria',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedLouvorRoute = AuthenticatedLouvorRouteImport.update({
-  id: '/louvor',
-  path: '/louvor',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedMapaRoute = AuthenticatedMapaRouteImport.update({
-  id: '/mapa',
-  path: '/mapa',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedMembrosRoute = AuthenticatedMembrosRouteImport.update({
-  id: '/membros',
-  path: '/membros',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedMesasRoute = AuthenticatedMesasRouteImport.update({
-  id: '/mesas',
-  path: '/mesas',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedMidiaRoute = AuthenticatedMidiaRouteImport.update({
-  id: '/midia',
-  path: '/midia',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedNoticiasRoute = AuthenticatedNoticiasRouteImport.update({
-  id: '/noticias',
-  path: '/noticias',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
-  id: '/onboarding',
-  path: '/onboarding',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedPerfilRoute = AuthenticatedPerfilRouteImport.update({
-  id: '/perfil',
-  path: '/perfil',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedPregacoesRoute = AuthenticatedPregacoesRouteImport.update({
-  id: '/pregacoes',
-  path: '/pregacoes',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedRedesRoute = AuthenticatedRedesRouteImport.update({
-  id: '/redes',
-  path: '/redes',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthCallbackRoute = AuthCallbackRouteImport.update({
-  id: '/callback',
-  path: '/callback',
-  getParentRoute: () => AuthRoute,
-} as any)
-const KidsVisitanteRoute = KidsVisitanteRouteImport.update({
-  id: '/kids/visitante',
-  path: '/kids/visitante',
+const AuthenticatedMinisteriosIndexRoute =
+  AuthenticatedMinisteriosIndexRouteImport.update({
+    id: '/ministerios/',
+    path: '/ministerios/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const ApiPublicSmsWhatsappRoute = ApiPublicSmsWhatsappRouteImport.update({
+  id: '/api/public/sms-whatsapp',
+  path: '/api/public/sms-whatsapp',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedKidsRetiradaCheckinIdRoute =
-  AuthenticatedKidsRetiradaCheckinIdRouteImport.update({
-    id: '/kids-retirada/$checkinId',
-    path: '/kids-retirada/$checkinId',
+const ApiPublicNotificationsRoute = ApiPublicNotificationsRouteImport.update({
+  id: '/api/public/notifications',
+  path: '/api/public/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicLiveStatusRoute = ApiPublicLiveStatusRouteImport.update({
+  id: '/api/public/live-status',
+  path: '/api/public/live-status',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicKidsVisitorRoute = ApiPublicKidsVisitorRouteImport.update({
+  id: '/api/public/kids-visitor',
+  path: '/api/public/kids-visitor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicImportCifraRoute = ApiPublicImportCifraRouteImport.update({
+  id: '/api/public/import-cifra',
+  path: '/api/public/import-cifra',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedMinisteriosSlugRoute =
+  AuthenticatedMinisteriosSlugRouteImport.update({
+    id: '/ministerios/$slug',
+    path: '/ministerios/$slug',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedKidsRelatoriosRoute =
@@ -187,43 +218,12 @@ const AuthenticatedKidsRelatoriosRoute =
     path: '/relatorios',
     getParentRoute: () => AuthenticatedKidsRoute,
   } as any)
-const AuthenticatedMinisteriosIndexRoute =
-  AuthenticatedMinisteriosIndexRouteImport.update({
-    id: '/ministerios/',
-    path: '/ministerios/',
+const AuthenticatedKidsRetiradaCheckinIdRoute =
+  AuthenticatedKidsRetiradaCheckinIdRouteImport.update({
+    id: '/kids-retirada/$checkinId',
+    path: '/kids-retirada/$checkinId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedMinisteriosSlugRoute =
-  AuthenticatedMinisteriosSlugRouteImport.update({
-    id: '/ministerios/$slug',
-    path: '/ministerios/$slug',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const ApiPublicImportCifraRoute = ApiPublicImportCifraRouteImport.update({
-  id: '/api/public/import-cifra',
-  path: '/api/public/import-cifra',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicKidsVisitorRoute = ApiPublicKidsVisitorRouteImport.update({
-  id: '/api/public/kids-visitor',
-  path: '/api/public/kids-visitor',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicLiveStatusRoute = ApiPublicLiveStatusRouteImport.update({
-  id: '/api/public/live-status',
-  path: '/api/public/live-status',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicNotificationsRoute = ApiPublicNotificationsRouteImport.update({
-  id: '/api/public/notifications',
-  path: '/api/public/notifications',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicSmsWhatsappRoute = ApiPublicSmsWhatsappRouteImport.update({
-  id: '/api/public/sms-whatsapp',
-  path: '/api/public/sms-whatsapp',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -462,18 +462,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated': {
-      id: '/_authenticated'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+    '/config-vercel': {
+      id: '/config-vercel'
+      path: '/config-vercel'
+      fullPath: '/config-vercel'
+      preLoaderRoute: typeof ConfigVercelRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -483,137 +476,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/config-vercel': {
-      id: '/config-vercel'
-      path: '/config-vercel'
-      fullPath: '/config-vercel'
-      preLoaderRoute: typeof ConfigVercelRouteImport
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/agenda': {
-      id: '/_authenticated/agenda'
-      path: '/agenda'
-      fullPath: '/agenda'
-      preLoaderRoute: typeof AuthenticatedAgendaRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/avisos': {
-      id: '/_authenticated/avisos'
-      path: '/avisos'
-      fullPath: '/avisos'
-      preLoaderRoute: typeof AuthenticatedAvisosRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/kids/visitante': {
+      id: '/kids/visitante'
+      path: '/kids/visitante'
+      fullPath: '/kids/visitante'
+      preLoaderRoute: typeof KidsVisitanteRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/cantina': {
-      id: '/_authenticated/cantina'
-      path: '/cantina'
-      fullPath: '/cantina'
-      preLoaderRoute: typeof AuthenticatedCantinaRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof AuthRoute
     }
-    '/_authenticated/cuidado': {
-      id: '/_authenticated/cuidado'
-      path: '/cuidado'
-      fullPath: '/cuidado'
-      preLoaderRoute: typeof AuthenticatedCuidadoRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/cuidado-semana': {
-      id: '/_authenticated/cuidado-semana'
-      path: '/cuidado-semana'
-      fullPath: '/cuidado-semana'
-      preLoaderRoute: typeof AuthenticatedCuidadoSemanaRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/faxina': {
-      id: '/_authenticated/faxina'
-      path: '/faxina'
-      fullPath: '/faxina'
-      preLoaderRoute: typeof AuthenticatedFaxinaRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/igrejas': {
-      id: '/_authenticated/igrejas'
-      path: '/igrejas'
-      fullPath: '/igrejas'
-      preLoaderRoute: typeof AuthenticatedIgrejasRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/kids': {
-      id: '/_authenticated/kids'
-      path: '/kids'
-      fullPath: '/kids'
-      preLoaderRoute: typeof AuthenticatedKidsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/livraria': {
-      id: '/_authenticated/livraria'
-      path: '/livraria'
-      fullPath: '/livraria'
-      preLoaderRoute: typeof AuthenticatedLivrariaRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/louvor': {
-      id: '/_authenticated/louvor'
-      path: '/louvor'
-      fullPath: '/louvor'
-      preLoaderRoute: typeof AuthenticatedLouvorRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/mapa': {
-      id: '/_authenticated/mapa'
-      path: '/mapa'
-      fullPath: '/mapa'
-      preLoaderRoute: typeof AuthenticatedMapaRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/membros': {
-      id: '/_authenticated/membros'
-      path: '/membros'
-      fullPath: '/membros'
-      preLoaderRoute: typeof AuthenticatedMembrosRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/mesas': {
-      id: '/_authenticated/mesas'
-      path: '/mesas'
-      fullPath: '/mesas'
-      preLoaderRoute: typeof AuthenticatedMesasRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/midia': {
-      id: '/_authenticated/midia'
-      path: '/midia'
-      fullPath: '/midia'
-      preLoaderRoute: typeof AuthenticatedMidiaRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/noticias': {
-      id: '/_authenticated/noticias'
-      path: '/noticias'
-      fullPath: '/noticias'
-      preLoaderRoute: typeof AuthenticatedNoticiasRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/onboarding': {
-      id: '/_authenticated/onboarding'
-      path: '/onboarding'
-      fullPath: '/onboarding'
-      preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/perfil': {
-      id: '/_authenticated/perfil'
-      path: '/perfil'
-      fullPath: '/perfil'
-      preLoaderRoute: typeof AuthenticatedPerfilRouteImport
+    '/_authenticated/redes': {
+      id: '/_authenticated/redes'
+      path: '/redes'
+      fullPath: '/redes'
+      preLoaderRoute: typeof AuthenticatedRedesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/pregacoes': {
@@ -623,40 +518,131 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPregacoesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/redes': {
-      id: '/_authenticated/redes'
-      path: '/redes'
-      fullPath: '/redes'
-      preLoaderRoute: typeof AuthenticatedRedesRouteImport
+    '/_authenticated/perfil': {
+      id: '/_authenticated/perfil'
+      path: '/perfil'
+      fullPath: '/perfil'
+      preLoaderRoute: typeof AuthenticatedPerfilRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/auth/callback': {
-      id: '/auth/callback'
-      path: '/callback'
-      fullPath: '/auth/callback'
-      preLoaderRoute: typeof AuthCallbackRouteImport
-      parentRoute: typeof AuthRoute
-    }
-    '/kids/visitante': {
-      id: '/kids/visitante'
-      path: '/kids/visitante'
-      fullPath: '/kids/visitante'
-      preLoaderRoute: typeof KidsVisitanteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/kids-retirada/$checkinId': {
-      id: '/_authenticated/kids-retirada/$checkinId'
-      path: '/kids-retirada/$checkinId'
-      fullPath: '/kids-retirada/$checkinId'
-      preLoaderRoute: typeof AuthenticatedKidsRetiradaCheckinIdRouteImport
+    '/_authenticated/onboarding': {
+      id: '/_authenticated/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/kids/relatorios': {
-      id: '/_authenticated/kids/relatorios'
-      path: '/relatorios'
-      fullPath: '/kids/relatorios'
-      preLoaderRoute: typeof AuthenticatedKidsRelatoriosRouteImport
-      parentRoute: typeof AuthenticatedKidsRoute
+    '/_authenticated/noticias': {
+      id: '/_authenticated/noticias'
+      path: '/noticias'
+      fullPath: '/noticias'
+      preLoaderRoute: typeof AuthenticatedNoticiasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/midia': {
+      id: '/_authenticated/midia'
+      path: '/midia'
+      fullPath: '/midia'
+      preLoaderRoute: typeof AuthenticatedMidiaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/mesas': {
+      id: '/_authenticated/mesas'
+      path: '/mesas'
+      fullPath: '/mesas'
+      preLoaderRoute: typeof AuthenticatedMesasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/membros': {
+      id: '/_authenticated/membros'
+      path: '/membros'
+      fullPath: '/membros'
+      preLoaderRoute: typeof AuthenticatedMembrosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/mapa': {
+      id: '/_authenticated/mapa'
+      path: '/mapa'
+      fullPath: '/mapa'
+      preLoaderRoute: typeof AuthenticatedMapaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/louvor': {
+      id: '/_authenticated/louvor'
+      path: '/louvor'
+      fullPath: '/louvor'
+      preLoaderRoute: typeof AuthenticatedLouvorRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/livraria': {
+      id: '/_authenticated/livraria'
+      path: '/livraria'
+      fullPath: '/livraria'
+      preLoaderRoute: typeof AuthenticatedLivrariaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/kids': {
+      id: '/_authenticated/kids'
+      path: '/kids'
+      fullPath: '/kids'
+      preLoaderRoute: typeof AuthenticatedKidsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/igrejas': {
+      id: '/_authenticated/igrejas'
+      path: '/igrejas'
+      fullPath: '/igrejas'
+      preLoaderRoute: typeof AuthenticatedIgrejasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/faxina': {
+      id: '/_authenticated/faxina'
+      path: '/faxina'
+      fullPath: '/faxina'
+      preLoaderRoute: typeof AuthenticatedFaxinaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/cuidado-semana': {
+      id: '/_authenticated/cuidado-semana'
+      path: '/cuidado-semana'
+      fullPath: '/cuidado-semana'
+      preLoaderRoute: typeof AuthenticatedCuidadoSemanaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/cuidado': {
+      id: '/_authenticated/cuidado'
+      path: '/cuidado'
+      fullPath: '/cuidado'
+      preLoaderRoute: typeof AuthenticatedCuidadoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/cantina': {
+      id: '/_authenticated/cantina'
+      path: '/cantina'
+      fullPath: '/cantina'
+      preLoaderRoute: typeof AuthenticatedCantinaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/avisos': {
+      id: '/_authenticated/avisos'
+      path: '/avisos'
+      fullPath: '/avisos'
+      preLoaderRoute: typeof AuthenticatedAvisosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/agenda': {
+      id: '/_authenticated/agenda'
+      path: '/agenda'
+      fullPath: '/agenda'
+      preLoaderRoute: typeof AuthenticatedAgendaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/ministerios/': {
       id: '/_authenticated/ministerios/'
@@ -665,32 +651,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMinisteriosIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/ministerios/$slug': {
-      id: '/_authenticated/ministerios/$slug'
-      path: '/ministerios/$slug'
-      fullPath: '/ministerios/$slug'
-      preLoaderRoute: typeof AuthenticatedMinisteriosSlugRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/api/public/import-cifra': {
-      id: '/api/public/import-cifra'
-      path: '/api/public/import-cifra'
-      fullPath: '/api/public/import-cifra'
-      preLoaderRoute: typeof ApiPublicImportCifraRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/kids-visitor': {
-      id: '/api/public/kids-visitor'
-      path: '/api/public/kids-visitor'
-      fullPath: '/api/public/kids-visitor'
-      preLoaderRoute: typeof ApiPublicKidsVisitorRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/live-status': {
-      id: '/api/public/live-status'
-      path: '/api/public/live-status'
-      fullPath: '/api/public/live-status'
-      preLoaderRoute: typeof ApiPublicLiveStatusRouteImport
+    '/api/public/sms-whatsapp': {
+      id: '/api/public/sms-whatsapp'
+      path: '/api/public/sms-whatsapp'
+      fullPath: '/api/public/sms-whatsapp'
+      preLoaderRoute: typeof ApiPublicSmsWhatsappRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/notifications': {
@@ -700,12 +665,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicNotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/sms-whatsapp': {
-      id: '/api/public/sms-whatsapp'
-      path: '/api/public/sms-whatsapp'
-      fullPath: '/api/public/sms-whatsapp'
-      preLoaderRoute: typeof ApiPublicSmsWhatsappRouteImport
+    '/api/public/live-status': {
+      id: '/api/public/live-status'
+      path: '/api/public/live-status'
+      fullPath: '/api/public/live-status'
+      preLoaderRoute: typeof ApiPublicLiveStatusRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/api/public/kids-visitor': {
+      id: '/api/public/kids-visitor'
+      path: '/api/public/kids-visitor'
+      fullPath: '/api/public/kids-visitor'
+      preLoaderRoute: typeof ApiPublicKidsVisitorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/import-cifra': {
+      id: '/api/public/import-cifra'
+      path: '/api/public/import-cifra'
+      fullPath: '/api/public/import-cifra'
+      preLoaderRoute: typeof ApiPublicImportCifraRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/ministerios/$slug': {
+      id: '/_authenticated/ministerios/$slug'
+      path: '/ministerios/$slug'
+      fullPath: '/ministerios/$slug'
+      preLoaderRoute: typeof AuthenticatedMinisteriosSlugRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/kids/relatorios': {
+      id: '/_authenticated/kids/relatorios'
+      path: '/relatorios'
+      fullPath: '/kids/relatorios'
+      preLoaderRoute: typeof AuthenticatedKidsRelatoriosRouteImport
+      parentRoute: typeof AuthenticatedKidsRoute
+    }
+    '/_authenticated/kids-retirada/$checkinId': {
+      id: '/_authenticated/kids-retirada/$checkinId'
+      path: '/kids-retirada/$checkinId'
+      fullPath: '/kids-retirada/$checkinId'
+      preLoaderRoute: typeof AuthenticatedKidsRetiradaCheckinIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
