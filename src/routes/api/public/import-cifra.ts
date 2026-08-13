@@ -28,17 +28,36 @@ export const Route = createFileRoute("/api/public/import-cifra")({
           if (!response.ok) throw new Error("Falha ao buscar página");
           const html = await response.text();
 
-          // Extração ultra-simples via Regex para evitar dependências pesadas de DOM no Worker
-          const title = html.match(/<h1 class="t1">([^<]+)<\/h1>/)?.[1] || "";
-          const artist = html.match(/<h2 class="t3">([^<]+)<\/h2>/)?.[1] || "";
-          const key = html.match(/id="cifra_tom"[^>]*>([^<]+)<\/a>/)?.[1] || "";
+          let title = "";
+          let artist = "";
+          let key = "";
+          let bpm: number | null = null;
+          let rawContent = "";
+
+          if (isCifraClub) {
+            title = html.match(/<h1 class="t1">([^<]+)<\/h1>/)?.[1] || "";
+            artist = html.match(/<h2 class="t3">([^<]+)<\/h2>/)?.[1] || "";
+            key = html.match(/id="cifra_tom"[^>]*>([^<]+)<\/a>/)?.[1] || "";
+            
+            // Tenta achar o BPM no HTML do CifraClub
+            const bpmMatch = html.match(/"bpm":\s*(\d+)/i) || html.match(/<span>(\d+)<\/span>\s*bpm/i);
+            if (bpmMatch) bpm = parseInt(bpmMatch[1]);
+
+            const chordsMatch = html.match(/<pre[^>]*>([\s\S]*?)<\/pre>/);
+            rawContent = chordsMatch ? chordsMatch[1] : "";
+          } else if (isCifras) {
+            title = html.match(/<h1[^>]*>([^<]+)<\/h1>/)?.[1] || "";
+            artist = html.match(/<h2[^>]*>([^<]+)<\/h2>/)?.[1] || "";
+            key = html.match(/<span[^>]*class="[^"]*tom[^"]*"[^>]*>([^<]+)<\/span>/i)?.[1] || "";
+            
+            const bpmMatch = html.match(/(\d+)\s*bpm/i);
+            if (bpmMatch) bpm = parseInt(bpmMatch[1]);
+
+            const chordsMatch = html.match(/<pre[^>]*id="[^"]*cifra[^"]*"[^>]*>([\s\S]*?)<\/pre>/i) || 
+                          html.match(/<div[^>]*class="[^"]*cifra-content[^"]*"[^>]*>([\s\S]*?)<\/div>/i);
+            rawContent = chordsMatch ? chordsMatch[1] : "";
+          }
           
-          // A cifra no CifraClub costuma estar dentro de uma tag <pre> ou identificada por classes
-          // Tentamos pegar o conteúdo bruto para o parser existente lidar
-          const chordsMatch = html.match(/<pre[^>]*>([\s\S]*?)<\/pre>/);
-          let rawContent = chordsMatch ? chordsMatch[1] : "";
-          
-          // Limpeza básica de tags HTML se houver
           rawContent = rawContent.replace(/<[^>]*>/g, "");
 
           return new Response(
@@ -46,6 +65,7 @@ export const Route = createFileRoute("/api/public/import-cifra")({
               title: title.trim(),
               artist: artist.trim(),
               key: key.trim(),
+              bpm: bpm,
               content: rawContent.trim(),
             }),
             {
