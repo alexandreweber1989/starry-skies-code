@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ClipboardPaste, ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { SONG_KEYS, TEMPO_LABELS } from "@/lib/louvor";
+import { LOUVOR_MINISTRY_ID, SONG_KEYS, TEMPO_LABELS } from "@/lib/louvor";
 import { parseChordSheet } from "@/lib/cifra-import";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -60,6 +60,7 @@ export function SongDialog({ initial, trigger }: { initial: SongDraft; trigger: 
         artist: draft.artist || null,
         song_key: draft.song_key || null,
         bpm: draft.bpm ? Number(draft.bpm) : null,
+        ministry_id: LOUVOR_MINISTRY_ID,
         tempo: draft.tempo || null,
         theme: draft.theme || null,
         tags: draft.tags.split(",").map((t) => t.trim()).filter(Boolean),
