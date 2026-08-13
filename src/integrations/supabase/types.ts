@@ -249,6 +249,9 @@ export type Database = {
           neighborhood: string | null
           notes: string | null
           phone: string | null
+          pix_city: string | null
+          pix_key: string | null
+          pix_name: string | null
           short_name: string | null
           state: string | null
           street_number: string | null
@@ -268,6 +271,9 @@ export type Database = {
           neighborhood?: string | null
           notes?: string | null
           phone?: string | null
+          pix_city?: string | null
+          pix_key?: string | null
+          pix_name?: string | null
           short_name?: string | null
           state?: string | null
           street_number?: string | null
@@ -287,6 +293,9 @@ export type Database = {
           neighborhood?: string | null
           notes?: string | null
           phone?: string | null
+          pix_city?: string | null
+          pix_key?: string | null
+          pix_name?: string | null
           short_name?: string | null
           state?: string | null
           street_number?: string | null
