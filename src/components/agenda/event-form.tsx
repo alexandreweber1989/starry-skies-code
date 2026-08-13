@@ -399,19 +399,68 @@ export function EventForm({
 
           <div className="grid sm:grid-cols-2 gap-4">
             <label className="flex items-center justify-between border border-border rounded-sm px-4 py-3">
-              <span className="text-sm">Pedir confirmação</span>
+              <span className="text-sm font-medium">Pedir confirmação</span>
               <Switch
                 checked={form.requires_rsvp}
                 onCheckedChange={(v) => set("requires_rsvp", v)}
               />
             </label>
             <label className="flex items-center justify-between border border-border rounded-sm px-4 py-3">
-              <span className="text-sm">Destacar na agenda</span>
+              <span className="text-sm font-medium">Destacar na agenda</span>
               <Switch
                 checked={form.is_featured}
                 onCheckedChange={(v) => set("is_featured", v)}
               />
             </label>
+          </div>
+
+          <div className="border border-border rounded-sm p-4 bg-muted/20 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <Label className="text-base font-serif">Lembrete Automático</Label>
+                <p className="text-[10px] text-muted-foreground">
+                  Envia um aviso aos membros que confirmarem presença.
+                </p>
+              </div>
+              <Switch
+                checked={form.reminder_enabled}
+                onCheckedChange={(v) => set("reminder_enabled", v)}
+              />
+            </div>
+
+            {form.reminder_enabled && (
+              <div className="evt-stagger pt-2 grid sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Antecedência (minutos)</Label>
+                  <Select
+                    value={form.reminder_lead_time}
+                    onValueChange={(v) => set("reminder_lead_time", v)}
+                  >
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="15">15 minutos</SelectItem>
+                      <SelectItem value="30">30 minutos</SelectItem>
+                      <SelectItem value="60">1 hora</SelectItem>
+                      <SelectItem value="1440">1 dia antes</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Tipo de Lembrete</Label>
+                  <Select
+                    value={form.reminder_type}
+                    onValueChange={(v) => set("reminder_type", v as any)}
+                  >
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="push">Notificação Push</SelectItem>
+                      <SelectItem value="email">E-mail</SelectItem>
+                      <SelectItem value="both">Ambos</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
