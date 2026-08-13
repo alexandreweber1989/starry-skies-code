@@ -45,8 +45,8 @@ export function ScheduleDetail({ scheduleId, canManage }: { scheduleId: string; 
   const { data: songs } = useQuery({
     queryKey: ["worship-songs-min"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("worship_songs")
+      const { data, error } = await (supabase
+        .from("songs") as any)
         .select("id, title, song_key")
         .eq("is_active", true)
         .order("title");
