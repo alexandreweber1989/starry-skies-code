@@ -9,6 +9,7 @@ import { MemberPicker } from "./member-picker";
 import { AddressManager } from "./address-manager";
 
 
+
 import {
   CHURCH_FUNCTIONS,
   CHURCH_FUNCTION_LABEL,
@@ -202,15 +203,15 @@ export function MesaDialog({
       <DialogTrigger asChild>
         {trigger ?? (
           compact ? (
-            <Button variant="outline" size="sm" className="font-mono text-[10px] uppercase tracking-wider"><Plus className="h-3 w-3 mr-1" /> Nova mesa</Button>
+            <Button variant="outline" size="sm"><Plus className="h-4 w-4" /> Nova mesa nesta rede</Button>
           ) : (
-            <Button className="font-serif"><Plus className="h-4 w-4" /> Nova mesa</Button>
+            <Button><Plus className="h-4 w-4" /> Nova mesa</Button>
           )
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="font-serif text-3xl tracking-tight">{isEdit ? "Editar mesa" : "Nova mesa"}</DialogTitle>
+          <DialogTitle className="font-serif text-3xl">{isEdit ? "Editar mesa" : "Nova mesa"}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
@@ -255,9 +256,8 @@ export function MesaDialog({
           </div>
           <div className="space-y-2">
             <Label>Ponto de referência ou descrição do local</Label>
-            <Input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Ex: Casa da família Silva, em frente à praça" />
+            <Input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Casa da família Silva" />
           </div>
-          {isEdit && <AddressManager mesaId={mesa!.id} />}
           <div className="space-y-2">
             <Label>Descrição</Label>
             <Textarea rows={2} value={description} onChange={(e) => setDescription(e.target.value)} className="resize-none" />
@@ -269,7 +269,7 @@ export function MesaDialog({
             </div>
           )}
 
-          <Button className="w-full h-11 text-lg font-serif mt-2" disabled={save.isPending} onClick={() => save.mutate()}>
+          <Button className="w-full" disabled={save.isPending} onClick={() => save.mutate()}>
             {isEdit ? "Salvar alterações" : "Criar mesa"}
           </Button>
         </div>

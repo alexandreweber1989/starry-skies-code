@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { UtensilsCrossed, CalendarPlus } from "lucide-react";
+import { UtensilsCrossed } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, PageBody } from "@/components/app-shell";
 import { Input } from "@/components/ui/input";
@@ -14,11 +14,11 @@ import {
 } from "@/components/ui/select";
 import { useAuth } from "@/lib/auth-context";
 import { MesaDialog, MesaMembersDialog, EditMesaButton } from "@/components/admin/mesa-dialog";
+import { MesaEventDialog } from "@/components/events/mesa-event-dialog";
+
 import { GroupSummary } from "@/components/admin/group-summary";
 import { statsOf, useGroupStats } from "@/lib/use-grupos";
 import { LoadingRegion, CardGridSkeleton } from "@/components/ui/loading-states";
-import { MesaEventDialog } from "@/components/events/mesa-event-dialog";
-import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/mesas")({
   head: () => ({
@@ -45,8 +45,6 @@ function MesasPage() {
   const { isAdmin, isMesaLeader } = useAuth();
   const [term, setTerm] = useState("");
   const [redeFilter, setRedeFilter] = useState("all");
-  const [selectedMesa, setSelectedMesa] = useState<any>(null);
-  const [eventDialogOpen, setEventDialogOpen] = useState(false);
 
   const { data, isPending } = useQuery({
     queryKey: ["mesas-full"],
@@ -163,18 +161,9 @@ function MesasPage() {
                 {(isAdmin || isMesaLeader(m.id)) && (
                   <div className="mt-4 flex flex-wrap items-center gap-2">
                     <MesaMembersDialog mesaId={m.id} mesaName={m.name} />
+                    <MesaEventDialog mesa={m} />
                     {isAdmin && <EditMesaButton mesa={m} />}
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="font-mono text-[10px] uppercase tracking-wider h-8 px-3"
-                      onClick={() => {
-                        setSelectedMesa(m);
-                        setEventDialogOpen(true);
-                      }}
-                    >
-                      <CalendarPlus className="h-3.5 w-3.5 mr-1.5" /> Agendar
-                    </Button>
+
                   </div>
                 )}
                 <div className="mt-6 pt-4 border-t border-border space-y-1 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
@@ -194,17 +183,6 @@ function MesasPage() {
               ? "Nenhuma mesa cadastrada ainda."
               : "Nenhuma mesa encontrada com esses filtros."}
           </p>
-        )}
-
-        {selectedMesa && (
-          <MesaEventDialog 
-            open={eventDialogOpen} 
-            onOpenChange={(open) => {
-              setEventDialogOpen(open);
-              if (!open) setSelectedMesa(null);
-            }} 
-            mesa={selectedMesa} 
-          />
         )}
       </PageBody>
     </>

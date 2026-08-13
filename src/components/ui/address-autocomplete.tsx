@@ -1,4 +1,3 @@
-import * as React from "react";
 import { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -11,6 +10,8 @@ interface Suggestion {
     main_text: string;
     secondary_text: string;
   };
+  raw?: any;
+
 }
 
 interface Props {
@@ -47,7 +48,6 @@ export function AddressAutocomplete({ value, onChange, onAddressSelect, placehol
   const fetchSuggestions = async (input: string) => {
     if (!input || input.length < 3) {
       setSuggestions([]);
-      setOpen(false);
       return;
     }
 
@@ -90,18 +90,19 @@ export function AddressAutocomplete({ value, onChange, onAddressSelect, placehol
         }
         setLoading(false);
       }
+
     } catch (error) {
       console.error("Error fetching suggestions:", error);
       setLoading(false);
     }
   };
 
-  const handleSelect = (suggestion: any) => {
+  const handleSelect = (suggestion: Suggestion) => {
     onChange(suggestion.structured_formatting.main_text);
     setOpen(false);
     
     if (onAddressSelect) {
-      if ((window as any).google && !suggestion.raw) {
+      if ((window as any).google) {
         const geocoder = new (window as any).google.maps.Geocoder();
         geocoder.geocode({ placeId: suggestion.place_id }, (results: any, status: any) => {
           if (status === "OK" && results[0]) {
@@ -114,23 +115,25 @@ export function AddressAutocomplete({ value, onChange, onAddressSelect, placehol
             onAddressSelect({
               street: getComp("route") || suggestion.structured_formatting.main_text,
               neighborhood: getComp("sublocality_level_1") || getComp("neighborhood"),
-              city: getComp("administrative_area_level_2"),
+              city: getComp("administrative_area_level_2") || getComp("locality"),
               state: getComp("administrative_area_level_1"),
               full: res.formatted_address
             });
           }
         });
       } else if (suggestion.raw) {
-        const item = suggestion.raw;
+        // Mapeamento para o fallback OpenStreetMap
+        const addr = suggestion.raw.address;
         onAddressSelect({
-          street: item.address.road || suggestion.structured_formatting.main_text,
-          neighborhood: item.address.suburb || item.address.neighbourhood,
-          city: item.address.city || item.address.town || item.address.municipality,
-          state: item.address.state,
-          full: item.display_name
+          street: addr.road || suggestion.structured_formatting.main_text,
+          neighborhood: addr.suburb || addr.neighbourhood || addr.city_district,
+          city: addr.city || addr.town || addr.village,
+          state: addr.state,
+          full: suggestion.raw.display_name
         });
       }
     }
+
   };
 
   return (
