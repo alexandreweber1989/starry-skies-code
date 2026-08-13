@@ -16,7 +16,10 @@ import { FamilySummary } from "./family-summary";
 import { MemberTimeline } from "./member-timeline";
 import { MemberCredentialsDialog } from "./credentials-dialog";
 import { MemberRolesDialog } from "./roles-dialog";
+import { OnboardingTracker } from "./onboarding-tracker";
+import { PastoralNotes } from "./pastoral-notes";
 import { useAuth } from "@/lib/auth-context";
+
 import {
   MARITAL_STATUS,
   MEMBERSHIP_STATUS,
