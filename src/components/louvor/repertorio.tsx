@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Music, Pencil, Plus, Search, Trash2, Youtube, ExternalLink, FileText, ChevronRight } from "lucide-react";
+import { Music, Pencil, Plus, Search, Trash2, Youtube, FileText, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { LOUVOR_MINISTRY_ID, SONG_KEYS, TEMPO_LABELS } from "@/lib/louvor";
@@ -40,21 +40,22 @@ export function Repertorio() {
   const { data, isLoading } = useQuery({
     queryKey: ["songs"],
     queryFn: async () => {
-      // Priorizamos a tabela public.songs criada no novo esquema
-      const { data, error } = await supabase.from("songs").select("*").order("title");
+      // Priorizamos a nova tabela public.songs
+      // O cast 'as any' resolve temporariamente a tipagem até a geração automática atualizar
+      const { data, error } = await (supabase.from("songs") as any).select("*").order("title");
       if (error) {
-        // Fallback para a tabela antiga se a nova ainda não estiver ativa/tipada
-        const { data: oldData, error: oldError } = await supabase.from("worship_songs").select("*").order("title");
+        // Fallback para worship_songs para retrocompatibilidade
+        const { data: oldData, error: oldError } = await (supabase.from("worship_songs") as any).select("*").order("title");
         if (oldError) throw oldError;
-        return oldData as unknown as SongRecord[];
+        return oldData as SongRecord[];
       }
-      return data as unknown as SongRecord[];
+      return data as SongRecord[];
     },
   });
 
   const remove = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("songs").delete().eq("id", id);
+      const { error } = await (supabase.from("songs") as any).delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -109,7 +110,7 @@ export function Repertorio() {
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((song) => (
+          {filtered.map((song: SongRecord) => (
             <div 
               key={song.id} 
               className="group relative flex flex-col bg-card hover:bg-muted/30 border border-border/50 hover:border-primary/30 rounded-lg p-5 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5"
@@ -137,7 +138,7 @@ export function Repertorio() {
                 </div>
 
                 <div className="flex flex-wrap gap-1.5">
-                  {(song.tags ?? []).map((t) => (
+                  {(song.tags ?? []).map((t: string) => (
                     <span key={t} className="text-[9px] uppercase tracking-widest text-muted-foreground/70 bg-muted/50 px-2 py-0.5 rounded-full border border-border/30">
                       {t}
                     </span>
