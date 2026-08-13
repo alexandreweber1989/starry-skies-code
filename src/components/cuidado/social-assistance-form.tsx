@@ -24,7 +24,7 @@ import { Heart, HandHelping, AlertTriangle } from "lucide-react";
 const formSchema = z.object({
   needs_food: z.boolean(),
   description: z.string().min(10, "Por favor, descreva brevemente a necessidade (mínimo 10 caracteres)."),
-  urgent: z.boolean().default(false),
+  urgent: z.boolean(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
