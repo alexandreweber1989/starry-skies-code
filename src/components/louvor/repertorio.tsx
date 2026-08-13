@@ -17,7 +17,7 @@ function toDraft(song: SongRecord): SongDraft {
     id: song.id,
     title: song.title,
     artist: song.artist ?? "",
-    song_key: song.song_key ?? "C",
+    song_key: song.song_key ?? song.original_key ?? "C",
     bpm: song.bpm?.toString() ?? "",
     tempo: song.tempo ?? "media",
     theme: song.theme ?? "",
@@ -25,7 +25,7 @@ function toDraft(song: SongRecord): SongDraft {
     lyrics: song.lyrics ?? "",
     chords: song.chords ?? "",
     youtube_url: song.youtube_url ?? "",
-    sheet_url: song.sheet_url ?? "",
+    sheet_url: song.sheet_url ?? song.chords_url ?? "",
     is_active: song.is_active,
   };
 }
