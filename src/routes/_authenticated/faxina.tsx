@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, CheckCircle2, Circle, Clock, Plus, Users, ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar, Clock, Plus, Users, ChevronLeft, ChevronRight } from "lucide-react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isFriday, addMonths, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useAuth } from "@/lib/auth-context";
@@ -37,7 +37,7 @@ function CleaningSchedulePage() {
     queryKey: ["cleaning-schedules", format(currentDate, "yyyy-MM")],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("cleaning_schedules")
+        .from("cleaning_schedules" as any)
         .select(`
           *,
           mesa:mesas(id, name),
@@ -63,7 +63,7 @@ function CleaningSchedulePage() {
   const upsertSchedule = useMutation({
     mutationFn: async (payload: any) => {
       const { data, error } = await supabase
-        .from("cleaning_schedules")
+        .from("cleaning_schedules" as any)
         .upsert(payload)
         .select()
         .single();
@@ -79,12 +79,12 @@ function CleaningSchedulePage() {
   const toggleTask = useMutation({
     mutationFn: async ({ taskId, isCompleted }: { taskId: string; isCompleted: boolean }) => {
       const { error } = await supabase
-        .from("cleaning_tasks")
+        .from("cleaning_tasks" as any)
         .update({ 
           is_completed: isCompleted,
           completed_at: isCompleted ? new Date().toISOString() : null,
           completed_by: isCompleted ? user?.id : null
-        })
+        } as any)
         .eq("id", taskId);
       if (error) throw error;
     },
@@ -96,8 +96,8 @@ function CleaningSchedulePage() {
   const addTask = useMutation({
     mutationFn: async ({ scheduleId, title }: { scheduleId: string; title: string }) => {
       const { error } = await supabase
-        .from("cleaning_tasks")
-        .insert({ schedule_id: scheduleId, title });
+        .from("cleaning_tasks" as any)
+        .insert({ schedule_id: scheduleId, title } as any);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -232,7 +232,7 @@ function CleaningSchedulePage() {
                               <Checkbox 
                                 checked={task.is_completed}
                                 onCheckedChange={(val) => toggleTask.mutate({ taskId: task.id, isCompleted: !!val })}
-                                disabled={!isAdmin} // TODO: Implementar lógica de responsável da mesa
+                                disabled={!isAdmin}
                               />
                               <div className="flex-1 min-w-0">
                                 <p className={`text-sm ${task.is_completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
@@ -260,7 +260,7 @@ function CleaningSchedulePage() {
                          <div className="h-1 bg-border/40 rounded-full overflow-hidden">
                            <div 
                              className="h-full bg-primary transition-all duration-500" 
-                             style={{ width: `${(schedule?.tasks || []).length ? ((schedule.tasks || []).filter((t: any) => t.is_completed).length / schedule.tasks.length) * 100 : 0}%` }}
+                             style={{ width: `${(schedule?.tasks || []).length ? ((schedule.tasks || []).filter((t: any) => t.is_completed).length / (schedule.tasks || []).length) * 100 : 0}%` }}
                            />
                          </div>
                       </div>
