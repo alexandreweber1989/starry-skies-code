@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ClipboardPaste, ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { SONG_KEYS, TEMPO_LABELS } from "@/lib/louvor";
+import { LOUVOR_MINISTRY_ID, SONG_KEYS, TEMPO_LABELS } from "@/lib/louvor";
 import { parseChordSheet } from "@/lib/cifra-import";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -58,26 +58,22 @@ export function SongDialog({ initial, trigger }: { initial: SongDraft; trigger: 
       const payload = {
         title: draft.title.trim(),
         artist: draft.artist || null,
-        song_key: draft.song_key || null,
+        original_key: draft.song_key || null,
         bpm: draft.bpm ? Number(draft.bpm) : null,
-        tempo: draft.tempo || null,
-        theme: draft.theme || null,
-        tags: draft.tags.split(",").map((t) => t.trim()).filter(Boolean),
         lyrics: draft.lyrics || null,
-        chords: draft.chords || null,
         youtube_url: draft.youtube_url || null,
-        sheet_url: draft.sheet_url || null,
+        chords_url: draft.sheet_url || null,
         is_active: draft.is_active,
       };
       const { error } = draft.id
-        ? await supabase.from("worship_songs").update(payload).eq("id", draft.id)
-        : await supabase.from("worship_songs").insert(payload);
+        ? await (supabase.from("songs") as any).update(payload).eq("id", draft.id)
+        : await (supabase.from("songs") as any).insert(payload);
       if (error) throw error;
     },
     onSuccess: () => {
       toast.success("Música salva no repertório.");
       setOpen(false);
-      qc.invalidateQueries({ queryKey: ["worship-songs"] });
+      qc.invalidateQueries({ queryKey: ["songs"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });

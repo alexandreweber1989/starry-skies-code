@@ -9,6 +9,7 @@ export interface SongRecord {
   title: string;
   artist: string | null;
   song_key: string | null;
+  original_key?: string | null;
   bpm: number | null;
   tempo: string | null;
   theme: string | null;
@@ -17,6 +18,7 @@ export interface SongRecord {
   chords: string | null;
   youtube_url: string | null;
   sheet_url: string | null;
+  chords_url?: string | null;
   is_active: boolean;
 }
 
@@ -39,7 +41,7 @@ export function SongSheet({
             </SheetHeader>
             <div className="px-4 pb-10 space-y-6">
               <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                {[song.artist, song.song_key && `Tom ${song.song_key}`, song.bpm && `${song.bpm} BPM`,
+                {[song.artist, (song.song_key || song.original_key) && `Tom ${song.song_key || song.original_key}`, song.bpm && `${song.bpm} BPM`,
                   song.tempo && TEMPO_LABELS[song.tempo]].filter(Boolean).join(" · ")}
               </div>
 
@@ -49,8 +51,8 @@ export function SongSheet({
                     <Button variant="outline" size="sm"><Youtube className="h-4 w-4" /> Referência</Button>
                   </a>
                 )}
-                {song.sheet_url && (
-                  <a href={song.sheet_url} target="_blank" rel="noreferrer">
+                {(song.sheet_url || song.chords_url) && (
+                  <a href={(song.sheet_url || song.chords_url)!} target="_blank" rel="noreferrer">
                     <Button variant="outline" size="sm"><FileText className="h-4 w-4" /> Partitura</Button>
                   </a>
                 )}

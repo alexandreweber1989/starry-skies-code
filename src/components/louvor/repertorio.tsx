@@ -17,7 +17,7 @@ function toDraft(song: SongRecord): SongDraft {
     id: song.id,
     title: song.title,
     artist: song.artist ?? "",
-    song_key: song.song_key ?? "C",
+    song_key: song.song_key ?? song.original_key ?? "C",
     bpm: song.bpm?.toString() ?? "",
     tempo: song.tempo ?? "media",
     theme: song.theme ?? "",
@@ -25,7 +25,7 @@ function toDraft(song: SongRecord): SongDraft {
     lyrics: song.lyrics ?? "",
     chords: song.chords ?? "",
     youtube_url: song.youtube_url ?? "",
-    sheet_url: song.sheet_url ?? "",
+    sheet_url: song.sheet_url ?? song.chords_url ?? "",
     is_active: song.is_active,
   };
 }
@@ -118,9 +118,9 @@ export function Repertorio() {
               <button className="text-left flex-1 space-y-3 cursor-pointer" onClick={() => setSelected(song)}>
                 <div className="flex items-center justify-between">
                   <div className="flex gap-2">
-                    {song.song_key && (
+                    {(song.song_key || song.original_key) && (
                       <Badge variant="outline" className="font-mono text-[10px] tracking-wider uppercase bg-primary/5 text-primary border-primary/20">
-                        {song.song_key}
+                        {song.song_key || song.original_key}
                       </Badge>
                     )}
                     {song.bpm && (
@@ -153,8 +153,8 @@ export function Repertorio() {
                       <Youtube className="h-4 w-4" />
                     </a>
                   )}
-                  {song.sheet_url && (
-                    <a href={song.sheet_url} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-blue-500 transition-colors">
+                  {(song.sheet_url || song.chords_url) && (
+                    <a href={(song.sheet_url || song.chords_url)!} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-blue-500 transition-colors">
                       <FileText className="h-4 w-4" />
                     </a>
                   )}
