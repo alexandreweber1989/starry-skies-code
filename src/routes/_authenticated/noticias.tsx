@@ -18,7 +18,7 @@ function NoticiasPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("news")
-        .select("*, author:profiles(full_name)")
+        .select("*, author:author_id")
         .eq("is_published", true)
         .order("published_at", { ascending: false });
       if (error) throw error;
