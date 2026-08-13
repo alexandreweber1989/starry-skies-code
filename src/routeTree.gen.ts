@@ -36,6 +36,7 @@ import { Route as AuthenticatedAgendaRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedMinisteriosIndexRouteImport } from './routes/_authenticated/ministerios.index'
 import { Route as ApiPublicSmsWhatsappRouteImport } from './routes/api/public/sms-whatsapp'
 import { Route as ApiPublicNotificationsRouteImport } from './routes/api/public/notifications'
+import { Route as ApiPublicLiveStatusRouteImport } from './routes/api/public/live-status'
 import { Route as ApiPublicKidsVisitorRouteImport } from './routes/api/public/kids-visitor'
 import { Route as ApiPublicImportCifraRouteImport } from './routes/api/public/import-cifra'
 import { Route as AuthenticatedMinisteriosSlugRouteImport } from './routes/_authenticated/ministerios.$slug'
@@ -177,6 +178,11 @@ const ApiPublicNotificationsRoute = ApiPublicNotificationsRouteImport.update({
   path: '/api/public/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicLiveStatusRoute = ApiPublicLiveStatusRouteImport.update({
+  id: '/api/public/live-status',
+  path: '/api/public/live-status',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicKidsVisitorRoute = ApiPublicKidsVisitorRouteImport.update({
   id: '/api/public/kids-visitor',
   path: '/api/public/kids-visitor',
@@ -235,6 +241,7 @@ export interface FileRoutesByFullPath {
   '/ministerios/$slug': typeof AuthenticatedMinisteriosSlugRoute
   '/api/public/import-cifra': typeof ApiPublicImportCifraRoute
   '/api/public/kids-visitor': typeof ApiPublicKidsVisitorRoute
+  '/api/public/live-status': typeof ApiPublicLiveStatusRoute
   '/api/public/notifications': typeof ApiPublicNotificationsRoute
   '/api/public/sms-whatsapp': typeof ApiPublicSmsWhatsappRoute
   '/ministerios/': typeof AuthenticatedMinisteriosIndexRoute
@@ -268,6 +275,7 @@ export interface FileRoutesByTo {
   '/ministerios/$slug': typeof AuthenticatedMinisteriosSlugRoute
   '/api/public/import-cifra': typeof ApiPublicImportCifraRoute
   '/api/public/kids-visitor': typeof ApiPublicKidsVisitorRoute
+  '/api/public/live-status': typeof ApiPublicLiveStatusRoute
   '/api/public/notifications': typeof ApiPublicNotificationsRoute
   '/api/public/sms-whatsapp': typeof ApiPublicSmsWhatsappRoute
   '/ministerios': typeof AuthenticatedMinisteriosIndexRoute
@@ -303,6 +311,7 @@ export interface FileRoutesById {
   '/_authenticated/ministerios/$slug': typeof AuthenticatedMinisteriosSlugRoute
   '/api/public/import-cifra': typeof ApiPublicImportCifraRoute
   '/api/public/kids-visitor': typeof ApiPublicKidsVisitorRoute
+  '/api/public/live-status': typeof ApiPublicLiveStatusRoute
   '/api/public/notifications': typeof ApiPublicNotificationsRoute
   '/api/public/sms-whatsapp': typeof ApiPublicSmsWhatsappRoute
   '/_authenticated/ministerios/': typeof AuthenticatedMinisteriosIndexRoute
@@ -338,6 +347,7 @@ export interface FileRouteTypes {
     | '/ministerios/$slug'
     | '/api/public/import-cifra'
     | '/api/public/kids-visitor'
+    | '/api/public/live-status'
     | '/api/public/notifications'
     | '/api/public/sms-whatsapp'
     | '/ministerios/'
@@ -371,6 +381,7 @@ export interface FileRouteTypes {
     | '/ministerios/$slug'
     | '/api/public/import-cifra'
     | '/api/public/kids-visitor'
+    | '/api/public/live-status'
     | '/api/public/notifications'
     | '/api/public/sms-whatsapp'
     | '/ministerios'
@@ -405,6 +416,7 @@ export interface FileRouteTypes {
     | '/_authenticated/ministerios/$slug'
     | '/api/public/import-cifra'
     | '/api/public/kids-visitor'
+    | '/api/public/live-status'
     | '/api/public/notifications'
     | '/api/public/sms-whatsapp'
     | '/_authenticated/ministerios/'
@@ -418,6 +430,7 @@ export interface RootRouteChildren {
   KidsVisitanteRoute: typeof KidsVisitanteRoute
   ApiPublicImportCifraRoute: typeof ApiPublicImportCifraRoute
   ApiPublicKidsVisitorRoute: typeof ApiPublicKidsVisitorRoute
+  ApiPublicLiveStatusRoute: typeof ApiPublicLiveStatusRoute
   ApiPublicNotificationsRoute: typeof ApiPublicNotificationsRoute
   ApiPublicSmsWhatsappRoute: typeof ApiPublicSmsWhatsappRoute
 }
@@ -613,6 +626,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicNotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/live-status': {
+      id: '/api/public/live-status'
+      path: '/api/public/live-status'
+      fullPath: '/api/public/live-status'
+      preLoaderRoute: typeof ApiPublicLiveStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/kids-visitor': {
       id: '/api/public/kids-visitor'
       path: '/api/public/kids-visitor'
@@ -732,6 +752,7 @@ const rootRouteChildren: RootRouteChildren = {
   KidsVisitanteRoute: KidsVisitanteRoute,
   ApiPublicImportCifraRoute: ApiPublicImportCifraRoute,
   ApiPublicKidsVisitorRoute: ApiPublicKidsVisitorRoute,
+  ApiPublicLiveStatusRoute: ApiPublicLiveStatusRoute,
   ApiPublicNotificationsRoute: ApiPublicNotificationsRoute,
   ApiPublicSmsWhatsappRoute: ApiPublicSmsWhatsappRoute,
 }

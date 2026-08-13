@@ -24,6 +24,10 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useState, useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LiveStreamCard } from "@/components/midia/live-stream-card";
+import { Youtube, MonitorPlay, Play } from "lucide-react";
+
+
 
 export const Route = createFileRoute("/_authenticated/midia")({
   component: MediaModule,
@@ -98,7 +102,12 @@ function MediaModule() {
                   </Badge>
                 )}
               </TabsTrigger>
+              <TabsTrigger value="live" className="gap-2">
+                <MonitorPlay className="h-4 w-4" />
+                <span>Transmissão</span>
+              </TabsTrigger>
             </TabsList>
+
 
             {activeTab === "library" && (
               <div className="relative w-full sm:w-64">
@@ -283,7 +292,47 @@ function MediaModule() {
                 )}
              </div>
           </TabsContent>
+
+          <TabsContent value="live" className="mt-0 animate-in fade-in duration-500">
+            <div className="max-w-4xl mx-auto space-y-8">
+              <div className="grid md:grid-cols-3 gap-8">
+                <div className="md:col-span-2">
+                  <LiveStreamCard />
+                </div>
+                <div className="space-y-6">
+                  <Card className="bg-muted/30 border-none shadow-none">
+                    <CardHeader>
+                      <CardTitle className="text-sm font-mono uppercase tracking-widest text-primary flex items-center gap-2">
+                        <Youtube className="h-4 w-4" /> Playlist
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        Acesse todos os cultos, pregações e momentos especiais da IB Atos em nosso canal oficial.
+                      </p>
+                      <div className="space-y-2">
+                        {[
+                          "Cultos de Celebração",
+                          "Série de Mensagens",
+                          "Louvor e Adoração",
+                          "Podcast Atos"
+                        ].map(item => (
+                          <div key={item} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors cursor-pointer group">
+                            <div className="h-8 w-8 rounded bg-red-600/10 flex items-center justify-center">
+                              <Play className="h-3 w-3 text-red-600 fill-current" />
+                            </div>
+                            <span className="text-xs font-medium">{item}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
         </Tabs>
+
       </PageBody>
     </div>
   );

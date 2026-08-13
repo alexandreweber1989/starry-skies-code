@@ -34,6 +34,8 @@ import { MeusLideres } from "@/components/painel/meus-lideres";
 import { ProximosEventos } from "@/components/painel/proximos-eventos";
 import { ContribuicaoPix } from "@/components/painel/contribuicao-pix";
 import { AvisosRecentes } from "@/components/painel/avisos-recentes";
+import { LiveStreamCard } from "@/components/midia/live-stream-card";
+
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -251,10 +253,16 @@ function Dashboard() {
           </div>
         )}
 
-        <div className="mt-6 grid lg:grid-cols-2 gap-6">
-          <MinhaSemana />
-          <MeusLideres />
+        <div className="mt-6 grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 grid gap-6">
+            <MinhaSemana />
+            <MeusLideres />
+          </div>
+          <div>
+            <LiveStreamCard />
+          </div>
         </div>
+
 
         <div className="mt-6 grid lg:grid-cols-2 gap-6">
           <AgendaCultos />
