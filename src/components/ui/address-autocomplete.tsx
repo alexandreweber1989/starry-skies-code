@@ -1,3 +1,4 @@
+import * as React from "react";
 import { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -46,6 +47,7 @@ export function AddressAutocomplete({ value, onChange, onAddressSelect, placehol
   const fetchSuggestions = async (input: string) => {
     if (!input || input.length < 3) {
       setSuggestions([]);
+      setOpen(false);
       return;
     }
 
