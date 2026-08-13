@@ -33,15 +33,19 @@ export const Route = createFileRoute("/api/public/import-cifra")({
           let key = "";
           let bpm: number | null = null;
           let rawContent = "";
+          let videoUrl = "";
 
           if (isCifraClub) {
             title = html.match(/<h1 class="t1">([^<]+)<\/h1>/)?.[1] || "";
             artist = html.match(/<h2 class="t3">([^<]+)<\/h2>/)?.[1] || "";
             key = html.match(/id="cifra_tom"[^>]*>([^<]+)<\/a>/)?.[1] || "";
             
-            // Tenta achar o BPM no HTML do CifraClub
             const bpmMatch = html.match(/"bpm":\s*(\d+)/i) || html.match(/<span>(\d+)<\/span>\s*bpm/i);
             if (bpmMatch) bpm = parseInt(bpmMatch[1]);
+
+            // Pegar vídeo do YouTube associado no CifraClub
+            const youtubeMatch = html.match(/youtube\.com\/embed\/([^"?]+)/) || html.match(/"youtubeId":\s*"([^"]+)"/);
+            if (youtubeMatch) videoUrl = `https://www.youtube.com/watch?v=${youtubeMatch[1]}`;
 
             const chordsMatch = html.match(/<pre[^>]*>([\s\S]*?)<\/pre>/);
             rawContent = chordsMatch ? chordsMatch[1] : "";
@@ -52,6 +56,10 @@ export const Route = createFileRoute("/api/public/import-cifra")({
             
             const bpmMatch = html.match(/(\d+)\s*bpm/i);
             if (bpmMatch) bpm = parseInt(bpmMatch[1]);
+
+            // Pegar vídeo do YouTube associado no Cifras.com.br
+            const youtubeMatch = html.match(/youtube\.com\/(?:embed\/|watch\?v=)([^"&? \n]+)/);
+            if (youtubeMatch) videoUrl = `https://www.youtube.com/watch?v=${youtubeMatch[1]}`;
 
             const chordsMatch = html.match(/<pre[^>]*id="[^"]*cifra[^"]*"[^>]*>([\s\S]*?)<\/pre>/i) || 
                           html.match(/<div[^>]*class="[^"]*cifra-content[^"]*"[^>]*>([\s\S]*?)<\/div>/i);
@@ -67,6 +75,7 @@ export const Route = createFileRoute("/api/public/import-cifra")({
               key: key.trim(),
               bpm: bpm,
               content: rawContent.trim(),
+              youtubeUrl: videoUrl,
             }),
             {
               headers: { "Content-Type": "application/json" },
