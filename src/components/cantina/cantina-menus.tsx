@@ -162,8 +162,8 @@ function MenuCard({
               Total da reserva
             </div>
             <div className="font-serif text-3xl">{formatBRL(total)}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Sem pagamento antecipado — você paga ao retirar no final do culto.
+            <p className="text-xs text-muted-foreground mt-1 font-medium text-primary/80">
+              Sem pagamento antecipado — você paga na retirada presencial na igreja.
             </p>
           </div>
           <Button disabled={total === 0 || pending} onClick={onReserve}>
