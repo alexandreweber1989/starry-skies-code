@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
@@ -55,6 +56,9 @@ export function MemberFormDialog({
   canEditMembership?: boolean;
 }) {
   const qc = useQueryClient();
+  const { isAdmin } = useAuth();
+  /** A seção administrativa é exclusiva de admins gerais, nunca de líderes. */
+  const canEditAdminSection = canEditMembership && isAdmin;
   const [form, setForm] = useState<MemberProfile>(EMPTY);
 
   useEffect(() => {
@@ -142,7 +146,7 @@ export function MemberFormDialog({
         notes: clean(form.notes),
       };
 
-      if (canEditMembership) {
+      if (canEditAdminSection) {
         payload.membership_type = clean(form.membership_type);
         payload.membership_status = form.membership_status || "ativo";
         payload.membership_end_date = clean(form.membership_end_date);
@@ -233,7 +237,7 @@ export function MemberFormDialog({
 
           {profile?.id && (
             <Section title="Parentes cadastrados na igreja">
-              <FamilyLinksEditor personId={profile.id as string} canEdit={canEditMembership} />
+              <FamilyLinksEditor personId={profile.id as string} canEdit={canEditAdminSection} />
             </Section>
           )}
 
@@ -349,7 +353,7 @@ export function MemberFormDialog({
             </Field>
           </Section>
 
-          {canEditMembership && (
+          {canEditAdminSection && (
             <Section title="Administração (somente secretaria)">
               <SelectField
                 label="Tipo de entrada"
