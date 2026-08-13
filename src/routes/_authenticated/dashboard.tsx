@@ -29,6 +29,8 @@ import { Operacao } from "@/components/painel/operacao";
 import { MembershipRequestsPanel } from "@/components/membros/membership-requests-panel";
 import { EscalaPendente } from "@/components/painel/escala-pendente";
 import { MeusLideres } from "@/components/painel/meus-lideres";
+import { ProximosEventos } from "@/components/painel/proximos-eventos";
+import { ContribuicaoPix } from "@/components/painel/contribuicao-pix";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -252,6 +254,11 @@ function Dashboard() {
         <div className="mt-6 grid lg:grid-cols-2 gap-6">
           <AgendaCultos />
           <Aniversariantes />
+        </div>
+
+        <div className="mt-6 grid lg:grid-cols-2 gap-6">
+          <ProximosEventos />
+          <ContribuicaoPix />
         </div>
 
         <div className="mt-6">
