@@ -419,6 +419,133 @@ export type Database = {
         }
         Relationships: []
       }
+      cleaning_photos: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          id: string
+          schedule_id: string | null
+          task_id: string | null
+          type: string
+          url: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          schedule_id?: string | null
+          task_id?: string | null
+          type: string
+          url: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          schedule_id?: string | null
+          task_id?: string | null
+          type?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cleaning_photos_schedule_id_fkey"
+            columns: ["schedule_id"]
+            isOneToOne: false
+            referencedRelation: "cleaning_schedules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cleaning_photos_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "cleaning_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cleaning_schedules: {
+        Row: {
+          created_at: string | null
+          date: string
+          id: string
+          mesa_id: string | null
+          notes: string | null
+          responsible_id: string | null
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          date: string
+          id?: string
+          mesa_id?: string | null
+          notes?: string | null
+          responsible_id?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          date?: string
+          id?: string
+          mesa_id?: string | null
+          notes?: string | null
+          responsible_id?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cleaning_schedules_mesa_id_fkey"
+            columns: ["mesa_id"]
+            isOneToOne: false
+            referencedRelation: "mesas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cleaning_tasks: {
+        Row: {
+          completed_at: string | null
+          completed_by: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_completed: boolean | null
+          schedule_id: string | null
+          title: string
+        }
+        Insert: {
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_completed?: boolean | null
+          schedule_id?: string | null
+          title: string
+        }
+        Update: {
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_completed?: boolean | null
+          schedule_id?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cleaning_tasks_schedule_id_fkey"
+            columns: ["schedule_id"]
+            isOneToOne: false
+            referencedRelation: "cleaning_schedules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_rsvps: {
         Row: {
           created_at: string
@@ -2731,6 +2858,7 @@ export type Database = {
           first_name: string
         }[]
       }
+      notify_cleaning_responsible: { Args: never; Returns: undefined }
     }
     Enums: {
       announcement_category: "aviso" | "comunicado" | "urgente" | "acao"
