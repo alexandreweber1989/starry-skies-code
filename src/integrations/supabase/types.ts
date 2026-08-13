@@ -603,6 +603,7 @@ export type Database = {
           is_featured: boolean
           kind: Database["public"]["Enums"]["event_kind"]
           location: string | null
+          mesa_address_id: string | null
           mesa_id: string | null
           ministry_id: string | null
           rede_id: string | null
@@ -624,6 +625,7 @@ export type Database = {
           is_featured?: boolean
           kind?: Database["public"]["Enums"]["event_kind"]
           location?: string | null
+          mesa_address_id?: string | null
           mesa_id?: string | null
           ministry_id?: string | null
           rede_id?: string | null
@@ -645,6 +647,7 @@ export type Database = {
           is_featured?: boolean
           kind?: Database["public"]["Enums"]["event_kind"]
           location?: string | null
+          mesa_address_id?: string | null
           mesa_id?: string | null
           ministry_id?: string | null
           rede_id?: string | null
@@ -656,6 +659,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "events_mesa_address_id_fkey"
+            columns: ["mesa_address_id"]
+            isOneToOne: false
+            referencedRelation: "mesa_addresses"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "events_mesa_id_fkey"
             columns: ["mesa_id"]
@@ -1426,6 +1436,62 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      mesa_addresses: {
+        Row: {
+          city: string | null
+          complement: string | null
+          created_at: string
+          full_address: string
+          id: string
+          label: string
+          mesa_id: string
+          neighborhood: string | null
+          number: string
+          postal_code: string | null
+          state: string | null
+          street: string
+          updated_at: string
+        }
+        Insert: {
+          city?: string | null
+          complement?: string | null
+          created_at?: string
+          full_address: string
+          id?: string
+          label?: string
+          mesa_id: string
+          neighborhood?: string | null
+          number: string
+          postal_code?: string | null
+          state?: string | null
+          street: string
+          updated_at?: string
+        }
+        Update: {
+          city?: string | null
+          complement?: string | null
+          created_at?: string
+          full_address?: string
+          id?: string
+          label?: string
+          mesa_id?: string
+          neighborhood?: string | null
+          number?: string
+          postal_code?: string | null
+          state?: string | null
+          street?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mesa_addresses_mesa_id_fkey"
+            columns: ["mesa_id"]
+            isOneToOne: false
+            referencedRelation: "mesas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       mesa_members: {
         Row: {
