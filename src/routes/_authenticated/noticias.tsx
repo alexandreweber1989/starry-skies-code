@@ -70,8 +70,8 @@ function NoticiasPage() {
                 </div>
                 <CardHeader className="flex-1 space-y-3">
                   <div className="flex items-center gap-3 text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
-                    <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {new Date(post.published_at).toLocaleDateString("pt-BR")}</span>
-                    <span className="flex items-center gap-1"><User className="h-3 w-3" /> {post.author?.full_name || "Comunicação"}</span>
+                    <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {post.published_at ? new Date(post.published_at).toLocaleDateString("pt-BR") : "Recent"}</span>
+                    <span className="flex items-center gap-1"><User className="h-3 w-3" /> Comunicação</span>
                   </div>
                   <CardTitle className="text-2xl font-serif leading-tight group-hover:text-orange-500 transition-colors">
                     {post.title}
