@@ -31,7 +31,9 @@ import { ShieldCheck, HeartPulse } from "lucide-react";
 const formSchema = z.object({
   category: z.enum(["prayer", "counseling"]),
   content: z.string().min(10, "Por favor, descreva seu pedido com pelo menos 10 caracteres."),
+  urgent: z.boolean().default(false),
 });
+
 
 export function PrayerRequestForm({ onSuccess }: { onSuccess?: () => void }) {
   const { profile } = useAuth();
