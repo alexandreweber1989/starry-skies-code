@@ -260,9 +260,16 @@ export function MesaDialog({
           {isEdit && <AddressManager mesaId={mesa!.id} />}
           <div className="space-y-2">
             <Label>Descrição</Label>
-            <Textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)} />
+            <Textarea rows={2} value={description} onChange={(e) => setDescription(e.target.value)} className="resize-none" />
           </div>
-          <Button className="w-full" disabled={save.isPending} onClick={() => save.mutate()}>
+
+          {isEdit && (
+            <div className="pt-4 border-t border-border/40">
+              <AddressManager mesaId={mesa!.id} />
+            </div>
+          )}
+
+          <Button className="w-full h-11 text-lg font-serif mt-2" disabled={save.isPending} onClick={() => save.mutate()}>
             {isEdit ? "Salvar alterações" : "Criar mesa"}
           </Button>
         </div>

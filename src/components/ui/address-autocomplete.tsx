@@ -96,29 +96,40 @@ export function AddressAutocomplete({ value, onChange, onAddressSelect, placehol
     }
   };
 
-  const handleSelect = (suggestion: Suggestion) => {
+  const handleSelect = (suggestion: any) => {
     onChange(suggestion.structured_formatting.main_text);
     setOpen(false);
     
-    if (onAddressSelect && (window as any).google) {
-      const geocoder = new (window as any).google.maps.Geocoder();
-      geocoder.geocode({ placeId: suggestion.place_id }, (results: any, status: any) => {
-        if (status === "OK" && results[0]) {
-          const res = results[0];
-          const components = res.address_components;
-          
-          const getComp = (type: string) => 
-            components.find((c: any) => c.types.includes(type))?.long_name;
+    if (onAddressSelect) {
+      if ((window as any).google && !suggestion.raw) {
+        const geocoder = new (window as any).google.maps.Geocoder();
+        geocoder.geocode({ placeId: suggestion.place_id }, (results: any, status: any) => {
+          if (status === "OK" && results[0]) {
+            const res = results[0];
+            const components = res.address_components;
+            
+            const getComp = (type: string) => 
+              components.find((c: any) => c.types.includes(type))?.long_name;
 
-          onAddressSelect({
-            street: getComp("route") || suggestion.structured_formatting.main_text,
-            neighborhood: getComp("sublocality_level_1"),
-            city: getComp("administrative_area_level_2"),
-            state: getComp("administrative_area_level_1"),
-            full: res.formatted_address
-          });
-        }
-      });
+            onAddressSelect({
+              street: getComp("route") || suggestion.structured_formatting.main_text,
+              neighborhood: getComp("sublocality_level_1") || getComp("neighborhood"),
+              city: getComp("administrative_area_level_2"),
+              state: getComp("administrative_area_level_1"),
+              full: res.formatted_address
+            });
+          }
+        });
+      } else if (suggestion.raw) {
+        const item = suggestion.raw;
+        onAddressSelect({
+          street: item.address.road || suggestion.structured_formatting.main_text,
+          neighborhood: item.address.suburb || item.address.neighbourhood,
+          city: item.address.city || item.address.town || item.address.municipality,
+          state: item.address.state,
+          full: item.display_name
+        });
+      }
     }
   };
 
