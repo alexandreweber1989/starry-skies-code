@@ -1407,6 +1407,54 @@ export type Database = {
           },
         ]
       }
+      news: {
+        Row: {
+          author_id: string | null
+          category: string | null
+          content: string
+          created_at: string | null
+          excerpt: string | null
+          id: string
+          image_url: string | null
+          is_featured: boolean | null
+          is_published: boolean | null
+          published_at: string | null
+          slug: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          author_id?: string | null
+          category?: string | null
+          content: string
+          created_at?: string | null
+          excerpt?: string | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean | null
+          is_published?: boolean | null
+          published_at?: string | null
+          slug: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string | null
+          category?: string | null
+          content?: string
+          created_at?: string | null
+          excerpt?: string | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean | null
+          is_published?: boolean | null
+          published_at?: string | null
+          slug?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       onboarding_steps: {
         Row: {
           created_at: string
@@ -1875,6 +1923,105 @@ export type Database = {
           },
         ]
       }
+      setlist_songs: {
+        Row: {
+          created_at: string | null
+          id: string
+          key_override: string | null
+          notes: string | null
+          position: number
+          setlist_id: string
+          song_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          key_override?: string | null
+          notes?: string | null
+          position: number
+          setlist_id: string
+          song_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          key_override?: string | null
+          notes?: string | null
+          position?: number
+          setlist_id?: string
+          song_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "setlist_songs_setlist_id_fkey"
+            columns: ["setlist_id"]
+            isOneToOne: false
+            referencedRelation: "setlists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "setlist_songs_song_id_fkey"
+            columns: ["song_id"]
+            isOneToOne: false
+            referencedRelation: "songs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      setlists: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          event_date: string
+          id: string
+          ministry_id: string | null
+          notes: string | null
+          status: string
+          title: string
+          updated_at: string | null
+          worship_schedule_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          event_date: string
+          id?: string
+          ministry_id?: string | null
+          notes?: string | null
+          status?: string
+          title: string
+          updated_at?: string | null
+          worship_schedule_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          event_date?: string
+          id?: string
+          ministry_id?: string | null
+          notes?: string | null
+          status?: string
+          title?: string
+          updated_at?: string | null
+          worship_schedule_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "setlists_ministry_id_fkey"
+            columns: ["ministry_id"]
+            isOneToOne: false
+            referencedRelation: "ministries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "setlists_worship_schedule_id_fkey"
+            columns: ["worship_schedule_id"]
+            isOneToOne: false
+            referencedRelation: "worship_schedules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       social_assistance_campaigns: {
         Row: {
           created_at: string | null
@@ -1947,6 +2094,57 @@ export type Database = {
           requester_phone?: string | null
           status?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      songs: {
+        Row: {
+          artist: string | null
+          bpm: number | null
+          chords_url: string | null
+          created_at: string | null
+          duration_seconds: number | null
+          id: string
+          is_active: boolean | null
+          lyrics: string | null
+          notes: string | null
+          original_key: string | null
+          spotify_url: string | null
+          title: string
+          updated_at: string | null
+          youtube_url: string | null
+        }
+        Insert: {
+          artist?: string | null
+          bpm?: number | null
+          chords_url?: string | null
+          created_at?: string | null
+          duration_seconds?: number | null
+          id?: string
+          is_active?: boolean | null
+          lyrics?: string | null
+          notes?: string | null
+          original_key?: string | null
+          spotify_url?: string | null
+          title: string
+          updated_at?: string | null
+          youtube_url?: string | null
+        }
+        Update: {
+          artist?: string | null
+          bpm?: number | null
+          chords_url?: string | null
+          created_at?: string | null
+          duration_seconds?: number | null
+          id?: string
+          is_active?: boolean | null
+          lyrics?: string | null
+          notes?: string | null
+          original_key?: string | null
+          spotify_url?: string | null
+          title?: string
+          updated_at?: string | null
+          youtube_url?: string | null
         }
         Relationships: []
       }

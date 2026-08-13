@@ -19,8 +19,7 @@ function useStageSongs(ids: string[], enabled: boolean) {
     queryKey: ["worship-stage-songs", ids.join(",")],
     enabled: enabled && ids.length > 0,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("worship_songs")
+      const { data, error } = await (supabase.from("songs") as any)
         .select("id, title, artist, song_key, chords, lyrics")
         .in("id", ids);
       if (error) throw error;
@@ -41,7 +40,7 @@ export function StageMode({ setlist }: { setlist: StageItem[] }) {
   const { data: songs } = useStageSongs(ids, open);
 
   const current = setlist[index];
-  const song = songs?.find((s) => s.id === current?.song?.id);
+  const song = songs?.find((s: any) => s.id === current?.song?.id);
 
   // Reinicia estado ao trocar de música.
   useEffect(() => {

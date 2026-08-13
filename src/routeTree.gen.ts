@@ -18,6 +18,7 @@ import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as AuthenticatedRedesRouteImport } from './routes/_authenticated/redes'
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedNoticiasRouteImport } from './routes/_authenticated/noticias'
 import { Route as AuthenticatedMidiaRouteImport } from './routes/_authenticated/midia'
 import { Route as AuthenticatedMesasRouteImport } from './routes/_authenticated/mesas'
 import { Route as AuthenticatedMembrosRouteImport } from './routes/_authenticated/membros'
@@ -77,6 +78,11 @@ const AuthenticatedPerfilRoute = AuthenticatedPerfilRouteImport.update({
 const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedNoticiasRoute = AuthenticatedNoticiasRouteImport.update({
+  id: '/noticias',
+  path: '/noticias',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedMidiaRoute = AuthenticatedMidiaRouteImport.update({
@@ -179,6 +185,7 @@ export interface FileRoutesByFullPath {
   '/membros': typeof AuthenticatedMembrosRoute
   '/mesas': typeof AuthenticatedMesasRoute
   '/midia': typeof AuthenticatedMidiaRoute
+  '/noticias': typeof AuthenticatedNoticiasRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/perfil': typeof AuthenticatedPerfilRoute
   '/redes': typeof AuthenticatedRedesRoute
@@ -205,6 +212,7 @@ export interface FileRoutesByTo {
   '/membros': typeof AuthenticatedMembrosRoute
   '/mesas': typeof AuthenticatedMesasRoute
   '/midia': typeof AuthenticatedMidiaRoute
+  '/noticias': typeof AuthenticatedNoticiasRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/perfil': typeof AuthenticatedPerfilRoute
   '/redes': typeof AuthenticatedRedesRoute
@@ -233,6 +241,7 @@ export interface FileRoutesById {
   '/_authenticated/membros': typeof AuthenticatedMembrosRoute
   '/_authenticated/mesas': typeof AuthenticatedMesasRoute
   '/_authenticated/midia': typeof AuthenticatedMidiaRoute
+  '/_authenticated/noticias': typeof AuthenticatedNoticiasRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
   '/_authenticated/redes': typeof AuthenticatedRedesRoute
@@ -261,6 +270,7 @@ export interface FileRouteTypes {
     | '/membros'
     | '/mesas'
     | '/midia'
+    | '/noticias'
     | '/onboarding'
     | '/perfil'
     | '/redes'
@@ -287,6 +297,7 @@ export interface FileRouteTypes {
     | '/membros'
     | '/mesas'
     | '/midia'
+    | '/noticias'
     | '/onboarding'
     | '/perfil'
     | '/redes'
@@ -314,6 +325,7 @@ export interface FileRouteTypes {
     | '/_authenticated/membros'
     | '/_authenticated/mesas'
     | '/_authenticated/midia'
+    | '/_authenticated/noticias'
     | '/_authenticated/onboarding'
     | '/_authenticated/perfil'
     | '/_authenticated/redes'
@@ -397,6 +409,13 @@ declare module '@tanstack/react-router' {
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/noticias': {
+      id: '/_authenticated/noticias'
+      path: '/noticias'
+      fullPath: '/noticias'
+      preLoaderRoute: typeof AuthenticatedNoticiasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/midia': {
@@ -527,6 +546,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMembrosRoute: typeof AuthenticatedMembrosRoute
   AuthenticatedMesasRoute: typeof AuthenticatedMesasRoute
   AuthenticatedMidiaRoute: typeof AuthenticatedMidiaRoute
+  AuthenticatedNoticiasRoute: typeof AuthenticatedNoticiasRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
   AuthenticatedRedesRoute: typeof AuthenticatedRedesRoute
@@ -548,6 +568,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMembrosRoute: AuthenticatedMembrosRoute,
   AuthenticatedMesasRoute: AuthenticatedMesasRoute,
   AuthenticatedMidiaRoute: AuthenticatedMidiaRoute,
+  AuthenticatedNoticiasRoute: AuthenticatedNoticiasRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
   AuthenticatedRedesRoute: AuthenticatedRedesRoute,

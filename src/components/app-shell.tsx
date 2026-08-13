@@ -20,6 +20,7 @@ import {
   Megaphone,
   MapPin,
   Sprout,
+  Newspaper,
 
 } from "lucide-react";
 import { type ReactNode, useState } from "react";
@@ -41,6 +42,7 @@ interface NavItem {
 const nav: NavItem[] = [
   { to: "/dashboard", label: "Painel", icon: LayoutDashboard },
   { to: "/avisos", label: "Avisos", icon: Megaphone },
+  { to: "/noticias", label: "Notícias", icon: Newspaper },
   { to: "/agenda", label: "Agenda", icon: CalendarDays },
   { to: "/ministerios", label: "Ministérios", icon: Sparkles },
   { to: "/louvor", label: "Louvor", icon: Music },

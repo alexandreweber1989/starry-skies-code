@@ -45,8 +45,8 @@ export function ScheduleDetail({ scheduleId, canManage }: { scheduleId: string; 
   const { data: songs } = useQuery({
     queryKey: ["worship-songs-min"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("worship_songs")
+      const { data, error } = await (supabase
+        .from("songs") as any)
         .select("id, title, song_key")
         .eq("is_active", true)
         .order("title");
@@ -61,7 +61,7 @@ export function ScheduleDetail({ scheduleId, canManage }: { scheduleId: string; 
       const { data, error } = await supabase
         .from("worship_schedules")
         .select(
-          "id, assignments:worship_schedule_assignments(id, function_name, status, response_note, user_id, profiles:profiles!inner(full_name)), setlist:worship_setlist_items(id, position, song_key, notes, song:worship_songs!inner(id, title, artist))",
+          "id, assignments:worship_schedule_assignments(id, function_name, status, response_note, user_id, profiles:profiles!inner(full_name)), setlist:setlist_songs(id, position, song_key, notes, song:songs!inner(id, title, artist))",
         )
         .eq("id", scheduleId)
         .single();
@@ -104,10 +104,10 @@ export function ScheduleDetail({ scheduleId, canManage }: { scheduleId: string; 
   const addSong = useMutation({
     mutationFn: async () => {
       if (!songId) throw new Error("Selecione a música.");
-      const song = songs?.find((s) => s.id === songId);
+      const song = songs?.find((s: any) => s.id === songId);
       const position = (detail?.setlist?.length ?? 0) + 1;
-      const { error } = await supabase
-        .from("worship_setlist_items")
+      const { error } = await (supabase
+        .from("setlist_songs") as any)
         .insert({ schedule_id: scheduleId, song_id: songId, position, song_key: song?.song_key ?? null });
       if (error) throw error;
     },
@@ -117,7 +117,7 @@ export function ScheduleDetail({ scheduleId, canManage }: { scheduleId: string; 
 
   const removeSong = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("worship_setlist_items").delete().eq("id", id);
+      const { error } = await (supabase.from("setlist_songs") as any).delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: detailKey }),
@@ -289,7 +289,7 @@ export function ScheduleDetail({ scheduleId, canManage }: { scheduleId: string; 
               <Select value={songId} onValueChange={setSongId}>
                 <SelectTrigger className="flex-1"><SelectValue placeholder="Música do repertório" /></SelectTrigger>
                 <SelectContent className="max-h-60">
-                  {songs?.map((s) => <SelectItem key={s.id} value={s.id}>{s.title}</SelectItem>)}
+                  {songs?.map((s: any) => <SelectItem key={s.id} value={s.id}>{s.title}</SelectItem>)}
                 </SelectContent>
               </Select>
               <Button size="icon" aria-label="Adicionar música" onClick={() => addSong.mutate()}>
