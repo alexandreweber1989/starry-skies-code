@@ -19,6 +19,8 @@ import {
 import { CheckoutDialog } from "@/components/kids/checkout-dialog";
 import { CheckinQrDialog } from "@/components/kids/checkin-qr-dialog";
 import { KidsPhoto } from "@/components/kids/kids-photo";
+import { EmergencyAlertButton } from "@/components/kids/emergency-alert-button";
+
 
 interface CheckinBoardProps {
   session: KidsSession;
@@ -150,6 +152,7 @@ export function CheckinBoard({ session, children }: CheckinBoardProps) {
                   <>
                     <CheckoutDialog checkin={checkin} childName={childDisplayName(child)} />
                     <CheckinQrDialog checkin={checkin} childName={childDisplayName(child)} />
+                    <EmergencyAlertButton child={child} session={session} />
                   </>
                 )}
                 {checkin?.status === "retirada" && (
