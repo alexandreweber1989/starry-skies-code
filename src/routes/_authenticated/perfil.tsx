@@ -8,6 +8,8 @@ import { useAuth } from "@/lib/auth-context";
 import { ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MemberFormDialog } from "@/components/membros/member-form-dialog";
+import { ProfileForm } from "@/components/membros/profile-form";
+
 import {
   MARITAL_STATUS,
   MEMBERSHIP_STATUS,
@@ -61,10 +63,14 @@ function PerfilPage() {
     <>
       <PageHeader eyebrow="Sua conta" title="Meu perfil" description={profile?.full_name ?? user?.email ?? ""} />
       <PageBody>
+        <div className="mb-8">
+          <ProfileForm profile={profile ?? null} userId={user?.id} />
+        </div>
         <div className="mb-6">
-          <Button onClick={() => setEditing(true)}>Editar ficha completa</Button>
+          <Button variant="outline" onClick={() => setEditing(true)}>Abrir ficha em janela</Button>
         </div>
         <div className="grid lg:grid-cols-2 gap-6">
+
           <div className="border border-border bg-card p-8 rounded-sm space-y-4 text-sm">
             <div className="font-mono text-[10px] uppercase tracking-widest text-primary">Dados pessoais</div>
             <Row label="Nome" value={profile?.full_name} />
