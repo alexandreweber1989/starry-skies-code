@@ -1444,6 +1444,7 @@ export type Database = {
           created_at: string
           full_address: string
           id: string
+          is_main: boolean | null
           label: string
           mesa_id: string
           neighborhood: string | null
@@ -1459,6 +1460,7 @@ export type Database = {
           created_at?: string
           full_address: string
           id?: string
+          is_main?: boolean | null
           label?: string
           mesa_id: string
           neighborhood?: string | null
@@ -1474,6 +1476,7 @@ export type Database = {
           created_at?: string
           full_address?: string
           id?: string
+          is_main?: boolean | null
           label?: string
           mesa_id?: string
           neighborhood?: string | null
