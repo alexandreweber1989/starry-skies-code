@@ -15,8 +15,8 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useMesaAddresses } from "@/lib/use-mesa-addresses";
-import { format, addDays, nextDay, parseISO } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { format, nextDay } from "date-fns";
+import { type EventKind } from "@/lib/agenda";
 
 interface Props {
   open: boolean;
@@ -75,10 +75,10 @@ export function MesaEventDialog({ open, onOpenChange, mesa }: Props) {
       // Assume 2 horas de duração
       const endsAt = new Date(new Date(`${date}T${time}:00`).getTime() + 2 * 60 * 60 * 1000).toISOString();
 
-      const payload = {
+      const payload: any = {
         title: `Reunião - ${mesa.name}`,
         description: `Encontro semanal da mesa ${mesa.name}.`,
-        kind: "reuniao",
+        kind: "reuniao" as EventKind,
         scope: "mesa",
         mesa_id: mesa.id,
         starts_at: startsAt,

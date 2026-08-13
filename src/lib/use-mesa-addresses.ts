@@ -28,7 +28,7 @@ export function useMesaAddresses(mesaId?: string) {
         .select("*")
         .eq("mesa_id", mesaId);
       if (error) throw error;
-      return data as MesaAddress[];
+      return (data as any) as MesaAddress[];
     },
   });
 

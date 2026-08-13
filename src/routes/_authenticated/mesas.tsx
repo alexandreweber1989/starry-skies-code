@@ -18,7 +18,7 @@ import { GroupSummary } from "@/components/admin/group-summary";
 import { statsOf, useGroupStats } from "@/lib/use-grupos";
 import { LoadingRegion, CardGridSkeleton } from "@/components/ui/loading-states";
 import { MesaEventDialog } from "@/components/events/mesa-event-dialog";
-import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/mesas")({
   head: () => ({
