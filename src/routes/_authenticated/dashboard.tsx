@@ -15,6 +15,7 @@ import {
   Layout,
   CheckCircle2,
   FileText,
+  HeartPulse,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, PageBody } from "@/components/app-shell";
@@ -77,6 +78,7 @@ const atalhos: { to: string; label: string; icon: any; requiredRoles?: AppRole[]
     requiredRoles: ["admin_geral", "admin_cantina"],
   },
   { to: "/perfil", label: "Meu perfil", icon: UserPlus },
+  { to: "/cuidado", label: "Cuidado", icon: HeartPulse },
 ];
 
 function Dashboard() {
