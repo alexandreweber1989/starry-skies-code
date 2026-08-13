@@ -1,4 +1,4 @@
-const CHORD_TOKEN = /^[A-G][b#]?(m|maj|min|dim|aug|sus|add)?[0-9]*(\([^)]*\))?(\/[A-G][b#]?)?$/;
+const CHORD_TOKEN = /^[A-G][b#]?(m|maj|min|dim|aug|sus|add)?[0-9]*(\([^)]*\))?(\/[A-G][b#]?)?(\d+)?$/;
 
 /** Uma linha é "linha de cifra" quando todos os seus tokens são acordes. */
 export function isChordLine(line: string): boolean {
@@ -50,7 +50,12 @@ export function parseChordSheet(raw: string): ParsedSheet {
     .trim();
 
   // A cifra fica com o conteúdo colado, já sem o cabeçalho de tom.
-  const chords = lines.filter((l) => !/tom:/i.test(l)).join("\n").trim();
+  // Remove tabs extras e normaliza espaços
+  const chords = lines
+    .filter((l) => !/tom:/i.test(l))
+    .map(line => line.replace(/\t/g, "    "))
+    .join("\n")
+    .trim();
 
   return { chords, lyrics, key, title, artist };
 }

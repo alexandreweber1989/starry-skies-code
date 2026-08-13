@@ -163,6 +163,7 @@ export function SongDialog({ initial, trigger }: { initial: SongDraft; trigger: 
                         artist: d.artist || data.artist || parsed.artist || "",
                         song_key: data.key || parsed.key || d.song_key,
                         bpm: data.bpm?.toString() || d.bpm,
+                        youtube_url: d.youtube_url || data.youtubeUrl || "",
                         chords: parsed.chords,
                         lyrics: parsed.lyrics,
                       }));
