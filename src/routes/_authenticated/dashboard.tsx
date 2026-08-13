@@ -14,6 +14,7 @@ import {
   ArrowUpRight,
   Layout,
   CheckCircle2,
+  FileText,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, PageBody } from "@/components/app-shell";
@@ -62,6 +63,7 @@ const atalhos: { to: string; label: string; icon: any; requiredRoles?: AppRole[]
   { to: "/mesas", label: "Mesas", icon: UtensilsCrossed },
   { to: "/membros", label: "Membros", icon: Users, requiredRoles: ["admin_geral"] },
   { to: "/kids", label: "Kids", icon: Baby, requiredRoles: ["admin_geral", "admin_kids"] },
+  { to: "/kids/relatorios", label: "Relatórios Kids", icon: FileText, requiredRoles: ["admin_geral", "admin_kids"] },
   {
     to: "/livraria",
     label: "Livraria",

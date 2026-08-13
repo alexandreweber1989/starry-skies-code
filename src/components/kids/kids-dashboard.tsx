@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Baby, CalendarDays, QrCode, ShieldCheck, Users, Search, Filter } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { Baby, CalendarDays, QrCode, ShieldCheck, Users, Search, Filter, FileText } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,6 +31,8 @@ import {
 
 export function KidsCheckinDashboard() {
   const { isKidsAdmin } = useAuth();
+  const navigate = useNavigate();
+
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [classroom, setClassroom] = useState("all");
@@ -143,6 +145,10 @@ export function KidsCheckinDashboard() {
           <TabsTrigger value="criancas" className="rounded-2xl px-8 h-full data-[state=active]:bg-blue-400 data-[state=active]:text-blue-950 data-[state=active]:shadow-lg data-[state=active]:scale-105 transition-all duration-300 font-bold text-lg">
             <Baby className="mr-2 h-5 w-5" /> Cadastro
           </TabsTrigger>
+          <TabsTrigger value="relatorios" className="rounded-2xl px-8 h-full data-[state=active]:bg-purple-400 data-[state=active]:text-purple-950 data-[state=active]:shadow-lg data-[state=active]:scale-105 transition-all duration-300 font-bold text-lg" onClick={() => navigate({ to: "/kids/relatorios" })}>
+            <FileText className="mr-2 h-5 w-5" /> Relatórios
+          </TabsTrigger>
+
 
         </TabsList>
 
