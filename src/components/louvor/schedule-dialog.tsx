@@ -48,7 +48,7 @@ export function ScheduleDialog({ trigger }: { trigger?: React.ReactNode }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button><Plus className="h-4 w-4" /> Nova escala / ensaio</Button>
+        {trigger || <Button><Plus className="h-4 w-4" /> Nova escala / ensaio</Button>}
       </DialogTrigger>
       <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
         <DialogHeader>
