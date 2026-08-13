@@ -180,7 +180,7 @@ function RedesPage() {
                           <div className="min-w-0">
                             <div className="font-serif text-lg">{m.name}</div>
                             <div className="text-xs text-muted-foreground truncate">
-                              {mesaStats.leaders.length
+                              {mesaStats.leaders.length > 0
                                 ? mesaStats.leaders.map((l) => l.name).join(" · ")
                                 : "Sem liderança definida"}
                               {" — "}
