@@ -34,6 +34,7 @@ import { Route as AuthenticatedAgendaRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedMinisteriosIndexRouteImport } from './routes/_authenticated/ministerios.index'
 import { Route as ApiPublicKidsVisitorRouteImport } from './routes/api/public/kids-visitor'
 import { Route as AuthenticatedMinisteriosSlugRouteImport } from './routes/_authenticated/ministerios.$slug'
+import { Route as AuthenticatedKidsRelatoriosRouteImport } from './routes/_authenticated/kids.relatorios'
 import { Route as AuthenticatedKidsRetiradaCheckinIdRouteImport } from './routes/_authenticated/kids-retirada.$checkinId'
 
 const ConfigVercelRoute = ConfigVercelRouteImport.update({
@@ -162,6 +163,12 @@ const AuthenticatedMinisteriosSlugRoute =
     path: '/ministerios/$slug',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedKidsRelatoriosRoute =
+  AuthenticatedKidsRelatoriosRouteImport.update({
+    id: '/relatorios',
+    path: '/relatorios',
+    getParentRoute: () => AuthenticatedKidsRoute,
+  } as any)
 const AuthenticatedKidsRetiradaCheckinIdRoute =
   AuthenticatedKidsRetiradaCheckinIdRouteImport.update({
     id: '/kids-retirada/$checkinId',
@@ -178,7 +185,7 @@ export interface FileRoutesByFullPath {
   '/cantina': typeof AuthenticatedCantinaRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/igrejas': typeof AuthenticatedIgrejasRoute
-  '/kids': typeof AuthenticatedKidsRoute
+  '/kids': typeof AuthenticatedKidsRouteWithChildren
   '/livraria': typeof AuthenticatedLivrariaRoute
   '/louvor': typeof AuthenticatedLouvorRoute
   '/mapa': typeof AuthenticatedMapaRoute
@@ -192,6 +199,7 @@ export interface FileRoutesByFullPath {
   '/auth/callback': typeof AuthCallbackRoute
   '/kids/visitante': typeof KidsVisitanteRoute
   '/kids-retirada/$checkinId': typeof AuthenticatedKidsRetiradaCheckinIdRoute
+  '/kids/relatorios': typeof AuthenticatedKidsRelatoriosRoute
   '/ministerios/$slug': typeof AuthenticatedMinisteriosSlugRoute
   '/api/public/kids-visitor': typeof ApiPublicKidsVisitorRoute
   '/ministerios/': typeof AuthenticatedMinisteriosIndexRoute
@@ -205,7 +213,7 @@ export interface FileRoutesByTo {
   '/cantina': typeof AuthenticatedCantinaRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/igrejas': typeof AuthenticatedIgrejasRoute
-  '/kids': typeof AuthenticatedKidsRoute
+  '/kids': typeof AuthenticatedKidsRouteWithChildren
   '/livraria': typeof AuthenticatedLivrariaRoute
   '/louvor': typeof AuthenticatedLouvorRoute
   '/mapa': typeof AuthenticatedMapaRoute
@@ -219,6 +227,7 @@ export interface FileRoutesByTo {
   '/auth/callback': typeof AuthCallbackRoute
   '/kids/visitante': typeof KidsVisitanteRoute
   '/kids-retirada/$checkinId': typeof AuthenticatedKidsRetiradaCheckinIdRoute
+  '/kids/relatorios': typeof AuthenticatedKidsRelatoriosRoute
   '/ministerios/$slug': typeof AuthenticatedMinisteriosSlugRoute
   '/api/public/kids-visitor': typeof ApiPublicKidsVisitorRoute
   '/ministerios': typeof AuthenticatedMinisteriosIndexRoute
@@ -234,7 +243,7 @@ export interface FileRoutesById {
   '/_authenticated/cantina': typeof AuthenticatedCantinaRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/igrejas': typeof AuthenticatedIgrejasRoute
-  '/_authenticated/kids': typeof AuthenticatedKidsRoute
+  '/_authenticated/kids': typeof AuthenticatedKidsRouteWithChildren
   '/_authenticated/livraria': typeof AuthenticatedLivrariaRoute
   '/_authenticated/louvor': typeof AuthenticatedLouvorRoute
   '/_authenticated/mapa': typeof AuthenticatedMapaRoute
@@ -248,6 +257,7 @@ export interface FileRoutesById {
   '/auth/callback': typeof AuthCallbackRoute
   '/kids/visitante': typeof KidsVisitanteRoute
   '/_authenticated/kids-retirada/$checkinId': typeof AuthenticatedKidsRetiradaCheckinIdRoute
+  '/_authenticated/kids/relatorios': typeof AuthenticatedKidsRelatoriosRoute
   '/_authenticated/ministerios/$slug': typeof AuthenticatedMinisteriosSlugRoute
   '/api/public/kids-visitor': typeof ApiPublicKidsVisitorRoute
   '/_authenticated/ministerios/': typeof AuthenticatedMinisteriosIndexRoute
@@ -277,6 +287,7 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/kids/visitante'
     | '/kids-retirada/$checkinId'
+    | '/kids/relatorios'
     | '/ministerios/$slug'
     | '/api/public/kids-visitor'
     | '/ministerios/'
@@ -304,6 +315,7 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/kids/visitante'
     | '/kids-retirada/$checkinId'
+    | '/kids/relatorios'
     | '/ministerios/$slug'
     | '/api/public/kids-visitor'
     | '/ministerios'
@@ -332,6 +344,7 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/kids/visitante'
     | '/_authenticated/kids-retirada/$checkinId'
+    | '/_authenticated/kids/relatorios'
     | '/_authenticated/ministerios/$slug'
     | '/api/public/kids-visitor'
     | '/_authenticated/ministerios/'
@@ -523,6 +536,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMinisteriosSlugRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/kids/relatorios': {
+      id: '/_authenticated/kids/relatorios'
+      path: '/relatorios'
+      fullPath: '/kids/relatorios'
+      preLoaderRoute: typeof AuthenticatedKidsRelatoriosRouteImport
+      parentRoute: typeof AuthenticatedKidsRoute
+    }
     '/_authenticated/kids-retirada/$checkinId': {
       id: '/_authenticated/kids-retirada/$checkinId'
       path: '/kids-retirada/$checkinId'
@@ -533,13 +553,24 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedKidsRouteChildren {
+  AuthenticatedKidsRelatoriosRoute: typeof AuthenticatedKidsRelatoriosRoute
+}
+
+const AuthenticatedKidsRouteChildren: AuthenticatedKidsRouteChildren = {
+  AuthenticatedKidsRelatoriosRoute: AuthenticatedKidsRelatoriosRoute,
+}
+
+const AuthenticatedKidsRouteWithChildren =
+  AuthenticatedKidsRoute._addFileChildren(AuthenticatedKidsRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAgendaRoute: typeof AuthenticatedAgendaRoute
   AuthenticatedAvisosRoute: typeof AuthenticatedAvisosRoute
   AuthenticatedCantinaRoute: typeof AuthenticatedCantinaRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedIgrejasRoute: typeof AuthenticatedIgrejasRoute
-  AuthenticatedKidsRoute: typeof AuthenticatedKidsRoute
+  AuthenticatedKidsRoute: typeof AuthenticatedKidsRouteWithChildren
   AuthenticatedLivrariaRoute: typeof AuthenticatedLivrariaRoute
   AuthenticatedLouvorRoute: typeof AuthenticatedLouvorRoute
   AuthenticatedMapaRoute: typeof AuthenticatedMapaRoute
@@ -561,7 +592,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCantinaRoute: AuthenticatedCantinaRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedIgrejasRoute: AuthenticatedIgrejasRoute,
-  AuthenticatedKidsRoute: AuthenticatedKidsRoute,
+  AuthenticatedKidsRoute: AuthenticatedKidsRouteWithChildren,
   AuthenticatedLivrariaRoute: AuthenticatedLivrariaRoute,
   AuthenticatedLouvorRoute: AuthenticatedLouvorRoute,
   AuthenticatedMapaRoute: AuthenticatedMapaRoute,
