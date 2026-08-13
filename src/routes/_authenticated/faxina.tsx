@@ -7,12 +7,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, CheckCircle2, Circle, Clock, MoreVertical, Plus, Trash2, Users } from "lucide-react";
+import { Calendar, CheckCircle2, Circle, Clock, Plus, Users, ChevronLeft, ChevronRight } from "lucide-react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isFriday, addMonths, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useAuth } from "@/lib/auth-context";
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -30,10 +30,10 @@ function CleaningSchedulePage() {
   const monthEnd = endOfMonth(currentDate);
   
   const fridays = useMemo(() => {
-    return eachDayOfInterval({ start: monthStart, end: monthEnd }).filter(isFriday);
+    return eachDayOfInterval({ start: monthStart, end: monthEnd }).filter((d) => isFriday(d));
   }, [monthStart, monthEnd]);
 
-  const { data: schedules, isLoading: loadingSchedules } = useQuery({
+  const { data: schedules } = useQuery({
     queryKey: ["cleaning-schedules", format(currentDate, "yyyy-MM")],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -47,7 +47,7 @@ function CleaningSchedulePage() {
         .lte("date", format(monthEnd, "yyyy-MM-dd"))
         .order("date", { ascending: true });
       if (error) throw error;
-      return data;
+      return data as any[];
     },
   });
 
@@ -113,15 +113,15 @@ function CleaningSchedulePage() {
         title="Escala de Faxina"
         description="Gerenciamento semanal das equipes de limpeza da igreja."
         actions={
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => setCurrentDate(subMonths(currentDate, 1))}>
-              Anterior
+          <div className="flex items-center gap-4">
+            <Button variant="outline" size="icon" onClick={() => setCurrentDate(subMonths(currentDate, 1))}>
+              <ChevronLeft className="h-4 w-4" />
             </Button>
-            <span className="font-mono text-xs uppercase tracking-widest px-4">
+            <span className="font-mono text-xs uppercase tracking-widest min-w-[140px] text-center">
               {format(currentDate, "MMMM yyyy", { locale: ptBR })}
             </span>
-            <Button variant="outline" size="sm" onClick={() => setCurrentDate(addMonths(currentDate, 1))}>
-              Próximo
+            <Button variant="outline" size="icon" onClick={() => setCurrentDate(addMonths(currentDate, 1))}>
+              <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
         }
@@ -159,17 +159,17 @@ function CleaningSchedulePage() {
                   </div>
                   
                   {isAdmin && (
-                    <Dialog>
-                      <DialogTrigger asChild>
+                    <Sheet>
+                      <SheetTrigger asChild>
                         <Button variant="ghost" size="sm" className="font-mono text-[10px] uppercase tracking-wider">
                           <Users className="h-4 w-4 mr-2" />
                           Escalar Mesa
                         </Button>
-                      </DialogTrigger>
-                      <DialogContent side="right" className="p-8">
-                        <DialogHeader>
-                          <DialogTitle className="font-serif text-2xl">Atribuir Responsabilidade</DialogTitle>
-                        </DialogHeader>
+                      </SheetTrigger>
+                      <SheetContent side="right" className="p-8">
+                        <SheetHeader>
+                          <SheetTitle className="font-serif text-2xl">Atribuir Responsabilidade</SheetTitle>
+                        </SheetHeader>
                         <div className="space-y-6 mt-8">
                           <div className="space-y-2">
                             <Label>Mesa Responsável</Label>
@@ -204,8 +204,8 @@ function CleaningSchedulePage() {
                             />
                           </div>
                         </div>
-                      </DialogContent>
-                    </Dialog>
+                      </SheetContent>
+                    </Sheet>
                   )}
                 </CardHeader>
                 <CardContent className="p-6">
@@ -224,21 +224,21 @@ function CleaningSchedulePage() {
                         </div>
                       ) : (
                         <div className="space-y-2">
-                          {schedule.tasks?.length === 0 && (
+                          {(schedule.tasks || []).length === 0 && (
                             <p className="text-xs text-muted-foreground italic">Nenhuma tarefa listada para este dia.</p>
                           )}
-                          {schedule.tasks?.map((task: any) => (
+                          {(schedule.tasks || []).map((task: any) => (
                             <div key={task.id} className="flex items-center gap-3 p-3 rounded-sm bg-muted/20 border border-border/10 hover:border-primary/20 transition-all group">
                               <Checkbox 
                                 checked={task.is_completed}
                                 onCheckedChange={(val) => toggleTask.mutate({ taskId: task.id, isCompleted: !!val })}
-                                disabled={!isAdmin && schedule.mesa_id !== user?.id} // Simplificação para o exemplo
+                                disabled={!isAdmin} // TODO: Implementar lógica de responsável da mesa
                               />
                               <div className="flex-1 min-w-0">
                                 <p className={`text-sm ${task.is_completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
                                   {task.title}
                                 </p>
-                                {task.is_completed && (
+                                {task.is_completed && task.completed_at && (
                                   <p className="text-[10px] text-primary/60 font-mono uppercase">
                                     Concluído em {format(new Date(task.completed_at), "HH:mm")}
                                   </p>
@@ -255,23 +255,23 @@ function CleaningSchedulePage() {
                       <div className="space-y-3">
                          <div className="flex justify-between text-xs">
                            <span className="text-muted-foreground">Progresso</span>
-                           <span className="font-mono">{schedule?.tasks?.filter((t: any) => t.is_completed).length || 0}/{schedule?.tasks?.length || 0}</span>
+                           <span className="font-mono">{(schedule?.tasks || []).filter((t: any) => t.is_completed).length || 0}/{(schedule?.tasks || []).length || 0}</span>
                          </div>
                          <div className="h-1 bg-border/40 rounded-full overflow-hidden">
                            <div 
                              className="h-full bg-primary transition-all duration-500" 
-                             style={{ width: `${schedule?.tasks?.length ? (schedule.tasks.filter((t: any) => t.is_completed).length / schedule.tasks.length) * 100 : 0}%` }}
+                             style={{ width: `${(schedule?.tasks || []).length ? ((schedule.tasks || []).filter((t: any) => t.is_completed).length / schedule.tasks.length) * 100 : 0}%` }}
                            />
                          </div>
                       </div>
                       <div className="pt-4 border-t border-border/40 space-y-2">
                         <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-muted-foreground">
                           <Clock className="h-3 w-3" />
-                          Recomendado: 19:30
+                          Sexta-feira • 19:30
                         </div>
                         <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-muted-foreground">
                           <Calendar className="h-3 w-3" />
-                          Sexta-feira Santa
+                          Presencial
                         </div>
                       </div>
                     </div>
@@ -289,16 +289,16 @@ function CleaningSchedulePage() {
 function AddTaskButton({ scheduleId, onAdd }: { scheduleId: string, onAdd: (title: string) => void }) {
   const [title, setTitle] = useState("");
   return (
-    <Dialog>
-      <DialogTrigger asChild>
+    <Sheet>
+      <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="h-6 w-6">
           <Plus className="h-4 w-4" />
         </Button>
-      </DialogTrigger>
-      <DialogContent side="right" className="p-8">
-        <DialogHeader>
-          <DialogTitle className="font-serif text-2xl">Nova Tarefa</DialogTitle>
-        </DialogHeader>
+      </SheetTrigger>
+      <SheetContent side="right" className="p-8">
+        <SheetHeader>
+          <SheetTitle className="font-serif text-2xl">Nova Tarefa</SheetTitle>
+        </SheetHeader>
         <div className="space-y-4 mt-8">
           <div className="space-y-2">
             <Label>O que precisa ser feito?</Label>
@@ -315,13 +315,15 @@ function AddTaskButton({ scheduleId, onAdd }: { scheduleId: string, onAdd: (titl
             />
           </div>
           <Button className="w-full" onClick={() => {
-            onAdd(title);
-            setTitle("");
+            if (title.trim()) {
+              onAdd(title);
+              setTitle("");
+            }
           }}>
             Adicionar Tarefa
           </Button>
         </div>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 }
