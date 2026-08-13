@@ -319,7 +319,7 @@ function Dashboard() {
                 "Mídia — biblioteca e central de mídias",
                 "Atos de Amor — campanhas e impacto",
                 "Hierarchy — isolamento de mesas e redes",
-                "RBAC — menus dinâmicos por cargo",
+                "Pedidos online: reserva com retirada na igreja",
                 "Personalização — interface adaptativa",
               ].map((t, i) => (
                 <li key={t} className="flex gap-3">

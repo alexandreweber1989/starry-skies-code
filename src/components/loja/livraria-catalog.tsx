@@ -172,8 +172,8 @@ export function LivrariaCatalog() {
             <Button className="w-full" disabled={checkout.isPending} onClick={() => checkout.mutate()}>
               {checkout.isPending ? "Gerando pedido..." : "Finalizar e pagar com PIX"}
             </Button>
-            <p className="text-xs text-muted-foreground">
-              Pagamento por PIX no CNPJ da igreja. A retirada é feita presencialmente com o código gerado.
+            <p className="text-xs text-muted-foreground font-medium text-primary/80">
+              Pagamento por PIX no CNPJ da igreja. A retirada é feita exclusivamente de forma presencial na igreja com o código gerado.
             </p>
           </div>
         )}
