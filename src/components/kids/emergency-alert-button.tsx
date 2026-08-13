@@ -42,7 +42,7 @@ export function EmergencyAlertButton({ child, session }: EmergencyAlertButtonPro
       // Busca o responsável principal para notificar
       const { data: guardians, error: gError } = await supabase
         .from("kids_guardians")
-        .select("id, phone, full_name")
+        .select("id, phone, full_name, profile_id")
         .eq("child_id", child.id)
         .eq("is_primary", true)
         .single();
@@ -59,42 +59,39 @@ export function EmergencyAlertButton({ child, session }: EmergencyAlertButtonPro
           message: message.trim(),
           severity,
           status: "enviado",
-        })
+        } as any)
         .select()
         .single();
 
       if (aError) throw aError;
 
       // Disparo real via Edge Function (Rota de API)
-      await fetch('/api/public/sms-whatsapp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: guardians.phone,
-          message: `[EMERGÊNCIA KIDS] ${child.full_name}: ${message.trim()}`,
-          type: 'both'
-        })
-      });
-
-      // Disparo de Push Notification se houver profile_id
-      const { data: profileData } = await supabase
-        .from('kids_guardians')
-        .select('profile_id')
-        .eq('id', guardians.id)
-        .single();
-
-      if (profileData?.profile_id) {
-        await fetch('/api/public/notifications', {
+      try {
+        await fetch('/api/public/sms-whatsapp', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            userIds: [profileData.profile_id],
-            title: '⚠️ Emergência no Kids',
-            body: `Seu filho(a) ${child.full_name} precisa de você na sala ${session.classroom}.`,
-            type: 'emergency',
-            data: { childId: child.id, sessionId: session.id }
+            to: guardians.phone,
+            message: `[EMERGÊNCIA KIDS] ${child.full_name}: ${message.trim()}`,
+            type: 'both'
           })
         });
+
+        if (guardians.profile_id) {
+          await fetch('/api/public/notifications', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userIds: [guardians.profile_id],
+              title: '⚠️ Emergência no Kids',
+              body: `Seu filho(a) ${child.full_name} precisa de você.`,
+              type: 'emergency',
+              data: { childId: child.id, sessionId: session.id }
+            })
+          });
+        }
+      } catch (err) {
+        console.error("Erro no disparo externo:", err);
       }
       
       return alert;

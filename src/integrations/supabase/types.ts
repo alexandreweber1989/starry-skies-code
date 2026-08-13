@@ -1016,6 +1016,7 @@ export type Database = {
           church_id: string | null
           classroom: string
           created_at: string
+          document_url: string | null
           gender: string | null
           guardian_document: string | null
           guardian_full_name: string
@@ -1041,6 +1042,7 @@ export type Database = {
           church_id?: string | null
           classroom?: string
           created_at?: string
+          document_url?: string | null
           gender?: string | null
           guardian_document?: string | null
           guardian_full_name: string
@@ -1066,6 +1068,7 @@ export type Database = {
           church_id?: string | null
           classroom?: string
           created_at?: string
+          document_url?: string | null
           gender?: string | null
           guardian_document?: string | null
           guardian_full_name?: string
@@ -1516,6 +1519,39 @@ export type Database = {
           slug?: string
           title?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      notifications_history: {
+        Row: {
+          body: string
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          status: string | null
+          title: string
+          type: string
+          user_id: string | null
+        }
+        Insert: {
+          body: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          status?: string | null
+          title: string
+          type: string
+          user_id?: string | null
+        }
+        Update: {
+          body?: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          status?: string | null
+          title?: string
+          type?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -2209,6 +2245,33 @@ export type Database = {
           title?: string
           updated_at?: string | null
           youtube_url?: string | null
+        }
+        Relationships: []
+      }
+      user_push_tokens: {
+        Row: {
+          created_at: string | null
+          device_type: string | null
+          id: string
+          token: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          device_type?: string | null
+          id?: string
+          token: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          device_type?: string | null
+          id?: string
+          token?: string
+          updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }

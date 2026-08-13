@@ -7,7 +7,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, type ReactNode, Suspense, lazy } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 import appCss from "../styles.css?url";
@@ -15,6 +15,8 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "../lib/auth-context";
 import { Toaster } from "@/components/ui/sonner";
 import { GlobalErrorBoundary } from "@/components/error-boundary";
+
+const PushRegistration = lazy(() => import("@/components/auth/push-registration"));
 
 function NotFoundComponent() {
   return (
@@ -156,21 +158,6 @@ function RootComponent() {
       <GlobalErrorBoundary>
         <AuthProvider>
           <div className="flex flex-col min-h-screen">
-            {/*
-              Transição entre telas (design-motion-principles — lente Emil Kowalski).
-
-              Navegar é uma ação de ALTA frequência num painel, então o movimento
-              precisa ser quase imperceptível. Antes: 400ms de saída + 400ms de
-              entrada com `mode="wait"` = ~800ms por navegação, mais blur na
-              página inteira — o que fazia a interface parecer travada.
-
-              Agora: entrada de 200ms (opacidade + 4px de deslocamento) e saída
-              de 120ms só em opacidade — a saída é sempre mais discreta que a
-              entrada, porque a atenção do usuário já está indo embora.
-
-              `useReducedMotion` é obrigatório aqui: o framer-motion aplica estilo
-              inline via JS e NÃO é alcançado pela media query de CSS.
-            */}
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={state.location.pathname}
@@ -190,6 +177,9 @@ function RootComponent() {
                 <Outlet />
               </motion.div>
             </AnimatePresence>
+            <Suspense fallback={null}>
+              <PushRegistration />
+            </Suspense>
           </div>
           <Toaster richColors position="top-right" closeButton />
         </AuthProvider>
