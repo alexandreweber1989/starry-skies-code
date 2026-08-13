@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Plus,
@@ -14,6 +14,10 @@ import {
   Presentation,
   Pencil,
   CalendarDays,
+  Youtube,
+  Send,
+  Loader2,
+  CheckCircle2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { format, parseISO } from "date-fns";
@@ -31,6 +35,8 @@ import { Badge } from "@/components/ui/badge";
 import { LoadingRegion, CardGridSkeleton } from "@/components/ui/loading-states";
 import {
   SermonCanvas,
+  svgToPngBlob,
+  DIMS,
   type SermonDraft,
   type SermonPoint,
   type SermonTemplate,
@@ -56,6 +62,12 @@ const TEMPLATES: { value: SermonTemplate; label: string; icon: typeof Network; h
   { value: "arte", label: "Arte / Card", icon: ImageIcon, hint: "Quadrado para post" },
 ];
 
+/** Extrai o ID de 11 caracteres de um link do YouTube (watch, youtu.be, shorts, embed). */
+function youtubeId(url: string): string | null {
+  const m = url.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+
 function blankDraft(): SermonDraft {
   return {
     title: "",
@@ -68,6 +80,8 @@ function blankDraft(): SermonDraft {
     tags: [],
     template: "mapa",
     dark: false,
+    youtube_url: "",
+    cover_image_url: "",
   };
 }
 
@@ -84,15 +98,19 @@ function fromRow(row: any): SermonDraft {
     tags: Array.isArray(row.tags) ? row.tags : [],
     template: (row.template ?? "mapa") as SermonTemplate,
     dark: Boolean(row.dark),
+    youtube_url: row.youtube_url ?? "",
+    cover_image_url: row.cover_image_url ?? "",
   };
 }
 
 function PregacoesPage() {
-  const { isAdmin } = useAuth();
+  const { isAdmin, user } = useAuth();
   const qc = useQueryClient();
   const [editingId, setEditingId] = useState<string | null | undefined>(undefined); // undefined = lista
   const [draft, setDraft] = useState<SermonDraft>(blankDraft);
   const [tagsText, setTagsText] = useState("");
+  const [ytLoading, setYtLoading] = useState(false);
+  const previewRef = useRef<SVGSVGElement>(null);
 
   const { data: sermons, isPending } = useQuery({
     queryKey: ["sermons"],
@@ -107,38 +125,147 @@ function PregacoesPage() {
     },
   });
 
-  const save = useMutation({
-    mutationFn: async () => {
-      if (draft.title.trim().length < 2) throw new Error("Dê um título à pregação.");
-      const payload = {
-        title: draft.title.trim(),
-        theme: draft.theme?.trim() || null,
-        preacher: draft.preacher?.trim() || null,
-        preached_on: draft.preached_on || null,
-        base_verse: draft.base_verse?.trim() || null,
-        summary: draft.summary?.trim() || null,
-        points: draft.points.filter((p) => p.title?.trim()) as unknown as Json,
-        tags: draft.tags,
-        template: draft.template,
-        dark: draft.dark,
-      };
-      if (editingId) {
-        const { error } = await (supabase as any).from("sermons").update(payload).eq("id", editingId);
-        if (error) throw error;
-        return editingId;
-      }
-      const { data, error } = await (supabase as any)
-        .from("sermons")
-        .insert(payload)
-        .select("id")
-        .single();
+  // Persiste a pregação (usado por "Salvar" e por "Publicar") e devolve o id.
+  async function persistSermon(): Promise<string> {
+    if (draft.title.trim().length < 2) throw new Error("Dê um título à pregação.");
+    const payload = {
+      title: draft.title.trim(),
+      theme: draft.theme?.trim() || null,
+      preacher: draft.preacher?.trim() || null,
+      preached_on: draft.preached_on || null,
+      base_verse: draft.base_verse?.trim() || null,
+      summary: draft.summary?.trim() || null,
+      points: draft.points.filter((p) => p.title?.trim()) as unknown as Json,
+      tags: draft.tags,
+      template: draft.template,
+      dark: draft.dark,
+      youtube_url: draft.youtube_url?.trim() || null,
+      cover_image_url: draft.cover_image_url?.trim() || null,
+    };
+    if (editingId) {
+      const { error } = await (supabase as any).from("sermons").update(payload).eq("id", editingId);
       if (error) throw error;
-      return data!.id as string;
-    },
+      return editingId;
+    }
+    const { data, error } = await (supabase as any).from("sermons").insert(payload).select("id").single();
+    if (error) throw error;
+    return data!.id as string;
+  }
+
+  const save = useMutation({
+    mutationFn: persistSermon,
     onSuccess: (id) => {
       toast.success("Pregação salva.");
       setEditingId(id);
       void qc.invalidateQueries({ queryKey: ["sermons"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  // Puxa capa (direto do ID, sempre funciona) e título (via oEmbed, best-effort).
+  async function fetchYouTube() {
+    const url = draft.youtube_url?.trim();
+    if (!url) return;
+    const id = youtubeId(url);
+    if (!id) {
+      toast.error("Link do YouTube inválido.");
+      return;
+    }
+    setYtLoading(true);
+    // A capa vem do ID do vídeo, carregada direto no navegador — nunca falha.
+    const cover = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+    setDraft((d) => ({ ...d, cover_image_url: cover }));
+    try {
+      const res = await fetch(`/api/public/youtube-oembed?url=${encodeURIComponent(url)}`);
+      const data = await res.json();
+      if (res.ok && data.title) {
+        setDraft((d) => ({ ...d, title: d.title?.trim() ? d.title : data.title }));
+        toast.success("Vídeo carregado do YouTube.");
+      } else {
+        toast.success("Capa carregada. Preencha o título manualmente.");
+      }
+    } catch {
+      toast.success("Capa carregada. Preencha o título manualmente.");
+    } finally {
+      setYtLoading(false);
+    }
+  }
+
+  // Publica: sobe a arte para o bucket público, cria/atualiza o post no feed de
+  // Notícias e também baixa o PNG para as redes sociais ("os dois").
+  const publish = useMutation({
+    mutationFn: async () => {
+      if (!previewRef.current) throw new Error("Prévia indisponível.");
+      const id = await persistSermon();
+      const { w, h } = DIMS[draft.template];
+      const blob = await svgToPngBlob(previewRef.current, w, h, 2);
+
+      const path = `${id}/${draft.template}-${draft.dark ? "escuro" : "claro"}.png`;
+      const up = await supabase.storage
+        .from("sermon-arts")
+        .upload(path, blob, { upsert: true, contentType: "image/png", cacheControl: "3600" });
+      if (up.error) throw up.error;
+      const artUrl = supabase.storage.from("sermon-arts").getPublicUrl(path).data.publicUrl;
+
+      // Corpo do post no feed.
+      const pts = draft.points.filter((p) => p.title?.trim());
+      const linhas: string[] = [];
+      if (draft.base_verse) linhas.push(draft.base_verse);
+      if (draft.summary) linhas.push("", draft.summary);
+      if (pts.length) {
+        linhas.push("", "Pontos da mensagem:");
+        pts.forEach((p, i) => linhas.push(`${i + 1}. ${p.title}${p.detail ? ` — ${p.detail}` : ""}`));
+      }
+      if (draft.preacher) linhas.push("", `Pregação: ${draft.preacher}`);
+      if (draft.youtube_url?.trim()) linhas.push("", `Assista na íntegra: ${draft.youtube_url.trim()}`);
+
+      const slug = `pregacao-${id}`;
+      const newsPayload = {
+        title: (draft.theme?.trim() || draft.title.trim()),
+        slug,
+        excerpt: draft.base_verse?.trim() || draft.theme?.trim() || null,
+        content: linhas.join("\n") || (draft.theme?.trim() ?? draft.title.trim()),
+        category: "Pregação",
+        image_url: artUrl,
+        is_published: true,
+        author_id: user?.id ?? null,
+        published_at: new Date().toISOString(),
+      };
+
+      const existing = await supabase.from("news").select("id").eq("slug", slug).maybeSingle();
+      let newsId: string;
+      if (existing.data?.id) {
+        const { error } = await supabase.from("news").update(newsPayload).eq("id", existing.data.id);
+        if (error) throw error;
+        newsId = existing.data.id;
+      } else {
+        const { data, error } = await supabase.from("news").insert(newsPayload).select("id").single();
+        if (error) throw error;
+        newsId = data!.id;
+      }
+
+      await (supabase as any)
+        .from("sermons")
+        .update({ is_published: true, published_at: new Date().toISOString(), news_id: newsId })
+        .eq("id", id);
+
+      // Baixa também o PNG para o usuário postar nas redes.
+      const dlUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = dlUrl;
+      a.download = `${slug}.png`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(dlUrl), 1500);
+
+      return id;
+    },
+    onSuccess: (id) => {
+      toast.success("Publicado no feed de Notícias e baixado para as redes.");
+      setEditingId(id);
+      void qc.invalidateQueries({ queryKey: ["sermons"] });
+      void qc.invalidateQueries({ queryKey: ["news"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -242,9 +369,16 @@ function PregacoesPage() {
                     className="group flex flex-col rounded-xl border border-border bg-card/50 p-5 transition-all hover:-translate-y-0.5 hover:shadow-md"
                   >
                     <div className="flex items-center justify-between gap-2">
-                      <Badge variant="outline" className="gap-1.5">
-                        <Icon className="h-3 w-3" /> {tpl?.label ?? s.template}
-                      </Badge>
+                      <div className="flex items-center gap-1.5">
+                        <Badge variant="outline" className="gap-1.5">
+                          <Icon className="h-3 w-3" /> {tpl?.label ?? s.template}
+                        </Badge>
+                        {s.is_published && (
+                          <Badge className="gap-1">
+                            <CheckCircle2 className="h-3 w-3" /> Publicado
+                          </Badge>
+                        )}
+                      </div>
                       {s.preached_on && (
                         <span className="flex items-center gap-1 text-xs text-muted-foreground">
                           <CalendarDays className="h-3 w-3" />
@@ -287,12 +421,16 @@ function PregacoesPage() {
         title="Estúdio de pregações"
         description="Preencha os campos à esquerda e veja a arte se montar em tempo real à direita."
         actions={
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button variant="ghost" onClick={() => setEditingId(undefined)}>
               <ArrowLeft className="h-4 w-4" /> Voltar
             </Button>
-            <Button disabled={save.isPending} onClick={() => save.mutate()}>
+            <Button variant="outline" disabled={save.isPending} onClick={() => save.mutate()}>
               <Save className="h-4 w-4" /> Salvar
+            </Button>
+            <Button disabled={publish.isPending} onClick={() => publish.mutate()}>
+              {publish.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+              Publicar no feed
             </Button>
           </div>
         }
@@ -301,6 +439,33 @@ function PregacoesPage() {
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
           {/* Formulário */}
           <div className="space-y-5">
+            <div className="space-y-2 rounded-xl border border-border bg-card/40 p-4">
+              <Label className="flex items-center gap-2">
+                <Youtube className="h-4 w-4 text-red-600" /> Link do YouTube da pregação
+              </Label>
+              <div className="flex gap-2">
+                <Input
+                  value={draft.youtube_url}
+                  onChange={(e) => set({ youtube_url: e.target.value })}
+                  onBlur={() => draft.youtube_url?.trim() && fetchYouTube()}
+                  placeholder="https://youtu.be/..."
+                />
+                <Button variant="outline" disabled={ytLoading} onClick={() => fetchYouTube()}>
+                  {ytLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Buscar"}
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Cola o link e clica em Buscar — o título e a capa vêm automaticamente.
+              </p>
+              {draft.cover_image_url ? (
+                <img
+                  src={draft.cover_image_url}
+                  alt="Capa do vídeo"
+                  className="mt-1 w-full rounded-lg border border-border"
+                  loading="lazy"
+                />
+              ) : null}
+            </div>
             <div className="space-y-2">
               <Label>Título da pregação</Label>
               <Input
@@ -428,7 +593,7 @@ function PregacoesPage() {
               </label>
             </div>
 
-            <SermonCanvas draft={draft} />
+            <SermonCanvas draft={draft} innerRef={previewRef} />
           </div>
         </div>
       </PageBody>

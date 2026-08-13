@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, type Ref } from "react";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Download, Image as ImageIcon, Code2 } from "lucide-react";
@@ -29,13 +29,15 @@ export interface SermonDraft {
   template: SermonTemplate;
   dark: boolean;
   churchName?: string;
+  youtube_url?: string;
+  cover_image_url?: string;
 }
 
 const SERIF = "'Syne', 'Georgia', serif";
 const SANS = "'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif";
 const MONO = "'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace";
 
-const DIMS: Record<SermonTemplate, { w: number; h: number }> = {
+export const DIMS: Record<SermonTemplate, { w: number; h: number }> = {
   mapa: { w: 1600, h: 1000 },
   infografico: { w: 1080, h: 1350 },
   arte: { w: 1080, h: 1080 },
@@ -439,11 +441,45 @@ function LayoutArte({ d, P }: { d: SermonDraft; P: Palette }) {
   );
 }
 
-export function SermonCanvas({ draft }: { draft: SermonDraft }) {
+/** Rasteriza um <svg> já renderizado para um PNG (2× por padrão). Reutilizável
+ *  tanto para baixar quanto para publicar a arte no feed. */
+export async function svgToPngBlob(
+  svg: SVGSVGElement,
+  w: number,
+  h: number,
+  scale = 2,
+): Promise<Blob> {
+  const xml = new XMLSerializer().serializeToString(svg);
+  const svg64 = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(xml);
+  const img = new Image();
+  await new Promise<void>((resolve, reject) => {
+    img.onload = () => resolve();
+    img.onerror = reject;
+    img.src = svg64;
+  });
+  const canvas = document.createElement("canvas");
+  canvas.width = w * scale;
+  canvas.height = h * scale;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Canvas indisponível.");
+  ctx.scale(scale, scale);
+  ctx.drawImage(img, 0, 0, w, h);
+  return await new Promise<Blob>((resolve, reject) =>
+    canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("Falha ao gerar PNG."))), "image/png"),
+  );
+}
+
+export function SermonCanvas({ draft, innerRef }: { draft: SermonDraft; innerRef?: Ref<SVGSVGElement> }) {
   const ref = useRef<SVGSVGElement>(null);
   const { w, h } = DIMS[draft.template];
   const P = palette(draft.dark);
   const base = slugify(draft.theme || draft.title) + (draft.preached_on ? "-" + draft.preached_on : "");
+
+  const setSvg = (el: SVGSVGElement | null) => {
+    ref.current = el;
+    if (typeof innerRef === "function") innerRef(el);
+    else if (innerRef) (innerRef as { current: SVGSVGElement | null }).current = el;
+  };
 
   const download = (filename: string, href: string) => {
     const a = document.createElement("a");
@@ -465,35 +501,17 @@ export function SermonCanvas({ draft }: { draft: SermonDraft }) {
 
   const exportPNG = async () => {
     if (!ref.current) return;
-    const xml = new XMLSerializer().serializeToString(ref.current);
-    const svg64 = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(xml);
-    const img = new Image();
-    await new Promise<void>((resolve, reject) => {
-      img.onload = () => resolve();
-      img.onerror = reject;
-      img.src = svg64;
-    });
-    const scale = 2;
-    const canvas = document.createElement("canvas");
-    canvas.width = w * scale;
-    canvas.height = h * scale;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    ctx.scale(scale, scale);
-    ctx.drawImage(img, 0, 0, w, h);
-    canvas.toBlob((blob) => {
-      if (!blob) return;
-      const url = URL.createObjectURL(blob);
-      download(base + ".png", url);
-      setTimeout(() => URL.revokeObjectURL(url), 1500);
-    }, "image/png");
+    const blob = await svgToPngBlob(ref.current, w, h, 2);
+    const url = URL.createObjectURL(blob);
+    download(base + ".png", url);
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
   };
 
   return (
     <div className="space-y-4">
       <div className="overflow-hidden rounded-xl border border-border bg-muted/30 shadow-sm">
         <svg
-          ref={ref}
+          ref={setSvg}
           xmlns="http://www.w3.org/2000/svg"
           width={w}
           height={h}
