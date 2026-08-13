@@ -184,6 +184,11 @@ export function EventForm({
         is_featured: form.is_featured,
         status: form.status,
         image_url: form.image_url.trim() || null,
+        reminder_settings: {
+          enabled: form.reminder_enabled,
+          lead_time: Number(form.reminder_lead_time),
+          type: form.reminder_type,
+        },
       };
 
       if (event) {
