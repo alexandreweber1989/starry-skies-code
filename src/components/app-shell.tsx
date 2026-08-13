@@ -172,7 +172,6 @@ export function AppShell({ children }: { children: ReactNode }) {
               <div className="lg:hidden">
                 <GlobalSearch />
               </div>
-              <QuickActions />
               <NotificationsBell />
               <div className="hidden sm:block h-6 w-px bg-border mx-1" />
               <div className="hidden sm:flex items-center gap-2">
