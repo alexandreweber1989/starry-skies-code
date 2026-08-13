@@ -182,7 +182,7 @@ function RedesPage() {
                             <div className="text-xs text-muted-foreground truncate">
                               {mesaStats.leaders.length > 0
                                 ? mesaStats.leaders.map((l) => l.name).join(" · ")
-                                : "Sem liderança definida"}
+                                : "Liderança a definir"}
                               {" — "}
                               {mesaStats.total} {mesaStats.total === 1 ? "pessoa" : "pessoas"}
                             </div>

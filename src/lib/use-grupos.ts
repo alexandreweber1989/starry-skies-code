@@ -17,7 +17,7 @@ export interface GroupStats {
 }
 
 const EMPTY: GroupStats = { total: 0, leaders: [] };
-const LEADER_ROLES = new Set(["pastor", "apascentador", "lider", "lider_mesa", "lider_rede", "lider_ministerio"]);
+const LEADER_ROLES = new Set(["pastor", "apascentador", "lider", "lider_mesa", "lider_rede", "lider_ministerio", "obreiro", "diacono"]);
 
 
 /** Papel exercido no grupo tem prioridade; o card mostra quem lidera. */

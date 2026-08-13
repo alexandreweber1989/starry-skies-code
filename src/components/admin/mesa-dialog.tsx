@@ -165,7 +165,7 @@ export function MesaDialog({
           const profile = profiles?.find((p) => p.id === userId);
           const fn = profile?.church_function;
           // Se a função for apascentador ou pastor, mantém. Caso contrário, define como líder de mesa.
-          const role = fn && (fn === "apascentador" || fn === "pastor") ? fn : "lider_mesa";
+          const role = fn && (fn === "apascentador" || fn === "pastor" || fn === "lider" || fn === "obreiro" || fn === "diacono") ? fn : "lider_mesa";
           return { mesa_id: mesaId!, user_id: userId, role: role as any };
         });
 
