@@ -1229,6 +1229,39 @@ export type Database = {
           },
         ]
       }
+      leader_touchpoints: {
+        Row: {
+          channel: string
+          created_at: string
+          id: string
+          leader_id: string
+          member_id: string
+          mesa_id: string
+          note: string | null
+          week_start: string
+        }
+        Insert: {
+          channel?: string
+          created_at?: string
+          id?: string
+          leader_id: string
+          member_id: string
+          mesa_id: string
+          note?: string | null
+          week_start: string
+        }
+        Update: {
+          channel?: string
+          created_at?: string
+          id?: string
+          leader_id?: string
+          member_id?: string
+          mesa_id?: string
+          note?: string | null
+          week_start?: string
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           city: string | null

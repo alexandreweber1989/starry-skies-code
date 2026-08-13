@@ -22,6 +22,7 @@ import {
   Sprout,
   Newspaper,
   FileText,
+  HeartHandshake,
 } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { useAuth, type AppRole } from "@/lib/auth-context";
@@ -48,6 +49,7 @@ const nav: NavItem[] = [
   { to: "/louvor", label: "Louvor", icon: Music },
   { to: "/redes", label: "Redes", icon: Network },
   { to: "/mesas", label: "Mesas", icon: UtensilsCrossed },
+  { to: "/cuidado-semana", label: "Cuidado da Semana", icon: HeartHandshake, requiredRoles: ["admin_geral", "lider_mesa"] },
   { to: "/faxina", label: "Faxina", icon: Sparkles },
   { to: "/membros", label: "Membros", icon: Users, requiredRoles: ["admin_geral"] },
   { to: "/mapa", label: "Mapa", icon: MapPin, requiredRoles: ["admin_geral"] },
