@@ -32,7 +32,12 @@ interface AuthState {
   isCantinaAdmin: boolean;
   /** Admin geral ou admin do Ministério Infantil. */
   isKidsAdmin: boolean;
+  /** Equipe pastoral: admin geral, pastores e apascentadores. */
+  isPastoral: boolean;
+  /** Qualquer nível de liderança (equipe pastoral + líderes de mesa). */
+  isLeadership: boolean;
   signOut: () => Promise<void>;
+
 }
 
 const AuthContext = createContext<AuthState | null>(null);
