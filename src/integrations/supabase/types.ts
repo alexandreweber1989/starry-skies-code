@@ -1846,6 +1846,56 @@ export type Database = {
           },
         ]
       }
+      prayer_requests: {
+        Row: {
+          category: string
+          content: string
+          created_at: string
+          id: string
+          is_private: boolean | null
+          mesa_id: string | null
+          responded_at: string | null
+          response: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          content: string
+          created_at?: string
+          id?: string
+          is_private?: boolean | null
+          mesa_id?: string | null
+          responded_at?: string | null
+          response?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          content?: string
+          created_at?: string
+          id?: string
+          is_private?: boolean | null
+          mesa_id?: string | null
+          responded_at?: string | null
+          response?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prayer_requests_mesa_id_fkey"
+            columns: ["mesa_id"]
+            isOneToOne: false
+            referencedRelation: "mesas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           category: string
@@ -2286,6 +2336,36 @@ export type Database = {
         Relationships: []
       }
       social_assistance_requests: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          needs_food: boolean | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          needs_food?: boolean | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          needs_food?: boolean | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      social_assistance_requests_legacy: {
         Row: {
           created_at: string | null
           family_members_count: number | null
