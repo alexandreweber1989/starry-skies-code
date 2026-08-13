@@ -20,6 +20,7 @@ import {
   Megaphone,
   MapPin,
   Sprout,
+  Newspaper,
 
 } from "lucide-react";
 import { type ReactNode, useState } from "react";
