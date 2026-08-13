@@ -14,7 +14,7 @@ import {
   Presentation,
   Pencil,
   CalendarDays,
-  Youtube,
+  Youtube as YouTube,
   Send,
   Loader2,
   CheckCircle2,
