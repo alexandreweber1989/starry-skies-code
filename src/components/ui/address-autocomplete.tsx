@@ -90,38 +90,54 @@ export function AddressAutocomplete({ value, onChange, onAddressSelect, placehol
           { input, componentRestrictions: { country: "br" }, types: ["address"] },
           (predictions: any, status: any) => {
             if (status === "OK" && predictions) {
-              setSuggestions(predictions);
+              const mapped: Suggestion[] = predictions.map((p: any) => ({
+                description: p.description,
+                place_id: p.place_id,
+                structured_formatting: {
+                  main_text: p.structured_formatting.main_text,
+                  secondary_text: p.structured_formatting.secondary_text,
+                },
+                raw: p
+              }));
+              setSuggestions(mapped);
               setOpen(true);
+            } else {
+              // Se falhar ou não encontrar, tenta o fallback
+              this?.fetchFallback(input);
             }
             setLoading(false);
           }
         );
       } else {
-        // Fallback OpenStreetMap Nominatim
-        try {
-          const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&countrycodes=br&q=${encodeURIComponent(input)}`);
-          const data = await res.json();
-          const mapped: Suggestion[] = data.map((item: any) => ({
-            description: item.display_name,
-            place_id: item.place_id.toString(),
-            structured_formatting: {
-              main_text: item.address.road || item.display_name.split(",")[0],
-              secondary_text: item.display_name.split(",").slice(1).join(",").trim(),
-            },
-            raw: item
-          }));
-          setSuggestions(mapped);
-          setOpen(true);
-        } catch (e) {
-          console.error("Maps API and fallback failed", e);
-        }
-        setLoading(false);
+        await fetchFallback(input);
       }
     } catch (error) {
       console.error("Error fetching suggestions:", error);
-      setLoading(false);
+      await fetchFallback(input);
     }
   }, []);
+
+  const fetchFallback = async (input: string) => {
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&countrycodes=br&q=${encodeURIComponent(input)}&limit=10`);
+      const data = await res.json();
+      const mapped: Suggestion[] = data.map((item: any) => ({
+        description: item.display_name,
+        place_id: item.place_id.toString(),
+        structured_formatting: {
+          main_text: item.address.road || item.address.pedestrian || item.display_name.split(",")[0],
+          secondary_text: item.display_name.split(",").slice(1).join(",").trim(),
+        },
+        raw: item
+      }));
+      setSuggestions(mapped);
+      if (mapped.length > 0) setOpen(true);
+    } catch (e) {
+      console.error("Maps API and fallback failed", e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
