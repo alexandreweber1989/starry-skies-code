@@ -40,7 +40,7 @@ export function StageMode({ setlist }: { setlist: StageItem[] }) {
   const { data: songs } = useStageSongs(ids, open);
 
   const current = setlist[index];
-  const song = songs?.find((s) => s.id === current?.song?.id);
+  const song = songs?.find((s: any) => s.id === current?.song?.id);
 
   // Reinicia estado ao trocar de música.
   useEffect(() => {
