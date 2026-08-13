@@ -8,8 +8,11 @@ export const Route = createFileRoute("/api/public/import-cifra")({
         const urlParams = new URL(request.url).searchParams;
         const targetUrl = urlParams.get("url");
 
-        if (!targetUrl || !targetUrl.includes("cifraclub.com.br")) {
-          return new Response(JSON.stringify({ error: "URL inválida do CifraClub" }), {
+        const isCifraClub = targetUrl && targetUrl.includes("cifraclub.com.br");
+        const isCifras = targetUrl && targetUrl.includes("cifras.com.br");
+
+        if (!targetUrl || (!isCifraClub && !isCifras)) {
+          return new Response(JSON.stringify({ error: "URL inválida. Use links do CifraClub ou Cifras.com.br" }), {
             status: 400,
             headers: { "Content-Type": "application/json" },
           });
