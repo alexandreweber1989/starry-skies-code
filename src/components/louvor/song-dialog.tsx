@@ -71,8 +71,8 @@ export function SongDialog({ initial, trigger }: { initial: SongDraft; trigger: 
         is_active: draft.is_active,
       };
       const { error } = draft.id
-        ? await supabase.from("worship_songs").update(payload).eq("id", draft.id)
-        : await supabase.from("worship_songs").insert(payload);
+        ? await (supabase.from("songs") as any).update(payload).eq("id", draft.id)
+        : await (supabase.from("songs") as any).insert(payload);
       if (error) throw error;
     },
     onSuccess: () => {
