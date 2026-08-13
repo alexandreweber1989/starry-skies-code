@@ -22,7 +22,7 @@ export function LiveStreamCard() {
       <div className="aspect-video bg-black relative">
         {status.isLive ? (
           <iframe
-            src={`https://www.youtube.com/embed/live_stream?channel=UCyJ2B1V_9Xo8eW8zXQnKx2w`} // Replace with real ID
+            src={`https://www.youtube.com/embed/live_stream?channel=UC-n6qZf6vY-eT29864uU5wQ`} // ID do canal @BatistaAtos
             className="w-full h-full"
             allowFullScreen
           />

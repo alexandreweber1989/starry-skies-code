@@ -10,7 +10,7 @@ export const Route = createFileRoute('/api/public/live-status')({
         // The user can update this URL via a future admin setting
         return new Response(JSON.stringify({
           isLive: false,
-          liveUrl: "https://www.youtube.com/@IgrejaBatistaAtos",
+          liveUrl: "https://www.youtube.com/@BatistaAtos/streams",
           title: "Culto de Celebração"
         }), {
           headers: { 'Content-Type': 'application/json' }
