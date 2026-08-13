@@ -77,6 +77,7 @@ const atalhos: { to: string; label: string; icon: any; requiredRoles?: AppRole[]
     requiredRoles: ["admin_geral", "admin_cantina"],
   },
   { to: "/perfil", label: "Meu perfil", icon: UserPlus },
+  { to: "/cuidado", label: "Cuidado", icon: HeartPulse },
 ];
 
 function Dashboard() {
