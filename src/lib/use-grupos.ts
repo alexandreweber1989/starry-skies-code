@@ -56,8 +56,8 @@ export function useGroupStats() {
     queryKey: ["group-stats"],
     queryFn: async () => {
       const [redes, mesas] = await Promise.all([
-        supabase.from("rede_members").select("rede_id, user_id, role, profiles:profiles!inner(full_name, gender)"),
-        supabase.from("mesa_members").select("mesa_id, user_id, role, profiles(full_name, gender)"),
+        supabase.from("rede_members").select("rede_id, user_id, role, profiles:profiles(full_name, gender)"),
+        supabase.from("mesa_members").select("mesa_id, user_id, role, profiles:profiles(full_name, gender)"),
       ]);
       if (redes.error) throw redes.error;
       if (mesas.error) throw mesas.error;
