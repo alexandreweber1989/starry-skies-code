@@ -20,15 +20,20 @@ import { toast } from "sonner";
 import { Heart, HandHelping } from "lucide-react";
 
 const formSchema = z.object({
-  needs_food: z.boolean().default(false),
+  needs_food: z.boolean(),
   description: z.string().min(10, "Por favor, descreva brevemente a necessidade (mínimo 10 caracteres)."),
 });
+
+type FormValues = {
+  needs_food: boolean;
+  description: string;
+};
 
 export function SocialAssistanceForm({ onSuccess }: { onSuccess?: () => void }) {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       needs_food: false,
@@ -36,7 +41,7 @@ export function SocialAssistanceForm({ onSuccess }: { onSuccess?: () => void }) 
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: FormValues) {
     if (!user) return;
     setLoading(true);
     try {
