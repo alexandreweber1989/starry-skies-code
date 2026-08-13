@@ -87,7 +87,13 @@ export function AddressAutocomplete({ value, onChange, onAddressSelect, placehol
       if (typeof window !== "undefined" && (window as any).google) {
         const service = new (window as any).google.maps.places.AutocompleteService();
         service.getPlacePredictions(
-          { input, componentRestrictions: { country: "br" }, types: ["address"] },
+          { 
+            input, 
+            componentRestrictions: { country: "br" }, 
+            types: ["address"],
+            // Google Maps permite filtrar por tipos específicos e idiomas se configurado na biblioteca
+            language: "pt-BR"
+          },
           (predictions: any, status: any) => {
             if (status === "OK" && predictions) {
               const mapped: Suggestion[] = predictions.map((p: any) => ({
