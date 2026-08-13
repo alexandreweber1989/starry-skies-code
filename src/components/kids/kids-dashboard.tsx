@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Baby, CalendarDays, QrCode, ShieldCheck, Users, Search, Filter } from "lucide-react";
+import { Baby, CalendarDays, QrCode, ShieldCheck, Users, Search, Filter, FileText } from "lucide-react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
