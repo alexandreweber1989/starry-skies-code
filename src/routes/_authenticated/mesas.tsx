@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/select";
 import { useAuth } from "@/lib/auth-context";
 import { MesaDialog, MesaMembersDialog, EditMesaButton } from "@/components/admin/mesa-dialog";
+import { MesaEventDialog } from "@/components/events/mesa-event-dialog";
+
 import { GroupSummary } from "@/components/admin/group-summary";
 import { statsOf, useGroupStats } from "@/lib/use-grupos";
 import { LoadingRegion, CardGridSkeleton } from "@/components/ui/loading-states";
@@ -159,7 +161,9 @@ function MesasPage() {
                 {(isAdmin || isMesaLeader(m.id)) && (
                   <div className="mt-4 flex flex-wrap items-center gap-2">
                     <MesaMembersDialog mesaId={m.id} mesaName={m.name} />
+                    <MesaEventDialog mesa={m} />
                     {isAdmin && <EditMesaButton mesa={m} />}
+
                   </div>
                 )}
                 <div className="mt-6 pt-4 border-t border-border space-y-1 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
