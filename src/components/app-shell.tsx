@@ -44,6 +44,9 @@ const nav: NavItem[] = [
   { to: "/redes", label: "Redes", icon: Network },
   { to: "/mesas", label: "Mesas", icon: UtensilsCrossed },
   { to: "/membros", label: "Membros", icon: Users, requiredRoles: ["admin_geral"] },
+  { to: "/mapa", label: "Mapa", icon: MapPin, requiredRoles: ["admin_geral"] },
+  { to: "/onboarding", label: "Integração", icon: Sprout, requiredRoles: ["admin_geral"] },
+
   { to: "/kids", label: "Kids", icon: Baby, requiredRoles: ["admin_geral", "admin_kids"] },
   { to: "/igrejas", label: "Ações Sociais", icon: Heart, requiredRoles: ["admin_geral"] },
   { to: "/livraria", label: "Livraria", icon: BookOpen, requiredRoles: ["admin_geral", "admin_livraria"] },
