@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Trash2, MapPin, ExternalLink, Loader2 } from "lucide-react";
+import { Plus, Trash2, MapPin, ExternalLink, Loader2, Star } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { AddressAutocomplete } from "@/components/ui/address-autocomplete";
 
 export function AddressManager({ mesaId }: { mesaId: string }) {
@@ -17,6 +18,7 @@ export function AddressManager({ mesaId }: { mesaId: string }) {
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [fullAddress, setFullAddress] = useState("");
+  const [isMain, setIsMain] = useState(false);
   const qc = useQueryClient();
 
   const { data: addresses, isPending } = useQuery({
@@ -43,6 +45,7 @@ export function AddressManager({ mesaId }: { mesaId: string }) {
         city,
         state,
         full_address: fullAddress || `${street}, ${number} - ${neighborhood}, ${city} - ${state}`,
+        is_main: isMain,
       });
       if (error) throw error;
     },
@@ -56,6 +59,7 @@ export function AddressManager({ mesaId }: { mesaId: string }) {
       setCity("");
       setState("");
       setFullAddress("");
+      setIsMain(false);
       void qc.invalidateQueries({ queryKey: ["mesa-addresses", mesaId] });
     },
     onError: (e: Error) => toast.error(e.message),
@@ -68,6 +72,21 @@ export function AddressManager({ mesaId }: { mesaId: string }) {
     },
     onSuccess: () => {
       toast.success("Endereço removido.");
+      void qc.invalidateQueries({ queryKey: ["mesa-addresses", mesaId] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+  
+  const setMain = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from("mesa_addresses" as any)
+        .update({ is_main: true })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Endereço principal atualizado.");
       void qc.invalidateQueries({ queryKey: ["mesa-addresses", mesaId] });
     },
     onError: (e: Error) => toast.error(e.message),
@@ -135,6 +154,14 @@ export function AddressManager({ mesaId }: { mesaId: string }) {
                 className="h-9"
               />
             </div>
+            <div className="flex items-center gap-2 col-span-2 py-1">
+              <Switch
+                id="is-main"
+                checked={isMain}
+                onCheckedChange={setIsMain}
+              />
+              <Label htmlFor="is-main" className="text-xs cursor-pointer">Definir como endereço principal</Label>
+            </div>
           </div>
           <div className="flex gap-2 justify-end pt-2">
             <Button variant="ghost" size="sm" onClick={() => setIsAdding(false)}>
@@ -162,12 +189,30 @@ export function AddressManager({ mesaId }: { mesaId: string }) {
               <div className="min-w-0 pr-10">
                 <div className="font-medium text-sm flex items-center gap-2">
                   {addr.label}
+                  {addr.is_main && (
+                    <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-primary/10 text-[10px] text-primary font-bold uppercase tracking-wider">
+                      <Star className="h-2.5 w-2.5 fill-current" />
+                      Principal
+                    </span>
+                  )}
                 </div>
                 <div className="text-xs text-muted-foreground truncate">
                   {addr.street}, {addr.number} - {addr.neighborhood}
                 </div>
               </div>
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                {!addr.is_main && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-muted-foreground hover:text-primary"
+                    onClick={() => setMain.mutate(addr.id)}
+                    disabled={setMain.isPending}
+                    title="Definir como principal"
+                  >
+                    <Star className="h-4 w-4" />
+                  </Button>
+                )}
                 <Button
                   variant="ghost"
                   size="icon"
