@@ -23,6 +23,25 @@ export function NotificationsBell() {
     queryFn: async (): Promise<Pendencia[]> => {
       const items: Pendencia[] = [];
 
+      // Avisos no ar que a pessoa ainda não marcou como lidos.
+      const [avisosRes, leiturasRes] = await Promise.all([
+        supabase
+          .from("announcements")
+          .select("id, published_at, expires_at")
+          .eq("is_published", true),
+        supabase.from("announcement_reads").select("announcement_id").eq("user_id", user!.id),
+      ]);
+      const lidos = new Set((leiturasRes.data ?? []).map((r: any) => r.announcement_id as string));
+      const agora = Date.now();
+      const naoLidos = (avisosRes.data ?? []).filter((a: any) => {
+        if (lidos.has(a.id)) return false;
+        if (a.published_at && new Date(a.published_at).getTime() > agora) return false;
+        if (a.expires_at && new Date(a.expires_at).getTime() <= agora) return false;
+        return true;
+      }).length;
+      if (naoLidos)
+        items.push({ label: "Avisos que você ainda não leu", count: naoLidos, to: "/avisos" });
+
       const minhasEscalas = await supabase
         .from("worship_schedule_assignments")
         .select("id", { count: "exact", head: true })

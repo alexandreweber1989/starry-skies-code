@@ -31,6 +31,7 @@ import { EscalaPendente } from "@/components/painel/escala-pendente";
 import { MeusLideres } from "@/components/painel/meus-lideres";
 import { ProximosEventos } from "@/components/painel/proximos-eventos";
 import { ContribuicaoPix } from "@/components/painel/contribuicao-pix";
+import { AvisosRecentes } from "@/components/painel/avisos-recentes";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -257,7 +258,11 @@ function Dashboard() {
         </div>
 
         <div className="mt-6 grid lg:grid-cols-2 gap-6">
+          <AvisosRecentes />
           <ProximosEventos />
+        </div>
+
+        <div className="mt-6">
           <ContribuicaoPix />
         </div>
 

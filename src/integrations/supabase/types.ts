@@ -14,6 +14,121 @@ export type Database = {
   }
   public: {
     Tables: {
+      announcement_reads: {
+        Row: {
+          announcement_id: string
+          id: string
+          read_at: string
+          user_id: string
+        }
+        Insert: {
+          announcement_id: string
+          id?: string
+          read_at?: string
+          user_id?: string
+        }
+        Update: {
+          announcement_id?: string
+          id?: string
+          read_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "announcement_reads_announcement_id_fkey"
+            columns: ["announcement_id"]
+            isOneToOne: false
+            referencedRelation: "announcements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      announcements: {
+        Row: {
+          body: string
+          category: Database["public"]["Enums"]["announcement_category"]
+          church_id: string | null
+          created_at: string
+          created_by: string
+          expires_at: string | null
+          id: string
+          is_pinned: boolean
+          is_published: boolean
+          mesa_id: string | null
+          ministry_id: string | null
+          published_at: string | null
+          rede_id: string | null
+          scope: Database["public"]["Enums"]["announcement_scope"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body: string
+          category?: Database["public"]["Enums"]["announcement_category"]
+          church_id?: string | null
+          created_at?: string
+          created_by?: string
+          expires_at?: string | null
+          id?: string
+          is_pinned?: boolean
+          is_published?: boolean
+          mesa_id?: string | null
+          ministry_id?: string | null
+          published_at?: string | null
+          rede_id?: string | null
+          scope?: Database["public"]["Enums"]["announcement_scope"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          category?: Database["public"]["Enums"]["announcement_category"]
+          church_id?: string | null
+          created_at?: string
+          created_by?: string
+          expires_at?: string | null
+          id?: string
+          is_pinned?: boolean
+          is_published?: boolean
+          mesa_id?: string | null
+          ministry_id?: string | null
+          published_at?: string | null
+          rede_id?: string | null
+          scope?: Database["public"]["Enums"]["announcement_scope"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "announcements_church_id_fkey"
+            columns: ["church_id"]
+            isOneToOne: false
+            referencedRelation: "churches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "announcements_mesa_id_fkey"
+            columns: ["mesa_id"]
+            isOneToOne: false
+            referencedRelation: "mesas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "announcements_ministry_id_fkey"
+            columns: ["ministry_id"]
+            isOneToOne: false
+            referencedRelation: "ministries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "announcements_rede_id_fkey"
+            columns: ["rede_id"]
+            isOneToOne: false
+            referencedRelation: "redes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       app_settings: {
         Row: {
           key: string
@@ -2109,6 +2224,26 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_manage_announcement: {
+        Args: {
+          _mesa_id: string
+          _ministry_id: string
+          _scope: Database["public"]["Enums"]["announcement_scope"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      can_view_announcement: {
+        Args: {
+          _church_id: string
+          _mesa_id: string
+          _ministry_id: string
+          _rede_id: string
+          _scope: Database["public"]["Enums"]["announcement_scope"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       claim_first_admin: { Args: { _user_id: string }; Returns: boolean }
       gen_pickup_code: { Args: { _prefix: string }; Returns: string }
       has_mesa_role: {
@@ -2149,6 +2284,8 @@ export type Database = {
       }
     }
     Enums: {
+      announcement_category: "aviso" | "comunicado" | "urgente" | "acao"
+      announcement_scope: "geral" | "igreja" | "ministerio" | "rede" | "mesa"
       app_role:
         | "admin_geral"
         | "admin_ministerio"
@@ -2314,6 +2451,8 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      announcement_category: ["aviso", "comunicado", "urgente", "acao"],
+      announcement_scope: ["geral", "igreja", "ministerio", "rede", "mesa"],
       app_role: [
         "admin_geral",
         "admin_ministerio",
