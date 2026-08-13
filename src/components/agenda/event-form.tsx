@@ -49,6 +49,9 @@ interface FormState {
   is_featured: boolean;
   status: EventStatus;
   image_url: string;
+  reminder_enabled: boolean;
+  reminder_lead_time: string;
+  reminder_type: "push" | "email" | "both";
 }
 
 const EMPTY: FormState = {
@@ -65,6 +68,9 @@ const EMPTY: FormState = {
   is_featured: false,
   status: "publicado",
   image_url: "",
+  reminder_enabled: false,
+  reminder_lead_time: "30",
+  reminder_type: "push",
 };
 
 function fromEvent(e: ChurchEvent): FormState {
