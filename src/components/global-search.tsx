@@ -88,19 +88,25 @@ export function GlobalSearch() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 rounded-sm border border-border bg-background px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        className="flex items-center gap-2 rounded-xl border border-border bg-background/50 backdrop-blur-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 hover:border-primary/50 transition-all duration-300 shadow-sm group"
+        aria-label="Pesquisa global"
       >
-        <Search className="h-4 w-4" />
-        <span className="hidden sm:inline">Buscar...</span>
-        <kbd className="hidden md:inline font-mono text-[10px] border border-border rounded-sm px-1.5 py-0.5">
+        <Search className="h-4 w-4 group-hover:scale-110 group-hover:text-primary transition-all" />
+        <span className="hidden sm:inline font-medium">Pesquisar...</span>
+        <kbd className="hidden md:inline font-mono text-[10px] bg-muted border border-border rounded-lg px-1.5 py-0.5 group-hover:bg-background transition-colors">
           Ctrl K
         </kbd>
       </button>
 
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Buscar membro, ministério, mesa, louvor, produto..." />
+        <CommandInput 
+          placeholder="Pesquisar membro, ministério, mesa, louvor..." 
+          className="font-medium"
+        />
         <CommandList>
-          <CommandEmpty>Nada encontrado.</CommandEmpty>
+          <CommandEmpty className="py-6 text-center text-muted-foreground">
+            Nenhum resultado encontrado para esta pesquisa.
+          </CommandEmpty>
           <CommandGroup heading="Ir para">
             {[
               { label: "Painel", to: "/dashboard" },
