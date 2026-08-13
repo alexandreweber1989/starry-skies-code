@@ -29,11 +29,14 @@ export const sendUrgentNotification = createServerFn({ method: "POST" })
       const message = `Olá ${leader.full_name}, um novo pedido URGENTE foi recebido!\n\nSolicitante: ${userName}\nTipo: ${type === 'prayer' ? 'Oração' : 'Assistência Social'}\n\nConteúdo: ${content}\n\nPor favor, acesse a plataforma para mais detalhes.`;
       
       return sendWhatsAppNotification({
-        phone: leader.phone,
-        message,
-        childName: userName,
-        type: 'checkin' // Reusing the type from the existing function for simulation
+        data: {
+          phone: leader.phone,
+          message,
+          childName: userName,
+          type: 'checkin'
+        }
       });
+
     }));
     
     return { success: true, targetsNotified: targets.length };
