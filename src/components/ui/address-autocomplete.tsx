@@ -1,7 +1,11 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { MapPin, Loader2 } from "lucide-react";
+import { MapPin, Loader2, Map as MapIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+
+const MapPicker = lazy(() => import("./map-picker").then(m => ({ default: m.MapPicker })));
 
 interface Suggestion {
   description: string;
@@ -32,6 +36,7 @@ export function AddressAutocomplete({ value, onChange, onAddressSelect, placehol
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [mapOpen, setMapOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Fechar ao clicar fora
@@ -138,24 +143,54 @@ export function AddressAutocomplete({ value, onChange, onAddressSelect, placehol
 
   return (
     <div className="relative" ref={containerRef}>
-      <div className="relative">
-        <Input
-          value={value}
-          onChange={(e) => {
-            onChange(e.target.value);
-            fetchSuggestions(e.target.value);
-          }}
-          placeholder={placeholder}
-          className={cn("pr-8", className)}
-        />
-        <div className="absolute right-2 top-1/2 -translate-y-1/2">
-          {loading ? (
-            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-          ) : (
-            <MapPin className="h-4 w-4 text-muted-foreground" />
-          )}
+      <div className="relative flex gap-2">
+        <div className="relative flex-1">
+          <Input
+            value={value}
+            onChange={(e) => {
+              onChange(e.target.value);
+              fetchSuggestions(e.target.value);
+            }}
+            placeholder={placeholder}
+            className={cn("pr-8", className)}
+          />
+          <div className="absolute right-2 top-1/2 -translate-y-1/2">
+            {loading ? (
+              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+            ) : (
+              <MapPin className="h-4 w-4 text-muted-foreground" />
+            )}
+          </div>
         </div>
+        <Button 
+          type="button" 
+          variant="outline" 
+          size="icon" 
+          className="shrink-0"
+          onClick={() => setMapOpen(true)}
+          title="Selecionar no mapa"
+        >
+          <MapIcon className="h-4 w-4" />
+        </Button>
       </div>
+
+      <Dialog open={mapOpen} onOpenChange={setMapOpen}>
+        <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden">
+          <DialogHeader className="p-4 border-b">
+            <DialogTitle>Selecionar local no mapa</DialogTitle>
+          </DialogHeader>
+          <Suspense fallback={<div className="h-[500px] flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>}>
+            <MapPicker 
+              onCancel={() => setMapOpen(false)}
+              onSelect={(addr) => {
+                onAddressSelect?.(addr);
+                onChange(addr.street);
+                setMapOpen(false);
+              }}
+            />
+          </Suspense>
+        </DialogContent>
+      </Dialog>
 
       {open && suggestions.length > 0 && (
         <ul className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-sm shadow-md max-h-60 overflow-y-auto overflow-x-hidden py-1">
