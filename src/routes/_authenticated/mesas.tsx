@@ -167,12 +167,13 @@ function MesasPage() {
                     <Button 
                       variant="outline" 
                       size="sm" 
+                      className="font-mono text-[10px] uppercase tracking-wider h-8 px-3"
                       onClick={() => {
                         setSelectedMesa(m);
                         setEventDialogOpen(true);
                       }}
                     >
-                      <CalendarPlus className="h-4 w-4 mr-1" /> Agendar
+                      <CalendarPlus className="h-3.5 w-3.5 mr-1.5" /> Agendar
                     </Button>
                   </div>
                 )}
@@ -198,7 +199,10 @@ function MesasPage() {
         {selectedMesa && (
           <MesaEventDialog 
             open={eventDialogOpen} 
-            onOpenChange={setEventDialogOpen} 
+            onOpenChange={(open) => {
+              setEventDialogOpen(open);
+              if (!open) setSelectedMesa(null);
+            }} 
             mesa={selectedMesa} 
           />
         )}

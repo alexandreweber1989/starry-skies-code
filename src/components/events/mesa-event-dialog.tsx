@@ -108,7 +108,7 @@ export function MesaEventDialog({ open, onOpenChange, mesa }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md bg-card/95 backdrop-blur-sm border-border/50">
         <DialogHeader>
           <DialogTitle className="font-serif text-2xl">Agendar Reunião da Mesa</DialogTitle>
         </DialogHeader>

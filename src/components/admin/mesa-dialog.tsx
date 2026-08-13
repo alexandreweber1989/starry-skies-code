@@ -254,8 +254,8 @@ export function MesaDialog({
             </div>
           </div>
           <div className="space-y-2">
-            <Label>Local</Label>
-            <Input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Casa da família Silva" />
+            <Label>Ponto de referência ou descrição do local</Label>
+            <Input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Ex: Casa da família Silva, em frente à praça" />
           </div>
           {isEdit && <AddressManager mesaId={mesa!.id} />}
           <div className="space-y-2">
