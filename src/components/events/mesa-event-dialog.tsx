@@ -60,12 +60,13 @@ export function MesaEventDialog({ mesa }: { mesa: any }) {
         location: locationLabel,
         starts_at: startsAt,
         ends_at: endsAt,
-        category: "Mesa",
-        scope: "mesa",
+        category: "Mesa" as any,
+        scope: "mesa" as any,
         mesa_id: mesa.id,
         mesa_address_id: addressId || null,
         created_by: (await supabase.auth.getUser()).data.user?.id
-      });
+      } as any);
+
 
       if (error) throw error;
     },
