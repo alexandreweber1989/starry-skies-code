@@ -737,6 +737,70 @@ export type Database = {
           },
         ]
       }
+      kids_emergency_alerts: {
+        Row: {
+          acknowledged_by_guardian_id: string | null
+          child_id: string | null
+          confirmed_at: string | null
+          created_at: string | null
+          guardian_id: string | null
+          id: string
+          message: string
+          session_id: string | null
+          severity: string
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          acknowledged_by_guardian_id?: string | null
+          child_id?: string | null
+          confirmed_at?: string | null
+          created_at?: string | null
+          guardian_id?: string | null
+          id?: string
+          message: string
+          session_id?: string | null
+          severity?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          acknowledged_by_guardian_id?: string | null
+          child_id?: string | null
+          confirmed_at?: string | null
+          created_at?: string | null
+          guardian_id?: string | null
+          id?: string
+          message?: string
+          session_id?: string | null
+          severity?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kids_emergency_alerts_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "kids_children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kids_emergency_alerts_guardian_id_fkey"
+            columns: ["guardian_id"]
+            isOneToOne: false
+            referencedRelation: "kids_guardians"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kids_emergency_alerts_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "kids_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       kids_guardians: {
         Row: {
           can_pickup: boolean
