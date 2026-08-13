@@ -138,6 +138,27 @@ function VisitorPage() {
     
     // Agora usando a rota de API pública com validação Zod no servidor
     try {
+      let documentUrl = null;
+      const fileInput = document.getElementById('doc-upload') as HTMLInputElement;
+      const file = fileInput?.files?.[0];
+
+      if (file) {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+        const filePath = `visitors/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('kids-documents')
+          .upload(filePath, file);
+
+        if (uploadError) {
+          console.error("Erro no upload:", uploadError);
+          toast.error("Erro ao enviar documento, mas continuaremos com o cadastro.");
+        } else {
+          documentUrl = filePath;
+        }
+      }
+
       const response = await fetch('/api/public/kids-visitor', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -155,8 +176,10 @@ function VisitorPage() {
           guardian_phone: v.guardian_phone,
           guardian_relation: v.guardian_relation,
           guardian_document: v.guardian_document || null,
+          document_url: documentUrl,
           other_pickup: v.other_pickup || null,
           notes: v.notes || null,
+          document_url: (v as any).document_url || null,
         }),
       });
 
