@@ -99,9 +99,14 @@ export function GlobalSearch() {
       </button>
 
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Buscar membro, ministério, mesa, louvor, produto..." />
+        <CommandInput 
+          placeholder="Pesquisar membro, ministério, mesa, louvor..." 
+          className="font-medium"
+        />
         <CommandList>
-          <CommandEmpty>Nada encontrado.</CommandEmpty>
+          <CommandEmpty className="py-6 text-center text-muted-foreground">
+            Nenhum resultado encontrado para esta pesquisa.
+          </CommandEmpty>
           <CommandGroup heading="Ir para">
             {[
               { label: "Painel", to: "/dashboard" },
