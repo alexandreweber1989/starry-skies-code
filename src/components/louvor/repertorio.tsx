@@ -153,8 +153,8 @@ export function Repertorio() {
                       <Youtube className="h-4 w-4" />
                     </a>
                   )}
-                  {song.sheet_url && (
-                    <a href={song.sheet_url} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-blue-500 transition-colors">
+                  {(song.sheet_url || song.chords_url) && (
+                    <a href={(song.sheet_url || song.chords_url)!} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-blue-500 transition-colors">
                       <FileText className="h-4 w-4" />
                     </a>
                   )}
