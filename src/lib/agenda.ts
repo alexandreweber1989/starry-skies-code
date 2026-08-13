@@ -28,6 +28,11 @@ export interface ChurchEvent {
   capacity: number | null;
   is_featured: boolean;
   status: EventStatus;
+  reminder_settings?: {
+    enabled: boolean;
+    lead_time: number;
+    type: "push" | "email" | "both";
+  };
   created_by: string | null;
   ministry?: { name: string; color: string | null } | null;
   rede?: { name: string; color: string | null } | null;
