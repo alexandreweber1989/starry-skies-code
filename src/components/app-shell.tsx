@@ -18,6 +18,9 @@ import {
   Menu,
   Layout,
   Megaphone,
+  MapPin,
+  Sprout,
+
 } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { useAuth, type AppRole } from "@/lib/auth-context";
