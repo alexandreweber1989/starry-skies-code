@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ClipboardPaste, ExternalLink } from "lucide-react";
+import { ClipboardPaste, ExternalLink, Loader2, Wand2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { LOUVOR_MINISTRY_ID, SONG_KEYS, TEMPO_LABELS } from "@/lib/louvor";
 import { parseChordSheet } from "@/lib/cifra-import";
@@ -49,6 +49,7 @@ export function SongDialog({ initial, trigger }: { initial: SongDraft; trigger: 
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState(initial);
   const [paste, setPaste] = useState("");
+  const [isImporting, setIsImporting] = useState(false);
   const qc = useQueryClient();
 
 
@@ -143,6 +144,38 @@ export function SongDialog({ initial, trigger }: { initial: SongDraft; trigger: 
                   value={draft.sheet_url}
                   onChange={(e) => setDraft({ ...draft, sheet_url: e.target.value })}
                 />
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="icon"
+                  disabled={isImporting || !draft.sheet_url.includes("cifraclub.com.br")}
+                  onClick={async () => {
+                    setIsImporting(true);
+                    try {
+                      const res = await fetch(`/api/public/import-cifra?url=${encodeURIComponent(draft.sheet_url)}`);
+                      const data = await res.json();
+                      if (data.error) throw new Error(data.error);
+
+                      const parsed = parseChordSheet(data.content);
+                      setDraft((d) => ({
+                        ...d,
+                        title: d.title || data.title || parsed.title || "",
+                        artist: d.artist || data.artist || parsed.artist || "",
+                        song_key: data.key || parsed.key || d.song_key,
+                        chords: parsed.chords,
+                        lyrics: parsed.lyrics,
+                      }));
+                      toast.success("Dados importados do link com sucesso!");
+                    } catch (e: any) {
+                      toast.error(e.message || "Erro ao importar link");
+                    } finally {
+                      setIsImporting(false);
+                    }
+                  }}
+                  title="Importar automaticamente via link"
+                >
+                  {isImporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wand2 className="h-4 w-4" />}
+                </Button>
                 {draft.sheet_url && (
                   <a href={draft.sheet_url} target="_blank" rel="noreferrer">
                     <Button type="button" variant="outline" size="icon" aria-label="Abrir link">
