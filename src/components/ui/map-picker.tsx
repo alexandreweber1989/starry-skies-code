@@ -8,6 +8,7 @@ import {
 } from "react-leaflet";
 import L from "leaflet";
 import { Search, MapPin, Loader2, Check, X } from "lucide-react";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -103,19 +104,37 @@ export function MapPicker({ onSelect, onCancel, initialCenter = [-24.9555, -53.4
 
     setIsSearching(true);
     try {
+      // Prioridade: buscar como endereço completo no Brasil
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=1`
+        `https://nominatim.openstreetmap.org/search?format=json&countrycodes=br&addressdetails=1&q=${encodeURIComponent(searchQuery)}&limit=5`
       );
       const data = await res.json();
-      if (data && data[0]) {
+      if (data && data.length > 0) {
+        // Pega o primeiro resultado (mais relevante)
         const item = data[0];
         const lat = parseFloat(item.lat);
         const lng = parseFloat(item.lon);
         setPosition([lat, lng]);
-        reverseGeocode(lat, lng);
+        
+        // Mapeia o endereço retornado pela busca para evitar novo reverse geocode se possível
+        const addr = item.address;
+        const newAddress: AddressData = {
+          street: addr.road || addr.pedestrian || addr.suburb || "",
+          neighborhood: addr.suburb || addr.neighbourhood || addr.city_district || "",
+          city: addr.city || addr.town || addr.village || "",
+          state: addr.state || "",
+          full: item.display_name,
+          lat,
+          lng
+        };
+        setAddress(newAddress);
+        setSearchQuery(newAddress.full);
+      } else {
+        toast.error("Local não encontrado. Tente digitar de outra forma.");
       }
     } catch (error) {
       console.error("Search error:", error);
+      toast.error("Erro na busca de endereço.");
     } finally {
       setIsSearching(false);
     }

@@ -90,38 +90,53 @@ export function AddressAutocomplete({ value, onChange, onAddressSelect, placehol
           { input, componentRestrictions: { country: "br" }, types: ["address"] },
           (predictions: any, status: any) => {
             if (status === "OK" && predictions) {
-              setSuggestions(predictions);
+              const mapped: Suggestion[] = predictions.map((p: any) => ({
+                description: p.description,
+                place_id: p.place_id,
+                structured_formatting: {
+                  main_text: p.structured_formatting.main_text,
+                  secondary_text: p.structured_formatting.secondary_text,
+                },
+                raw: p
+              }));
+              setSuggestions(mapped);
               setOpen(true);
+              setLoading(false);
+            } else {
+              fetchFallback(input);
             }
-            setLoading(false);
           }
         );
       } else {
-        // Fallback OpenStreetMap Nominatim
-        try {
-          const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&countrycodes=br&q=${encodeURIComponent(input)}`);
-          const data = await res.json();
-          const mapped: Suggestion[] = data.map((item: any) => ({
-            description: item.display_name,
-            place_id: item.place_id.toString(),
-            structured_formatting: {
-              main_text: item.address.road || item.display_name.split(",")[0],
-              secondary_text: item.display_name.split(",").slice(1).join(",").trim(),
-            },
-            raw: item
-          }));
-          setSuggestions(mapped);
-          setOpen(true);
-        } catch (e) {
-          console.error("Maps API and fallback failed", e);
-        }
-        setLoading(false);
+        fetchFallback(input);
       }
     } catch (error) {
       console.error("Error fetching suggestions:", error);
-      setLoading(false);
+      fetchFallback(input);
     }
   }, []);
+
+  const fetchFallback = async (input: string) => {
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&countrycodes=br&q=${encodeURIComponent(input)}&limit=10`);
+      const data = await res.json();
+      const mapped: Suggestion[] = data.map((item: any) => ({
+        description: item.display_name,
+        place_id: item.place_id.toString(),
+        structured_formatting: {
+          main_text: item.address.road || item.address.pedestrian || item.display_name.split(",")[0],
+          secondary_text: item.display_name.split(",").slice(1).join(",").trim(),
+        },
+        raw: item
+      }));
+      setSuggestions(mapped);
+      if (mapped.length > 0) setOpen(true);
+    } catch (e) {
+      console.error("Maps API and fallback failed", e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
@@ -173,7 +188,7 @@ export function AddressAutocomplete({ value, onChange, onAddressSelect, placehol
       full: suggestion.description
     };
 
-    if ((window as any).google) {
+    if (typeof window !== "undefined" && (window as any).google && suggestion.place_id.length > 20) {
       const geocoder = new (window as any).google.maps.Geocoder();
       geocoder.geocode({ placeId: suggestion.place_id }, (results: any, status: any) => {
         if (status === "OK" && results[0]) {
@@ -193,19 +208,28 @@ export function AddressAutocomplete({ value, onChange, onAddressSelect, placehol
           
           onChange(formatAddressString(finalAddress));
           onAddressSelect?.(finalAddress);
+        } else {
+          // Se falhar o geocode detalhado, usa o que já temos
+          onChange(formatAddressString(finalAddress));
+          onAddressSelect?.(finalAddress);
         }
       });
     } else if (suggestion.raw) {
-      const addr = suggestion.raw.address;
+      // Trata dados do Nominatim ou Google (fallback)
+      const addr = suggestion.raw.address || {};
       finalAddress = {
-        street: addr.road || finalAddress.street,
+        street: addr.road || addr.pedestrian || finalAddress.street,
         number: addr.house_number || finalAddress.number,
         neighborhood: addr.suburb || addr.neighbourhood || addr.city_district || "",
         city: addr.city || addr.town || addr.village || "",
         state: addr.state || "",
-        full: suggestion.raw.display_name
+        full: suggestion.description
       };
       
+      onChange(formatAddressString(finalAddress));
+      onAddressSelect?.(finalAddress);
+    } else {
+      // Caso genérico
       onChange(formatAddressString(finalAddress));
       onAddressSelect?.(finalAddress);
     }
@@ -295,7 +319,7 @@ export function AddressAutocomplete({ value, onChange, onAddressSelect, placehol
         </DialogContent>
       </Dialog>
 
-      {open && filteredSuggestions.length > 0 && (
+      {open && (
         <div className="absolute z-[100] w-full mt-2 bg-popover border border-border rounded-lg shadow-xl max-h-[300px] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
           <div className="p-2 bg-muted/30 border-b flex items-center justify-between">
             <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground px-1">
@@ -306,27 +330,33 @@ export function AddressAutocomplete({ value, onChange, onAddressSelect, placehol
             </span>
           </div>
           <ul className="overflow-y-auto max-h-[250px] py-1">
-            {filteredSuggestions.map((s, index) => (
-              <li
-                key={s.place_id}
-                onClick={() => handleSelect(s)}
-                onMouseEnter={() => setActiveIndex(index)}
-                className={cn(
-                  "px-4 py-3 cursor-pointer text-sm flex gap-3 transition-colors",
-                  activeIndex === index ? "bg-primary/10 text-primary" : "hover:bg-muted text-foreground"
-                )}
-              >
-                <div className="shrink-0 mt-0.5">
-                  <MapPin className={cn("h-4 w-4", activeIndex === index ? "text-primary" : "text-muted-foreground")} />
-                </div>
-                <div className="flex flex-col min-w-0">
-                  <span className="font-semibold truncate">{s.structured_formatting.main_text}</span>
-                  <span className="text-xs opacity-70 truncate">
-                    {s.structured_formatting.secondary_text}
-                  </span>
-                </div>
+            {filteredSuggestions.length > 0 ? (
+              filteredSuggestions.map((s, index) => (
+                <li
+                  key={s.place_id}
+                  onClick={() => handleSelect(s)}
+                  onMouseEnter={() => setActiveIndex(index)}
+                  className={cn(
+                    "px-4 py-3 cursor-pointer text-sm flex gap-3 transition-colors",
+                    activeIndex === index ? "bg-primary/10 text-primary" : "hover:bg-muted text-foreground"
+                  )}
+                >
+                  <div className="shrink-0 mt-0.5">
+                    <MapPin className={cn("h-4 w-4", activeIndex === index ? "text-primary" : "text-muted-foreground")} />
+                  </div>
+                  <div className="flex flex-col min-w-0">
+                    <span className="font-semibold truncate">{s.structured_formatting.main_text}</span>
+                    <span className="text-xs opacity-70 truncate">
+                      {s.structured_formatting.secondary_text}
+                    </span>
+                  </div>
+                </li>
+              ))
+            ) : (
+              <li className="px-4 py-8 text-center text-sm text-muted-foreground italic">
+                {loading ? "Buscando..." : "Nenhuma sugestão encontrada para este termo."}
               </li>
-            ))}
+            )}
           </ul>
         </div>
       )}
