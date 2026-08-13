@@ -184,7 +184,7 @@ export function ContribuicaoPix() {
           </div>
 
           <div className="mx-auto rounded-xl border border-border bg-background p-4">
-            <QRCodeSVG value={payload} size={180} level="M" includeMargin={false} />
+            <QRCodeSVG value={payload} size={180} level="M" />
             <p className="mt-3 text-center text-xs text-muted-foreground max-w-[180px]">
               Aponte a câmera do seu banco para o QR Code
             </p>
