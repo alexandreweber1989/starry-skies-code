@@ -48,6 +48,7 @@ const nav: NavItem[] = [
   { to: "/louvor", label: "Louvor", icon: Music },
   { to: "/redes", label: "Redes", icon: Network },
   { to: "/mesas", label: "Mesas", icon: UtensilsCrossed },
+  { to: "/faxina", label: "Faxina", icon: Sparkles },
   { to: "/membros", label: "Membros", icon: Users, requiredRoles: ["admin_geral"] },
   { to: "/mapa", label: "Mapa", icon: MapPin, requiredRoles: ["admin_geral"] },
   { to: "/onboarding", label: "Integração", icon: Sprout, requiredRoles: ["admin_geral"] },
