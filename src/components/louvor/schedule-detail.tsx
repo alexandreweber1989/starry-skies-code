@@ -104,7 +104,7 @@ export function ScheduleDetail({ scheduleId, canManage }: { scheduleId: string; 
   const addSong = useMutation({
     mutationFn: async () => {
       if (!songId) throw new Error("Selecione a música.");
-      const song = songs?.find((s) => s.id === songId);
+      const song = songs?.find((s: any) => s.id === songId);
       const position = (detail?.setlist?.length ?? 0) + 1;
       const { error } = await (supabase
         .from("setlist_songs") as any)
@@ -289,7 +289,7 @@ export function ScheduleDetail({ scheduleId, canManage }: { scheduleId: string; 
               <Select value={songId} onValueChange={setSongId}>
                 <SelectTrigger className="flex-1"><SelectValue placeholder="Música do repertório" /></SelectTrigger>
                 <SelectContent className="max-h-60">
-                  {songs?.map((s) => <SelectItem key={s.id} value={s.id}>{s.title}</SelectItem>)}
+                  {songs?.map((s: any) => <SelectItem key={s.id} value={s.id}>{s.title}</SelectItem>)}
                 </SelectContent>
               </Select>
               <Button size="icon" aria-label="Adicionar música" onClick={() => addSong.mutate()}>
