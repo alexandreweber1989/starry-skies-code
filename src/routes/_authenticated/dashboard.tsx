@@ -15,6 +15,7 @@ import {
   Layout,
   CheckCircle2,
   FileText,
+  HeartPulse,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, PageBody } from "@/components/app-shell";
