@@ -162,10 +162,11 @@ export function MesaDialog({
       }
       if (added.length > 0) {
         const rows = added.map((userId) => {
-          const profile = profiles?.find((p) => p.id === userId);
           const fn = profile?.church_function;
-          const role = fn && fn !== "membro" ? fn : "lider";
+          // Se a função for apascentador ou pastor, mantém. Caso contrário, define como líder de mesa.
+          const role = fn && (fn === "apascentador" || fn === "pastor") ? fn : "lider_mesa";
           return { mesa_id: mesaId!, user_id: userId, role: role as any };
+
         });
         const { error } = await supabase.from("mesa_members").insert(rows);
         if (error) throw error;
