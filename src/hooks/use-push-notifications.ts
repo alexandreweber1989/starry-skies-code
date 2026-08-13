@@ -1,9 +1,6 @@
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-/**
- * Hook para registrar o Service Worker e gerenciar tokens de push.
- */
 export function usePushNotifications() {
   useEffect(() => {
     const registerToken = async () => {
@@ -14,7 +11,7 @@ export function usePushNotifications() {
 
       try {
         await (supabase
-          .from("user_push_tokens") as any)
+          .from("user_push_tokens" as any) as any)
           .upsert({
             user_id: user.id,
             token: mockToken,

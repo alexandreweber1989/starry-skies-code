@@ -1,7 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
 
-// Schema para envio de notificações (interno, validado via API Key ou Auth)
 const notificationSchema = z.object({
   userIds: z.array(z.string().uuid()),
   title: z.string(),
@@ -20,8 +19,7 @@ export const Route = createFileRoute('/api/public/notifications')({
 
           const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
 
-          // 1. Registrar no histórico (as any para evitar erros de tipos do db até sync)
-          const { error: histError } = await (supabaseAdmin.from('notifications_history') as any).insert(
+          const { error: histError } = await (supabaseAdmin.from('notifications_history' as any) as any).insert(
             userIds.map(uid => ({
               user_id: uid,
               title,
