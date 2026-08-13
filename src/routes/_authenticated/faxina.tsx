@@ -386,3 +386,111 @@ function AddTaskButton({ scheduleId, onAdd }: { scheduleId: string, onAdd: (titl
     </Sheet>
   );
 }
+  );
+}
+
+function PhotoGallery({ task, scheduleId, onUpload, onDelete, canEdit }: { 
+  task: any, 
+  scheduleId: string, 
+  onUpload: (file: File, type: 'before' | 'after') => void,
+  onDelete: (id: string) => void,
+  canEdit: boolean
+}) {
+  const photos = task.photos || [];
+  const beforePhotos = photos.filter((p: any) => p.type === 'before');
+  const afterPhotos = photos.filter((p: any) => p.type === 'after');
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="ghost" size="icon" className="h-8 w-8 relative">
+          <ImageIcon className="h-4 w-4" />
+          {photos.length > 0 && (
+            <span className="absolute -top-1 -right-1 bg-primary text-[8px] text-white rounded-full w-3 h-3 flex items-center justify-center font-bold">
+              {photos.length}
+            </span>
+          )}
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="font-serif">Galeria - {task.title}</DialogTitle>
+        </DialogHeader>
+        
+        <Tabs defaultValue="before" className="mt-4">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="before">Antes</TabsTrigger>
+            <TabsTrigger value="after">Depois</TabsTrigger>
+          </TabsList>
+          
+          <PhotoTabContent 
+            type="before" 
+            photos={beforePhotos} 
+            onUpload={onUpload} 
+            onDelete={onDelete}
+            canEdit={canEdit}
+          />
+          <PhotoTabContent 
+            type="after" 
+            photos={afterPhotos} 
+            onUpload={onUpload} 
+            onDelete={onDelete}
+            canEdit={canEdit}
+          />
+        </Tabs>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function PhotoTabContent({ type, photos, onUpload, onDelete, canEdit }: { 
+  type: 'before' | 'after', 
+  photos: any[], 
+  onUpload: (file: File, type: 'before' | 'after') => void,
+  onDelete: (id: string) => void,
+  canEdit: boolean
+}) {
+  return (
+    <TabsContent value={type} className="space-y-4 mt-4">
+      {canEdit && (
+        <div className="flex items-center gap-4 p-4 border-2 border-dashed border-border/20 rounded-sm">
+          <label className="flex flex-col items-center justify-center w-full cursor-pointer hover:bg-muted/30 transition-colors py-4">
+            <Camera className="h-6 w-6 mb-2 text-muted-foreground" />
+            <span className="text-xs font-mono uppercase tracking-widest text-muted-foreground">Adicionar Foto</span>
+            <input 
+              type="file" 
+              className="hidden" 
+              accept="image/*" 
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) onUpload(file, type);
+              }}
+            />
+          </label>
+        </div>
+      )}
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        {photos.map((photo: any) => (
+          <div key={photo.id} className="relative aspect-square group rounded-sm overflow-hidden border border-border/10">
+            <img src={photo.url} alt="Faxina" className="object-cover w-full h-full" />
+            {canEdit && (
+              <Button 
+                variant="destructive" 
+                size="icon" 
+                className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={() => onDelete(photo.id)}
+              >
+                <Trash2 className="h-3 w-3" />
+              </Button>
+            )}
+          </div>
+        ))}
+        {photos.length === 0 && (
+          <div className="col-span-full py-8 text-center bg-muted/10 rounded-sm">
+            <p className="text-xs text-muted-foreground font-mono uppercase tracking-widest">Nenhuma foto enviada</p>
+          </div>
+        )}
+      </div>
+    </TabsContent>
+  );
