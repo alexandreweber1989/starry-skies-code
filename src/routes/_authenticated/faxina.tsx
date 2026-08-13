@@ -386,8 +386,6 @@ function AddTaskButton({ scheduleId, onAdd }: { scheduleId: string, onAdd: (titl
     </Sheet>
   );
 }
-  );
-}
 
 function PhotoGallery({ task, scheduleId, onUpload, onDelete, canEdit }: { 
   task: any, 
@@ -494,3 +492,4 @@ function PhotoTabContent({ type, photos, onUpload, onDelete, canEdit }: {
       </div>
     </TabsContent>
   );
+}
