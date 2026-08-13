@@ -31,6 +31,7 @@ import { Route as AuthenticatedMidiaRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedNoticiasRouteImport } from './routes/_authenticated/noticias'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
+import { Route as AuthenticatedPregacoesRouteImport } from './routes/_authenticated/pregacoes'
 import { Route as AuthenticatedRedesRouteImport } from './routes/_authenticated/redes'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as KidsVisitanteRouteImport } from './routes/kids.visitante'
@@ -154,6 +155,11 @@ const AuthenticatedPerfilRoute = AuthenticatedPerfilRouteImport.update({
   path: '/perfil',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPregacoesRoute = AuthenticatedPregacoesRouteImport.update({
+  id: '/pregacoes',
+  path: '/pregacoes',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedRedesRoute = AuthenticatedRedesRouteImport.update({
   id: '/redes',
   path: '/redes',
@@ -241,6 +247,7 @@ export interface FileRoutesByFullPath {
   '/noticias': typeof AuthenticatedNoticiasRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/perfil': typeof AuthenticatedPerfilRoute
+  '/pregacoes': typeof AuthenticatedPregacoesRoute
   '/redes': typeof AuthenticatedRedesRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/kids/visitante': typeof KidsVisitanteRoute
@@ -276,6 +283,7 @@ export interface FileRoutesByTo {
   '/noticias': typeof AuthenticatedNoticiasRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/perfil': typeof AuthenticatedPerfilRoute
+  '/pregacoes': typeof AuthenticatedPregacoesRoute
   '/redes': typeof AuthenticatedRedesRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/kids/visitante': typeof KidsVisitanteRoute
@@ -313,6 +321,7 @@ export interface FileRoutesById {
   '/_authenticated/noticias': typeof AuthenticatedNoticiasRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
+  '/_authenticated/pregacoes': typeof AuthenticatedPregacoesRoute
   '/_authenticated/redes': typeof AuthenticatedRedesRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/kids/visitante': typeof KidsVisitanteRoute
@@ -350,6 +359,7 @@ export interface FileRouteTypes {
     | '/noticias'
     | '/onboarding'
     | '/perfil'
+    | '/pregacoes'
     | '/redes'
     | '/auth/callback'
     | '/kids/visitante'
@@ -385,6 +395,7 @@ export interface FileRouteTypes {
     | '/noticias'
     | '/onboarding'
     | '/perfil'
+    | '/pregacoes'
     | '/redes'
     | '/auth/callback'
     | '/kids/visitante'
@@ -421,6 +432,7 @@ export interface FileRouteTypes {
     | '/_authenticated/noticias'
     | '/_authenticated/onboarding'
     | '/_authenticated/perfil'
+    | '/_authenticated/pregacoes'
     | '/_authenticated/redes'
     | '/auth/callback'
     | '/kids/visitante'
@@ -604,6 +616,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPerfilRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/pregacoes': {
+      id: '/_authenticated/pregacoes'
+      path: '/pregacoes'
+      fullPath: '/pregacoes'
+      preLoaderRoute: typeof AuthenticatedPregacoesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/redes': {
       id: '/_authenticated/redes'
       path: '/redes'
@@ -721,6 +740,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedNoticiasRoute: typeof AuthenticatedNoticiasRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
+  AuthenticatedPregacoesRoute: typeof AuthenticatedPregacoesRoute
   AuthenticatedRedesRoute: typeof AuthenticatedRedesRoute
   AuthenticatedKidsRetiradaCheckinIdRoute: typeof AuthenticatedKidsRetiradaCheckinIdRoute
   AuthenticatedMinisteriosSlugRoute: typeof AuthenticatedMinisteriosSlugRoute
@@ -746,6 +766,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedNoticiasRoute: AuthenticatedNoticiasRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
+  AuthenticatedPregacoesRoute: AuthenticatedPregacoesRoute,
   AuthenticatedRedesRoute: AuthenticatedRedesRoute,
   AuthenticatedKidsRetiradaCheckinIdRoute:
     AuthenticatedKidsRetiradaCheckinIdRoute,
