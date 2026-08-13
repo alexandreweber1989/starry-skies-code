@@ -263,7 +263,7 @@ function MediaModule() {
                             <p className="text-sm text-muted-foreground line-clamp-1">{req.description || "Sem descrição adicional."}</p>
                             <div className="flex items-center gap-4 mt-2 text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
                               <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> Prazo: {req.deadline ? new Date(req.deadline).toLocaleDateString("pt-BR") : "A definir"}</span>
-                              <span className="flex items-center gap-1"><Layout className="h-3 w-3" /> Tipo: {req.format || "Social"}</span>
+                              <span className="flex items-center gap-1"><Layout className="h-3 w-3" /> Tipo: Social</span>
                             </div>
                           </div>
                           <div className="flex gap-2 shrink-0">
