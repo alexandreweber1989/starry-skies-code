@@ -60,24 +60,35 @@ function CuidadoPage() {
           </TabsList>
 
           <TabsContent value="request" className="space-y-6">
-            <div className="grid lg:grid-cols-2 gap-8">
-              <div className="space-y-6">
-                <div className="flex items-center gap-3 border-b pb-4">
-                  <HeartPulse className="h-6 w-6 text-primary" />
-                  <h2 className="text-xl font-serif font-medium">Oração e Aconselhamento</h2>
+            <div className="grid lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2 grid md:grid-cols-2 gap-8">
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3 border-b pb-4">
+                    <HeartPulse className="h-6 w-6 text-primary" />
+                    <h2 className="text-xl font-serif font-medium">Oração e Aconselhamento</h2>
+                  </div>
+                  <PrayerRequestForm />
                 </div>
-                <PrayerRequestForm />
+
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3 border-b pb-4">
+                    <HandHelping className="h-6 w-6 text-rose-600" />
+                    <h2 className="text-xl font-serif font-medium">Assistência Social (Atos de Amor)</h2>
+                  </div>
+                  <SocialAssistanceForm />
+                </div>
               </div>
 
               <div className="space-y-6">
                 <div className="flex items-center gap-3 border-b pb-4">
-                  <HandHelping className="h-6 w-6 text-rose-600" />
-                  <h2 className="text-xl font-serif font-medium">Assistência Social (Atos de Amor)</h2>
+                  <HeartPulse className="h-6 w-6 text-rose-600" />
+                  <h2 className="text-xl font-serif font-medium">Contribua</h2>
                 </div>
-                <SocialAssistanceForm />
+                <DonationWidget />
               </div>
             </div>
           </TabsContent>
+
 
           <TabsContent value="history" className="space-y-8">
              <div className="max-w-3xl mx-auto space-y-6">
