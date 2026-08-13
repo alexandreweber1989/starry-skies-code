@@ -49,6 +49,9 @@ interface FormState {
   is_featured: boolean;
   status: EventStatus;
   image_url: string;
+  reminder_enabled: boolean;
+  reminder_lead_time: string;
+  reminder_type: "push" | "email" | "both";
 }
 
 const EMPTY: FormState = {
@@ -65,6 +68,9 @@ const EMPTY: FormState = {
   is_featured: false,
   status: "publicado",
   image_url: "",
+  reminder_enabled: false,
+  reminder_lead_time: "30",
+  reminder_type: "push",
 };
 
 function fromEvent(e: ChurchEvent): FormState {
@@ -82,6 +88,9 @@ function fromEvent(e: ChurchEvent): FormState {
     is_featured: e.is_featured,
     status: e.status,
     image_url: e.image_url ?? "",
+    reminder_enabled: e.reminder_settings?.enabled ?? false,
+    reminder_lead_time: String(e.reminder_settings?.lead_time ?? 30),
+    reminder_type: e.reminder_settings?.type ?? "push",
   };
 }
 
@@ -175,6 +184,11 @@ export function EventForm({
         is_featured: form.is_featured,
         status: form.status,
         image_url: form.image_url.trim() || null,
+        reminder_settings: {
+          enabled: form.reminder_enabled,
+          lead_time: Number(form.reminder_lead_time),
+          type: form.reminder_type,
+        },
       };
 
       if (event) {

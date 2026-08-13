@@ -1,7 +1,8 @@
-import { MapPin, Clock, Users, Pencil, Trash2, Star } from "lucide-react";
+import { MapPin, Clock, Users, Pencil, Trash2, Star, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { EventArt } from "@/components/agenda/event-art";
+import { AddToCalendar } from "@/components/agenda/add-to-calendar";
 import {
   KIND_LABEL,
   RSVP_LABEL,
@@ -119,6 +120,12 @@ export function EventCard({
                   {RSVP_LABEL[opt]}
                 </Button>
               ))}
+            </div>
+          )}
+
+          {!cancelled && (
+            <div className="mt-4 flex items-center gap-2">
+              <AddToCalendar event={event} variant="ghost" className="h-8 px-2 text-muted-foreground hover:text-primary" />
             </div>
           )}
 
