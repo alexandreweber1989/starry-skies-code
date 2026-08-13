@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { 
-  Github as GitHubIcon, 
+  Code, 
   ExternalLink, 
   Zap, 
   Settings, 
@@ -70,7 +70,7 @@ function ConfigVercelPage() {
                   </li>
                 </ul>
                 <div className="p-4 bg-muted/50 rounded-xl flex items-center gap-3 border border-border/50">
-                  <GitHubIcon className="h-5 w-5" />
+                  <Code className="h-5 w-5" />
                   <span className="text-xs font-mono uppercase tracking-widest opacity-70">Github Repository Connected</span>
                 </div>
               </CardContent>

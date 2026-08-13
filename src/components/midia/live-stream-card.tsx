@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Youtube as YouTubeIcon, Play, ExternalLink, Radio } from "lucide-react";
+import { Video, Play, ExternalLink, Radio } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -28,7 +28,7 @@ export function LiveStreamCard() {
           />
         ) : (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900 text-white p-6 text-center">
-            <YouTubeIcon className="h-12 w-12 text-red-600 mb-4 opacity-50" />
+            <Video className="h-12 w-12 text-red-600 mb-4 opacity-50" />
             <h3 className="font-serif text-xl mb-2">Acompanhe pelo YouTube</h3>
             <p className="text-sm text-zinc-400 max-w-xs">
               Todos os domingos às 19:00 transmitimos nosso culto ao vivo.
