@@ -8,6 +8,8 @@ import { useAuth } from "@/lib/auth-context";
 import { ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MemberFormDialog } from "@/components/membros/member-form-dialog";
+import { ProfileForm } from "@/components/membros/profile-form";
+
 import {
   MARITAL_STATUS,
   MEMBERSHIP_STATUS,
