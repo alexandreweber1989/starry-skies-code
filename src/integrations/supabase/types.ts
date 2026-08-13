@@ -2898,6 +2898,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      can_view_mesa: {
+        Args: { _mesa_id: string; _user_id: string }
+        Returns: boolean
+      }
+      can_view_rede: {
+        Args: { _rede_id: string; _user_id: string }
+        Returns: boolean
+      }
       claim_first_admin: { Args: { _user_id: string }; Returns: boolean }
       gen_pickup_code: { Args: { _prefix: string }; Returns: string }
       has_mesa_role: {
@@ -2930,7 +2938,15 @@ export type Database = {
       is_kids_admin: { Args: { _user_id: string }; Returns: boolean }
       is_leadership: { Args: { _user_id: string }; Returns: boolean }
       is_livraria_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_mesa_member: {
+        Args: { _mesa_id: string; _user_id: string }
+        Returns: boolean
+      }
       is_pastoral: { Args: { _user_id: string }; Returns: boolean }
+      is_rede_member: {
+        Args: { _rede_id: string; _user_id: string }
+        Returns: boolean
+      }
       kids_find_family_by_phone: {
         Args: { _phone: string }
         Returns: {
