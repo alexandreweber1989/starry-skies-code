@@ -148,7 +148,7 @@ export function SongDialog({ initial, trigger }: { initial: SongDraft; trigger: 
                   type="button"
                   variant="secondary"
                   size="icon"
-                  disabled={isImporting || !draft.sheet_url.includes("cifraclub.com.br")}
+                  disabled={isImporting || (!draft.sheet_url.includes("cifraclub.com.br") && !draft.sheet_url.includes("cifras.com.br"))}
                   onClick={async () => {
                     setIsImporting(true);
                     try {
@@ -162,6 +162,7 @@ export function SongDialog({ initial, trigger }: { initial: SongDraft; trigger: 
                         title: d.title || data.title || parsed.title || "",
                         artist: d.artist || data.artist || parsed.artist || "",
                         song_key: data.key || parsed.key || d.song_key,
+                        bpm: data.bpm?.toString() || d.bpm,
                         chords: parsed.chords,
                         lyrics: parsed.lyrics,
                       }));
