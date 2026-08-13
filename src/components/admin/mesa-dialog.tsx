@@ -162,9 +162,10 @@ export function MesaDialog({
       }
       if (added.length > 0) {
         const rows = added.map((userId) => {
-          const fn = profiles?.find((p) => p.id === userId)?.church_function;
+          const profile = profiles?.find((p) => p.id === userId);
+          const fn = profile?.church_function;
           const role = fn && fn !== "membro" ? fn : "lider";
-          return { mesa_id: mesaId!, user_id: userId, role: role as never };
+          return { mesa_id: mesaId!, user_id: userId, role: role as any };
         });
         const { error } = await supabase.from("mesa_members").insert(rows);
         if (error) throw error;
