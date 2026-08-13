@@ -21,7 +21,7 @@ import {
   MapPin,
   Sprout,
   Newspaper,
-
+  FileText,
 } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { useAuth, type AppRole } from "@/lib/auth-context";
