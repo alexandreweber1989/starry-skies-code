@@ -4,15 +4,22 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, User, ArrowRight, Newspaper } from "lucide-react";
+import { Calendar, User, ArrowRight, Newspaper, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useState } from "react";
+import { NewsForm } from "@/components/noticias/news-form";
+import { useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/_authenticated/noticias")({
   component: NoticiasPage,
 });
 
 function NoticiasPage() {
+  const { isAdmin } = useAuth();
+  const [formOpen, setFormOpen] = useState(false);
+  const [editing, setEditing] = useState<any>(null);
+
   const { data: news, isLoading } = useQuery({
     queryKey: ["news"],
     queryFn: async () => {
@@ -33,6 +40,18 @@ function NoticiasPage() {
         title="Portal de Notícias"
         className="border-b-[3px] border-[var(--group-primary)]"
         description="Fique por dentro de tudo o que acontece na Igreja Batista Atos."
+        actions={
+          isAdmin && (
+            <Button
+              onClick={() => {
+                setEditing(null);
+                setFormOpen(true);
+              }}
+            >
+              <Plus className="h-4 w-4" /> Nova notícia
+            </Button>
+          )
+        }
       />
       <PageBody>
         {isLoading ? (
@@ -49,7 +68,16 @@ function NoticiasPage() {
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {news?.map((post) => (
-              <Card key={post.id} className="group overflow-hidden border-border/50 hover:border-orange-500/30 hover:shadow-2xl hover:shadow-orange-500/5 transition-all duration-500 flex flex-col">
+              <Card 
+                key={post.id} 
+                className="group overflow-hidden border-border/50 hover:border-orange-500/30 hover:shadow-2xl hover:shadow-orange-500/5 transition-all duration-500 flex flex-col cursor-pointer"
+                onClick={() => {
+                  if (isAdmin) {
+                    setEditing(post);
+                    setFormOpen(true);
+                  }
+                }}
+              >
                 <div className="aspect-video relative overflow-hidden bg-muted">
                   {post.image_url ? (
                     <img
@@ -90,6 +118,7 @@ function NoticiasPage() {
           </div>
         )}
       </PageBody>
+      <NewsForm open={formOpen} onOpenChange={setFormOpen} news={editing} />
     </div>
   );
 }

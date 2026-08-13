@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Plus, X, Users, CalendarDays, Network, UtensilsCrossed, Baby, BookOpen, Coffee } from "lucide-react";
+import { Plus, X, Users, CalendarDays, Network, UtensilsCrossed, Baby, BookOpen, Coffee, Megaphone, Newspaper } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 
 const ACTIONS = [
-  { to: "/membros", label: "Cadastrar membro", icon: Users },
   { to: "/agenda", label: "Novo evento", icon: CalendarDays },
+  { to: "/avisos", label: "Novo aviso", icon: Megaphone },
+  { to: "/noticias", label: "Nova notícia", icon: Newspaper },
+  { to: "/membros", label: "Cadastrar membro", icon: Users },
   { to: "/redes", label: "Nova rede", icon: Network },
   { to: "/mesas", label: "Nova mesa", icon: UtensilsCrossed },
   { to: "/kids", label: "Check-in Kids", icon: Baby },
