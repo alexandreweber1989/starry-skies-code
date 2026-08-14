@@ -32,18 +32,20 @@ import { CadastroLead } from "@/components/home/cadastro-lead";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Igreja Batista Atos" },
+      { title: "Igreja Batista Atos | Uma casa sobre a rocha" },
       {
         name: "description",
         content:
-          "Plataforma da Igreja Batista Atos — ministérios, redes, mesas e comunidade em um só lugar.",
+          "Comunidade cristã dedicada a edificar um lugar de oração para todos os povos. Forjando discípulos através do relacionamento, da mesa e da paternidade em Ponta Grossa.",
       },
-      { property: "og:title", content: "Igreja Batista Atos" },
+      { property: "og:title", content: "Igreja Batista Atos | Uma casa sobre a rocha" },
       {
         property: "og:description",
         content:
-          "Plataforma da Igreja Batista Atos — ministérios, redes, mesas e comunidade em um só lugar.",
+          "Comunidade cristã dedicada a edificar um lugar de oração para todos os povos. Forjando discípulos através do relacionamento, da mesa e da paternidade em Ponta Grossa.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Landing,
