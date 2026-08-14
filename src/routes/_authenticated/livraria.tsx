@@ -29,11 +29,7 @@ export const Route = createFileRoute("/_authenticated/livraria")({
 });
 
 function LivrariaPage() {
-  const { isLivrariaAdmin, isAdmin } = useAuth();
-
-  // Membros podem ver o catálogo e pedidos, mas apenas admins acessam áreas de gestão.
-  // Se quisermos bloquear a página inteira para quem não tem papel algum:
-  // const hasAccess = isAdmin || isLivrariaAdmin || true; // Permitindo por padrão membros verem catálogo
+  const { isLivrariaAdmin } = useAuth();
 
   return (
     <>
