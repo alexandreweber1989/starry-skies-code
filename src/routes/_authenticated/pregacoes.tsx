@@ -461,7 +461,7 @@ function PregacoesPage() {
           <div className="space-y-5">
             <div className="space-y-2 rounded-xl border border-border bg-card/40 p-4">
               <Label className="flex items-center gap-2">
-                <Video className="h-4 w-4 text-red-600" /> Link do YouTube da pregação
+                <Sparkles className="h-4 w-4 text-primary animate-pulse" /> Link do YouTube da pregação (IA)
               </Label>
               <div className="flex gap-2">
                 <Input
@@ -471,11 +471,12 @@ function PregacoesPage() {
                   placeholder="https://youtu.be/..."
                 />
                 <Button variant="outline" disabled={ytLoading} onClick={() => fetchYouTube()}>
-                  {ytLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Buscar"}
+                  {ytLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4 mr-2" />}
+                  {ytLoading ? "Processando..." : "Buscar e Resumir"}
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                Cola o link e clica em Buscar — o título e a capa vêm automaticamente.
+                Cole o link para baixar a transcrição e gerar um resumo completo via IA.
               </p>
               {draft.cover_image_url ? (
                 <img
