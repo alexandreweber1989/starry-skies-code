@@ -80,9 +80,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="flex flex-col h-full bg-sidebar text-sidebar-foreground lg:border-r border-sidebar-border shadow-2xl">
       <div className="px-6 py-8 border-b border-sidebar-border">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-sm bg-sidebar-primary/20 flex items-center justify-center">
-            <Church className="h-5 w-5 text-sidebar-primary" />
-          </div>
+          <ChurchLogo className="h-10 w-10 bg-sidebar-primary/20 rounded-sm p-1.5 text-sidebar-primary" />
           <div>
             <div className="font-serif text-lg leading-none">Igreja Batista</div>
             <div className="font-mono text-xs uppercase tracking-widest text-sidebar-primary mt-1">
