@@ -1,24 +1,20 @@
-# Plano de Implementação: Transcrição e Resumo de Pregações via IA
+# Plano: Atualização do Sistema Tipográfico (4 Fontes)
 
-Implementação de um sistema automatizado para extrair transcrições e gerar resumos detalhados (com tópicos e versículos) de pregações a partir de links do YouTube, integrando-o ao "Sermon Studio".
+Implementação de um esquema tipográfico semântico com 4 fontes (Syne, Lora, DM Sans, Inter) conforme especificações de design.
 
-## Alterações Técnicas
+## Passos
 
-### Backend & IA
-- **src/lib/ai-gateway.server.ts**: Criação de um gateway centralizado para o Lovable AI Gateway (GPT-4o).
-- **src/lib/pregacoes.functions.ts**: Implementação de `processSermonAI` como uma `createServerFn` para processar a pregação no servidor.
-- **src/lib/sermon-ai.server.ts**: Lógica de análise de conteúdo que utiliza IA para simular a transcrição e gerar um JSON estruturado com título, tema, versículo-base, resumo e pontos principais.
+1. **Importação**: Atualizar `src/routes/__root.tsx` para incluir Google Fonts (Syne, Lora, DM Sans, Inter) com os pesos corretos.
+2. **Configuração Tailwind**: Atualizar `src/styles.css` (@theme inline) para registrar as 4 famílias de fontes como variáveis do sistema.
+3. **Aplicação Semântica**:
+    - `h1`, `h2` -> Syne.
+    - `h3`, `h4`, `h5`, `h6` -> DM Sans.
+    - `p` (conteúdo editorial) -> Lora.
+    - `body` (base) e elementos de sistema (botões, inputs, labels) -> Inter.
+4. **Refinamento de Componentes**: Ajustar o `Landing Page` (src/routes/index.tsx) e `AppShell` para aplicar as fontes nos alvos específicos.
 
-### Frontend
-- **src/routes/_authenticated/pregacoes.tsx**:
-  - Atualização da função `fetchYouTube` para chamar o serviço de IA após obter os metadados básicos.
-  - Implementação de feedback visual (loading states, toasts informativos) durante o processamento da IA.
-  - Integração dos resultados da IA no estado do rascunho (`draft`), preenchendo automaticamente todos os campos do formulário e da arte visual.
-  - Melhoria na UI do campo de link do YouTube para destacar a funcionalidade de IA.
-
-## Critérios de Aceite
-- [ ] Ao colar um link do YouTube e clicar em "Buscar e Resumir", o sistema deve obter a capa.
-- [ ] O sistema deve exibir um aviso de processamento de IA.
-- [ ] Após o processamento, os campos Título, Tema, Versículo-base, Resumo e Pontos Principais devem ser preenchidos automaticamente.
-- [ ] A arte visual (SVG/PNG) deve refletir imediatamente os dados gerados pela IA.
-- [ ] O resumo deve focar apenas na pregação, ignorando introduções ou avisos.
+## Especificação de Fontes
+- **Syne**: Impacto Visual.
+- **Lora**: Blocos descritivos e históricos.
+- **DM Sans**: Transição e UI amigável.
+- **Inter**: Dados funcionais e sistema.
