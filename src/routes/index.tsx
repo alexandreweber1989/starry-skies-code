@@ -197,9 +197,7 @@ function FloatingNav({ cta }: { cta: { to: string; label: string } }) {
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between text-background">
         <div className="flex items-center gap-2.5">
-          <div className="h-8 w-8 rounded-md bg-background text-foreground grid place-items-center">
-            <Church className="h-4 w-4" />
-          </div>
+          <ChurchLogo className="h-8 w-8 bg-background text-foreground rounded-md p-1" />
           <div className="hidden sm:block">
             <div className="font-serif text-base leading-none font-semibold tracking-tight">
               Igreja Batista Atos
