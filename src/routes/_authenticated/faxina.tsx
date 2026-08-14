@@ -157,7 +157,7 @@ function CleaningSchedulePage() {
   });
 
   return (
-    <AppShell>
+    <>
       <PageHeader 
         eyebrow="Administração"
         title="Escala de Faxina"
@@ -341,7 +341,7 @@ function CleaningSchedulePage() {
           })}
         </div>
       </PageBody>
-    </AppShell>
+    </>
   );
 }
 
