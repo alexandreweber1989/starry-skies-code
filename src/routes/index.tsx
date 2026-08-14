@@ -654,7 +654,7 @@ function Historia() {
           }}
         />
 
-        <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-[200px_1fr] gap-8 sm:gap-12 lg:gap-32 items-center relative z-10">
+        <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-[200px_1fr] gap-12 sm:gap-20 lg:gap-32 items-center relative z-10">
           {/* Vertical Timeline Navigation */}
           <div className="hidden lg:flex flex-col gap-10 relative py-10">
             {/* Timeline Line */}
@@ -728,7 +728,7 @@ function Historia() {
 
           {/* Active Chapter Content */}
           <div className="relative min-h-[24rem] sm:min-h-[30rem] flex flex-col justify-center">
-            <div className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.4em] text-primary/60 mb-8 sm:mb-12 flex items-center gap-4">
+            <div className="font-mono text-[9px] sm:text-[11px] uppercase tracking-[0.4em] text-primary/60 mb-6 sm:mb-12 flex items-center gap-4">
               <span className="h-px w-8 bg-primary/40" />
               Nossa Gênese
             </div>
@@ -765,7 +765,7 @@ function Historia() {
                     exit: { opacity: 0, y: -20 }
                   }}
                   transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-                  className="font-serif text-4xl sm:text-5xl md:text-8xl lg:text-9xl leading-[0.9] font-bold tracking-[-0.04em] mb-8 sm:mb-12 uppercase text-foreground"
+                  className="font-serif text-3xl sm:text-5xl md:text-8xl lg:text-9xl leading-[0.9] font-bold tracking-[-0.04em] mb-6 sm:mb-12 uppercase text-foreground"
                 >
                   {capitulos[ativo].titulo}
                 </motion.h2>
@@ -807,10 +807,10 @@ function Historia() {
 function Numeros() {
   return (
     <section className="relative z-20 bg-background py-24 md:py-32 px-6 lg:px-10 border-t border-border/10">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-6">
+      <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-8 sm:gap-12 md:gap-6">
         {numeros.map((n) => (
-          <div key={n.rotulo} className="text-center md:text-left">
-            <div className="font-serif text-6xl md:text-8xl tracking-tight">
+          <div key={n.rotulo} className="text-left">
+            <div className="font-serif text-4xl sm:text-6xl md:text-8xl tracking-tight">
               <Contador para={n.valor} sufixo={n.sufixo} />
             </div>
             <div className="font-mono text-[10px] md:text-xs uppercase tracking-[0.3em] text-muted-foreground mt-4">
@@ -884,14 +884,14 @@ function Pilares() {
       <div className="font-mono text-[10px] uppercase tracking-[0.3em] opacity-40 mb-4">
         § 02 — Pilares
       </div>
-      <h2 className="font-serif text-4xl md:text-[min(4.5rem,11vh)] leading-tight">
+      <h2 className="font-serif text-3xl sm:text-4xl md:text-[min(4.5rem,11vh)] leading-tight">
         Os fundamentos da nossa fé.
       </h2>
     </div>
   );
 
   const Cartao = ({ p, i }: { p: (typeof pilares)[number]; i: number }) => (
-    <div className="flex flex-col justify-between p-6 md:p-10 rounded-3xl border border-background/10 bg-background/[0.03] min-h-[min(22rem,50vh)] md:min-h-[min(26rem,52vh)]">
+    <div className="flex flex-col justify-between p-6 sm:p-10 rounded-2xl sm:rounded-3xl border border-background/10 bg-background/[0.03] min-h-[min(18rem,50vh)] sm:min-h-[min(26rem,52vh)]">
       <div className="flex items-center justify-between">
         <span className="font-mono text-xs tracking-[0.4em] opacity-30">
           {p.n}
@@ -901,7 +901,7 @@ function Pilares() {
         </span>
       </div>
       <div>
-        <h3 className="font-serif text-3xl md:text-4xl mb-4">{p.nome}</h3>
+        <h3 className="font-serif text-2xl sm:text-4xl mb-3 sm:mb-4">{p.nome}</h3>
         <p className="text-sm md:text-base opacity-60 leading-relaxed">
           {p.desc}
         </p>
