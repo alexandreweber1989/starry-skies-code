@@ -83,7 +83,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="flex items-center gap-3">
           <ChurchLogo className="h-10 w-10 bg-sidebar-primary/20 rounded-sm p-1.5 text-sidebar-primary" />
           <div>
-            <div className="font-serif text-lg leading-none">Igreja Batista</div>
+            <div className="font-display text-lg leading-none">Igreja Batista</div>
             <div className="font-mono text-xs uppercase tracking-widest text-sidebar-primary mt-1">
               Atos
             </div>
@@ -218,7 +218,7 @@ export function PageHeader({
               {eyebrow}
             </div>
           )}
-          <h1 className="font-serif text-3xl sm:text-4xl lg:text-6xl leading-tight text-foreground animate-in fade-in slide-in-from-left-4 duration-700">
+          <h1 className="font-primary text-3xl sm:text-4xl lg:text-6xl leading-tight text-foreground animate-in fade-in slide-in-from-left-4 duration-700">
             {title}
           </h1>
           {description && (
