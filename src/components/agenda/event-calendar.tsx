@@ -79,11 +79,11 @@ export function EventCalendar({
         </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-px border border-border bg-border">
+      <div className="grid grid-cols-7 gap-px border border-border bg-border overflow-hidden rounded-sm">
         {WEEKDAYS.map((w) => (
           <div
             key={w}
-            className="bg-background px-2 py-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground text-center"
+            className="bg-background px-1 sm:px-2 py-2 font-mono text-[9px] sm:text-[10px] uppercase tracking-widest text-muted-foreground text-center"
           >
             {w}
           </div>
@@ -94,7 +94,7 @@ export function EventCalendar({
           return (
             <div
               key={d.toISOString()}
-              className={`bg-background min-h-24 p-1.5 space-y-1 ${outside ? "opacity-40" : ""}`}
+              className={`bg-background min-h-16 sm:min-h-24 p-1 sm:p-1.5 space-y-1 ${outside ? "opacity-30" : ""}`}
             >
               <div
                 className={`font-mono text-[10px] w-5 h-5 grid place-items-center rounded-sm ${
@@ -109,7 +109,7 @@ export function EventCalendar({
                   type="button"
                   onClick={() => onSelect(e)}
                   title={`${e.title} · ${KIND_LABEL[e.kind]}`}
-                  className="w-full text-left truncate rounded-sm border border-border px-1.5 py-1 text-[11px] hover:border-foreground transition-colors"
+                  className="w-full text-left truncate rounded-sm border border-border px-1 sm:px-1.5 py-0.5 sm:py-1 text-[9px] sm:text-[11px] hover:border-foreground transition-colors"
                 >
                   {new Date(e.starts_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}{" "}
                   {e.title}
