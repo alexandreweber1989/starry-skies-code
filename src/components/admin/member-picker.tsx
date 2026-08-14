@@ -19,6 +19,7 @@ export interface MemberPickerProps {
   value: string[];
   onChange: (ids: string[]) => void;
   placeholder?: string;
+  label?: string;
 }
 
 function functionLabel(p: ProfileOption) {
@@ -29,7 +30,7 @@ function functionLabel(p: ProfileOption) {
  * Busca por parte do nome e devolve nome completo + função na igreja.
  * Seleção múltipla e opcional (pode ficar vazia).
  */
-export function MemberPicker({ value, onChange, placeholder = "Buscar por parte do nome" }: MemberPickerProps) {
+export function MemberPicker({ value, onChange, placeholder = "Buscar por parte do nome", label = "responsável(is)" }: MemberPickerProps) {
   const [open, setOpen] = useState(false);
   const { data: profiles, isLoading } = useProfileOptions();
 
@@ -55,7 +56,7 @@ export function MemberPicker({ value, onChange, placeholder = "Buscar por parte 
             <span className={cn("truncate", selected.length === 0 && "text-muted-foreground")}>
               {selected.length === 0
                 ? placeholder
-                : `${selected.length} responsável(is) selecionado(s)`}
+                : `${selected.length} ${label} selecionado(s)`}
             </span>
             <ChevronsUpDown className="h-4 w-4 opacity-50" />
           </Button>
