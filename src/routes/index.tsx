@@ -1000,7 +1000,7 @@ function Ministerios() {
             <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-4">
               § 03 — Serviço
             </div>
-            <h2 className="font-serif text-4xl md:text-7xl leading-tight">
+            <h2 className="font-serif text-3xl sm:text-4xl md:text-7xl leading-tight">
               Um corpo. Muitos membros.
             </h2>
           </div>
@@ -1009,7 +1009,7 @@ function Ministerios() {
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {ministerios.map((m, idx) => (
             <motion.div
               key={m.nome}
@@ -1021,7 +1021,7 @@ function Ministerios() {
                 ease: [0.22, 1, 0.36, 1],
               }}
               viewport={{ once: true, margin: "-60px" }}
-              className="group relative p-8 bg-card/50 backdrop-blur-sm border border-border/50 rounded-3xl hover:border-primary/40 transition-all duration-700 overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-2"
+              className="group relative p-6 sm:p-8 bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl sm:rounded-3xl hover:border-primary/40 transition-all duration-700 overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-2"
             >
               <div className="relative z-10 flex justify-between items-start mb-8">
                 <div className="h-12 w-12 rounded-2xl bg-primary/5 text-primary grid place-items-center group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-500 rotate-3 group-hover:rotate-0">
@@ -1032,7 +1032,7 @@ function Ministerios() {
                 </div>
               </div>
               <div className="relative z-10">
-                <h3 className="font-serif text-2xl mb-2 group-hover:translate-x-1 transition-transform">
+                <h3 className="font-serif text-xl sm:text-2xl mb-2 group-hover:translate-x-1 transition-transform">
                   {m.nome}
                 </h3>
                 <div className="h-px w-0 group-hover:w-full bg-primary/20 transition-all duration-700" />
@@ -1055,7 +1055,7 @@ function FinalCTA({ cta }: { cta: { to: string; label: string } }) {
   const palavras = ["Faça", "parte", "desta"];
 
   return (
-    <footer className="relative z-20 bg-foreground text-background py-32 md:py-48 px-6 lg:px-10 overflow-hidden">
+    <footer className="relative z-20 bg-foreground text-background py-24 sm:py-32 md:py-48 px-6 lg:px-10 overflow-hidden">
       {/* Brilho suave: dá calor e foco ao convite sobre o fundo escuro */}
       <div
         aria-hidden
@@ -1073,7 +1073,7 @@ function FinalCTA({ cta }: { cta: { to: string; label: string } }) {
             § 04 — O convite
           </div>
 
-          <h2 className="font-serif font-semibold text-5xl md:text-[7rem] leading-[0.95] uppercase tracking-[-0.04em]">
+          <h2 className="font-serif font-semibold text-4xl sm:text-6xl md:text-[7rem] leading-[0.95] uppercase tracking-[-0.04em]">
             {palavras.map((p, i) => (
               <span key={p} className="inline-block overflow-hidden align-bottom">
                 <motion.span
@@ -1114,7 +1114,7 @@ function FinalCTA({ cta }: { cta: { to: string; label: string } }) {
             <Button
               asChild
               size="lg"
-              className="group rounded-full h-16 md:h-20 px-10 md:px-14 text-lg md:text-xl bg-background text-foreground border border-transparent hover:bg-transparent hover:text-background hover:border-background transition-all duration-700 hover:-translate-y-1 hover:shadow-2xl hover:shadow-background/10"
+              className="group rounded-full h-14 sm:h-16 md:h-20 px-8 sm:px-10 md:px-14 text-base sm:text-lg md:text-xl bg-background text-foreground border border-transparent hover:bg-transparent hover:text-background hover:border-background transition-all duration-700 hover:-translate-y-1 hover:shadow-2xl hover:shadow-background/10"
             >
               <Link to={cta.to}>
                 <span>
@@ -1124,13 +1124,13 @@ function FinalCTA({ cta }: { cta: { to: string; label: string } }) {
               </Link>
             </Button>
 
-            <div className="font-mono text-[11px] uppercase tracking-[0.25em] text-background/40">
+            <div className="font-mono text-[9px] sm:text-[11px] uppercase tracking-[0.25em] text-background/40 max-w-xs sm:max-w-none">
               Parque N. S. das Graças · Ponta Grossa / PR · Todos são bem-vindos
             </div>
           </div>
         </motion.div>
 
-        <div className="mt-28 md:mt-40 pt-10 border-t border-background/10 flex flex-col md:flex-row items-center justify-between gap-8 text-background/40 font-mono text-[10px] uppercase tracking-[0.3em]">
+        <div className="mt-20 sm:mt-28 md:mt-40 pt-10 border-t border-background/10 flex flex-col md:flex-row items-center justify-between gap-8 text-background/40 font-mono text-[10px] uppercase tracking-[0.3em]">
           <div className="flex items-center gap-3">
             <Church className="h-4 w-4" />
             <span>Igreja Batista Atos · PG</span>
