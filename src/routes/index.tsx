@@ -28,22 +28,25 @@ import {
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { CadastroLead } from "@/components/home/cadastro-lead";
+import { ChurchLogo } from "@/components/ui/church-logo";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Igreja Batista Atos" },
+      { title: "Igreja Batista Atos | Uma casa sobre a rocha" },
       {
         name: "description",
         content:
-          "Plataforma da Igreja Batista Atos — ministérios, redes, mesas e comunidade em um só lugar.",
+          "Comunidade cristã dedicada a edificar um lugar de oração para todos os povos. Forjando discípulos através do relacionamento, da mesa e da paternidade em Ponta Grossa.",
       },
-      { property: "og:title", content: "Igreja Batista Atos" },
+      { property: "og:title", content: "Igreja Batista Atos | Uma casa sobre a rocha" },
       {
         property: "og:description",
         content:
-          "Plataforma da Igreja Batista Atos — ministérios, redes, mesas e comunidade em um só lugar.",
+          "Comunidade cristã dedicada a edificar um lugar de oração para todos os povos. Forjando discípulos através do relacionamento, da mesa e da paternidade em Ponta Grossa.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Landing,
@@ -195,9 +198,7 @@ function FloatingNav({ cta }: { cta: { to: string; label: string } }) {
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between text-background">
         <div className="flex items-center gap-2.5">
-          <div className="h-8 w-8 rounded-md bg-background text-foreground grid place-items-center">
-            <Church className="h-4 w-4" />
-          </div>
+          <ChurchLogo className="h-8 w-8 bg-background text-foreground rounded-md p-1" />
           <div className="hidden sm:block">
             <div className="font-serif text-base leading-none font-semibold tracking-tight">
               Igreja Batista Atos
@@ -403,9 +404,7 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
           >
             <div className="relative group">
               <div className="absolute -inset-1 bg-primary/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500" />
-              <span className="relative h-14 w-14 md:h-20 md:w-20 rounded-2xl md:rounded-[2rem] bg-foreground/5 backdrop-blur-md border border-foreground/10 text-foreground grid place-items-center shrink-0">
-                <Church className="h-7 w-7 md:h-10 md:w-10" />
-              </span>
+              <ChurchLogo className="relative h-14 w-14 md:h-20 md:w-20 rounded-2xl md:rounded-[2rem] bg-foreground/5 backdrop-blur-md border border-foreground/10 text-foreground p-3 shrink-0" />
             </div>
             <div>
               <span className="block font-serif font-extrabold tracking-[-0.03em] leading-[0.95] text-3xl md:text-5xl lg:text-7xl">
