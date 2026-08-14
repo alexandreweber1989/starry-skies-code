@@ -1526,6 +1526,13 @@ export type Database = {
             referencedRelation: "mesas"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "mesa_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       mesas: {
@@ -3043,6 +3050,9 @@ export type Database = {
         | "diacono"
         | "obreiro"
         | "membro"
+        | "lider_mesa"
+        | "lider_rede"
+        | "lider_ministerio"
       event_kind:
         | "culto"
         | "ensaio"
@@ -3211,6 +3221,9 @@ export const Constants = {
         "diacono",
         "obreiro",
         "membro",
+        "lider_mesa",
+        "lider_rede",
+        "lider_ministerio",
       ],
       event_kind: [
         "culto",
