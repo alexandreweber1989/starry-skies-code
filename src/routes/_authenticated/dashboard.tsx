@@ -128,7 +128,7 @@ function Dashboard() {
           .from("worship_schedule_assignments")
           .select("id", { count: "exact", head: true })
           .eq("status", "pendente"),
-        supabase
+        (supabase as any)
           .from("visitor_checkins")
           .select("id", { count: "exact", head: true })
           .eq("status", "novo"),
