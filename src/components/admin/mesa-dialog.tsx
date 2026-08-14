@@ -165,7 +165,7 @@ export function MesaDialog({
           const profile = profiles?.find((p) => p.id === userId);
           const fn = profile?.church_function;
           // Se a função for apascentador ou pastor, mantém. Caso contrário, define como líder de mesa.
-          const role = fn && (fn === "apascentador" || fn === "pastor" || fn === "lider" || fn === "obreiro" || fn === "diacono") ? fn : "lider_mesa";
+          const role = fn && (fn === "apascentador" || fn === "pastor" || fn === "lider" || fn === "obreiro" || fn === "diacono" || fn === "lider_mesa") ? fn : "lider_mesa";
           return { mesa_id: mesaId!, user_id: userId, role: role as any };
         });
 
@@ -233,10 +233,10 @@ export function MesaDialog({
           </div>
 
           <div className="space-y-2">
-            <Label>Responsáveis pela mesa</Label>
-            <MemberPicker value={leaders} onChange={setLeaders} />
+            <Label>Líderes da mesa</Label>
+            <MemberPicker value={leaders} onChange={setLeaders} label="líder(es)" />
             <p className="text-xs text-muted-foreground">
-              Geralmente um casal. Selecione uma ou mais pessoas da lista de membros.
+              Geralmente um casal. Selecione uma ou mais pessoas da lista de membros. Ao selecionar, elas serão definidas como líderes desta mesa.
             </p>
           </div>
 
