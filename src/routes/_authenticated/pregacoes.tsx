@@ -18,6 +18,7 @@ import {
   Send,
   Loader2,
   CheckCircle2,
+  Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
 import { format, parseISO } from "date-fns";
@@ -188,7 +189,7 @@ function PregacoesPage() {
       // 2. Processamento IA (Transcrição e Resumo)
       toast.info("Processando transcrição e resumo com IA... Isso pode levar alguns segundos.");
       const { processSermonAI } = await import("@/lib/pregacoes.functions");
-      const aiResult = await processSermonAI({ youtubeUrl: url });
+      const aiResult = await processSermonAI({ data: { youtubeUrl: url } });
 
       if (aiResult) {
         setDraft((d) => ({
