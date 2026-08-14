@@ -185,26 +185,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               </div>
             </div>
           </header>
-
-          <nav className="lg:hidden flex overflow-x-auto gap-2 px-4 py-3 border-b border-border/50 bg-muted/40 backdrop-blur-md scrollbar-none sticky top-16 z-20">
-            {filteredNav.map((item) => {
-              const active = pathname === item.to || pathname.startsWith(item.to + "/");
-              return (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  className={`px-4 py-2 rounded-full text-[10px] font-mono uppercase tracking-widest whitespace-nowrap transition-all duration-300 shadow-sm ${
-                    active 
-                      ? "bg-primary text-primary-foreground shadow-sm font-bold" 
-                      : "text-muted-foreground hover:bg-primary/5 hover:text-foreground"
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
-
+          
           <div className="flex-1 min-h-0">
             <PageTransition>{children}</PageTransition>
           </div>
