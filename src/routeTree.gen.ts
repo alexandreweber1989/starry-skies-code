@@ -10,11 +10,13 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ConfigVercelRouteImport } from './routes/config-vercel'
+import { Route as BoasVindasRouteImport } from './routes/boas-vindas'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as KidsVisitanteRouteImport } from './routes/kids.visitante'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
+import { Route as AuthenticatedVisitantesRouteImport } from './routes/_authenticated/visitantes'
 import { Route as AuthenticatedRedesRouteImport } from './routes/_authenticated/redes'
 import { Route as AuthenticatedPregacoesRouteImport } from './routes/_authenticated/pregacoes'
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
@@ -51,6 +53,11 @@ const ConfigVercelRoute = ConfigVercelRouteImport.update({
   path: '/config-vercel',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BoasVindasRoute = BoasVindasRouteImport.update({
+  id: '/boas-vindas',
+  path: '/boas-vindas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -74,6 +81,11 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
   id: '/callback',
   path: '/callback',
   getParentRoute: () => AuthRoute,
+} as any)
+const AuthenticatedVisitantesRoute = AuthenticatedVisitantesRouteImport.update({
+  id: '/visitantes',
+  path: '/visitantes',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedRedesRoute = AuthenticatedRedesRouteImport.update({
   id: '/redes',
@@ -234,6 +246,7 @@ const AuthenticatedKidsRetiradaCheckinIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
+  '/boas-vindas': typeof BoasVindasRoute
   '/config-vercel': typeof ConfigVercelRoute
   '/agenda': typeof AuthenticatedAgendaRoute
   '/avisos': typeof AuthenticatedAvisosRoute
@@ -255,6 +268,7 @@ export interface FileRoutesByFullPath {
   '/perfil': typeof AuthenticatedPerfilRoute
   '/pregacoes': typeof AuthenticatedPregacoesRoute
   '/redes': typeof AuthenticatedRedesRoute
+  '/visitantes': typeof AuthenticatedVisitantesRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/kids/visitante': typeof KidsVisitanteRoute
   '/kids-retirada/$checkinId': typeof AuthenticatedKidsRetiradaCheckinIdRoute
@@ -271,6 +285,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
+  '/boas-vindas': typeof BoasVindasRoute
   '/config-vercel': typeof ConfigVercelRoute
   '/agenda': typeof AuthenticatedAgendaRoute
   '/avisos': typeof AuthenticatedAvisosRoute
@@ -292,6 +307,7 @@ export interface FileRoutesByTo {
   '/perfil': typeof AuthenticatedPerfilRoute
   '/pregacoes': typeof AuthenticatedPregacoesRoute
   '/redes': typeof AuthenticatedRedesRoute
+  '/visitantes': typeof AuthenticatedVisitantesRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/kids/visitante': typeof KidsVisitanteRoute
   '/kids-retirada/$checkinId': typeof AuthenticatedKidsRetiradaCheckinIdRoute
@@ -310,6 +326,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
+  '/boas-vindas': typeof BoasVindasRoute
   '/config-vercel': typeof ConfigVercelRoute
   '/_authenticated/agenda': typeof AuthenticatedAgendaRoute
   '/_authenticated/avisos': typeof AuthenticatedAvisosRoute
@@ -331,6 +348,7 @@ export interface FileRoutesById {
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
   '/_authenticated/pregacoes': typeof AuthenticatedPregacoesRoute
   '/_authenticated/redes': typeof AuthenticatedRedesRoute
+  '/_authenticated/visitantes': typeof AuthenticatedVisitantesRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/kids/visitante': typeof KidsVisitanteRoute
   '/_authenticated/kids-retirada/$checkinId': typeof AuthenticatedKidsRetiradaCheckinIdRoute
@@ -349,6 +367,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/boas-vindas'
     | '/config-vercel'
     | '/agenda'
     | '/avisos'
@@ -370,6 +389,7 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/pregacoes'
     | '/redes'
+    | '/visitantes'
     | '/auth/callback'
     | '/kids/visitante'
     | '/kids-retirada/$checkinId'
@@ -386,6 +406,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/boas-vindas'
     | '/config-vercel'
     | '/agenda'
     | '/avisos'
@@ -407,6 +428,7 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/pregacoes'
     | '/redes'
+    | '/visitantes'
     | '/auth/callback'
     | '/kids/visitante'
     | '/kids-retirada/$checkinId'
@@ -424,6 +446,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/boas-vindas'
     | '/config-vercel'
     | '/_authenticated/agenda'
     | '/_authenticated/avisos'
@@ -445,6 +468,7 @@ export interface FileRouteTypes {
     | '/_authenticated/perfil'
     | '/_authenticated/pregacoes'
     | '/_authenticated/redes'
+    | '/_authenticated/visitantes'
     | '/auth/callback'
     | '/kids/visitante'
     | '/_authenticated/kids-retirada/$checkinId'
@@ -463,6 +487,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
+  BoasVindasRoute: typeof BoasVindasRoute
   ConfigVercelRoute: typeof ConfigVercelRoute
   KidsVisitanteRoute: typeof KidsVisitanteRoute
   ApiPublicImportCifraRoute: typeof ApiPublicImportCifraRoute
@@ -480,6 +505,13 @@ declare module '@tanstack/react-router' {
       path: '/config-vercel'
       fullPath: '/config-vercel'
       preLoaderRoute: typeof ConfigVercelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/boas-vindas': {
+      id: '/boas-vindas'
+      path: '/boas-vindas'
+      fullPath: '/boas-vindas'
+      preLoaderRoute: typeof BoasVindasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -516,6 +548,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth/callback'
       preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof AuthRoute
+    }
+    '/_authenticated/visitantes': {
+      id: '/_authenticated/visitantes'
+      path: '/visitantes'
+      fullPath: '/visitantes'
+      preLoaderRoute: typeof AuthenticatedVisitantesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/redes': {
       id: '/_authenticated/redes'
@@ -762,6 +801,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
   AuthenticatedPregacoesRoute: typeof AuthenticatedPregacoesRoute
   AuthenticatedRedesRoute: typeof AuthenticatedRedesRoute
+  AuthenticatedVisitantesRoute: typeof AuthenticatedVisitantesRoute
   AuthenticatedKidsRetiradaCheckinIdRoute: typeof AuthenticatedKidsRetiradaCheckinIdRoute
   AuthenticatedMinisteriosSlugRoute: typeof AuthenticatedMinisteriosSlugRoute
   AuthenticatedMinisteriosIndexRoute: typeof AuthenticatedMinisteriosIndexRoute
@@ -788,6 +828,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
   AuthenticatedPregacoesRoute: AuthenticatedPregacoesRoute,
   AuthenticatedRedesRoute: AuthenticatedRedesRoute,
+  AuthenticatedVisitantesRoute: AuthenticatedVisitantesRoute,
   AuthenticatedKidsRetiradaCheckinIdRoute:
     AuthenticatedKidsRetiradaCheckinIdRoute,
   AuthenticatedMinisteriosSlugRoute: AuthenticatedMinisteriosSlugRoute,
@@ -811,6 +852,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
+  BoasVindasRoute: BoasVindasRoute,
   ConfigVercelRoute: ConfigVercelRoute,
   KidsVisitanteRoute: KidsVisitanteRoute,
   ApiPublicImportCifraRoute: ApiPublicImportCifraRoute,
