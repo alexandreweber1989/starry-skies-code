@@ -355,7 +355,7 @@ function LinhaGlitch({ palavras }: { palavras: string[] }) {
   return (
     <span
       ref={ref}
-      className="block italic text-foreground whitespace-nowrap text-[10vw] md:text-[8vw] lg:text-[8rem]"
+      className="block italic text-foreground whitespace-nowrap leading-[0.9]"
       style={fontPx ? { fontSize: `${fontPx}px`, lineHeight: 1 } : undefined}
     >
       <PalavraGlitch palavras={palavras} />
@@ -435,7 +435,7 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
                 initial={reduce ? undefined : { y: "100%" }}
                 animate={reduce ? undefined : { y: "0%" }}
                 transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
-                className="block text-muted-foreground/60 text-[min(8vw,9vh)] md:text-[min(6vw,9vh)] lg:text-[5.5rem]"
+                className="block text-muted-foreground/60 text-[min(11vw,9vh)] sm:text-[min(8vw,9vh)] lg:text-[5.5rem]"
               >
                 Uma casa
               </motion.span>
@@ -455,7 +455,7 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
                 initial={reduce ? undefined : { y: "100%" }}
                 animate={reduce ? undefined : { y: "0%" }}
                 transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.8 }}
-                className="block text-muted-foreground/60 text-[min(8vw,9vh)] md:text-[min(6vw,9vh)] lg:text-[5.5rem]"
+                className="block text-muted-foreground/60 text-[min(11vw,9vh)] sm:text-[min(8vw,9vh)] lg:text-[5.5rem]"
               >
                 sobre a rocha.
               </motion.span>
@@ -466,12 +466,12 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 1.2, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-20 md:mt-24 flex flex-wrap gap-6"
+            className="mt-16 sm:mt-20 md:mt-24 flex flex-wrap gap-4 sm:gap-6"
           >
             <Button
               asChild
               size="lg"
-              className="rounded-full h-16 px-10 text-xl font-medium group relative overflow-hidden bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 shadow-2xl shadow-primary/20"
+              className="w-full sm:w-auto rounded-full h-14 sm:h-16 px-8 sm:px-10 text-lg sm:text-xl font-medium group relative overflow-hidden bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 shadow-2xl shadow-primary/20"
             >
               <Link to={cta.to}>
                 <span className="relative z-10 flex items-center">
@@ -486,7 +486,7 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.5, duration: 1 }}
-              className="flex items-center gap-4 px-6 border-l border-foreground/10"
+              className="flex items-center gap-4 px-0 sm:px-6 border-l-0 sm:border-l border-foreground/10"
             >
               <div className="flex -space-x-3">
                 {[1, 2, 3].map((i) => (
