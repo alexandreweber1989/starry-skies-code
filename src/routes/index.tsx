@@ -200,7 +200,7 @@ function FloatingNav({ cta }: { cta: { to: string; label: string } }) {
         <div className="flex items-center gap-2.5">
           <ChurchLogo className="h-8 w-8 bg-background text-foreground rounded-md p-1" />
           <div className="hidden sm:block">
-            <div className="font-display text-base leading-none font-semibold tracking-tight">
+            <div className="font-serif text-base leading-none font-semibold tracking-tight">
               Igreja Batista Atos
             </div>
             <div className="font-mono text-[8px] uppercase tracking-[0.3em] opacity-60 mt-1">
@@ -407,7 +407,7 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
               <ChurchLogo className="relative h-14 w-14 md:h-20 md:w-20 rounded-2xl md:rounded-[2rem] bg-foreground/5 backdrop-blur-md border border-foreground/10 text-foreground p-3 shrink-0" />
             </div>
             <div>
-              <span className="block font-primary font-extrabold tracking-[-0.03em] leading-[0.95] text-3xl md:text-5xl lg:text-7xl">
+              <span className="block font-serif font-extrabold tracking-[-0.03em] leading-[0.95] text-3xl md:text-5xl lg:text-7xl">
                 Igreja Batista Atos
               </span>
               <div className="h-1 w-12 bg-primary mt-2 rounded-full opacity-60" />
@@ -429,7 +429,7 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
             PG · Est. 2014 · Ponta Grossa / PR
           </motion.div>
 
-          <h1 className="font-primary font-bold tracking-[-0.05em] leading-[0.85] uppercase">
+          <h1 className="font-serif font-bold tracking-[-0.05em] leading-[0.85] uppercase">
             <span className="block overflow-hidden pb-[0.04em]">
               <motion.span
                 initial={reduce ? undefined : { y: "100%" }}
@@ -555,10 +555,10 @@ function CadastroSection() {
           <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-5">
             Comece por aqui
           </div>
-          <h2 className="font-primary text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
+          <h2 className="font-serif text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
             Dê o seu próximo passo
           </h2>
-          <p className="font-editorial text-muted-foreground text-sm md:text-base lg:text-xl max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-sm md:text-base lg:text-xl max-w-2xl mx-auto">
             Acreditamos que ninguém deve caminhar sozinho. Preencha os dados e
             te ajudaremos a encontrar a Mesa mais próxima da sua casa.
           </p>
@@ -602,10 +602,10 @@ function Historia() {
                 <div className="font-mono text-sm text-primary mb-3">
                   {c.marca}
                 </div>
-                <h3 className="font-display text-4xl md:text-5xl mb-4">
+                <h3 className="font-serif text-4xl md:text-5xl mb-4">
                   {c.titulo}
                 </h3>
-                <p className="font-editorial text-lg text-muted-foreground leading-relaxed max-w-2xl">
+                <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl">
                   {c.texto}
                 </p>
               </div>
@@ -703,7 +703,7 @@ function Historia() {
                     Cap. 0{i + 1}
                   </span>
                   <span
-                    className={`font-display text-sm font-semibold transition-all duration-500 ${
+                    className={`font-serif text-sm font-semibold transition-all duration-500 ${
                       i === ativo ? "text-foreground opacity-100" : "text-muted-foreground opacity-0 -translate-x-2"
                     }`}
                   >
@@ -753,7 +753,7 @@ function Historia() {
                     exit: { opacity: 0, x: 10 }
                   }}
                   transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                  className="font-display text-primary text-3xl md:text-5xl font-light mb-6 italic tracking-tight"
+                  className="font-serif text-primary text-3xl md:text-5xl font-light mb-6 italic tracking-tight"
                 >
                   {capitulos[ativo].marca}
                 </motion.div>
@@ -765,7 +765,7 @@ function Historia() {
                     exit: { opacity: 0, y: -20 }
                   }}
                   transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-                  className="font-primary text-3xl sm:text-5xl md:text-8xl lg:text-9xl leading-[0.9] font-bold tracking-[-0.04em] mb-6 sm:mb-12 uppercase text-foreground"
+                  className="font-serif text-3xl sm:text-5xl md:text-8xl lg:text-9xl leading-[0.9] font-bold tracking-[-0.04em] mb-6 sm:mb-12 uppercase text-foreground"
                 >
                   {capitulos[ativo].titulo}
                 </motion.h2>
@@ -777,7 +777,7 @@ function Historia() {
                     exit: { opacity: 0, y: 10 }
                   }}
                   transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-                  className="font-editorial text-base sm:text-lg md:text-2xl text-muted-foreground leading-relaxed max-w-2xl font-medium tracking-tight"
+                  className="text-base sm:text-lg md:text-2xl text-muted-foreground leading-relaxed max-w-2xl font-medium tracking-tight"
                 >
                   {capitulos[ativo].texto}
                 </motion.p>
@@ -810,7 +810,7 @@ function Numeros() {
       <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-8 sm:gap-12 md:gap-6">
         {numeros.map((n) => (
           <div key={n.rotulo} className="text-left">
-            <div className="font-display text-4xl sm:text-6xl md:text-8xl tracking-tight">
+            <div className="font-serif text-4xl sm:text-6xl md:text-8xl tracking-tight">
               <Contador para={n.valor} sufixo={n.sufixo} />
             </div>
             <div className="font-mono text-[10px] md:text-xs uppercase tracking-[0.3em] text-muted-foreground mt-4">
@@ -884,7 +884,7 @@ function Pilares() {
       <div className="font-mono text-[10px] uppercase tracking-[0.3em] opacity-40 mb-4">
         § 02 — Pilares
       </div>
-      <h2 className="font-primary text-3xl sm:text-4xl md:text-[min(4.5rem,11vh)] leading-tight">
+      <h2 className="font-serif text-3xl sm:text-4xl md:text-[min(4.5rem,11vh)] leading-tight">
         Os fundamentos da nossa fé.
       </h2>
     </div>
@@ -901,8 +901,8 @@ function Pilares() {
         </span>
       </div>
       <div>
-        <h3 className="font-display text-2xl sm:text-4xl mb-3 sm:mb-4">{p.nome}</h3>
-        <p className="font-editorial text-sm md:text-base opacity-60 leading-relaxed">
+        <h3 className="font-serif text-2xl sm:text-4xl mb-3 sm:mb-4">{p.nome}</h3>
+        <p className="text-sm md:text-base opacity-60 leading-relaxed">
           {p.desc}
         </p>
       </div>
@@ -1000,11 +1000,11 @@ function Ministerios() {
             <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-4">
               § 03 — Serviço
             </div>
-            <h2 className="font-primary text-3xl sm:text-4xl md:text-7xl leading-tight">
+            <h2 className="font-serif text-3xl sm:text-4xl md:text-7xl leading-tight">
               Um corpo. Muitos membros.
             </h2>
           </div>
-          <p className="font-editorial text-muted-foreground text-lg md:text-xl max-w-sm">
+          <p className="text-muted-foreground text-lg md:text-xl max-w-sm">
             Conecte-se ao seu propósito através das nossas frentes de ação.
           </p>
         </div>
@@ -1032,7 +1032,7 @@ function Ministerios() {
                 </div>
               </div>
               <div className="relative z-10">
-                <h3 className="font-display text-xl sm:text-2xl mb-2 group-hover:translate-x-1 transition-transform">
+                <h3 className="font-serif text-xl sm:text-2xl mb-2 group-hover:translate-x-1 transition-transform">
                   {m.nome}
                 </h3>
                 <div className="h-px w-0 group-hover:w-full bg-primary/20 transition-all duration-700" />
@@ -1073,7 +1073,7 @@ function FinalCTA({ cta }: { cta: { to: string; label: string } }) {
             § 04 — O convite
           </div>
 
-          <h2 className="font-primary font-semibold text-4xl sm:text-6xl md:text-[7rem] leading-[0.95] uppercase tracking-[-0.04em]">
+          <h2 className="font-serif font-semibold text-4xl sm:text-6xl md:text-[7rem] leading-[0.95] uppercase tracking-[-0.04em]">
             {palavras.map((p, i) => (
               <span key={p} className="inline-block overflow-hidden align-bottom">
                 <motion.span
@@ -1104,7 +1104,7 @@ function FinalCTA({ cta }: { cta: { to: string; label: string } }) {
             </span>
           </h2>
 
-          <p className="mt-10 font-editorial text-lg md:text-2xl text-background/70 leading-relaxed max-w-2xl mx-auto">
+          <p className="mt-10 text-lg md:text-2xl text-background/70 leading-relaxed max-w-2xl mx-auto">
             Você leu até aqui — e talvez seja porque algo em você procura um lugar
             pra chamar de lar. Aqui tem mesa, tem abraço e tem um espaço guardado
             pra sua história. Venha ser parte da nossa casa.
@@ -1152,7 +1152,7 @@ function Marquee({ children, reduce }: { children: ReactNode; reduce: boolean })
         aria-hidden
         animate={reduce ? undefined : { x: ["0%", "-50%"] }}
         transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-        className="font-primary text-[20vw] leading-none opacity-[0.03] whitespace-nowrap flex"
+        className="font-serif text-[20vw] leading-none opacity-[0.03] whitespace-nowrap flex"
       >
         <span>{children}{children}{children}{children}</span>
       </motion.div>
