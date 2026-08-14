@@ -10,8 +10,7 @@ export const registerVisitor = createServerFn({ method: "POST" })
     }).parse(data)
   )
   .handler(async ({ data }) => {
-    const { data: checkin, error } = await supabase
-      .from("visitor_checkins")
+    const { data: checkin, error } = await (supabase.from("visitor_checkins") as any)
       .insert({
         full_name: data.full_name,
         whatsapp: data.whatsapp,
@@ -20,16 +19,13 @@ export const registerVisitor = createServerFn({ method: "POST" })
       .single();
 
     if (error) throw error;
-
-    // TODO: Disparar notificação em tempo real via API Gateway
     
     return checkin;
   });
 
 export const getVisitorStats = createServerFn({ method: "GET" })
   .handler(async () => {
-    const { count, error } = await supabase
-      .from("visitor_checkins")
+    const { count, error } = await (supabase.from("visitor_checkins") as any)
       .select("*", { count: "exact", head: true })
       .eq("status", "novo");
 
