@@ -77,7 +77,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   });
 
   const sidebarContent = (
-    <div className="flex flex-col h-full bg-sidebar text-sidebar-foreground border-r border-sidebar-border shadow-2xl">
+    <div className="flex flex-col h-full bg-sidebar text-sidebar-foreground lg:border-r border-sidebar-border shadow-2xl">
       <div className="px-6 py-8 border-b border-sidebar-border">
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-sm bg-sidebar-primary/20 flex items-center justify-center">
@@ -158,7 +158,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                     <Menu className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="p-0 w-72">
+                <SheetContent side="left" className="p-0 w-72 bg-sidebar border-r-0">
                   {sidebarContent}
                 </SheetContent>
               </Sheet>
