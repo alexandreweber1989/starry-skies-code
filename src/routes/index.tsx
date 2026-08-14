@@ -28,6 +28,7 @@ import {
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { CadastroLead } from "@/components/home/cadastro-lead";
+import { ChurchLogo } from "@/components/ui/church-logo";
 
 export const Route = createFileRoute("/")({
   head: () => ({
