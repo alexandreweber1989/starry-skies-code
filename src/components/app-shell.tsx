@@ -162,7 +162,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 </SheetContent>
               </Sheet>
               <div className="flex items-center gap-2">
-                <Church className="h-5 w-5 text-primary" />
+                <ChurchLogo className="h-5 w-5 text-primary" />
                 <span className="font-serif font-bold text-sm tracking-tight">IB Atos</span>
               </div>
             </div>
