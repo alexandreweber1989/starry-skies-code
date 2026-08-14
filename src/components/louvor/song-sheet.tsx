@@ -30,6 +30,7 @@ export function SongSheet({
   onOpenChange: (open: boolean) => void;
 }) {
   const [shift, setShift] = useState(0);
+  const [showChords, setShowChords] = useState(true);
 
   return (
     <Sheet open={Boolean(song)} onOpenChange={(o) => { onOpenChange(o); if (!o) setShift(0); }}>
