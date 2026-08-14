@@ -200,7 +200,7 @@ function FloatingNav({ cta }: { cta: { to: string; label: string } }) {
         <div className="flex items-center gap-2.5">
           <ChurchLogo className="h-8 w-8 bg-background text-foreground rounded-md p-1" />
           <div className="hidden sm:block">
-            <div className="font-serif text-base leading-none font-semibold tracking-tight">
+            <div className="font-display text-base leading-none font-semibold tracking-tight">
               Igreja Batista Atos
             </div>
             <div className="font-mono text-[8px] uppercase tracking-[0.3em] opacity-60 mt-1">
@@ -407,7 +407,7 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
               <ChurchLogo className="relative h-14 w-14 md:h-20 md:w-20 rounded-2xl md:rounded-[2rem] bg-foreground/5 backdrop-blur-md border border-foreground/10 text-foreground p-3 shrink-0" />
             </div>
             <div>
-              <span className="block font-serif font-extrabold tracking-[-0.03em] leading-[0.95] text-3xl md:text-5xl lg:text-7xl">
+              <span className="block font-primary font-extrabold tracking-[-0.03em] leading-[0.95] text-3xl md:text-5xl lg:text-7xl">
                 Igreja Batista Atos
               </span>
               <div className="h-1 w-12 bg-primary mt-2 rounded-full opacity-60" />
@@ -429,7 +429,7 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
             PG · Est. 2014 · Ponta Grossa / PR
           </motion.div>
 
-          <h1 className="font-serif font-bold tracking-[-0.05em] leading-[0.85] uppercase">
+          <h1 className="font-primary font-bold tracking-[-0.05em] leading-[0.85] uppercase">
             <span className="block overflow-hidden pb-[0.04em]">
               <motion.span
                 initial={reduce ? undefined : { y: "100%" }}

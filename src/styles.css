@@ -5,10 +5,11 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-mono: "Plus Jakarta Sans", ui-monospace, SFMono-Regular, Menlo, monospace;
-  --font-serif: "Syne", ui-sans-serif, system-ui, sans-serif;
-  --font-kids: "Fredoka", "Plus Jakarta Sans", sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-editorial: "Lora", ui-serif, Georgia, serif;
+  --font-primary: "Syne", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Inter", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 @theme {
@@ -244,6 +245,26 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-sans);
+  }
+
+  h1, h2 {
+    font-family: var(--font-primary);
+    font-weight: 700;
+  }
+
+  h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 500;
+  }
+
+  .font-editorial {
+    font-family: var(--font-editorial);
+    line-height: 1.7;
+  }
+
+  button, input, select, textarea {
+    font-family: var(--font-sans);
   }
 }
 
