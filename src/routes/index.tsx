@@ -555,10 +555,10 @@ function CadastroSection() {
           <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-5">
             Comece por aqui
           </div>
-          <h2 className="font-serif text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
+          <h2 className="font-primary text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
             Dê o seu próximo passo
           </h2>
-          <p className="text-muted-foreground text-sm md:text-base lg:text-xl max-w-2xl mx-auto">
+          <p className="font-editorial text-muted-foreground text-sm md:text-base lg:text-xl max-w-2xl mx-auto">
             Acreditamos que ninguém deve caminhar sozinho. Preencha os dados e
             te ajudaremos a encontrar a Mesa mais próxima da sua casa.
           </p>
@@ -602,10 +602,10 @@ function Historia() {
                 <div className="font-mono text-sm text-primary mb-3">
                   {c.marca}
                 </div>
-                <h3 className="font-serif text-4xl md:text-5xl mb-4">
+                <h3 className="font-display text-4xl md:text-5xl mb-4">
                   {c.titulo}
                 </h3>
-                <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl">
+                <p className="font-editorial text-lg text-muted-foreground leading-relaxed max-w-2xl">
                   {c.texto}
                 </p>
               </div>
@@ -703,7 +703,7 @@ function Historia() {
                     Cap. 0{i + 1}
                   </span>
                   <span
-                    className={`font-serif text-sm font-semibold transition-all duration-500 ${
+                    className={`font-display text-sm font-semibold transition-all duration-500 ${
                       i === ativo ? "text-foreground opacity-100" : "text-muted-foreground opacity-0 -translate-x-2"
                     }`}
                   >
@@ -753,7 +753,7 @@ function Historia() {
                     exit: { opacity: 0, x: 10 }
                   }}
                   transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                  className="font-serif text-primary text-3xl md:text-5xl font-light mb-6 italic tracking-tight"
+                  className="font-display text-primary text-3xl md:text-5xl font-light mb-6 italic tracking-tight"
                 >
                   {capitulos[ativo].marca}
                 </motion.div>
@@ -765,7 +765,7 @@ function Historia() {
                     exit: { opacity: 0, y: -20 }
                   }}
                   transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-                  className="font-serif text-3xl sm:text-5xl md:text-8xl lg:text-9xl leading-[0.9] font-bold tracking-[-0.04em] mb-6 sm:mb-12 uppercase text-foreground"
+                  className="font-primary text-3xl sm:text-5xl md:text-8xl lg:text-9xl leading-[0.9] font-bold tracking-[-0.04em] mb-6 sm:mb-12 uppercase text-foreground"
                 >
                   {capitulos[ativo].titulo}
                 </motion.h2>
@@ -777,7 +777,7 @@ function Historia() {
                     exit: { opacity: 0, y: 10 }
                   }}
                   transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-                  className="text-base sm:text-lg md:text-2xl text-muted-foreground leading-relaxed max-w-2xl font-medium tracking-tight"
+                  className="font-editorial text-base sm:text-lg md:text-2xl text-muted-foreground leading-relaxed max-w-2xl font-medium tracking-tight"
                 >
                   {capitulos[ativo].texto}
                 </motion.p>
@@ -810,7 +810,7 @@ function Numeros() {
       <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-8 sm:gap-12 md:gap-6">
         {numeros.map((n) => (
           <div key={n.rotulo} className="text-left">
-            <div className="font-serif text-4xl sm:text-6xl md:text-8xl tracking-tight">
+            <div className="font-display text-4xl sm:text-6xl md:text-8xl tracking-tight">
               <Contador para={n.valor} sufixo={n.sufixo} />
             </div>
             <div className="font-mono text-[10px] md:text-xs uppercase tracking-[0.3em] text-muted-foreground mt-4">
@@ -884,7 +884,7 @@ function Pilares() {
       <div className="font-mono text-[10px] uppercase tracking-[0.3em] opacity-40 mb-4">
         § 02 — Pilares
       </div>
-      <h2 className="font-serif text-3xl sm:text-4xl md:text-[min(4.5rem,11vh)] leading-tight">
+      <h2 className="font-primary text-3xl sm:text-4xl md:text-[min(4.5rem,11vh)] leading-tight">
         Os fundamentos da nossa fé.
       </h2>
     </div>
@@ -901,8 +901,8 @@ function Pilares() {
         </span>
       </div>
       <div>
-        <h3 className="font-serif text-2xl sm:text-4xl mb-3 sm:mb-4">{p.nome}</h3>
-        <p className="text-sm md:text-base opacity-60 leading-relaxed">
+        <h3 className="font-display text-2xl sm:text-4xl mb-3 sm:mb-4">{p.nome}</h3>
+        <p className="font-editorial text-sm md:text-base opacity-60 leading-relaxed">
           {p.desc}
         </p>
       </div>
