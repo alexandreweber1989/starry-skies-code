@@ -97,7 +97,7 @@ const FLAT_TO_SHARP: Record<string, string> = {
 export function transposeChords(text: string, semitones: number): string {
   if (!semitones) return text;
   return text.replace(
-    /\b([A-G][b#]?)((?:m|maj|min|dim|aug|sus|add)?[0-9]*(?:\/[A-G][b#]?)?)/g,
+    /\b([A-G][b#]?(?:m|maj|min|dim|aug|sus|add)?[0-9]*(?:\([^)]*\))?)(?=\s|\/|$|\n)/g,
     (match, root: string, rest: string) => {
       const normalized = FLAT_TO_SHARP[root] ?? root;
       const index = SHARP.indexOf(normalized);
