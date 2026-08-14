@@ -54,6 +54,7 @@ const nav: NavItem[] = [
   { to: "/mesas", label: "Mesas", icon: UtensilsCrossed },
   { to: "/cuidado-semana", label: "Cuidado da Semana", icon: HeartHandshake, requiredRoles: ["admin_geral", "lider_mesa"] },
   { to: "/faxina", label: "Faxina", icon: Sparkles },
+  { to: "/visitantes", label: "Visitantes", icon: Sparkles, requiredRoles: ["admin_geral"] },
   { to: "/membros", label: "Membros", icon: Users, requiredRoles: ["admin_geral"] },
   { to: "/mapa", label: "Mapa", icon: MapPin, requiredRoles: ["admin_geral"] },
   { to: "/onboarding", label: "Integração", icon: Sprout, requiredRoles: ["admin_geral"] },

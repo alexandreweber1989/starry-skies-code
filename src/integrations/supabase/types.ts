@@ -2585,6 +2585,36 @@ export type Database = {
         }
         Relationships: []
       }
+      visitor_checkins: {
+        Row: {
+          created_at: string | null
+          full_name: string
+          id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          whatsapp: string
+        }
+        Insert: {
+          created_at?: string | null
+          full_name: string
+          id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          whatsapp: string
+        }
+        Update: {
+          created_at?: string | null
+          full_name?: string
+          id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          whatsapp?: string
+        }
+        Relationships: []
+      }
       worship_musicians: {
         Row: {
           created_at: string
