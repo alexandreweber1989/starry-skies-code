@@ -122,7 +122,7 @@ export function MemberToolbar({
         <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mr-auto">
           {count} resultado{count === 1 ? "" : "s"}
         </span>
-        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+        <Picker
           value={filters.sort}
           onChange={(v) => set({ sort: v })}
           placeholder="Ordenar"
