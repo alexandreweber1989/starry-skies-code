@@ -81,6 +81,7 @@ const atalhos: { to: string; label: string; icon: any; requiredRoles?: AppRole[]
   },
   { to: "/perfil", label: "Meu perfil", icon: UserPlus },
   { to: "/cuidado", label: "Cuidado", icon: HeartPulse },
+  { to: "/visitantes", label: "Visitantes", icon: Sparkles, requiredRoles: ["admin_geral"] },
 ];
 
 function Dashboard() {
@@ -101,7 +102,7 @@ function Dashboard() {
     queryFn: async () => {
       const hoje = todayISO();
       const inicioMes = hoje.slice(0, 8) + "01";
-      const [m, r, mesas, ativos, novos, proximo, pendentes] = await Promise.all([
+      const [m, r, mesas, ativos, novos, proximo, pendentes, v_pendentes] = await Promise.all([
         supabase
           .from("ministries")
           .select("id", { count: "exact", head: true })
@@ -127,6 +128,10 @@ function Dashboard() {
           .from("worship_schedule_assignments")
           .select("id", { count: "exact", head: true })
           .eq("status", "pendente"),
+        supabase
+          .from("visitor_checkins")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "novo"),
       ]);
       return {
         ministries: m.count ?? 0,
@@ -135,6 +140,7 @@ function Dashboard() {
         ativos: ativos.count ?? 0,
         novos: novos.count ?? 0,
         pendentes: pendentes.count ?? 0,
+        v_pendentes: v_pendentes.count ?? 0,
         proximo: (proximo.data ?? [])[0] as
           | {
               title: string;
@@ -240,6 +246,15 @@ function Dashboard() {
                 hint="Aguardando confirmação"
                 icon={CalendarDays}
                 to="/louvor"
+              />
+            )}
+            {isAdmin && (
+              <StatTile
+                label="Visitantes"
+                value={data?.v_pendentes ?? "—"}
+                hint="Novos hoje (via QR Code)"
+                icon={Sparkles}
+                to="/visitantes"
               />
             )}
           </div>
