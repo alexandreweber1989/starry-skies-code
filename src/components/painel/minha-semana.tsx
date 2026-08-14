@@ -74,7 +74,7 @@ export function MinhaSemana() {
         {proximas.map((a) => (
           <div
             key={a.id}
-            className="flex flex-wrap items-center justify-between gap-4 border border-border rounded-sm p-4"
+            className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-border rounded-sm p-4"
           >
             <div className="min-w-0">
               <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
@@ -89,16 +89,16 @@ export function MinhaSemana() {
               </div>
             </div>
             {a.status === "pendente" ? (
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2 w-full sm:w-auto">
                 <Button
-                  size="sm"
+                  className="flex-1 sm:flex-initial"
                   onClick={() => respond.mutate({ id: a.id, status: "confirmado" })}
                   disabled={respond.isPending}
                 >
                   <Check className="h-4 w-4" /> Confirmar
                 </Button>
                 <Button
-                  size="sm"
+                  className="flex-1 sm:flex-initial"
                   variant="outline"
                   onClick={() => respond.mutate({ id: a.id, status: "recusado" })}
                   disabled={respond.isPending}

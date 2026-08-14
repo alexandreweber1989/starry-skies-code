@@ -149,7 +149,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </aside>
 
         <main className="min-w-0 flex flex-col">
-          <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border/50 bg-background/80 px-4 backdrop-blur-xl lg:px-10 transition-all duration-300 shadow-sm">
+          <header className="sticky top-0 z-30 flex h-14 sm:h-16 items-center justify-between border-b border-border/50 bg-background/80 px-4 backdrop-blur-xl lg:px-10 transition-all duration-300 shadow-sm">
             <div className="flex items-center gap-2 lg:hidden">
               <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
                 <SheetTrigger asChild>
@@ -211,14 +211,14 @@ export function PageHeader({
   return (
     <div className={`border-b border-border/40 bg-card/40 backdrop-blur-xl relative overflow-hidden group ${className}`}>
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 lg:py-20 flex flex-col md:flex-row md:items-end md:justify-between gap-6 sm:gap-8 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-16 lg:py-20 flex flex-col md:flex-row md:items-end md:justify-between gap-6 sm:gap-8 relative z-10">
         <div className="space-y-4">
           {eyebrow && (
             <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-primary font-bold">
               {eyebrow}
             </div>
           )}
-          <h1 className="font-serif text-4xl lg:text-6xl leading-tight text-foreground animate-in fade-in slide-in-from-left-4 duration-700">
+          <h1 className="font-serif text-3xl sm:text-4xl lg:text-6xl leading-tight text-foreground animate-in fade-in slide-in-from-left-4 duration-700">
             {title}
           </h1>
           {description && (

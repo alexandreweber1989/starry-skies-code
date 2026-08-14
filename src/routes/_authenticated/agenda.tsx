@@ -207,7 +207,7 @@ function AgendaPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <StatTile label="Eventos futuros" value={upcoming.length} icon={CalendarDays} />
           <StatTile label="Você confirmou" value={mine.length} icon={CheckCircle2} />
           <StatTile
@@ -223,7 +223,7 @@ function AgendaPage() {
           />
         </div>
 
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-[1fr_auto_auto] gap-3">
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-[1fr_auto_auto] gap-3">
           <Input
             placeholder="Buscar por título, descrição ou local"
             value={search}

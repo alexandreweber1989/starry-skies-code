@@ -355,7 +355,7 @@ function LinhaGlitch({ palavras }: { palavras: string[] }) {
   return (
     <span
       ref={ref}
-      className="block italic text-foreground whitespace-nowrap text-[10vw] md:text-[8vw] lg:text-[8rem]"
+      className="block italic text-foreground whitespace-nowrap leading-[0.9]"
       style={fontPx ? { fontSize: `${fontPx}px`, lineHeight: 1 } : undefined}
     >
       <PalavraGlitch palavras={palavras} />
@@ -435,7 +435,7 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
                 initial={reduce ? undefined : { y: "100%" }}
                 animate={reduce ? undefined : { y: "0%" }}
                 transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
-                className="block text-muted-foreground/60 text-[min(8vw,9vh)] md:text-[min(6vw,9vh)] lg:text-[5.5rem]"
+                className="block text-muted-foreground/60 text-[min(11vw,9vh)] sm:text-[min(8vw,9vh)] lg:text-[5.5rem]"
               >
                 Uma casa
               </motion.span>
@@ -455,7 +455,7 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
                 initial={reduce ? undefined : { y: "100%" }}
                 animate={reduce ? undefined : { y: "0%" }}
                 transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.8 }}
-                className="block text-muted-foreground/60 text-[min(8vw,9vh)] md:text-[min(6vw,9vh)] lg:text-[5.5rem]"
+                className="block text-muted-foreground/60 text-[min(11vw,9vh)] sm:text-[min(8vw,9vh)] lg:text-[5.5rem]"
               >
                 sobre a rocha.
               </motion.span>
@@ -466,12 +466,12 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 1.2, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-20 md:mt-24 flex flex-wrap gap-6"
+            className="mt-16 sm:mt-20 md:mt-24 flex flex-wrap gap-4 sm:gap-6"
           >
             <Button
               asChild
               size="lg"
-              className="rounded-full h-16 px-10 text-xl font-medium group relative overflow-hidden bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 shadow-2xl shadow-primary/20"
+              className="w-full sm:w-auto rounded-full h-14 sm:h-16 px-8 sm:px-10 text-lg sm:text-xl font-medium group relative overflow-hidden bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 shadow-2xl shadow-primary/20"
             >
               <Link to={cta.to}>
                 <span className="relative z-10 flex items-center">
@@ -486,7 +486,7 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.5, duration: 1 }}
-              className="flex items-center gap-4 px-6 border-l border-foreground/10"
+              className="flex items-center gap-4 px-0 sm:px-6 border-l-0 sm:border-l border-foreground/10"
             >
               <div className="flex -space-x-3">
                 {[1, 2, 3].map((i) => (
@@ -654,7 +654,7 @@ function Historia() {
           }}
         />
 
-        <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-[200px_1fr] gap-8 sm:gap-12 lg:gap-32 items-center relative z-10">
+        <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-[200px_1fr] gap-12 sm:gap-20 lg:gap-32 items-center relative z-10">
           {/* Vertical Timeline Navigation */}
           <div className="hidden lg:flex flex-col gap-10 relative py-10">
             {/* Timeline Line */}
@@ -728,7 +728,7 @@ function Historia() {
 
           {/* Active Chapter Content */}
           <div className="relative min-h-[24rem] sm:min-h-[30rem] flex flex-col justify-center">
-            <div className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.4em] text-primary/60 mb-8 sm:mb-12 flex items-center gap-4">
+            <div className="font-mono text-[9px] sm:text-[11px] uppercase tracking-[0.4em] text-primary/60 mb-6 sm:mb-12 flex items-center gap-4">
               <span className="h-px w-8 bg-primary/40" />
               Nossa Gênese
             </div>
@@ -765,7 +765,7 @@ function Historia() {
                     exit: { opacity: 0, y: -20 }
                   }}
                   transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-                  className="font-serif text-4xl sm:text-5xl md:text-8xl lg:text-9xl leading-[0.9] font-bold tracking-[-0.04em] mb-8 sm:mb-12 uppercase text-foreground"
+                  className="font-serif text-3xl sm:text-5xl md:text-8xl lg:text-9xl leading-[0.9] font-bold tracking-[-0.04em] mb-6 sm:mb-12 uppercase text-foreground"
                 >
                   {capitulos[ativo].titulo}
                 </motion.h2>
@@ -807,10 +807,10 @@ function Historia() {
 function Numeros() {
   return (
     <section className="relative z-20 bg-background py-24 md:py-32 px-6 lg:px-10 border-t border-border/10">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-6">
+      <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-8 sm:gap-12 md:gap-6">
         {numeros.map((n) => (
-          <div key={n.rotulo} className="text-center md:text-left">
-            <div className="font-serif text-6xl md:text-8xl tracking-tight">
+          <div key={n.rotulo} className="text-left">
+            <div className="font-serif text-4xl sm:text-6xl md:text-8xl tracking-tight">
               <Contador para={n.valor} sufixo={n.sufixo} />
             </div>
             <div className="font-mono text-[10px] md:text-xs uppercase tracking-[0.3em] text-muted-foreground mt-4">
@@ -884,14 +884,14 @@ function Pilares() {
       <div className="font-mono text-[10px] uppercase tracking-[0.3em] opacity-40 mb-4">
         § 02 — Pilares
       </div>
-      <h2 className="font-serif text-4xl md:text-[min(4.5rem,11vh)] leading-tight">
+      <h2 className="font-serif text-3xl sm:text-4xl md:text-[min(4.5rem,11vh)] leading-tight">
         Os fundamentos da nossa fé.
       </h2>
     </div>
   );
 
   const Cartao = ({ p, i }: { p: (typeof pilares)[number]; i: number }) => (
-    <div className="flex flex-col justify-between p-6 md:p-10 rounded-3xl border border-background/10 bg-background/[0.03] min-h-[min(22rem,50vh)] md:min-h-[min(26rem,52vh)]">
+    <div className="flex flex-col justify-between p-6 sm:p-10 rounded-2xl sm:rounded-3xl border border-background/10 bg-background/[0.03] min-h-[min(18rem,50vh)] sm:min-h-[min(26rem,52vh)]">
       <div className="flex items-center justify-between">
         <span className="font-mono text-xs tracking-[0.4em] opacity-30">
           {p.n}
@@ -901,7 +901,7 @@ function Pilares() {
         </span>
       </div>
       <div>
-        <h3 className="font-serif text-3xl md:text-4xl mb-4">{p.nome}</h3>
+        <h3 className="font-serif text-2xl sm:text-4xl mb-3 sm:mb-4">{p.nome}</h3>
         <p className="text-sm md:text-base opacity-60 leading-relaxed">
           {p.desc}
         </p>
@@ -1000,7 +1000,7 @@ function Ministerios() {
             <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-4">
               § 03 — Serviço
             </div>
-            <h2 className="font-serif text-4xl md:text-7xl leading-tight">
+            <h2 className="font-serif text-3xl sm:text-4xl md:text-7xl leading-tight">
               Um corpo. Muitos membros.
             </h2>
           </div>
@@ -1009,7 +1009,7 @@ function Ministerios() {
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {ministerios.map((m, idx) => (
             <motion.div
               key={m.nome}
@@ -1021,7 +1021,7 @@ function Ministerios() {
                 ease: [0.22, 1, 0.36, 1],
               }}
               viewport={{ once: true, margin: "-60px" }}
-              className="group relative p-8 bg-card/50 backdrop-blur-sm border border-border/50 rounded-3xl hover:border-primary/40 transition-all duration-700 overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-2"
+              className="group relative p-6 sm:p-8 bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl sm:rounded-3xl hover:border-primary/40 transition-all duration-700 overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-2"
             >
               <div className="relative z-10 flex justify-between items-start mb-8">
                 <div className="h-12 w-12 rounded-2xl bg-primary/5 text-primary grid place-items-center group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-500 rotate-3 group-hover:rotate-0">
@@ -1032,7 +1032,7 @@ function Ministerios() {
                 </div>
               </div>
               <div className="relative z-10">
-                <h3 className="font-serif text-2xl mb-2 group-hover:translate-x-1 transition-transform">
+                <h3 className="font-serif text-xl sm:text-2xl mb-2 group-hover:translate-x-1 transition-transform">
                   {m.nome}
                 </h3>
                 <div className="h-px w-0 group-hover:w-full bg-primary/20 transition-all duration-700" />
@@ -1055,7 +1055,7 @@ function FinalCTA({ cta }: { cta: { to: string; label: string } }) {
   const palavras = ["Faça", "parte", "desta"];
 
   return (
-    <footer className="relative z-20 bg-foreground text-background py-32 md:py-48 px-6 lg:px-10 overflow-hidden">
+    <footer className="relative z-20 bg-foreground text-background py-24 sm:py-32 md:py-48 px-6 lg:px-10 overflow-hidden">
       {/* Brilho suave: dá calor e foco ao convite sobre o fundo escuro */}
       <div
         aria-hidden
@@ -1073,7 +1073,7 @@ function FinalCTA({ cta }: { cta: { to: string; label: string } }) {
             § 04 — O convite
           </div>
 
-          <h2 className="font-serif font-semibold text-5xl md:text-[7rem] leading-[0.95] uppercase tracking-[-0.04em]">
+          <h2 className="font-serif font-semibold text-4xl sm:text-6xl md:text-[7rem] leading-[0.95] uppercase tracking-[-0.04em]">
             {palavras.map((p, i) => (
               <span key={p} className="inline-block overflow-hidden align-bottom">
                 <motion.span
@@ -1114,7 +1114,7 @@ function FinalCTA({ cta }: { cta: { to: string; label: string } }) {
             <Button
               asChild
               size="lg"
-              className="group rounded-full h-16 md:h-20 px-10 md:px-14 text-lg md:text-xl bg-background text-foreground border border-transparent hover:bg-transparent hover:text-background hover:border-background transition-all duration-700 hover:-translate-y-1 hover:shadow-2xl hover:shadow-background/10"
+              className="group rounded-full h-14 sm:h-16 md:h-20 px-8 sm:px-10 md:px-14 text-base sm:text-lg md:text-xl bg-background text-foreground border border-transparent hover:bg-transparent hover:text-background hover:border-background transition-all duration-700 hover:-translate-y-1 hover:shadow-2xl hover:shadow-background/10"
             >
               <Link to={cta.to}>
                 <span>
@@ -1124,13 +1124,13 @@ function FinalCTA({ cta }: { cta: { to: string; label: string } }) {
               </Link>
             </Button>
 
-            <div className="font-mono text-[11px] uppercase tracking-[0.25em] text-background/40">
+            <div className="font-mono text-[9px] sm:text-[11px] uppercase tracking-[0.25em] text-background/40 max-w-xs sm:max-w-none">
               Parque N. S. das Graças · Ponta Grossa / PR · Todos são bem-vindos
             </div>
           </div>
         </motion.div>
 
-        <div className="mt-28 md:mt-40 pt-10 border-t border-background/10 flex flex-col md:flex-row items-center justify-between gap-8 text-background/40 font-mono text-[10px] uppercase tracking-[0.3em]">
+        <div className="mt-20 sm:mt-28 md:mt-40 pt-10 border-t border-background/10 flex flex-col md:flex-row items-center justify-between gap-8 text-background/40 font-mono text-[10px] uppercase tracking-[0.3em]">
           <div className="flex items-center gap-3">
             <Church className="h-4 w-4" />
             <span>Igreja Batista Atos · PG</span>
