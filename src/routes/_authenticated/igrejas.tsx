@@ -41,7 +41,7 @@ function SocialActionPage() {
     campaigns?.reduce((acc, curr) => acc + (curr.total_families_reached || 0), 0) || 0;
 
   return (
-    <div style={{ "--group-primary": "#f43f5e" } as React.CSSProperties}>
+    <>
       <PageHeader
         eyebrow="Ação Social"
         title="Atos de Amor"
@@ -189,6 +189,6 @@ function SocialActionPage() {
           </aside>
         </div>
       </PageBody>
-    </div>
+    </>
   );
 }
