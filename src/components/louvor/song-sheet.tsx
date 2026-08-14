@@ -30,6 +30,7 @@ export function SongSheet({
   onOpenChange: (open: boolean) => void;
 }) {
   const [shift, setShift] = useState(0);
+  const [showChords, setShowChords] = useState(true);
 
   return (
     <Sheet open={Boolean(song)} onOpenChange={(o) => { onOpenChange(o); if (!o) setShift(0); }}>
@@ -61,30 +62,52 @@ export function SongSheet({
               {song.chords && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                      Cifra {shift !== 0 && `(${shift > 0 ? "+" : ""}${shift})`}
+                    <div className="flex items-center gap-4">
+                      <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                        Cifra {shift !== 0 && `(${shift > 0 ? "+" : ""}${shift})`}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-7 px-2 font-mono text-[10px] uppercase tracking-widest"
+                          onClick={() => setShowChords(!showChords)}
+                        >
+                          {showChords ? "Ocultar Cifra" : "Exibir Cifra"}
+                        </Button>
+                      </div>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Button variant="outline" size="icon" aria-label="Baixar meio tom" onClick={() => setShift((s) => s - 1)}>
+                      <Button variant="outline" size="icon" className="h-8 w-8" aria-label="Baixar meio tom" onClick={() => setShift((s) => s - 1)}>
                         <Minus className="h-4 w-4" />
                       </Button>
-                      <Button variant="outline" size="icon" aria-label="Subir meio tom" onClick={() => setShift((s) => s + 1)}>
+                      <Button variant="outline" size="icon" className="h-8 w-8" aria-label="Subir meio tom" onClick={() => setShift((s) => s + 1)}>
                         <Plus className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>
-                  <pre className="border border-border bg-card rounded-sm p-4 font-mono text-xs whitespace-pre-wrap leading-relaxed">
-                    {transposeChords(song.chords, shift)}
-                  </pre>
+                  
+                  {showChords ? (
+                    <pre className="border border-border bg-card rounded-sm p-4 font-mono text-xs whitespace-pre-wrap leading-[1.6] tracking-normal overflow-x-auto selection:bg-primary/20">
+                      {transposeChords(song.chords, shift)}
+                    </pre>
+                  ) : song.lyrics ? (
+                    <div className="space-y-3">
+                      <p className="whitespace-pre-wrap text-sm leading-relaxed">{song.lyrics}</p>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground italic">Letra não disponível para esta música.</p>
+                  )}
                 </div>
               )}
 
-              {song.lyrics && (
+              {!song.chords && song.lyrics && (
                 <div className="space-y-3">
                   <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Letra</div>
                   <p className="whitespace-pre-wrap text-sm leading-relaxed">{song.lyrics}</p>
                 </div>
               )}
+
 
               {!song.chords && !song.lyrics && (
                 <p className="text-sm text-muted-foreground">Cifra e letra ainda não cadastradas.</p>

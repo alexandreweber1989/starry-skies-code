@@ -96,22 +96,24 @@ const FLAT_TO_SHARP: Record<string, string> = {
 /** Transpõe uma cifra em N semitons preservando o texto ao redor. */
 export function transposeChords(text: string, semitones: number): string {
   if (!semitones) return text;
+  
+  // Regex para capturar o acorde completo, incluindo baixo após a barra e extensões entre parênteses
+  // Ex: C#m7(9), G/B, A#add9
   return text.replace(
-    /\b([A-G][b#]?)((?:m|maj|min|dim|aug|sus|add)?[0-9]*(?:\/[A-G][b#]?)?)/g,
-    (match, root: string, rest: string) => {
-      const normalized = FLAT_TO_SHARP[root] ?? root;
-      const index = SHARP.indexOf(normalized);
-      if (index === -1) return match;
-      const next = SHARP[(index + semitones + 120) % 12];
-      const bassMatch = rest.match(/\/([A-G][b#]?)/);
-      if (bassMatch) {
-        const bass = FLAT_TO_SHARP[bassMatch[1]] ?? bassMatch[1];
-        const bassIndex = SHARP.indexOf(bass);
-        if (bassIndex !== -1) {
-          rest = rest.replace(/\/([A-G][b#]?)/, "/" + SHARP[(bassIndex + semitones + 120) % 12]);
-        }
-      }
-      return next + rest;
+    /\b([A-G][b#]?)((?:m|maj|min|dim|aug|sus|add)?[0-9]*(?:\([^)]*\))?)(?:\/([A-G][b#]?))?/g,
+    (match, root: string, suffix: string, bass: string) => {
+      const transposeKey = (key: string) => {
+        const normalized = FLAT_TO_SHARP[key] ?? key;
+        const idx = SHARP.indexOf(normalized);
+        if (idx === -1) return key;
+        return SHARP[(idx + semitones + 120) % 12];
+      };
+
+      const newRoot = transposeKey(root);
+      const newBass = bass ? "/" + transposeKey(bass) : "";
+      
+      return newRoot + suffix + newBass;
     },
   );
 }
+

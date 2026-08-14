@@ -32,6 +32,7 @@ export function StageMode({ setlist }: { setlist: StageItem[] }) {
   const [open, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
   const [shift, setShift] = useState(0);
+  const [showChords, setShowChords] = useState(true);
   const [size, setSize] = useState(16);
   const [scrolling, setScrolling] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -97,8 +98,12 @@ export function StageMode({ setlist }: { setlist: StageItem[] }) {
           <Button variant="outline" size="icon" aria-label="Aumentar letra" onClick={() => setSize((s) => Math.min(40, s + 1))}>
             <Plus className="h-4 w-4" />
           </Button>
+          <Button variant="outline" size="sm" className="font-mono text-[10px]" onClick={() => setShowChords(!showChords)}>
+            {showChords ? "LETRA" : "CIFRA"}
+          </Button>
           <Button variant="outline" size="sm" onClick={() => setShift((s) => s - 1)}>-½</Button>
           <Button variant="outline" size="sm" onClick={() => setShift((s) => s + 1)}>+½</Button>
+
           <Button variant={scrolling ? "default" : "outline"} size="icon" aria-label="Rolagem automática" onClick={() => setScrolling((s) => !s)}>
             {scrolling ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
           </Button>
@@ -109,15 +114,16 @@ export function StageMode({ setlist }: { setlist: StageItem[] }) {
       </header>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-6">
-        {song?.chords ? (
-          <pre className="font-mono whitespace-pre-wrap leading-relaxed max-w-3xl mx-auto" style={{ fontSize: size }}>
+        {showChords && song?.chords ? (
+          <pre className="font-mono whitespace-pre-wrap leading-[1.6] max-w-3xl mx-auto selection:bg-primary/20" style={{ fontSize: size }}>
             {transposeChords(song.chords, shift)}
           </pre>
         ) : song?.lyrics ? (
           <p className="whitespace-pre-wrap leading-relaxed max-w-3xl mx-auto" style={{ fontSize: size }}>{song.lyrics}</p>
         ) : (
-          <p className="text-sm text-muted-foreground text-center">Cifra e letra ainda não cadastradas para esta música.</p>
+          <p className="text-sm text-muted-foreground text-center">Cifra ou letra ainda não cadastradas para esta música.</p>
         )}
+
         {current?.notes && (
           <p className="max-w-3xl mx-auto mt-6 text-sm text-muted-foreground border-l-2 border-border pl-3">{current.notes}</p>
         )}
