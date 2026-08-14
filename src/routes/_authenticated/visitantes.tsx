@@ -19,7 +19,8 @@ function VisitorsAdminPage() {
   const { data: visitors, isLoading } = useQuery({
     queryKey: ['visitors'],
     queryFn: async () => {
-      const { data, error } = await (supabase.from('visitor_checkins') as any)
+      const { data, error } = await (supabase as any)
+        .from('visitor_checkins')
         .select('*')
         .order('created_at', { ascending: false });
       if (error) throw error;
@@ -29,7 +30,8 @@ function VisitorsAdminPage() {
 
   const updateStatus = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const { error } = await (supabase.from('visitor_checkins') as any)
+      const { error } = await (supabase as any)
+        .from('visitor_checkins')
         .update({ status, reviewed_at: new Date().toISOString() })
         .eq('id', id);
       if (error) throw error;
@@ -42,7 +44,8 @@ function VisitorsAdminPage() {
 
   const remove = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await (supabase.from('visitor_checkins') as any)
+      const { error } = await (supabase as any)
+        .from('visitor_checkins')
         .delete()
         .eq('id', id);
       if (error) throw error;

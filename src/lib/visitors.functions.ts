@@ -10,7 +10,8 @@ export const registerVisitor = createServerFn({ method: "POST" })
     }).parse(data)
   )
   .handler(async ({ data }) => {
-    const { data: checkin, error } = await (supabase.from("visitor_checkins") as any)
+    const { data: checkin, error } = await (supabase as any)
+      .from("visitor_checkins")
       .insert({
         full_name: data.full_name,
         whatsapp: data.whatsapp,
@@ -25,7 +26,8 @@ export const registerVisitor = createServerFn({ method: "POST" })
 
 export const getVisitorStats = createServerFn({ method: "GET" })
   .handler(async () => {
-    const { count, error } = await (supabase.from("visitor_checkins") as any)
+    const { count, error } = await (supabase as any)
+      .from("visitor_checkins")
       .select("*", { count: "exact", head: true })
       .eq("status", "novo");
 
