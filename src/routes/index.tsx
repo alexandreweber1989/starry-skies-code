@@ -404,9 +404,7 @@ function Hero({ cta }: { cta: { to: string; label: string } }) {
           >
             <div className="relative group">
               <div className="absolute -inset-1 bg-primary/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500" />
-              <span className="relative h-14 w-14 md:h-20 md:w-20 rounded-2xl md:rounded-[2rem] bg-foreground/5 backdrop-blur-md border border-foreground/10 text-foreground grid place-items-center shrink-0">
-                <Church className="h-7 w-7 md:h-10 md:w-10" />
-              </span>
+              <ChurchLogo className="relative h-14 w-14 md:h-20 md:w-20 rounded-2xl md:rounded-[2rem] bg-foreground/5 backdrop-blur-md border border-foreground/10 text-foreground p-3 shrink-0" />
             </div>
             <div>
               <span className="block font-serif font-extrabold tracking-[-0.03em] leading-[0.95] text-3xl md:text-5xl lg:text-7xl">
