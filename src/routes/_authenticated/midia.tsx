@@ -72,7 +72,7 @@ function MediaModule() {
   }, [assets, q]);
 
   return (
-    <div style={{ "--group-primary": "#ec4899" } as React.CSSProperties}>
+    <>
       <PageHeader
         eyebrow="Comunicação"
         title="Central de Mídia"
@@ -334,6 +334,6 @@ function MediaModule() {
         </Tabs>
 
       </PageBody>
-    </div>
+    </>
   );
 }

@@ -16,7 +16,7 @@ function LouvorPage() {
   const { data: musicians, isLoading } = useMusicians();
 
   return (
-    <div style={{ "--group-primary": "#facc15" } as React.CSSProperties}>
+    <>
       <PageHeader
         eyebrow="Ministério"
         title="Louvor & Adoração"
@@ -60,6 +60,6 @@ function LouvorPage() {
           </TabsContent>
         </Tabs>
       </PageBody>
-    </div>
+    </>
   );
 }

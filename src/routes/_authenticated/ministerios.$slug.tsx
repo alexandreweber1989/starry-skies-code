@@ -45,7 +45,7 @@ function MinistryDetail() {
   const canManage = isMinistryAdmin(ministry.id);
 
   return (
-    <div style={{ "--group-primary": ministry.color || 'var(--primary)' } as React.CSSProperties}>
+    <>
       <PageHeader
         eyebrow="Ministério"
         title={ministry.name}
@@ -125,6 +125,6 @@ function MinistryDetail() {
           </aside>
         </div>
       </PageBody>
-    </div>
+    </>
   );
 }
