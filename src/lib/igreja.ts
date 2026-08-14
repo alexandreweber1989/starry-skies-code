@@ -5,6 +5,9 @@ export const CHURCH_FUNCTIONS = [
   { value: "lider", label: "Líder" },
   { value: "diacono", label: "Diácono(isa)" },
   { value: "obreiro", label: "Obreiro(a)" },
+  { value: "lider_rede", label: "Líder de Rede" },
+  { value: "lider_mesa", label: "Líder de Mesa" },
+  { value: "lider_ministerio", label: "Líder de Ministério" },
   { value: "membro", label: "Membro" },
 ] as const;
 
@@ -19,6 +22,9 @@ export const CHURCH_FUNCTION_HINT: Record<string, string> = {
   pastor: "Prefixo Pr. / Pra. antes do nome",
   apascentador: "Prefixo Apasc. antes do nome",
   lider: "Prefixo Líder antes do nome",
+  lider_rede: "Prefixo Líder antes do nome",
+  lider_mesa: "Prefixo Líder antes do nome",
+  lider_ministerio: "Prefixo Líder antes do nome",
   diacono: "Sem prefixo no nome",
   obreiro: "Sem prefixo no nome",
   membro: "Somente o nome completo",
@@ -38,6 +44,9 @@ export function churchFunctionPrefix(
     case "apascentador":
       return "Apasc.";
     case "lider":
+    case "lider_rede":
+    case "lider_mesa":
+    case "lider_ministerio":
       return "Líder";
     default:
       return null;
