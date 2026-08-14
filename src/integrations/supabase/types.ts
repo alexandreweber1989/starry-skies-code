@@ -3061,6 +3061,10 @@ export type Database = {
         }[]
       }
       notify_cleaning_responsible: { Args: never; Returns: undefined }
+      register_public_visitor: {
+        Args: { _full_name: string; _whatsapp: string }
+        Returns: Json
+      }
     }
     Enums: {
       announcement_category: "aviso" | "comunicado" | "urgente" | "acao"

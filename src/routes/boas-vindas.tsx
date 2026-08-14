@@ -31,8 +31,9 @@ function WelcomePage() {
       await register({ data: { full_name: name, whatsapp } });
       setStep('success');
       toast.success("Seja bem-vindo(a) à IBA!");
-    } catch (err) {
-      toast.error("Erro ao registrar sua visita. Tente novamente.");
+    } catch (err: any) {
+      console.error("Registration error:", err);
+      toast.error(err?.message || "Erro ao registrar sua visita. Tente novamente.");
     } finally {
       setLoading(false);
     }
