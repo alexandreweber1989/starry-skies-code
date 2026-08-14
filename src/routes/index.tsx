@@ -1000,11 +1000,11 @@ function Ministerios() {
             <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-4">
               § 03 — Serviço
             </div>
-            <h2 className="font-serif text-3xl sm:text-4xl md:text-7xl leading-tight">
+            <h2 className="font-primary text-3xl sm:text-4xl md:text-7xl leading-tight">
               Um corpo. Muitos membros.
             </h2>
           </div>
-          <p className="text-muted-foreground text-lg md:text-xl max-w-sm">
+          <p className="font-editorial text-muted-foreground text-lg md:text-xl max-w-sm">
             Conecte-se ao seu propósito através das nossas frentes de ação.
           </p>
         </div>
@@ -1032,7 +1032,7 @@ function Ministerios() {
                 </div>
               </div>
               <div className="relative z-10">
-                <h3 className="font-serif text-xl sm:text-2xl mb-2 group-hover:translate-x-1 transition-transform">
+                <h3 className="font-display text-xl sm:text-2xl mb-2 group-hover:translate-x-1 transition-transform">
                   {m.nome}
                 </h3>
                 <div className="h-px w-0 group-hover:w-full bg-primary/20 transition-all duration-700" />
@@ -1073,7 +1073,7 @@ function FinalCTA({ cta }: { cta: { to: string; label: string } }) {
             § 04 — O convite
           </div>
 
-          <h2 className="font-serif font-semibold text-4xl sm:text-6xl md:text-[7rem] leading-[0.95] uppercase tracking-[-0.04em]">
+          <h2 className="font-primary font-semibold text-4xl sm:text-6xl md:text-[7rem] leading-[0.95] uppercase tracking-[-0.04em]">
             {palavras.map((p, i) => (
               <span key={p} className="inline-block overflow-hidden align-bottom">
                 <motion.span
@@ -1104,7 +1104,7 @@ function FinalCTA({ cta }: { cta: { to: string; label: string } }) {
             </span>
           </h2>
 
-          <p className="mt-10 text-lg md:text-2xl text-background/70 leading-relaxed max-w-2xl mx-auto">
+          <p className="mt-10 font-editorial text-lg md:text-2xl text-background/70 leading-relaxed max-w-2xl mx-auto">
             Você leu até aqui — e talvez seja porque algo em você procura um lugar
             pra chamar de lar. Aqui tem mesa, tem abraço e tem um espaço guardado
             pra sua história. Venha ser parte da nossa casa.
@@ -1152,7 +1152,7 @@ function Marquee({ children, reduce }: { children: ReactNode; reduce: boolean })
         aria-hidden
         animate={reduce ? undefined : { x: ["0%", "-50%"] }}
         transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-        className="font-serif text-[20vw] leading-none opacity-[0.03] whitespace-nowrap flex"
+        className="font-primary text-[20vw] leading-none opacity-[0.03] whitespace-nowrap flex"
       >
         <span>{children}{children}{children}{children}</span>
       </motion.div>
