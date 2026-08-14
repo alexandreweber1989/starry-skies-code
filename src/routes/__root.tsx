@@ -81,26 +81,26 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Igreja Batista Atos" },
+      { title: "Igreja Batista Atos | Uma casa sobre a rocha" },
       {
         name: "description",
         content:
-          "Plataforma da Igreja Batista Atos — ministérios, redes, mesas e comunidade em um só lugar.",
+          "Comunidade cristã dedicada a edificar um lugar de oração para todos os povos em Ponta Grossa. Forjando discípulos através do relacionamento, da mesa e da paternidade.",
       },
       { name: "author", content: "Igreja Batista Atos" },
-      { property: "og:title", content: "Igreja Batista Atos" },
+      { property: "og:title", content: "Igreja Batista Atos | Uma casa sobre a rocha" },
       {
         property: "og:description",
         content:
-          "Plataforma da Igreja Batista Atos — ministérios, redes, mesas e comunidade em um só lugar.",
+          "Comunidade cristã dedicada a edificar um lugar de oração para todos os povos em Ponta Grossa. Forjando discípulos através do relacionamento, da mesa e da paternidade.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Igreja Batista Atos" },
+      { name: "twitter:title", content: "Igreja Batista Atos | Uma casa sobre a rocha" },
       {
         name: "twitter:description",
         content:
-          "Plataforma da Igreja Batista Atos — ministérios, redes, mesas e comunidade em um só lugar.",
+          "Comunidade cristã dedicada a edificar um lugar de oração para todos os povos em Ponta Grossa. Forjando discípulos através do relacionamento, da mesa e da paternidade.",
       },
       {
         property: "og:image",

@@ -33,6 +33,7 @@ import { GlobalSearch } from "@/components/global-search";
 import { NotificationsBell } from "@/components/notifications-bell";
 import { QuickActions } from "@/components/quick-actions";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { ChurchLogo } from "@/components/ui/church-logo";
 
 interface NavItem {
   to: string;
