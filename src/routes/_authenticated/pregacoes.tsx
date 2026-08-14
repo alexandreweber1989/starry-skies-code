@@ -18,6 +18,7 @@ import {
   Send,
   Loader2,
   CheckCircle2,
+  Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
 import { format, parseISO } from "date-fns";
@@ -162,7 +163,7 @@ function PregacoesPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  // Puxa capa (direto do ID, sempre funciona) e título (via oEmbed, best-effort).
+  // Puxa capa, título e aciona o processamento de IA (transcrição e resumo).
   async function fetchYouTube() {
     const url = draft.youtube_url?.trim();
     if (!url) return;
@@ -172,20 +173,39 @@ function PregacoesPage() {
       return;
     }
     setYtLoading(true);
-    // A capa vem do ID do vídeo, carregada direto no navegador — nunca falha.
+    
+    // A capa vem do ID do vídeo, carregada direto no navegador.
     const cover = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
     setDraft((d) => ({ ...d, cover_image_url: cover }));
+
     try {
+      // 1. Título básico via oEmbed
       const res = await fetch(`/api/public/youtube-oembed?url=${encodeURIComponent(url)}`);
       const data = await res.json();
       if (res.ok && data.title) {
         setDraft((d) => ({ ...d, title: d.title?.trim() ? d.title : data.title }));
-        toast.success("Vídeo carregado do YouTube.");
-      } else {
-        toast.success("Capa carregada. Preencha o título manualmente.");
       }
-    } catch {
-      toast.success("Capa carregada. Preencha o título manualmente.");
+
+      // 2. Processamento IA (Transcrição e Resumo)
+      toast.info("Processando transcrição e resumo com IA... Isso pode levar alguns segundos.");
+      const { processSermonAI } = await import("@/lib/pregacoes.functions");
+      const aiResult = await processSermonAI({ data: { youtubeUrl: url } });
+
+      if (aiResult) {
+        setDraft((d) => ({
+          ...d,
+          title: aiResult.title || d.title,
+          theme: aiResult.theme || d.theme,
+          base_verse: aiResult.base_verse || d.base_verse,
+          summary: aiResult.summary || d.summary,
+          points: aiResult.points?.length ? aiResult.points : d.points,
+          tags: [...new Set([...(d.tags || []), ...(aiResult.verses || [])])].slice(0, 10),
+        }));
+        toast.success("Pregação processada com IA com sucesso!");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Capa carregada, mas houve um erro no processamento da IA.");
     } finally {
       setYtLoading(false);
     }
@@ -441,7 +461,7 @@ function PregacoesPage() {
           <div className="space-y-5">
             <div className="space-y-2 rounded-xl border border-border bg-card/40 p-4">
               <Label className="flex items-center gap-2">
-                <Video className="h-4 w-4 text-red-600" /> Link do YouTube da pregação
+                <Sparkles className="h-4 w-4 text-primary animate-pulse" /> Link do YouTube da pregação (IA)
               </Label>
               <div className="flex gap-2">
                 <Input
@@ -451,11 +471,12 @@ function PregacoesPage() {
                   placeholder="https://youtu.be/..."
                 />
                 <Button variant="outline" disabled={ytLoading} onClick={() => fetchYouTube()}>
-                  {ytLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Buscar"}
+                  {ytLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4 mr-2" />}
+                  {ytLoading ? "Processando..." : "Buscar e Resumir"}
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                Cola o link e clica em Buscar — o título e a capa vêm automaticamente.
+                Cole o link para baixar a transcrição e gerar um resumo completo via IA.
               </p>
               {draft.cover_image_url ? (
                 <img
