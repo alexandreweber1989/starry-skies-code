@@ -162,7 +162,7 @@ function PregacoesPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  // Puxa capa (direto do ID, sempre funciona) e título (via oEmbed, best-effort).
+  // Puxa capa, título e aciona o processamento de IA (transcrição e resumo).
   async function fetchYouTube() {
     const url = draft.youtube_url?.trim();
     if (!url) return;
@@ -172,20 +172,39 @@ function PregacoesPage() {
       return;
     }
     setYtLoading(true);
-    // A capa vem do ID do vídeo, carregada direto no navegador — nunca falha.
+    
+    // A capa vem do ID do vídeo, carregada direto no navegador.
     const cover = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
     setDraft((d) => ({ ...d, cover_image_url: cover }));
+
     try {
+      // 1. Título básico via oEmbed
       const res = await fetch(`/api/public/youtube-oembed?url=${encodeURIComponent(url)}`);
       const data = await res.json();
       if (res.ok && data.title) {
         setDraft((d) => ({ ...d, title: d.title?.trim() ? d.title : data.title }));
-        toast.success("Vídeo carregado do YouTube.");
-      } else {
-        toast.success("Capa carregada. Preencha o título manualmente.");
       }
-    } catch {
-      toast.success("Capa carregada. Preencha o título manualmente.");
+
+      // 2. Processamento IA (Transcrição e Resumo)
+      toast.info("Processando transcrição e resumo com IA... Isso pode levar alguns segundos.");
+      const { processSermonAI } = await import("@/lib/pregacoes.functions");
+      const aiResult = await processSermonAI({ youtubeUrl: url });
+
+      if (aiResult) {
+        setDraft((d) => ({
+          ...d,
+          title: aiResult.title || d.title,
+          theme: aiResult.theme || d.theme,
+          base_verse: aiResult.base_verse || d.base_verse,
+          summary: aiResult.summary || d.summary,
+          points: aiResult.points?.length ? aiResult.points : d.points,
+          tags: [...new Set([...(d.tags || []), ...(aiResult.verses || [])])].slice(0, 10),
+        }));
+        toast.success("Pregação processada com IA com sucesso!");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Capa carregada, mas houve um erro no processamento da IA.");
     } finally {
       setYtLoading(false);
     }
