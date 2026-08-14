@@ -121,7 +121,7 @@ export function Aniversariantes() {
       {!isLoading && lista.length === 0 && <EmptyLine>Nenhum aniversariante neste mês.</EmptyLine>}
 
       {aniversariantesHoje.length > 0 && (
-        <p className="text-sm mb-4">
+        <p className="text-sm mb-4 leading-relaxed">
           Hoje é aniversário de{" "}
           <span className="text-primary">
             {aniversariantesHoje.map((p) => p.full_name.split(" ")[0]).join(", ")}
@@ -130,7 +130,7 @@ export function Aniversariantes() {
         </p>
       )}
 
-      <ul className="grid sm:grid-cols-2 gap-3">
+      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {lista.slice(0, 8).map((p) => {
           const dia = Number(p.birth_date!.slice(8, 10));
           const hoje = dia === hojeDia;

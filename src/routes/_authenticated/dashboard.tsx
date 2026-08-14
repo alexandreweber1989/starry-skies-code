@@ -158,7 +158,7 @@ function Dashboard() {
         description="Centro operacional da Igreja Batista Atos. Tudo que precisa de você hoje aparece primeiro."
         actions={
           data?.proximo ? (
-            <div className="border border-border rounded-xl px-4 py-3 bg-card/50 backdrop-blur-sm w-full md:w-auto transition-all duration-300 hover:shadow-md hover:border-primary/30">
+            <div className="border border-border rounded-xl px-4 py-3 bg-card/50 backdrop-blur-sm w-full sm:w-auto transition-all duration-300 hover:shadow-md hover:border-primary/30">
               <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
                 Próximo culto · {relativeDayLabel(data.proximo.event_date)}
               </div>
@@ -185,7 +185,7 @@ function Dashboard() {
             <StatGridSkeleton count={4} />
           </LoadingRegion>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {isAdmin ? (
               <StatTile
                 label="Membros ativos"
@@ -248,7 +248,7 @@ function Dashboard() {
         {/* Leitura de tendência: os números acima dizem "quanto"; os gráficos
             abaixo dizem "para onde". Restrito a quem tem visão da igreja toda. */}
         {isAdmin && (
-          <div className="mt-6 grid lg:grid-cols-2 gap-6">
+          <div className="mt-6 grid sm:grid-cols-1 lg:grid-cols-2 gap-6">
             <GraficosDoPainel />
           </div>
         )}

@@ -166,8 +166,8 @@ export function ContribuicaoPix() {
               : " Fale com a secretaria."}
           </div>
         ) : (
-          <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_auto] items-start">
-            <div className="space-y-5">
+          <div className="grid gap-8 lg:grid-cols-[1fr_auto] items-start">
+              <div className="grid grid-cols-1 gap-5">
               <div className="flex gap-2">
                 {(["dizimo", "oferta"] as Tipo[]).map((t) => (
                   <button
@@ -221,12 +221,12 @@ export function ContribuicaoPix() {
                   Chave PIX (CNPJ) · {pixName}
                 </div>
                 <div className="font-mono text-sm break-all">{pixKey}</div>
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <Button variant="outline" className="flex-1" onClick={() => copy(pixKey, "key")}>
+                <div className="grid grid-cols-1 sm:flex sm:flex-row gap-3">
+                  <Button variant="outline" className="w-full sm:flex-1 h-11" onClick={() => copy(pixKey, "key")}>
                     {copied === "key" ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                     Copiar chave
                   </Button>
-                  <Button className="flex-1" onClick={() => copy(payload, "payload")}>
+                  <Button className="w-full sm:flex-1 h-11" onClick={() => copy(payload, "payload")}>
                     {copied === "payload" ? (
                       <Check className="h-4 w-4" />
                     ) : (
@@ -238,7 +238,7 @@ export function ContribuicaoPix() {
               </div>
             </div>
 
-            <div className="mx-auto rounded-xl border border-border bg-background p-4">
+            <div className="mx-auto lg:mx-0 rounded-xl border border-border bg-background p-6 shadow-sm">
               <QRCodeSVG value={payload} size={180} level="M" />
               <p className="mt-3 text-center text-xs text-muted-foreground max-w-[180px]">
                 Aponte a câmera do seu banco para o QR Code
