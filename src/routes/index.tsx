@@ -659,7 +659,7 @@ function Historia() {
         <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-[200px_1fr] gap-12 sm:gap-20 lg:gap-32 items-center relative z-10">
           {/* Vertical Timeline Navigation */}
           <div className="hidden lg:flex flex-col gap-10 relative py-10">
-            {/* Timeline Line */}
+            {/* Timeline Line with Progress indicator */}
             <div className="absolute left-[7px] top-0 bottom-0 w-[2px] bg-foreground/5">
               <motion.div 
                 className="absolute top-0 left-0 w-full bg-primary origin-top"
@@ -667,6 +667,24 @@ function Historia() {
                   scaleY: scrollYProgress,
                 }}
               />
+              
+              {/* Floating Percentage Indicator */}
+              <motion.div
+                style={{ 
+                  top: useTransform(scrollYProgress, (v) => `${v * 100}%`),
+                  opacity: useTransform(scrollYProgress, [0, 0.05, 0.95, 1], [0, 1, 1, 0])
+                }}
+                className="absolute left-4 -translate-y-1/2 whitespace-nowrap"
+              >
+                <motion.span 
+                  className="font-mono text-[8px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded-sm"
+                  style={{
+                    display: 'inline-block'
+                  }}
+                >
+                  <motion.span>{useTransform(scrollYProgress, (v) => `${Math.round(v * 100)}%`)}</motion.span>
+                </motion.span>
+              </motion.div>
             </div>
 
             {capitulos.map((c, i) => (
@@ -717,16 +735,26 @@ function Historia() {
             ))}
           </div>
 
-          {/* Mobile Navigation */}
-          <div className="lg:hidden flex justify-center gap-4 mb-8">
-            {capitulos.map((_, i) => (
-              <div 
-                key={i}
-                className={`h-1.5 rounded-full transition-all duration-500 ${
-                  i === ativo ? "w-8 bg-primary" : "w-2 bg-foreground/10"
-                }`}
+          {/* Mobile Navigation & Progress */}
+          <div className="lg:hidden flex flex-col items-center gap-6 mb-8 w-full">
+            <div className="flex justify-center gap-4">
+              {capitulos.map((_, i) => (
+                <div 
+                  key={i}
+                  className={`h-1.5 rounded-full transition-all duration-500 ${
+                    i === ativo ? "w-8 bg-primary" : "w-2 bg-foreground/10"
+                  }`}
+                />
+              ))}
+            </div>
+            
+            {/* Mobile Horizontal Progress Bar */}
+            <div className="w-full max-w-[200px] h-1 bg-foreground/5 rounded-full overflow-hidden relative">
+              <motion.div 
+                className="absolute top-0 left-0 h-full bg-primary/60 origin-left"
+                style={{ scaleX: scrollYProgress }}
               />
-            ))}
+            </div>
           </div>
 
           {/* Active Chapter Content */}
