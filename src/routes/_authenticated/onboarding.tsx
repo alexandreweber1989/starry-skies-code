@@ -31,6 +31,7 @@ import { useOnboardingOverview } from "@/lib/onboarding";
 import { OnboardingTracker } from "@/components/membros/onboarding-tracker";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
   head: () => ({
