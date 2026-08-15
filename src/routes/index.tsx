@@ -926,35 +926,35 @@ function NumeroScrollItem({ n, index, progress, total }: {
   // Opacity for the whole item
   const opacity = useTransform(progress, 
     [
-      Math.max(0, start - 0.1), 
-      start, 
-      Math.max(start, end - 0.1), 
+      Math.max(0, start - 0.05), 
+      start + 0.1, 
+      Math.max(start + 0.1, end - 0.1), 
       end
     ], 
     [0, 1, 1, 0]
   );
   
-  // Y movement for parallax effect
+  // Y movement for parallax effect - intensified
   const y = useTransform(progress, 
     [start, end], 
-    [100, -100]
+    [150, -150]
   );
 
-  // Scale effect
+  // Scale effect - more dramatic
   const scale = useTransform(progress,
     [
-      Math.max(0, start - 0.1), 
-      start, 
-      Math.max(start, end - 0.1), 
+      Math.max(0, start - 0.05), 
+      start + 0.1, 
+      Math.max(start + 0.1, end - 0.1), 
       end
     ],
-    [0.8, 1, 1, 0.8]
+    [0.7, 1, 1, 0.7]
   );
 
   // Perspective tilt based on progress within the step
   const rotateX = useTransform(progress,
     [start, end],
-    [20, -20]
+    [25, -25]
   );
 
   return (
