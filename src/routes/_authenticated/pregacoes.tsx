@@ -163,7 +163,7 @@ function PregacoesPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  // Puxa capa, título e aciona o processamento de IA (transcrição e resumo).
+  // Puxa capa, título e aciona o processamento (transcrição e resumo).
   async function fetchYouTube() {
     const url = draft.youtube_url?.trim();
     if (!url) return;
@@ -186,10 +186,10 @@ function PregacoesPage() {
         setDraft((d) => ({ ...d, title: d.title?.trim() ? d.title : data.title }));
       }
 
-      // 2. Processamento IA (Transcrição e Resumo)
-      toast.info("Processando transcrição e resumo com IA... Isso pode levar alguns segundos.");
-      const { processSermonAI } = await import("@/lib/pregacoes.functions");
-      const aiResult = await processSermonAI({ data: { youtubeUrl: url } });
+      // 2. Processamento (Transcrição e Resumo)
+      toast.info("Processando transcrição e resumo... Isso pode levar alguns segundos.");
+      const { processSermon } = await import("@/lib/pregacoes.functions");
+      const aiResult = await processSermon({ data: { youtubeUrl: url } });
 
       if (aiResult) {
         setDraft((d) => ({
@@ -201,11 +201,11 @@ function PregacoesPage() {
           points: aiResult.points?.length ? aiResult.points : d.points,
           tags: [...new Set([...(d.tags || []), ...(aiResult.verses || [])])].slice(0, 10),
         }));
-        toast.success("Pregação processada com IA com sucesso!");
+        toast.success("Pregação processada com sucesso!");
       }
     } catch (err) {
       console.error(err);
-      toast.error("Capa carregada, mas houve um erro no processamento da IA.");
+      toast.error("Capa carregada, mas houve um erro no processamento.");
     } finally {
       setYtLoading(false);
     }
@@ -461,7 +461,7 @@ function PregacoesPage() {
           <div className="space-y-5">
             <div className="space-y-2 rounded-xl border border-border bg-card/40 p-4">
               <Label className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-primary animate-pulse" /> Link do YouTube da pregação (IA)
+                <Sparkles className="h-4 w-4 text-primary animate-pulse" /> Link do YouTube da pregação
               </Label>
               <div className="flex gap-2">
                 <Input
