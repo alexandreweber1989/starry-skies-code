@@ -25,11 +25,16 @@ import { Badge } from "@/components/ui/badge";
 import { ChurchLogo } from "@/components/ui/church-logo";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
+import { Link } from "@tanstack/react-router";
+
 
 const MODULES = [
   {
     id: "dashboard",
     title: "Painel Operacional",
+    path: "/dashboard",
+
     description: "Visão 360º e centro de comando da igreja.",
     icon: LayoutDashboard,
     details: [
@@ -43,6 +48,8 @@ const MODULES = [
   {
     id: "membros",
     title: "Gestão de Membros",
+    path: "/membros",
+
     description: "Cuidado individual e mapeamento da comunidade.",
     icon: Users,
     details: [
@@ -56,6 +63,8 @@ const MODULES = [
   {
     id: "louvor",
     title: "Ministério de Louvor",
+    path: "/louvor",
+
     description: "Excelência técnica para a adoração.",
     icon: Music,
     details: [
@@ -69,6 +78,8 @@ const MODULES = [
   {
     id: "kids",
     title: "Kids & Segurança",
+    path: "/kids",
+
     description: "Proteção total para a próxima geração.",
     icon: Baby,
     details: [
@@ -80,8 +91,10 @@ const MODULES = [
     ],
   },
   {
-    id: "cuidado",
+    id: "cuidado-semana",
     title: "Cuidado & Social",
+    path: "/cuidado-semana",
+
     description: "Amor em ação e apoio ministerial.",
     icon: HeartHandshake,
     details: [
@@ -95,6 +108,8 @@ const MODULES = [
   {
     id: "agenda",
     title: "Agenda & Eventos",
+    path: "/agenda",
+
     description: "Calendário unificado da nossa casa.",
     icon: Calendar,
     details: [
@@ -108,6 +123,8 @@ const MODULES = [
   {
     id: "cantina",
     title: "Cantina & Livraria",
+    path: "/cantina",
+
     description: "Comunhão e recursos literários.",
     icon: ShoppingBag,
     details: [
@@ -119,8 +136,10 @@ const MODULES = [
     ],
   },
   {
-    id: "midia",
+    id: "pregacoes",
     title: "Estúdio de Pregações",
+    path: "/pregacoes",
+
     description: "Conteúdo edificado e automatizado.",
     icon: Presentation,
     details: [
@@ -134,6 +153,8 @@ const MODULES = [
   {
     id: "visitantes",
     title: "Portal de Boas-Vindas",
+    path: "/visitantes",
+
     description: "Acolhimento desde o primeiro contato.",
     icon: Sparkles,
     details: [
@@ -152,6 +173,14 @@ export const Route = createFileRoute("/_authenticated/manual")({
 
 function PlatformManual() {
   const [selectedModule, setSelectedModule] = useState<(typeof MODULES)[0] | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredModules = MODULES.filter(m => 
+    m.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    m.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    m.details.some(d => d.label.toLowerCase().includes(searchQuery.toLowerCase()) || d.content.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
 
   return (
     <div className="min-h-screen bg-background text-foreground pb-20">
@@ -175,13 +204,23 @@ function PlatformManual() {
         <section className="max-w-3xl">
           <Badge variant="outline" className="mb-4 font-mono text-[10px] tracking-widest uppercase border-primary/20 text-primary">Introdução</Badge>
           <h2 className="text-4xl sm:text-5xl font-serif font-bold tracking-tighter mb-6">A bússola digital da nossa comunidade.</h2>
-          <p className="text-lg text-muted-foreground leading-relaxed">
+          <p className="text-lg text-muted-foreground leading-relaxed mb-8">
             Este documento é o guia definitivo para administradores e líderes. Ele detalha cada funcionalidade, menu e lógica da nossa plataforma, garantindo que a tecnologia sirva à visão da igreja: forjar discípulos através do relacionamento.
           </p>
+          
+          <div className="relative max-w-md">
+            <Input 
+              placeholder="Pesquisar no manual..." 
+              value={searchQuery}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+              className="pl-10 h-12 rounded-2xl bg-card/50 border-border/40 focus:ring-primary/20"
+            />
+            <BookOpen className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground/50" />
+          </div>
         </section>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {MODULES.map((module) => (
+          {filteredModules.map((module) => (
             <Card 
               key={module.id} 
               className="border-border/40 bg-card/50 hover:bg-card transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1"
@@ -258,6 +297,17 @@ function PlatformManual() {
                   </div>
                 </div>
               </ScrollArea>
+              <div className="mt-8 flex justify-end">
+                <Button 
+                  asChild 
+                  className="rounded-full gap-2 px-6"
+                >
+                  <Link to={selectedModule?.path || "/"}>
+                    Acessar Módulo <ArrowRight className="h-4 w-4" />
+                  </Link>
+
+                </Button>
+              </div>
             </div>
           </DialogContent>
         </Dialog>

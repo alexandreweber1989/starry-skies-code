@@ -42,30 +42,43 @@ interface NavItem {
   requiredRoles?: AppRole[];
 }
 
-const nav: NavItem[] = [
-  { to: "/dashboard", label: "Painel", icon: LayoutDashboard },
-  { to: "/avisos", label: "Avisos", icon: Megaphone },
-  { to: "/noticias", label: "Notícias", icon: Newspaper },
-  { to: "/pregacoes", label: "Pregações", icon: Presentation, requiredRoles: ["admin_geral"] },
-  { to: "/agenda", label: "Agenda", icon: CalendarDays },
-  { to: "/ministerios", label: "Ministérios", icon: Sparkles },
-  { to: "/louvor", label: "Louvor", icon: Music },
-  { to: "/redes", label: "Redes", icon: Network },
-  { to: "/mesas", label: "Mesas", icon: UtensilsCrossed },
-  { to: "/cuidado-semana", label: "Cuidado da Semana", icon: HeartHandshake, requiredRoles: ["admin_geral", "lider_mesa"] },
-  { to: "/faxina", label: "Faxina", icon: Sparkles },
-  { to: "/visitantes", label: "Visitantes", icon: Sparkles, requiredRoles: ["admin_geral"] },
-  { to: "/membros", label: "Membros", icon: Users, requiredRoles: ["admin_geral"] },
-  { to: "/mapa", label: "Mapa", icon: MapPin, requiredRoles: ["admin_geral"] },
-  { to: "/onboarding", label: "Integração", icon: Sprout, requiredRoles: ["admin_geral"] },
-
-  { to: "/kids", label: "Kids", icon: Baby, requiredRoles: ["admin_geral", "admin_kids"] },
-  { to: "/kids/relatorios", label: "Relatórios Kids", icon: FileText, requiredRoles: ["admin_geral", "admin_kids"] },
-  { to: "/igrejas", label: "Ações Sociais", icon: Heart, requiredRoles: ["admin_geral"] },
-  { to: "/livraria", label: "Livraria", icon: BookOpen, requiredRoles: ["admin_geral", "admin_livraria"] },
-  { to: "/cantina", label: "Cantina", icon: Coffee, requiredRoles: ["admin_geral", "admin_cantina"] },
-  { to: "/midia", label: "Mídia", icon: Layout, requiredRoles: ["admin_geral"] },
-  { to: "/manual", label: "Manual Operacional", icon: FileText, requiredRoles: ["admin_geral"] },
+const navGroups: { label: string; items: NavItem[] }[] = [
+  {
+    label: "Geral",
+    items: [
+      { to: "/dashboard", label: "Painel", icon: LayoutDashboard },
+      { to: "/avisos", label: "Avisos", icon: Megaphone },
+      { to: "/noticias", label: "Notícias", icon: Newspaper },
+      { to: "/agenda", label: "Agenda", icon: CalendarDays },
+    ],
+  },
+  {
+    label: "Ministérios & Redes",
+    items: [
+      { to: "/ministerios", label: "Ministérios", icon: Sparkles },
+      { to: "/louvor", label: "Louvor", icon: Music },
+      { to: "/redes", label: "Redes", icon: Network },
+      { to: "/mesas", label: "Mesas", icon: UtensilsCrossed },
+      { to: "/cuidado-semana", label: "Cuidado da Semana", icon: HeartHandshake, requiredRoles: ["admin_geral", "lider_mesa"] },
+      { to: "/faxina", label: "Faxina", icon: Sparkles },
+    ],
+  },
+  {
+    label: "Administração & Cuidado",
+    items: [
+      { to: "/pregacoes", label: "Pregações", icon: Presentation, requiredRoles: ["admin_geral"] },
+      { to: "/visitantes", label: "Visitantes", icon: Sparkles, requiredRoles: ["admin_geral"] },
+      { to: "/membros", label: "Membros", icon: Users, requiredRoles: ["admin_geral"] },
+      { to: "/mapa", label: "Mapa", icon: MapPin, requiredRoles: ["admin_geral"] },
+      { to: "/onboarding", label: "Integração", icon: Sprout, requiredRoles: ["admin_geral"] },
+      { to: "/kids", label: "Kids", icon: Baby, requiredRoles: ["admin_geral", "admin_kids"] },
+      { to: "/kids/relatorios", label: "Relatórios Kids", icon: FileText, requiredRoles: ["admin_geral", "admin_kids"] },
+      { to: "/igrejas", label: "Ações Sociais", icon: Heart, requiredRoles: ["admin_geral"] },
+      { to: "/livraria", label: "Livraria", icon: BookOpen, requiredRoles: ["admin_geral", "admin_livraria"] },
+      { to: "/cantina", label: "Cantina", icon: Coffee, requiredRoles: ["admin_geral", "admin_cantina"] },
+      { to: "/midia", label: "Mídia", icon: Layout, requiredRoles: ["admin_geral"] },
+    ],
+  },
 ];
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -73,11 +86,14 @@ export function AppShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const filteredNav = nav.filter((item) => {
-    if (isAdmin) return true;
-    if (!item.requiredRoles) return true;
-    return roles.some((r) => item.requiredRoles?.includes(r.role));
-  });
+  const filteredNavGroups = navGroups.map(group => ({
+    ...group,
+    items: group.items.filter((item) => {
+      if (isAdmin) return true;
+      if (!item.requiredRoles) return true;
+      return roles.some((r) => item.requiredRoles?.includes(r.role));
+    })
+  })).filter(group => group.items.length > 0);
 
   const sidebarContent = (
     <div className="flex flex-col h-full bg-sidebar text-sidebar-foreground lg:border-r border-sidebar-border shadow-2xl">
@@ -92,28 +108,52 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </div>
       </div>
-      <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-sidebar-border/50">
-        {filteredNav.map((item) => {
-          const active = pathname === item.to || pathname.startsWith(item.to + "/");
-          const Icon = item.icon;
-          return (
-            <Link
-              key={item.to}
-              to={item.to}
-              onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-3 px-3 py-2 rounded-sm text-sm transition-all duration-200 ${
-                active
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium shadow-sm"
-                  : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground hover:translate-x-1"
-              }`}
-            >
-              <Icon className="h-4 w-4" />
-              {item.label}
-            </Link>
-          );
-        })}
+      <nav className="flex-1 px-4 py-6 space-y-8 overflow-y-auto scrollbar-thin scrollbar-thumb-sidebar-border/50">
+        {filteredNavGroups.map((group) => (
+          <div key={group.label} className="space-y-2">
+            <h3 className="px-3 text-[10px] font-mono uppercase tracking-[0.2em] text-sidebar-foreground/40 font-bold">
+              {group.label}
+            </h3>
+            <div className="space-y-1">
+              {group.items.map((item) => {
+                const active = pathname === item.to || pathname.startsWith(item.to + "/");
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-300 ${
+                      active
+                        ? "bg-primary/10 text-primary font-bold shadow-sm ring-1 ring-primary/20"
+                        : "text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground hover:translate-x-1"
+                    }`}
+                  >
+                    <Icon className={`h-4 w-4 ${active ? "text-primary" : "opacity-70"}`} />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
       <div className="px-3 py-4 border-t border-sidebar-border space-y-1 bg-sidebar/50 backdrop-blur-sm">
+        {isAdmin && (
+          <Link
+            to="/manual"
+            onClick={() => setMobileMenuOpen(false)}
+            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-300 ${
+              pathname === "/manual"
+                ? "bg-primary/10 text-primary font-bold shadow-sm ring-1 ring-primary/20"
+                : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground group"
+            }`}
+          >
+            <BookOpen className={`h-4 w-4 ${pathname === "/manual" ? "text-primary" : "group-hover:scale-110 transition-transform"}`} />
+            Manual Operacional
+          </Link>
+        )}
+
         <Link
           to="/perfil"
           onClick={() => setMobileMenuOpen(false)}
