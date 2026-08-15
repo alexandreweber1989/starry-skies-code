@@ -125,8 +125,8 @@ export function AppShell({ children }: { children: ReactNode }) {
                     onClick={() => setMobileMenuOpen(false)}
                     className={`flex flex-col items-center justify-center gap-2 p-3 rounded-xl transition-all duration-300 group border text-center shadow-sm hover:shadow-md hover:-translate-y-1 ${
                       active
-                        ? `${item.color.split(" ").slice(0, 2).join(" ")} font-bold ring-2 ring-current/20 ${item.color.split(" ")[2]}`
-                        : `text-sidebar-foreground/60 hover:text-sidebar-foreground border-transparent bg-sidebar-accent/10 hover:${item.color.split(" ")[0]} hover:${item.color.split(" ")[2]} hover:border-current/20`
+                        ? `font-bold ring-2 ring-current/20 ${item.color}`
+                        : `text-sidebar-foreground/60 hover:text-sidebar-foreground border-transparent bg-sidebar-accent/10 hover:${item.color}`
                     }`}
                   >
                     <div className={`p-2 rounded-lg transition-all duration-300 ${active ? "bg-current/20 scale-110" : "bg-sidebar-foreground/5 group-hover:bg-current/20 group-hover:scale-110"}`}>
