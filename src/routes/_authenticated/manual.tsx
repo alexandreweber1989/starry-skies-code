@@ -32,64 +32,118 @@ const MODULES = [
     title: "Painel Operacional",
     description: "Visão 360º e centro de comando da igreja.",
     icon: LayoutDashboard,
-    details: "O Dashboard é o ponto de partida de todo administrador. Ele oferece uma visão consolidada de toda a operação da igreja em tempo real. \n\nFuncionalidades principais:\n- **Métricas de Engajamento:** Acompanhamento de presença nos cultos e crescimento da membresia.\n- **Alertas Críticos:** Notificações instantâneas vindas do Módulo Kids (segurança) e do Cuidado Social.\n- **Gestão de Escalas:** Visualização rápida de quem está servindo no Louvor e na Faxina hoje.\n- **Atalhos de Ação:** Botões rápidos para criar Avisos, Eventos e Notícias sem navegar por menus complexos.\n- **Avisos da Liderança:** Espaço para comunicações importantes que aparecem para todos os membros logados.",
+    details: [
+      { label: "Métricas de Engajamento", content: "Acompanhamento de presença nos cultos e crescimento da membresia." },
+      { label: "Alertas Críticos", content: "Notificações instantâneas vindas do Módulo Kids (segurança) e do Cuidado Social." },
+      { label: "Gestão de Escalas", content: "Visualização rápida de quem está servindo no Louvor e na Faxina hoje." },
+      { label: "Atalhos de Ação", content: "Botões rápidos para criar Avisos, Eventos e Notícias sem navegar por menus complexos." },
+      { label: "Avisos da Liderança", content: "Espaço para comunicações importantes que aparecem para todos os membros logados." }
+    ],
   },
   {
     id: "membros",
     title: "Gestão de Membros",
     description: "Cuidado individual e mapeamento da comunidade.",
     icon: Users,
-    details: "Mais que um cadastro, é uma ferramenta de pastoreio. Permite acompanhar a jornada de cada pessoa na igreja.\n\nFuncionalidades principais:\n- **Ficha Cadastral Completa:** Dados pessoais, familiares, contatos e status ministerial.\n- **Histórico Pastoral:** Espaço para notas privadas de aconselhamento e acompanhamento (protegido por sigilo de acesso).\n- **Mapa de Membros:** Visualização geográfica de onde moram nossos membros, facilitando a criação de novas Mesas.\n- **Onboarding de Visitantes:** Fluxo automatizado para transformar um visitante em um membro integrado.\n- **Gestão de Famílias:** Vinculação de parentesco para facilitar a comunicação e o cuidado familiar.",
+    details: [
+      { label: "Ficha Cadastral Completa", content: "Dados pessoais, familiares, contatos e status ministerial." },
+      { label: "Histórico Pastoral", content: "Espaço para notas privadas de aconselhamento e acompanhamento (protegido por sigilo de acesso)." },
+      { label: "Mapa de Membros", content: "Visualização geográfica de onde moram nossos membros, facilitando a criação de novas Mesas." },
+      { label: "Onboarding de Visitantes", content: "Fluxo automatizado para transformar um visitante em um membro integrado." },
+      { label: "Gestão de Famílias", content: "Vinculação de parentesco para facilitar a comunicação e o cuidado familiar." }
+    ],
   },
   {
     id: "louvor",
     title: "Ministério de Louvor",
     description: "Excelência técnica para a adoração.",
     icon: Music,
-    details: "Centraliza toda a operação musical da igreja, eliminando pastas de papel e PDFs desatualizados.\n\nFuncionalidades principais:\n- **Repertório Inteligente:** Importação automática de cifras (CifraClub/Cifras.com.br) com detecção de BPM e Tom.\n- **Transposição em Tempo Real:** Altere o tom da música com um clique e a cifra se ajusta automaticamente para todos os músicos.\n- **Modo Palco:** Interface otimizada para tablets com alto contraste, fontes grandes e rolagem automática.\n- **Gestão de Escalas:** Definição de bandas, vocais e técnicos para cada culto/evento.\n- **Link de Estudo:** Integração com YouTube e Spotify para que os músicos ensaiem com a versão correta.",
+    details: [
+      { label: "Repertório Inteligente", content: "Importação automática de cifras (CifraClub/Cifras.com.br) com detecção de BPM e Tom." },
+      { label: "Transposição em Tempo Real", content: "Altere o tom da música com um clique e a cifra se ajusta automaticamente para todos os músicos." },
+      { label: "Modo Palco", content: "Interface otimizada para tablets com alto contraste, fontes grandes e rolagem automática." },
+      { label: "Gestão de Escalas", content: "Definição de bandas, vocais e técnicos para cada culto/evento." },
+      { label: "Link de Estudo", content: "Integração com YouTube e Spotify para que os músicos ensaiem com a versão correta." }
+    ],
   },
   {
     id: "kids",
     title: "Kids & Segurança",
     description: "Proteção total para a próxima geração.",
     icon: Baby,
-    details: "Focado em tranquilizar os pais e garantir a segurança máxima das crianças.\n\nFuncionalidades principais:\n- **Check-in via QR Code:** Entrada rápida e segura com registro fotográfico da criança e do responsável.\n- **Alertas de Emergência:** Disparo imediato de mensagem via WhatsApp para o celular do pai caso a criança precise de atenção.\n- **Controle de Retirada:** Apenas o responsável cadastrado com o código correspondente pode retirar a criança.\n- **Relatórios de Presença:** Histórico de frequência e gestão de visitantes nas salas por faixa etária.\n- **Documentação:** Upload seguro de certidões e termos de responsabilidade.",
+    details: [
+      { label: "Check-in via QR Code", content: "Entrada rápida e segura com registro fotográfico da criança e do responsável." },
+      { label: "Alertas de Emergência", content: "Disparo imediato de mensagem via WhatsApp para o celular do pai caso a criança precise de atenção." },
+      { label: "Controle de Retirada", content: "Apenas o responsável cadastrado com o código correspondente pode retirar a criança." },
+      { label: "Relatórios de Presença", content: "Histórico de frequência e gestão de visitantes nas salas por faixa etária." },
+      { label: "Documentação", content: "Upload seguro de certidões e termos de responsabilidade." }
+    ],
   },
   {
     id: "cuidado",
     title: "Cuidado & Social",
     description: "Amor em ação e apoio ministerial.",
     icon: HeartHandshake,
-    details: "Gerencia as necessidades da comunidade com discrição e agilidade.\n\nFuncionalidades principais:\n- **Pedidos de Oração:** Canal direto para solicitações que são direcionadas automaticamente ao líder da Mesa ou Rede.\n- **Assistência Social (Atos de Amor):** Cadastro e acompanhamento de famílias assistidas com cestas básicas ou apoio financeiro.\n- **Notificações Urgentes:** Alertas para pastores sobre casos que demandam visita ou intervenção imediata.\n- **Doações Integradas:** Widget de PIX direto para campanhas específicas de ação social.\n- **Privacidade RLS:** Garantia tecnológica de que dados sensíveis só são vistos por quem tem permissão explícita.",
+    details: [
+      { label: "Pedidos de Oração", content: "Canal direto para solicitações que são direcionadas automaticamente ao líder da Mesa ou Rede." },
+      { label: "Assistência Social (Atos de Amor)", content: "Cadastro e acompanhamento de famílias assistidas com cestas básicas ou apoio financeiro." },
+      { label: "Notificações Urgentes", content: "Alertas para pastores sobre casos que demandam visita ou intervenção imediata." },
+      { label: "Doações Integradas", content: "Widget de PIX direto para campanhas específicas de ação social." },
+      { label: "Privacidade RLS", content: "Garantia tecnológica de que dados sensíveis só são vistos por quem tem permissão explícita." }
+    ],
   },
   {
     id: "agenda",
     title: "Agenda & Eventos",
     description: "Calendário unificado da nossa casa.",
     icon: Calendar,
-    details: "Evita conflitos de horários e aumenta o engajamento nos eventos.\n\nFuncionalidades principais:\n- **Calendário Interativo:** Visão geral de cultos, ensaios, reuniões de Mesas e eventos especiais.\n- **Sincronização Externa:** Membros podem exportar eventos diretamente para suas agendas Google ou Apple.\n- **Gestão de RSVP:** Controle de quem vai comparecer, facilitando o planejamento de logística e alimentação.\n- **Múltiplos Endereços:** Suporte para eventos que ocorrem em diferentes locais, com integração ao Google Maps.\n- **Lembretes Automáticos:** O sistema avisa os inscritos sobre a proximidade do evento via Push ou WhatsApp.",
+    details: [
+      { label: "Calendário Interativo", content: "Visão geral de cultos, ensaios, reuniões de Mesas e eventos especiais." },
+      { label: "Sincronização Externa", content: "Membros podem exportar eventos diretamente para suas agendas Google ou Apple." },
+      { label: "Gestão de RSVP", content: "Controle de quem vai comparecer, facilitando o planejamento de logística e alimentação." },
+      { label: "Múltiplos Endereços", content: "Suporte para eventos que ocorrem em diferentes locais, com integração ao Google Maps." },
+      { label: "Lembretes Automáticos", content: "O sistema avisa os inscritos sobre a proximidade do evento via Push ou WhatsApp." }
+    ],
   },
   {
     id: "cantina",
     title: "Cantina & Livraria",
     description: "Comunhão e recursos literários.",
     icon: ShoppingBag,
-    details: "Moderniza o atendimento e o fluxo financeiro interno.\n\nFuncionalidades principais:\n- **Reserva Antecipada:** O membro escolhe seu lanche ou livro pelo app e reserva para retirada.\n- **Pagamento via PIX:** Integração para agilizar a fila e evitar manuseio de dinheiro físico no balcão.\n- **Painel de Produção:** A equipe da cantina visualiza os pedidos em tempo real para preparar as entregas.\n- **Controle de Estoque:** Atualização automática de produtos disponíveis na livraria e cozinha.\n- **Histórico de Pedidos:** Relatórios financeiros para a tesouraria da igreja.",
+    details: [
+      { label: "Reserva Antecipada", content: "O membro escolhe seu lanche ou livro pelo app e reserva para retirada." },
+      { label: "Pagamento via PIX", content: "Integração para agilizar a fila e evitar manuseio de dinheiro físico no balcão." },
+      { label: "Painel de Produção", content: "A equipe da cantina visualiza os pedidos em tempo real para preparar as entregas." },
+      { label: "Controle de Estoque", content: "Atualização automática de produtos disponíveis na livraria e cozinha." },
+      { label: "Histórico de Pedidos", content: "Relatórios financeiros para a tesouraria da igreja." }
+    ],
   },
   {
     id: "midia",
     title: "Estúdio de Pregações",
     description: "Conteúdo edificado e automatizado.",
     icon: Presentation,
-    details: "Transforma nossas lives em recursos de estudo permanentes.\n\nFuncionalidades principais:\n- **Integração YouTube:** Captura automática de vídeos do canal da igreja usando apenas o link.\n- **Resumo Estruturado:** O sistema processa o áudio e gera um resumo completo com tópicos e versículos citados.\n- **Filtro de Conteúdo:** Remove automaticamente partes não relacionadas à mensagem (como avisos ou louvores iniciais).\n- **Arquivo de Mensagens:** Biblioteca organizada por data e tema para consulta posterior dos membros.\n- **Gerador de Capas:** Puxa a identidade visual do vídeo original para manter a organização estética.",
+    details: [
+      { label: "Integração YouTube", content: "Captura automática de vídeos do canal da igreja usando apenas o link." },
+      { label: "Resumo Estruturado", content: "O sistema processa o áudio e gera um resumo completo com tópicos e versículos citados." },
+      { label: "Filtro de Conteúdo", content: "Remove automaticamente partes não relacionadas à mensagem (como avisos ou louvores iniciais)." },
+      { label: "Arquivo de Mensagens", content: "Biblioteca organizada por data e tema para consulta posterior dos membros." },
+      { label: "Gerador de Capas", content: "Puxa a identidade visual do vídeo original para manter a organização estética." }
+    ],
   },
   {
     id: "visitantes",
     title: "Portal de Boas-Vindas",
     description: "Acolhimento desde o primeiro contato.",
     icon: Sparkles,
-    details: "Focado em fazer o visitante se sentir amado e conectado.\n\nFuncionalidades principais:\n- **Landing Page Pública:** QR Code nos bancos que leva a uma página de recepção calorosa.\n- **Cadastro Simplificado:** O visitante deixa seus dados básicos em 30 segundos.\n- **Presente Digital:** Após o cadastro, o visitante recebe imediatamente o E-book 'O Progresso do Peregrino'.\n- **Conexão Imediata:** Notificação instantânea para a equipe de recepção e pastores para um cumprimento pessoal.\n- **Jornada de Integração:** Início automático do fluxo de acompanhamento para que ele retorne no próximo domingo.",
-  }
+    details: [
+      { label: "Landing Page Pública", content: "QR Code nos bancos que leva a uma página de recepção calorosa." },
+      { label: "Cadastro Simplificado", content: "O visitante deixa seus dados básicos em 30 segundos." },
+      { label: "Presente Digital", content: "Após o cadastro, o visitante recebe imediatamente o E-book 'O Progresso do Peregrino'." },
+      { label: "Conexão Imediata", content: "Notificação instantânea para a equipe de recepção e pastores para um cumprimento pessoal." },
+      { label: "Jornada de Integração", content: "Início automático do fluxo de acompanhamento para que ele retorne no próximo domingo." }
+    ],
+  },
 ];
 
 export const Route = createFileRoute("/_authenticated/manual")({
@@ -150,18 +204,61 @@ function PlatformManual() {
         </div>
 
         <Dialog open={!!selectedModule} onOpenChange={() => setSelectedModule(null)}>
-          <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
-            <DialogHeader>
-              <DialogTitle className="font-serif text-3xl">{selectedModule?.title}</DialogTitle>
-              <DialogDescription>{selectedModule?.description}</DialogDescription>
-            </DialogHeader>
-            <ScrollArea className="flex-1 pr-4 mt-4">
-              <div className="prose prose-sm dark:prose-invert max-w-none">
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  {selectedModule?.details}
-                </p>
+          <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col p-0 overflow-hidden border-none bg-background/95 backdrop-blur-xl">
+            <div className="relative h-32 w-full bg-primary/10 overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent" />
+              {selectedModule && (
+                <selectedModule.icon className="absolute -bottom-6 -right-6 h-32 w-32 text-primary/10 rotate-12" />
+              )}
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="absolute top-4 right-4 rounded-full bg-background/20 hover:bg-background/40 backdrop-blur-md"
+                onClick={() => setSelectedModule(null)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <div className="px-8 pb-8 -mt-6 relative z-10">
+              <div className="h-16 w-16 rounded-2xl bg-card border shadow-xl flex items-center justify-center mb-6 text-primary ring-4 ring-background">
+                {selectedModule && <selectedModule.icon className="h-8 w-8" />}
               </div>
-            </ScrollArea>
+
+              <DialogHeader className="text-left mb-8">
+                <DialogTitle className="font-serif text-4xl tracking-tight">{selectedModule?.title}</DialogTitle>
+                <DialogDescription className="text-lg mt-2">{selectedModule?.description}</DialogDescription>
+              </DialogHeader>
+
+              <ScrollArea className="h-[45vh] pr-4">
+                <div className="space-y-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge variant="secondary" className="font-mono text-[10px] tracking-widest uppercase">Funcionalidades Principais</Badge>
+                    <div className="h-px flex-1 bg-border/50" />
+                  </div>
+                  
+                  <div className="grid gap-4">
+                    {Array.isArray(selectedModule?.details) && selectedModule?.details.map((detail: any, idx: number) => (
+                      <motion.div 
+                        key={idx}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: idx * 0.05 }}
+                        className="group flex gap-4 p-4 rounded-xl bg-card/50 border border-border/40 hover:border-primary/30 transition-all hover:shadow-md"
+                      >
+                        <div className="h-8 w-8 rounded-lg bg-primary/5 flex items-center justify-center text-primary font-serif shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                          {idx + 1}
+                        </div>
+                        <div className="space-y-1">
+                          <h4 className="font-bold text-sm tracking-wide uppercase text-foreground/90">{detail.label}</h4>
+                          <p className="text-sm text-muted-foreground leading-relaxed">{detail.content}</p>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              </ScrollArea>
+            </div>
           </DialogContent>
         </Dialog>
 
