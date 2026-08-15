@@ -717,16 +717,26 @@ function Historia() {
             ))}
           </div>
 
-          {/* Mobile Navigation */}
-          <div className="lg:hidden flex justify-center gap-4 mb-8">
-            {capitulos.map((_, i) => (
-              <div 
-                key={i}
-                className={`h-1.5 rounded-full transition-all duration-500 ${
-                  i === ativo ? "w-8 bg-primary" : "w-2 bg-foreground/10"
-                }`}
+          {/* Mobile Navigation & Progress */}
+          <div className="lg:hidden flex flex-col items-center gap-6 mb-8 w-full">
+            <div className="flex justify-center gap-4">
+              {capitulos.map((_, i) => (
+                <div 
+                  key={i}
+                  className={`h-1.5 rounded-full transition-all duration-500 ${
+                    i === ativo ? "w-8 bg-primary" : "w-2 bg-foreground/10"
+                  }`}
+                />
+              ))}
+            </div>
+            
+            {/* Mobile Horizontal Progress Bar */}
+            <div className="w-full max-w-[200px] h-1 bg-foreground/5 rounded-full overflow-hidden relative">
+              <motion.div 
+                className="absolute top-0 left-0 h-full bg-primary/60 origin-left"
+                style={{ scaleX: scrollYProgress }}
               />
-            ))}
+            </div>
           </div>
 
           {/* Active Chapter Content */}
