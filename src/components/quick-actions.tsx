@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Plus, X, Users, CalendarDays, Network, UtensilsCrossed, Baby, BookOpen, Coffee, Megaphone, Newspaper, Presentation } from "lucide-react";
+import { Plus, X, Users, CalendarDays, Network, UtensilsCrossed, Baby, BookOpen, Coffee, Megaphone, Newspaper, Presentation, Sprout } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 
 const ACTIONS = [
@@ -14,6 +14,7 @@ const ACTIONS = [
   { to: "/kids", label: "Check-in Kids", icon: Baby },
   { to: "/livraria", label: "Produto da livraria", icon: BookOpen },
   { to: "/cantina", label: "Item da cantina", icon: Coffee },
+  { to: "/onboarding", label: "Integração de membros", icon: Sprout },
 ] as const;
 
 /** Botão flutuante de ações rápidas: leva direto às telas de cadastro. */

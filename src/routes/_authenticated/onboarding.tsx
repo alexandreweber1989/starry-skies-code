@@ -1,154 +1,243 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { Sprout } from "lucide-react";
+import { 
+  Sprout, 
+  Search, 
+  Filter, 
+  MoreHorizontal, 
+  CheckCircle2, 
+  Clock, 
+  AlertCircle,
+  TrendingUp,
+  UserPlus
+} from "lucide-react";
 import { PageBody, PageHeader } from "@/components/app-shell";
 import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { OnboardingTracker } from "@/components/membros/onboarding-tracker";
+import { Button } from "@/components/ui/button";
+import { 
+  Card, 
+  CardContent, 
+  CardDescription, 
+  CardHeader, 
+  CardTitle 
+} from "@/components/ui/card";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useOnboardingOverview } from "@/lib/onboarding";
-import { useAuth } from "@/lib/auth-context";
-import { initialsOf } from "@/lib/membros";
+import { OnboardingTracker } from "@/components/membros/onboarding-tracker";
+import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
   head: () => ({
     meta: [
-      { title: "Integração de novos membros — Igreja Batista Atos" },
-      {
-        name: "description",
-        content:
-          "Trilha de integração dos novos membros: boas-vindas, curso, definição de mesa, batismo e ministério.",
-      },
-      { property: "og:title", content: "Integração de novos membros — Igreja Batista Atos" },
-      {
-        property: "og:description",
-        content: "Acompanhe em que etapa cada novo membro está na trilha de integração.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
+      { title: "Integração de novos membros — IB Atos" },
+      { name: "description", content: "Gerenciamento da trilha de novos membros." }
+    ]
   }),
-  component: OnboardingPage,
+  component: OnboardingLayout
 });
 
-/** Diferença em dias entre hoje e uma data ISO. */
-function daysSince(iso: string | null): number | null {
-  if (!iso) return null;
-  return Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000);
-}
-
-function OnboardingPage() {
-  const { isAdmin, profile } = useAuth();
-  const canEdit =
-    isAdmin || ["pastor", "apascentador", "lider"].includes(profile?.church_function ?? "");
+function OnboardingLayout() {
   const { rows, total, isLoading } = useOnboardingOverview();
-  const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("todos");
-  const [openId, setOpenId] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedPersonId, setSelectedPersonId] = useState<string | null>(null);
 
-  const list = useMemo(() => {
-    const term = search.trim().toLowerCase();
-    return rows.filter((r) => {
-      if (term && !r.person.full_name.toLowerCase().includes(term)) return false;
-      if (status === "concluidos") return total > 0 && r.done >= total;
-      if (status === "andamento") return r.done > 0 && r.done < total;
-      if (status === "nao_iniciados") return r.done === 0;
-      return true;
-    });
-  }, [rows, search, status, total]);
+  const filteredRows = rows.filter(r => 
+    r.person.full_name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const stats = {
+    total: rows.length,
+    completed: rows.filter(r => r.done === total && total > 0).length,
+    stalled: rows.filter(r => {
+      if (!r.lastAt) return false;
+      const days = (Date.now() - new Date(r.lastAt).getTime()) / 86400000;
+      return days > 15 && r.done < total;
+    }).length
+  };
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <PageHeader
-        eyebrow="Comunidade"
-        title="Integração de novos membros"
-        description="Acompanhe a trilha de cada pessoa que chegou: boas-vindas, curso, mesa, batismo e ministério."
+        eyebrow="Crescimento & Integração"
+        title="Jornada do Novo Membro"
+        description="Acompanhe e facilite a caminhada de quem está chegando na família Atos."
       />
+      
       <PageBody>
-        <div className="flex flex-col sm:flex-row gap-3 mb-6">
-          <Input
-            placeholder="Buscar por nome…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="sm:max-w-xs"
-          />
-          <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="sm:w-56">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="todos">Todos</SelectItem>
-              <SelectItem value="nao_iniciados">Ainda não iniciados</SelectItem>
-              <SelectItem value="andamento">Em andamento</SelectItem>
-              <SelectItem value="concluidos">Concluídos</SelectItem>
-            </SelectContent>
-          </Select>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card className="bg-primary/5 border-primary/20">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-mono uppercase tracking-widest text-primary/60">Em Integração</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <span className="text-4xl font-serif">{stats.total}</span>
+                <UserPlus className="h-8 w-8 text-primary/40" />
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">Pessoas ativas na trilha</p>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-mono uppercase tracking-widest text-emerald-500/60">Concluídos</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <span className="text-4xl font-serif">{stats.completed}</span>
+                <CheckCircle2 className="h-8 w-8 text-emerald-500/40" />
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">Integrados com sucesso</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-mono uppercase tracking-widest text-amber-500/60">Atenção</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <span className="text-4xl font-serif">{stats.stalled}</span>
+                <Clock className="h-8 w-8 text-amber-500/40" />
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">Sem movimentação há +15 dias</p>
+            </CardContent>
+          </Card>
         </div>
 
-        {isLoading && <p className="text-sm text-muted-foreground">Carregando…</p>}
-        {!isLoading && !list.length && (
-          <p className="text-sm text-muted-foreground">Nenhum membro encontrado com esse filtro.</p>
-        )}
+        <Tabs defaultValue="list" className="space-y-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <TabsList className="bg-muted/50 p-1">
+              <TabsTrigger value="list" className="gap-2">
+                <TrendingUp className="h-4 w-4" />
+                Fluxo Ativo
+              </TabsTrigger>
+              <TabsTrigger value="config" className="gap-2">
+                <AlertCircle className="h-4 w-4" />
+                Configuração
+              </TabsTrigger>
+            </TabsList>
+            
+            <div className="relative w-full sm:w-72 group">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+              <Input 
+                placeholder="Filtrar por nome..." 
+                className="pl-10 bg-card/50"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
 
-        <ul className="space-y-3">
-          {list.map((row) => {
-            const pct = total ? Math.round((row.done / total) * 100) : 0;
-            const parado = daysSince(row.lastAt);
-            const aberto = openId === row.person.id;
-            return (
-              <li
-                key={row.person.id}
-                className="border border-border rounded-xl bg-card/50 backdrop-blur-sm"
-              >
-                <button
-                  type="button"
-                  onClick={() => setOpenId(aberto ? null : row.person.id)}
-                  className="w-full text-left p-4 flex flex-col sm:flex-row sm:items-center gap-3"
-                >
-                  <div className="h-9 w-9 shrink-0 rounded-sm border border-border bg-muted grid place-items-center font-mono text-[11px]">
-                    {initialsOf(row.person.full_name)}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-sm truncate">{row.person.full_name}</div>
-                    <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-                      {row.done}/{total} etapas
-                      {row.done > 0 && row.done < total && parado !== null
-                        ? ` · última há ${parado} dia(s)`
-                        : ""}
+          <TabsContent value="list" className="space-y-4">
+            {isLoading ? (
+              <div className="py-20 text-center text-muted-foreground font-mono uppercase tracking-widest animate-pulse">
+                Sincronizando dados...
+              </div>
+            ) : filteredRows.length === 0 ? (
+              <div className="py-20 text-center border-2 border-dashed border-border rounded-3xl">
+                <Sprout className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
+                <h3 className="text-lg font-serif">Nenhum membro encontrado</h3>
+                <p className="text-muted-foreground">Tente ajustar seu filtro ou verifique se há novos registros.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-3">
+                {filteredRows.map((row) => (
+                  <Card 
+                    key={row.person.id} 
+                    className={`overflow-hidden transition-all duration-300 border-l-4 ${
+                      row.done === total ? 'border-l-emerald-500' : 'border-l-primary/40'
+                    } ${selectedPersonId === row.person.id ? 'ring-2 ring-primary/20' : ''}`}
+                  >
+                    <div className="p-4 sm:p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-4">
+                          <div className="h-12 w-12 rounded-2xl bg-muted flex items-center justify-center font-serif text-xl border border-border/50">
+                            {row.person.full_name.charAt(0)}
+                          </div>
+                          <div>
+                            <h3 className="font-serif text-lg leading-none mb-1">{row.person.full_name}</h3>
+                            <div className="flex items-center gap-2">
+                              <Badge variant="outline" className="text-[10px] font-mono uppercase tracking-widest py-0">
+                                {row.done}/{total} Etapas
+                              </Badge>
+                              {row.lastAt && (
+                                <span className="text-[10px] text-muted-foreground font-mono uppercase tracking-widest">
+                                  Lido em {new Date(row.lastAt).toLocaleDateString('pt-BR')}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => setSelectedPersonId(selectedPersonId === row.person.id ? null : row.person.id)}
+                            className="rounded-xl"
+                          >
+                            {selectedPersonId === row.person.id ? "Fechar" : "Ver Detalhes"}
+                          </Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="rounded-xl">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem>Ver Perfil</DropdownMenuItem>
+                              <DropdownMenuItem>Enviar Mensagem</DropdownMenuItem>
+                              <DropdownMenuItem className="text-destructive">Remover da Trilha</DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </div>
+                      
+                      {selectedPersonId === row.person.id && (
+                        <div className="mt-6 pt-6 border-t border-border animate-in fade-in slide-in-from-top-2 duration-300">
+                          <OnboardingTracker 
+                            personId={row.person.id} 
+                            enabled={true} 
+                            canEdit={true} 
+                          />
+                        </div>
+                      )}
                     </div>
-                  </div>
-                  <div className="sm:w-48 flex items-center gap-3">
-                    <Progress value={pct} className="h-2 flex-1" />
-                    {total > 0 && row.done >= total ? (
-                      <Badge variant="secondary" className="gap-1">
-                        <Sprout className="h-3 w-3" /> Integrado
-                      </Badge>
-                    ) : (
-                      <span className="font-mono text-[10px] text-muted-foreground">{pct}%</span>
-                    )}
-                  </div>
-                </button>
-                {aberto && (
-                  <div className="border-t border-border p-4">
-                    <OnboardingTracker
-                      personId={row.person.id}
-                      enabled
-                      canEdit={canEdit}
-                    />
-                  </div>
-                )}
-              </li>
-            );
-          })}
-        </ul>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="config">
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-serif">Configuração da Jornada</CardTitle>
+                <CardDescription>
+                  Defina as etapas oficiais que todo novo membro deve percorrer.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="p-8 text-center border-2 border-dashed border-border rounded-2xl">
+                  <p className="text-muted-foreground italic mb-4">A gestão de etapas está disponível apenas para administradores do sistema.</p>
+                  <Button variant="outline" className="rounded-xl" onClick={() => toast.info("Funcionalidade em desenvolvimento.")}>
+                    Editar Etapas
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </PageBody>
-    </>
+    </div>
   );
 }

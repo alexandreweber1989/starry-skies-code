@@ -70,7 +70,7 @@ const navGroups: { label: string; items: (NavItem & { color: string })[] }[] = [
       { to: "/visitantes", label: "Visitantes", icon: Users, color: "bg-sky-500/15 text-sky-400 border-sky-500/30", requiredRoles: ["admin_geral"] },
       { to: "/membros", label: "Membros", icon: Users, color: "bg-indigo-600/15 text-indigo-400 border-indigo-600/30", requiredRoles: ["admin_geral"] },
       { to: "/mapa", label: "Mapa", icon: MapPin, color: "bg-lime-500/15 text-lime-400 border-lime-500/30", requiredRoles: ["admin_geral"] },
-      { to: "/onboarding", label: "Integração", icon: Sprout, color: "bg-green-500/15 text-green-400 border-green-500/30", requiredRoles: ["admin_geral"] },
+      { to: "/onboarding", label: "Integração de novos membros", icon: Sprout, color: "bg-green-500/15 text-green-400 border-green-500/30", requiredRoles: ["admin_geral"] },
       { to: "/kids", label: "Kids", icon: Baby, color: "bg-pink-400/15 text-pink-300 border-pink-400/30", requiredRoles: ["admin_geral", "admin_kids"] },
       { to: "/kids/relatorios", label: "Relatórios", icon: FileText, color: "bg-slate-500/15 text-slate-400 border-slate-500/30", requiredRoles: ["admin_geral", "admin_kids"] },
       { to: "/igrejas", label: "Social", icon: Heart, color: "bg-red-500/15 text-red-400 border-red-500/30", requiredRoles: ["admin_geral"] },
