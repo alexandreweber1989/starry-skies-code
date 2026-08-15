@@ -110,11 +110,11 @@ export function AppShell({ children }: { children: ReactNode }) {
       </div>
       <nav className="flex-1 px-4 py-6 space-y-8 overflow-y-auto scrollbar-thin scrollbar-thumb-sidebar-border/50">
         {filteredNavGroups.map((group) => (
-          <div key={group.label} className="space-y-2">
-            <h3 className="px-3 text-[10px] font-mono uppercase tracking-[0.2em] text-sidebar-foreground/40 font-bold">
+          <div key={group.label} className="space-y-3">
+            <h3 className="px-1 text-[10px] font-mono uppercase tracking-[0.2em] text-sidebar-foreground/40 font-bold">
               {group.label}
             </h3>
-            <div className="space-y-1">
+            <div className="grid grid-cols-2 gap-2">
               {group.items.map((item) => {
                 const active = pathname === item.to || pathname.startsWith(item.to + "/");
                 const Icon = item.icon;
@@ -123,14 +123,18 @@ export function AppShell({ children }: { children: ReactNode }) {
                     key={item.to}
                     to={item.to}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-300 ${
+                    className={`flex flex-col items-center justify-center gap-2 p-3 rounded-xl transition-all duration-300 group border text-center ${
                       active
-                        ? "bg-primary/10 text-primary font-bold shadow-sm ring-1 ring-primary/20"
-                        : "text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground hover:translate-x-1"
+                        ? "bg-primary/10 text-primary font-bold shadow-md ring-1 ring-primary/20 border-primary/20"
+                        : "text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground hover:-translate-y-1 border-transparent bg-sidebar-accent/10"
                     }`}
                   >
-                    <Icon className={`h-4 w-4 ${active ? "text-primary" : "opacity-70"}`} />
-                    {item.label}
+                    <div className={`p-2 rounded-lg transition-colors ${active ? "bg-primary/20" : "bg-sidebar-foreground/5 group-hover:bg-sidebar-foreground/10"}`}>
+                      <Icon className={`h-4 w-4 ${active ? "text-primary" : "opacity-70"}`} />
+                    </div>
+                    <span className="text-[10px] leading-tight font-medium break-words px-1">
+                      {item.label}
+                    </span>
                   </Link>
                 );
               })}
