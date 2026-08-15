@@ -204,18 +204,61 @@ function PlatformManual() {
         </div>
 
         <Dialog open={!!selectedModule} onOpenChange={() => setSelectedModule(null)}>
-          <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
-            <DialogHeader>
-              <DialogTitle className="font-serif text-3xl">{selectedModule?.title}</DialogTitle>
-              <DialogDescription>{selectedModule?.description}</DialogDescription>
-            </DialogHeader>
-            <ScrollArea className="flex-1 pr-4 mt-4">
-              <div className="prose prose-sm dark:prose-invert max-w-none">
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  {selectedModule?.details}
-                </p>
+          <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col p-0 overflow-hidden border-none bg-background/95 backdrop-blur-xl">
+            <div className="relative h-32 w-full bg-primary/10 overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent" />
+              {selectedModule && (
+                <selectedModule.icon className="absolute -bottom-6 -right-6 h-32 w-32 text-primary/10 rotate-12" />
+              )}
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="absolute top-4 right-4 rounded-full bg-background/20 hover:bg-background/40 backdrop-blur-md"
+                onClick={() => setSelectedModule(null)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <div className="px-8 pb-8 -mt-6 relative z-10">
+              <div className="h-16 w-16 rounded-2xl bg-card border shadow-xl flex items-center justify-center mb-6 text-primary ring-4 ring-background">
+                {selectedModule && <selectedModule.icon className="h-8 w-8" />}
               </div>
-            </ScrollArea>
+
+              <DialogHeader className="text-left mb-8">
+                <DialogTitle className="font-serif text-4xl tracking-tight">{selectedModule?.title}</DialogTitle>
+                <DialogDescription className="text-lg mt-2">{selectedModule?.description}</DialogDescription>
+              </DialogHeader>
+
+              <ScrollArea className="h-[45vh] pr-4">
+                <div className="space-y-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge variant="secondary" className="font-mono text-[10px] tracking-widest uppercase">Funcionalidades Principais</Badge>
+                    <div className="h-px flex-1 bg-border/50" />
+                  </div>
+                  
+                  <div className="grid gap-4">
+                    {Array.isArray(selectedModule?.details) && selectedModule?.details.map((detail: any, idx: number) => (
+                      <motion.div 
+                        key={idx}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: idx * 0.05 }}
+                        className="group flex gap-4 p-4 rounded-xl bg-card/50 border border-border/40 hover:border-primary/30 transition-all hover:shadow-md"
+                      >
+                        <div className="h-8 w-8 rounded-lg bg-primary/5 flex items-center justify-center text-primary font-serif shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                          {idx + 1}
+                        </div>
+                        <div className="space-y-1">
+                          <h4 className="font-bold text-sm tracking-wide uppercase text-foreground/90">{detail.label}</h4>
+                          <p className="text-sm text-muted-foreground leading-relaxed">{detail.content}</p>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              </ScrollArea>
+            </div>
           </DialogContent>
         </Dialog>
 
