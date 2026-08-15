@@ -965,11 +965,11 @@ function NumeroScrollItem({ n, index, progress, total }: {
         scale,
         perspective: "1000px",
         rotateX,
-        position: index === 0 ? 'relative' : 'absolute',
-        top: index === 0 ? '0' : '50%',
+        position: 'absolute',
+        top: '50%',
         left: '0',
         right: '0',
-        transform: index === 0 ? 'none' : 'translateY(-50%)',
+        translateY: '-50%',
       }}
       className="w-full flex flex-col items-center justify-center text-center py-20"
     >
