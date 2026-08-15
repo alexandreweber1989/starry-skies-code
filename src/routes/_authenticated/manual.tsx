@@ -13,7 +13,9 @@ import {
   Settings,
   ArrowRight,
   Download,
-  Info
+  Info,
+  Presentation,
+  Sparkles
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
