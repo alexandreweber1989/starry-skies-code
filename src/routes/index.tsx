@@ -619,27 +619,29 @@ function Historia() {
   return (
     <section
       ref={ref}
-      className="relative z-20 bg-background border-t border-border/10"
-      style={{ height: `${capitulos.length * 100}vh` }}
+      className="relative z-20 bg-background border-t border-border/10 overflow-visible"
+      style={{ 
+        height: `${capitulos.length * 100}vh`,
+        perspective: "1200px"
+      }}
     >
-      <div className="sticky top-0 h-screen overflow-hidden flex items-center px-6 lg:px-10">
+      <div className="sticky top-0 h-screen overflow-hidden flex items-center px-6 lg:px-10 perspective-1000">
         {/* Dynamic Atmospheric Light System */}
         <div className="absolute inset-0 z-0">
           <motion.div 
-            animate={{ 
-              opacity: [0.1, 0.15, 0.1],
-              scale: [1, 1.1, 1],
+            style={{ 
+              x: useTransform(scrollYProgress, [0, 1], [0, 100]),
+              opacity: useTransform(scrollYProgress, [0, 0.5, 1], [0.1, 0.2, 0.1]),
+              scale: useTransform(scrollYProgress, [0, 0.5, 1], [1, 1.2, 1])
             }}
-            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
             className="absolute top-1/2 -right-40 -translate-y-1/2 w-[40rem] h-[40rem] bg-primary/20 rounded-full blur-[140px] pointer-events-none" 
           />
           <motion.div 
-            animate={{ 
-              opacity: [0.05, 0.1, 0.05],
-              scale: [1, 1.2, 1],
-              x: [0, 50, 0]
+            style={{ 
+              x: useTransform(scrollYProgress, [0, 1], [0, -100]),
+              opacity: useTransform(scrollYProgress, [0, 0.5, 1], [0.05, 0.15, 0.05]),
+              scale: useTransform(scrollYProgress, [0, 0.5, 1], [1.2, 1, 1.2])
             }}
-            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
             className="absolute bottom-0 -left-40 w-[30rem] h-[30rem] bg-primary/10 rounded-full blur-[120px] pointer-events-none" 
           />
         </div>
@@ -680,20 +682,21 @@ function Historia() {
                 }}
                 className="relative flex items-center gap-8 group text-left outline-none"
               >
-                <div 
-                  className={`relative z-10 w-4 h-4 rounded-full border-2 transition-all duration-500 flex items-center justify-center ${
-                    i <= ativo 
-                      ? "bg-primary border-primary scale-110 shadow-[0_0_15px_rgba(var(--primary),0.5)]" 
-                      : "bg-background border-foreground/20 group-hover:border-primary/40"
-                  }`}
+                <motion.div 
+                  animate={{
+                    scale: i === ativo ? 1.2 : 1,
+                    backgroundColor: i <= ativo ? "var(--primary)" : "transparent",
+                    borderColor: i <= ativo ? "var(--primary)" : "rgba(255,255,255,0.2)"
+                  }}
+                  className="relative z-10 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors duration-500"
                 >
                   {i === ativo && (
                     <motion.div 
                       layoutId="active-dot-glow"
-                      className="absolute inset-0 rounded-full bg-primary blur-[4px]" 
+                      className="absolute inset-0 rounded-full bg-primary blur-[6px] opacity-50" 
                     />
                   )}
-                </div>
+                </motion.div>
                 <div className="flex flex-col">
                   <span
                     className={`font-mono text-[10px] uppercase tracking-[0.2em] transition-colors duration-500 ${
@@ -727,7 +730,7 @@ function Historia() {
           </div>
 
           {/* Active Chapter Content */}
-          <div className="relative min-h-[24rem] sm:min-h-[30rem] flex flex-col justify-center">
+          <div className="relative min-h-[24rem] sm:min-h-[30rem] flex flex-col justify-center" style={{ perspective: "1000px", transformStyle: "preserve-3d" }}>
             <div className="font-mono text-[9px] sm:text-[11px] uppercase tracking-[0.4em] text-primary/60 mb-6 sm:mb-12 flex items-center gap-4">
               <span className="h-px w-8 bg-primary/40" />
               Nossa Gênese
@@ -740,56 +743,94 @@ function Historia() {
                 animate="animate"
                 exit="exit"
                 variants={{
-                  initial: { opacity: 0, y: 40 },
-                  animate: { opacity: 1, y: 0, transition: { staggerChildren: 0.15 } },
-                  exit: { opacity: 0, y: -40, transition: { duration: 0.3 } }
+                  initial: { 
+                    opacity: 0, 
+                    z: -500,
+                    scale: 0.8,
+                    rotateX: 10
+                  },
+                  animate: { 
+                    opacity: 1, 
+                    z: 0,
+                    scale: 1,
+                    rotateX: 0,
+                    transition: { 
+                      duration: 1.2,
+                      ease: [0.22, 1, 0.36, 1],
+                      staggerChildren: 0.1 
+                    } 
+                  },
+                  exit: { 
+                    opacity: 0, 
+                    z: 300,
+                    scale: 1.2,
+                    rotateX: -5,
+                    transition: { duration: 0.8, ease: "easeInOut" } 
+                  }
                 }}
                 className="will-change-transform"
+                style={{ transformStyle: "preserve-3d" }}
               >
-                <motion.div 
-                  variants={{
-                    initial: { opacity: 0, x: -20 },
-                    animate: { opacity: 1, x: 0 },
-                    exit: { opacity: 0, x: 10 }
-                  }}
-                  transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                  className="font-serif text-primary text-3xl md:text-5xl font-light mb-6 italic tracking-tight"
-                >
-                  {capitulos[ativo].marca}
-                </motion.div>
-                
-                <motion.h2 
-                  variants={{
-                    initial: { opacity: 0, y: 30 },
-                    animate: { opacity: 1, y: 0 },
-                    exit: { opacity: 0, y: -20 }
-                  }}
-                  transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-                  className="font-serif text-3xl sm:text-5xl md:text-8xl lg:text-9xl leading-[0.9] font-bold tracking-[-0.04em] mb-6 sm:mb-12 uppercase text-foreground"
-                >
-                  {capitulos[ativo].titulo}
-                </motion.h2>
-                
-                <motion.p 
-                  variants={{
-                    initial: { opacity: 0, y: 20 },
-                    animate: { opacity: 1, y: 0 },
-                    exit: { opacity: 0, y: 10 }
-                  }}
-                  transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-                  className="text-base sm:text-lg md:text-2xl text-muted-foreground leading-relaxed max-w-2xl font-medium tracking-tight"
-                >
-                  {capitulos[ativo].texto}
-                </motion.p>
-
+                {/* Background Layer: Big Year Indicator */}
                 <motion.div
                   variants={{
-                    initial: { opacity: 0, scaleX: 0 },
-                    animate: { opacity: 1, scaleX: 1 },
-                    exit: { opacity: 0, scaleX: 0 }
+                    initial: { opacity: 0, scale: 0.5, z: -200 },
+                    animate: { opacity: 0.05, scale: 1.2, z: -100 },
+                    exit: { opacity: 0, scale: 1.5, z: 0 }
+                  }}
+                  className="absolute -top-20 -left-10 text-[20vw] font-serif font-black text-foreground pointer-events-none select-none z-0"
+                >
+                  {capitulos[ativo].marca.replace(/\D/g, '') || "0" + (ativo + 1)}
+                </motion.div>
+
+                {/* Middle Layer: Content */}
+                <div className="relative z-10" style={{ transformStyle: "preserve-3d" }}>
+                  <motion.div 
+                    variants={{
+                      initial: { opacity: 0, x: -30, z: -50 },
+                      animate: { opacity: 1, x: 0, z: 0 },
+                      exit: { opacity: 0, x: 50, z: 50 }
+                    }}
+                    transition={{ duration: 0.8 }}
+                    className="font-serif text-primary text-3xl md:text-5xl font-light mb-6 italic tracking-tight"
+                  >
+                    {capitulos[ativo].marca}
+                  </motion.div>
+                  
+                  <motion.h2 
+                    variants={{
+                      initial: { opacity: 0, y: 40, z: -20 },
+                      animate: { opacity: 1, y: 0, z: 0 },
+                      exit: { opacity: 0, y: -40, z: 100 }
+                    }}
+                    transition={{ duration: 0.9 }}
+                    className="font-serif text-3xl sm:text-5xl md:text-8xl lg:text-9xl leading-[0.9] font-bold tracking-[-0.04em] mb-6 sm:mb-12 uppercase text-foreground"
+                  >
+                    {capitulos[ativo].titulo}
+                  </motion.h2>
+                  
+                  <motion.p 
+                    variants={{
+                      initial: { opacity: 0, y: 30, z: -10 },
+                      animate: { opacity: 1, y: 0, z: 0 },
+                      exit: { opacity: 0, y: 20, z: 80 }
+                    }}
+                    transition={{ duration: 1 }}
+                    className="text-base sm:text-lg md:text-2xl text-muted-foreground leading-relaxed max-w-2xl font-medium tracking-tight"
+                  >
+                    {capitulos[ativo].texto}
+                  </motion.p>
+                </div>
+
+                {/* Foreground Layer: Accent Line */}
+                <motion.div
+                  variants={{
+                    initial: { opacity: 0, scaleX: 0, z: -50 },
+                    animate: { opacity: 1, scaleX: 1, z: 50 },
+                    exit: { opacity: 0, scaleX: 0, z: 150 }
                   }}
                   transition={{ duration: 1, delay: 0.4 }}
-                  className="h-px w-24 bg-primary/30 mt-16 origin-left"
+                  className="h-px w-24 bg-primary/40 mt-16 origin-left relative z-20"
                 />
               </motion.div>
             </AnimatePresence>
