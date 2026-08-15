@@ -46,37 +46,37 @@ const navGroups: { label: string; items: (NavItem & { color: string })[] }[] = [
   {
     label: "Geral",
     items: [
-      { to: "/dashboard", label: "Painel", icon: LayoutDashboard, color: "bg-blue-500/10 text-blue-500 border-blue-500/20" },
-      { to: "/avisos", label: "Avisos", icon: Megaphone, color: "bg-amber-500/10 text-amber-500 border-amber-500/20" },
-      { to: "/noticias", label: "Notícias", icon: Newspaper, color: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" },
-      { to: "/agenda", label: "Agenda", icon: CalendarDays, color: "bg-purple-500/10 text-purple-500 border-purple-500/20" },
+      { to: "/dashboard", label: "Painel", icon: LayoutDashboard, color: "bg-blue-500/15 text-blue-400 border-blue-500/30" },
+      { to: "/avisos", label: "Avisos", icon: Megaphone, color: "bg-amber-500/15 text-amber-400 border-amber-500/30" },
+      { to: "/noticias", label: "Notícias", icon: Newspaper, color: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30" },
+      { to: "/agenda", label: "Agenda", icon: CalendarDays, color: "bg-purple-500/15 text-purple-400 border-purple-500/30" },
     ],
   },
   {
     label: "Ministérios & Redes",
     items: [
-      { to: "/ministerios", label: "Ministérios", icon: Sparkles, color: "bg-pink-500/10 text-pink-500 border-pink-500/20" },
-      { to: "/louvor", label: "Louvor", icon: Music, color: "bg-indigo-500/10 text-indigo-500 border-indigo-500/20" },
-      { to: "/redes", label: "Redes", icon: Network, color: "bg-cyan-500/10 text-cyan-500 border-cyan-500/20" },
-      { to: "/mesas", label: "Mesas", icon: UtensilsCrossed, color: "bg-orange-500/10 text-orange-500 border-orange-500/20" },
-      { to: "/cuidado-semana", label: "Cuidado", icon: HeartHandshake, color: "bg-rose-500/10 text-rose-500 border-rose-500/20", requiredRoles: ["admin_geral", "lider_mesa"] },
-      { to: "/faxina", label: "Faxina", icon: Sparkles, color: "bg-teal-500/10 text-teal-500 border-teal-500/20" },
+      { to: "/ministerios", label: "Ministérios", icon: Sparkles, color: "bg-pink-500/15 text-pink-400 border-pink-500/30" },
+      { to: "/louvor", label: "Louvor", icon: Music, color: "bg-indigo-500/15 text-indigo-400 border-indigo-500/30" },
+      { to: "/redes", label: "Redes", icon: Network, color: "bg-cyan-500/15 text-cyan-400 border-cyan-500/30" },
+      { to: "/mesas", label: "Mesas", icon: UtensilsCrossed, color: "bg-orange-500/15 text-orange-400 border-orange-500/30" },
+      { to: "/cuidado-semana", label: "Cuidado", icon: HeartHandshake, color: "bg-rose-500/15 text-rose-400 border-rose-500/30", requiredRoles: ["admin_geral", "lider_mesa"] },
+      { to: "/faxina", label: "Faxina", icon: Sparkles, color: "bg-teal-500/15 text-teal-400 border-teal-500/30" },
     ],
   },
   {
     label: "Administração & Cuidado",
     items: [
-      { to: "/pregacoes", label: "Pregações", icon: Presentation, color: "bg-violet-500/10 text-violet-500 border-violet-500/20", requiredRoles: ["admin_geral"] },
-      { to: "/visitantes", label: "Visitantes", icon: Users, color: "bg-sky-500/10 text-sky-500 border-sky-500/20", requiredRoles: ["admin_geral"] },
-      { to: "/membros", label: "Membros", icon: Users, color: "bg-indigo-600/10 text-indigo-600 border-indigo-600/20", requiredRoles: ["admin_geral"] },
-      { to: "/mapa", label: "Mapa", icon: MapPin, color: "bg-lime-500/10 text-lime-500 border-lime-500/20", requiredRoles: ["admin_geral"] },
-      { to: "/onboarding", label: "Integração", icon: Sprout, color: "bg-green-500/10 text-green-500 border-green-500/20", requiredRoles: ["admin_geral"] },
-      { to: "/kids", label: "Kids", icon: Baby, color: "bg-pink-400/10 text-pink-400 border-pink-400/20", requiredRoles: ["admin_geral", "admin_kids"] },
-      { to: "/kids/relatorios", label: "Relatórios", icon: FileText, color: "bg-slate-500/10 text-slate-500 border-slate-500/20", requiredRoles: ["admin_geral", "admin_kids"] },
-      { to: "/igrejas", label: "Social", icon: Heart, color: "bg-red-500/10 text-red-500 border-red-500/20", requiredRoles: ["admin_geral"] },
-      { to: "/livraria", label: "Livraria", icon: BookOpen, color: "bg-amber-600/10 text-amber-600 border-amber-600/20", requiredRoles: ["admin_geral", "admin_livraria"] },
-      { to: "/cantina", label: "Cantina", icon: Coffee, color: "bg-orange-600/10 text-orange-600 border-orange-600/20", requiredRoles: ["admin_geral", "admin_cantina"] },
-      { to: "/midia", label: "Mídia", icon: Layout, color: "bg-indigo-400/10 text-indigo-400 border-indigo-400/20", requiredRoles: ["admin_geral"] },
+      { to: "/pregacoes", label: "Pregações", icon: Presentation, color: "bg-violet-500/15 text-violet-400 border-violet-500/30", requiredRoles: ["admin_geral"] },
+      { to: "/visitantes", label: "Visitantes", icon: Users, color: "bg-sky-500/15 text-sky-400 border-sky-500/30", requiredRoles: ["admin_geral"] },
+      { to: "/membros", label: "Membros", icon: Users, color: "bg-indigo-600/15 text-indigo-400 border-indigo-600/30", requiredRoles: ["admin_geral"] },
+      { to: "/mapa", label: "Mapa", icon: MapPin, color: "bg-lime-500/15 text-lime-400 border-lime-500/30", requiredRoles: ["admin_geral"] },
+      { to: "/onboarding", label: "Integração", icon: Sprout, color: "bg-green-500/15 text-green-400 border-green-500/30", requiredRoles: ["admin_geral"] },
+      { to: "/kids", label: "Kids", icon: Baby, color: "bg-pink-400/15 text-pink-300 border-pink-400/30", requiredRoles: ["admin_geral", "admin_kids"] },
+      { to: "/kids/relatorios", label: "Relatórios", icon: FileText, color: "bg-slate-500/15 text-slate-400 border-slate-500/30", requiredRoles: ["admin_geral", "admin_kids"] },
+      { to: "/igrejas", label: "Social", icon: Heart, color: "bg-red-500/15 text-red-400 border-red-500/30", requiredRoles: ["admin_geral"] },
+      { to: "/livraria", label: "Livraria", icon: BookOpen, color: "bg-amber-600/15 text-amber-500 border-amber-600/30", requiredRoles: ["admin_geral", "admin_livraria"] },
+      { to: "/cantina", label: "Cantina", icon: Coffee, color: "bg-orange-600/15 text-orange-500 border-orange-600/30", requiredRoles: ["admin_geral", "admin_cantina"] },
+      { to: "/midia", label: "Mídia", icon: Layout, color: "bg-indigo-400/15 text-indigo-300 border-indigo-400/30", requiredRoles: ["admin_geral"] },
     ],
   },
 ];
@@ -125,9 +125,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                     onClick={() => setMobileMenuOpen(false)}
                     className={`flex flex-col items-center justify-center gap-2 p-3 rounded-xl transition-all duration-300 group border text-center shadow-sm hover:shadow-md hover:-translate-y-1 ${
                       active
-                        ? `${item.color.split(" ").slice(0, 2).join(" ")} font-bold ring-2 ring-current/20 ${item.color.split(" ")[2]}`
-                        : `text-sidebar-foreground/60 hover:text-sidebar-foreground border-transparent bg-sidebar-accent/10 hover:${item.color.split(" ")[0]} hover:${item.color.split(" ")[2]}`
-                    }`}
+                        ? `font-bold ring-2 ring-current/20 ${item.color}`
+                        : `text-sidebar-foreground/60 hover:text-sidebar-foreground border-transparent bg-sidebar-accent/10 active:scale-95`
+                    } ${!active ? item.color.split(" ").map(c => `hover:${c}`).join(" ") : ""}`}
                   >
                     <div className={`p-2 rounded-lg transition-all duration-300 ${active ? "bg-current/20 scale-110" : "bg-sidebar-foreground/5 group-hover:bg-current/20 group-hover:scale-110"}`}>
                       <Icon className={`h-4 w-4 ${active ? "text-current" : "opacity-70 group-hover:text-current group-hover:opacity-100"}`} />
