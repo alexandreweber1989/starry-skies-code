@@ -934,10 +934,10 @@ function NumeroScrollItem({ n, index, progress, total }: {
     [0, 1, 1, 0]
   );
   
-  // Y movement for parallax effect - intensified
+  // Y movement for parallax effect - extreme range to fill the screen transition
   const y = useTransform(progress, 
     [start, end], 
-    [150, -150]
+    [250, -250]
   );
 
   // Scale effect - more dramatic
@@ -987,24 +987,24 @@ function NumeroScrollItem({ n, index, progress, total }: {
           />
 
           <motion.div 
-            className="font-serif text-[15vw] sm:text-[12vw] md:text-[10vw] lg:text-[14rem] tracking-tighter leading-[0.8] text-foreground select-none flex items-baseline relative"
+            className="font-serif text-[22vw] sm:text-[20vw] md:text-[18vw] lg:text-[22rem] tracking-tighter leading-[0.75] text-foreground select-none flex items-baseline relative"
           >
-            {/* 3D Duplicate for Depth Effect */}
-            <span className="absolute inset-0 text-primary/10 -z-10 blur-sm translate-x-2 translate-y-2 select-none pointer-events-none" aria-hidden="true">
+            {/* 3D Duplicate for Depth Effect - Increased blur and offset */}
+            <span className="absolute inset-0 text-primary/15 -z-10 blur-md translate-x-4 translate-y-4 select-none pointer-events-none" aria-hidden="true">
               <Contador para={n.valor} sufixo={n.sufixo} />
             </span>
             <Contador para={n.valor} sufixo={n.sufixo} />
           </motion.div>
           
-          <div className="mt-8 flex flex-col items-center">
+          <div className="mt-12 md:mt-16 flex flex-col items-center w-full max-w-4xl px-6">
             <motion.div 
               initial={{ width: 0 }}
-              whileInView={{ width: 60 }}
-              className="h-px bg-primary/60 mb-6"
+              whileInView={{ width: 120 }}
+              className="h-px bg-primary/60 mb-8"
             />
-            <div className="flex flex-col items-center gap-2">
-              <span className="font-mono text-[10px] text-primary/40 tracking-[0.4em] uppercase">Metric {index + 1}</span>
-              <span className="font-mono text-xs sm:text-sm uppercase tracking-[0.6em] text-muted-foreground group-hover:text-primary transition-colors duration-500">
+            <div className="flex flex-col items-center gap-4">
+              <span className="font-mono text-[12px] md:text-[14px] text-primary/40 tracking-[0.5em] uppercase">Metric {index + 1}</span>
+              <span className="font-serif italic text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-muted-foreground group-hover:text-primary transition-colors duration-500 text-center balance">
                 {n.rotulo}
               </span>
             </div>
