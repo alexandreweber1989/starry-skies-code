@@ -179,6 +179,66 @@ function PlatformManual() {
               </ul>
             </CardContent>
           </Card>
+
+          {/* Cantina e Livraria */}
+          <Card className="border-border/40 bg-card/50 hover:bg-card transition-colors">
+            <CardHeader>
+              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center mb-2 text-primary">
+                <ShoppingBag className="h-5 w-5" />
+              </div>
+              <CardTitle className="font-serif text-2xl tracking-tight">Cantina & Livraria</CardTitle>
+              <CardDescription>Recursos e retiradas.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4 text-sm text-muted-foreground">
+              <p>Gestão de vendas internas e pedidos antecipados.</p>
+              <ul className="space-y-2 list-disc list-inside marker:text-primary">
+                <li>Reserva de lanches para retirada na igreja</li>
+                <li>Catálogo de livros e vestuário da igreja</li>
+                <li>Pagamento via PIX com aprovação automática</li>
+                <li>Gestão de estoque e demanda em tempo real</li>
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Pregações e Mídia */}
+          <Card className="border-border/40 bg-card/50 hover:bg-card transition-colors">
+            <CardHeader>
+              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center mb-2 text-primary">
+                <Presentation className="h-5 w-5" />
+              </div>
+              <CardTitle className="font-serif text-2xl tracking-tight">Estúdio de Pregações</CardTitle>
+              <CardDescription>Conteúdo e Inteligência IA.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4 text-sm text-muted-foreground">
+              <p>Integração com YouTube e IA para edificação.</p>
+              <ul className="space-y-2 list-disc list-inside marker:text-primary">
+                <li>Importação automática de lives via link</li>
+                <li>Transcrição e Resumo por IA em tópicos</li>
+                <li>Extração de versículos citados na pregação</li>
+                <li>Status de Live em tempo real no Dashboard</li>
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Visitantes */}
+          <Card className="border-border/40 bg-card/50 hover:bg-card transition-colors">
+            <CardHeader>
+              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center mb-2 text-primary">
+                <Sparkles className="h-5 w-5" />
+              </div>
+              <CardTitle className="font-serif text-2xl tracking-tight">Portal de Boas-Vindas</CardTitle>
+              <CardDescription>A primeira impressão digital.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4 text-sm text-muted-foreground">
+              <p>Experiência interativa para quem pisa na casa pela primeira vez.</p>
+              <ul className="space-y-2 list-disc list-inside marker:text-primary">
+                <li>Landing page pública de recepção</li>
+                <li>Presente digital (E-book) pós-cadastro</li>
+                <li>Alertas instantâneos para líderes via WhatsApp</li>
+                <li>Dashboard de novos check-ins em tempo real</li>
+              </ul>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Detalhes Técnicos e Segurança */}
