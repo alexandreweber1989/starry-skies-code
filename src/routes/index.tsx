@@ -880,60 +880,116 @@ function Numeros() {
     offset: ["start end", "end start"],
   });
 
-  const y = useTransform(scrollYProgress, [0, 1], [0, -40]);
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (rect) {
+      mouseX.set(e.clientX - rect.left);
+      mouseY.set(e.clientY - rect.top);
+    }
+  };
 
   return (
     <section 
       ref={containerRef}
-      className="relative z-20 bg-background py-32 md:py-48 px-6 lg:px-10 overflow-hidden"
+      onMouseMove={handleMouseMove}
+      className="relative z-20 bg-background py-32 md:py-56 px-6 lg:px-10 overflow-hidden group/section"
     >
-      {/* Background decoration */}
-      <div className="absolute top-0 left-0 w-full h-px bg-linear-to-r from-transparent via-border/30 to-transparent" />
-      
-      <div className="max-w-7xl mx-auto relative">
-        {/* Modern grid with glass cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 lg:gap-16">
+      {/* Neo-Tech Background Elements */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        {/* Dynamic Scanning Line */}
+        <motion.div 
+          animate={{ 
+            top: ["0%", "100%", "0%"],
+            opacity: [0, 0.2, 0]
+          }}
+          transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+          className="absolute left-0 w-full h-[1px] bg-primary z-0"
+        />
+        
+        {/* Subtle Grid with Glow */}
+        <div 
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `linear-gradient(to right, var(--foreground) 1px, transparent 1px), linear-gradient(to bottom, var(--foreground) 1px, transparent 1px)`,
+            backgroundSize: '60px 60px'
+          }}
+        />
+
+        {/* Mouse following glow */}
+        <motion.div
+          className="absolute -inset-[500px] z-0 opacity-0 group-hover/section:opacity-10 transition-opacity duration-1000"
+          style={{
+            background: useTransform(
+              [mouseX, mouseY],
+              ([x, y]) => `radial-gradient(600px circle at ${x}px ${y}px, var(--color-primary), transparent 80%)`
+            )
+          }}
+        />
+      </div>
+
+      <div className="max-w-7xl mx-auto relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 lg:gap-16">
           {numeros.map((n, i) => (
             <motion.div
               key={n.rotulo}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ 
-                duration: 0.8, 
-                delay: i * 0.15,
-                ease: [0.22, 1, 0.36, 1] 
+                duration: 1, 
+                delay: i * 0.2,
+                type: "spring",
+                stiffness: 50
               }}
-              style={{ y: i % 2 === 0 ? 0 : y }}
-              className="group relative"
+              className="relative group"
             >
-              {/* Card effect */}
-              <div className="absolute -inset-4 bg-foreground/[0.02] rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
+              {/* Technological Card Frame */}
+              <div className="absolute -inset-8 border border-foreground/[0.03] rounded-[2rem] opacity-0 group-hover:opacity-100 transition-all duration-700 pointer-events-none" />
               
-              <div className="relative flex flex-col items-center md:items-start text-center md:text-left">
-                {/* Visual accent */}
-                <motion.div 
-                  initial={{ width: 0 }}
-                  whileInView={{ width: 40 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 1, delay: 0.5 + (i * 0.1) }}
-                  className="h-[2px] bg-primary/60 mb-8 rounded-full"
-                />
-
-                <div className="relative">
-                  {/* Glowing background for numbers */}
-                  <div className="absolute -inset-8 bg-primary/5 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                  
-                  <div className="font-serif text-6xl sm:text-7xl md:text-8xl lg:text-9xl tracking-tight leading-none text-foreground flex items-baseline">
-                    <Contador para={n.valor} sufixo={n.sufixo} />
-                  </div>
+              <div className="relative flex flex-col items-center md:items-start">
+                {/* Index / Counter tag */}
+                <div className="mb-6 flex items-center gap-3">
+                  <span className="font-mono text-[10px] text-primary/40 tracking-tighter">0{i + 1}</span>
+                  <div className="h-[1px] w-6 bg-primary/20" />
                 </div>
 
-                <div className="mt-6 md:mt-8 space-y-2">
-                  <div className="font-mono text-[10px] md:text-xs uppercase tracking-[0.4em] text-muted-foreground group-hover:text-primary transition-colors duration-500">
-                    {n.rotulo}
+                <div className="relative perspective-1000">
+                  {/* Digital Glitch Background */}
+                  <div className="absolute -inset-10 bg-primary/5 rounded-full blur-[80px] opacity-0 group-hover:opacity-100 transition-all duration-1000" />
+                  
+                  <motion.div 
+                    whileHover={{ scale: 1.05, rotateY: 5, rotateX: -5 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                    className="font-serif text-8xl sm:text-9xl lg:text-[11rem] tracking-tighter leading-none text-foreground flex items-baseline select-none"
+                  >
+                    <Contador para={n.valor} sufixo={n.sufixo} />
+                  </motion.div>
+                </div>
+
+                <div className="mt-8 md:mt-12 w-full">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="font-mono text-[11px] uppercase tracking-[0.5em] text-muted-foreground group-hover:text-primary transition-colors duration-500">
+                      {n.rotulo}
+                    </span>
+                    <motion.div 
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="w-1 h-1 bg-primary rounded-full opacity-0 group-hover:opacity-100"
+                    />
                   </div>
-                  <div className="h-1 w-0 bg-primary/20 group-hover:w-full transition-all duration-700 ease-out" />
+                  {/* Tech Loading Bar */}
+                  <div className="h-[2px] w-full bg-foreground/[0.05] relative overflow-hidden">
+                    <motion.div 
+                      initial={{ left: "-100%" }}
+                      whileInView={{ left: "0%" }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 1.5, delay: 0.8 + (i * 0.2), ease: "circOut" }}
+                      className="absolute inset-0 bg-primary/40"
+                    />
+                  </div>
                 </div>
               </div>
             </motion.div>
