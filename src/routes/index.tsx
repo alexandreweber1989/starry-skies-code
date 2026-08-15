@@ -621,7 +621,7 @@ function Historia() {
       ref={ref}
       className="relative z-20 bg-background border-t border-border/10 overflow-visible"
       style={{ 
-        height: `${capitulos.length * 100}vh`,
+        height: `${capitulos.length * 180}vh`,
         perspective: "1200px"
       }}
     >
