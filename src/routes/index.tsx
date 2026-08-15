@@ -934,10 +934,10 @@ function NumeroScrollItem({ n, index, progress, total }: {
     [0, 1, 1, 0]
   );
   
-  // Y movement for parallax effect - intensified
+  // Y movement for parallax effect - extreme range to fill the screen transition
   const y = useTransform(progress, 
     [start, end], 
-    [150, -150]
+    [250, -250]
   );
 
   // Scale effect - more dramatic
