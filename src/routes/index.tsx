@@ -682,20 +682,21 @@ function Historia() {
                 }}
                 className="relative flex items-center gap-8 group text-left outline-none"
               >
-                <div 
-                  className={`relative z-10 w-4 h-4 rounded-full border-2 transition-all duration-500 flex items-center justify-center ${
-                    i <= ativo 
-                      ? "bg-primary border-primary scale-110 shadow-[0_0_15px_rgba(var(--primary),0.5)]" 
-                      : "bg-background border-foreground/20 group-hover:border-primary/40"
-                  }`}
+                <motion.div 
+                  animate={{
+                    scale: i === ativo ? 1.2 : 1,
+                    backgroundColor: i <= ativo ? "var(--primary)" : "transparent",
+                    borderColor: i <= ativo ? "var(--primary)" : "rgba(255,255,255,0.2)"
+                  }}
+                  className="relative z-10 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors duration-500"
                 >
                   {i === ativo && (
                     <motion.div 
                       layoutId="active-dot-glow"
-                      className="absolute inset-0 rounded-full bg-primary blur-[4px]" 
+                      className="absolute inset-0 rounded-full bg-primary blur-[6px] opacity-50" 
                     />
                   )}
-                </div>
+                </motion.div>
                 <div className="flex flex-col">
                   <span
                     className={`font-mono text-[10px] uppercase tracking-[0.2em] transition-colors duration-500 ${
