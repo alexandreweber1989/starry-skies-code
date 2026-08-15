@@ -874,129 +874,119 @@ function Historia() {
  * ------------------------------------------------------------------------- */
 
 function Numeros() {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"],
+    target: sectionRef,
+    offset: ["start start", "end end"],
   });
-
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (rect) {
-      mouseX.set(e.clientX - rect.left);
-      mouseY.set(e.clientY - rect.top);
-    }
-  };
 
   return (
     <section 
-      ref={containerRef}
-      onMouseMove={handleMouseMove}
-      className="relative z-20 bg-background py-32 md:py-56 px-6 lg:px-10 overflow-hidden group/section"
+      ref={sectionRef} 
+      className="relative z-20 bg-background"
+      style={{ height: "300vh" }}
     >
-      {/* Neo-Tech Background Elements */}
-      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-        {/* Dynamic Scanning Line */}
-        <motion.div 
-          animate={{ 
-            top: ["0%", "100%", "0%"],
-            opacity: [0, 0.2, 0]
-          }}
-          transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-          className="absolute left-0 w-full h-[1px] bg-primary z-0"
-        />
-        
-        {/* Subtle Grid with Glow */}
-        <div 
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `linear-gradient(to right, var(--foreground) 1px, transparent 1px), linear-gradient(to bottom, var(--foreground) 1px, transparent 1px)`,
-            backgroundSize: '60px 60px'
-          }}
-        />
+      <div className="sticky top-0 h-screen w-full flex flex-col justify-center items-center overflow-hidden px-6">
+        {/* Background Visuals */}
+        <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none">
+          <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, var(--foreground) 1px, transparent 0)', backgroundSize: '40px 40px' }} />
+        </div>
 
-        {/* Mouse following glow */}
-        <motion.div
-          className="absolute -inset-[500px] z-0 opacity-0 group-hover/section:opacity-10 transition-opacity duration-1000"
-          style={{
-            background: useTransform(
-              [mouseX, mouseY],
-              ([x, y]) => `radial-gradient(600px circle at ${x}px ${y}px, var(--color-primary), transparent 80%)`
-            )
-          }}
-        />
-      </div>
-
-      <div className="max-w-7xl mx-auto relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 lg:gap-16">
+        <div className="max-w-7xl mx-auto w-full relative z-10 h-full flex flex-col justify-center">
           {numeros.map((n, i) => (
-            <motion.div
-              key={n.rotulo}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ 
-                duration: 1, 
-                delay: i * 0.2,
-                type: "spring",
-                stiffness: 50
-              }}
-              className="relative group"
-            >
-              {/* Technological Card Frame */}
-              <div className="absolute -inset-8 border border-foreground/[0.03] rounded-[2rem] opacity-0 group-hover:opacity-100 transition-all duration-700 pointer-events-none" />
-              
-              <div className="relative flex flex-col items-center md:items-start">
-                {/* Index / Counter tag */}
-                <div className="mb-6 flex items-center gap-3">
-                  <span className="font-mono text-[10px] text-primary/40 tracking-tighter">0{i + 1}</span>
-                  <div className="h-[1px] w-6 bg-primary/20" />
-                </div>
-
-                <div className="relative perspective-1000">
-                  {/* Digital Glitch Background */}
-                  <div className="absolute -inset-10 bg-primary/5 rounded-full blur-[80px] opacity-0 group-hover:opacity-100 transition-all duration-1000" />
-                  
-                  <motion.div 
-                    whileHover={{ scale: 1.05, rotateY: 5, rotateX: -5 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                    className="font-serif text-8xl sm:text-9xl lg:text-[11rem] tracking-tighter leading-none text-foreground flex items-baseline select-none"
-                  >
-                    <Contador para={n.valor} sufixo={n.sufixo} />
-                  </motion.div>
-                </div>
-
-                <div className="mt-8 md:mt-12 w-full">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="font-mono text-[11px] uppercase tracking-[0.5em] text-muted-foreground group-hover:text-primary transition-colors duration-500">
-                      {n.rotulo}
-                    </span>
-                    <motion.div 
-                      animate={{ scale: [1, 1.2, 1] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                      className="w-1 h-1 bg-primary rounded-full opacity-0 group-hover:opacity-100"
-                    />
-                  </div>
-                  {/* Tech Loading Bar */}
-                  <div className="h-[2px] w-full bg-foreground/[0.05] relative overflow-hidden">
-                    <motion.div 
-                      initial={{ left: "-100%" }}
-                      whileInView={{ left: "0%" }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 1.5, delay: 0.8 + (i * 0.2), ease: "circOut" }}
-                      className="absolute inset-0 bg-primary/40"
-                    />
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+            <NumeroScrollItem 
+              key={n.rotulo} 
+              n={n} 
+              index={i} 
+              progress={scrollYProgress} 
+              total={numeros.length}
+            />
           ))}
         </div>
+        
+        {/* Scroll Indicator */}
+        <motion.div 
+          style={{ scaleX: scrollYProgress }}
+          className="absolute bottom-0 left-0 h-1 bg-primary/40 w-full origin-left z-20" 
+        />
       </div>
     </section>
+  );
+}
+
+function NumeroScrollItem({ n, index, progress, total }: { 
+  n: typeof numeros[0], 
+  index: number, 
+  progress: any,
+  total: number 
+}) {
+  const start = index / total;
+  const end = (index + 1) / total;
+  
+  // Opacity for the whole item
+  const opacity = useTransform(progress, 
+    [start - 0.1, start, end - 0.1, end], 
+    [0, 1, 1, 0]
+  );
+  
+  // Y movement for parallax effect
+  const y = useTransform(progress, 
+    [start, end], 
+    [100, -100]
+  );
+
+  // Scale effect
+  const scale = useTransform(progress,
+    [start, start + 0.1, end - 0.1, end],
+    [0.8, 1, 1, 0.8]
+  );
+
+  // Perspective tilt based on progress within the step
+  const rotateX = useTransform(progress,
+    [start, end],
+    [20, -20]
+  );
+
+  return (
+    <motion.div
+      style={{ 
+        opacity, 
+        y, 
+        scale,
+        perspective: "1000px",
+        rotateX,
+        position: index === 0 ? 'relative' : 'absolute',
+        top: index === 0 ? '0' : '50%',
+        left: '0',
+        right: '0',
+        transform: index === 0 ? 'none' : 'translateY(-50%)',
+      }}
+      className="w-full flex flex-col items-center justify-center text-center py-20"
+    >
+      <div className="relative group cursor-default">
+        {/* Hover Glow */}
+        <div className="absolute -inset-20 bg-primary/5 rounded-full blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+        
+        <div className="relative flex flex-col items-center">
+          <motion.div 
+            className="font-serif text-[15vw] sm:text-[12vw] md:text-[10vw] lg:text-[14rem] tracking-tighter leading-[0.8] text-foreground select-none flex items-baseline"
+          >
+            <Contador para={n.valor} sufixo={n.sufixo} />
+          </motion.div>
+          
+          <div className="mt-8 flex flex-col items-center">
+            <motion.div 
+              initial={{ width: 0 }}
+              whileInView={{ width: 60 }}
+              className="h-px bg-primary/60 mb-6"
+            />
+            <span className="font-mono text-xs sm:text-sm uppercase tracking-[0.6em] text-muted-foreground group-hover:text-primary transition-colors duration-500">
+              {n.rotulo}
+            </span>
+          </div>
+        </div>
+      </div>
+    </motion.div>
   );
 }
 
