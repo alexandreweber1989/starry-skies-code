@@ -3,7 +3,7 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 /**
- * Interface para o processamento de pregações via IA.
+ * Interface para o processamento de pregações.
  * Extrai transcrição do YouTube e gera resumo estruturado.
  */
 
@@ -11,7 +11,7 @@ const processSermonSchema = z.object({
   youtubeUrl: z.string().url(),
 });
 
-export const processSermonAI = createServerFn({ method: "POST" })
+export const processSermon = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => processSermonSchema.parse(input))
   .handler(async ({ data, context }) => {
@@ -28,7 +28,7 @@ export const processSermonAI = createServerFn({ method: "POST" })
       
       return await generateSermonSummary(data.youtubeUrl);
     } catch (error) {
-      console.error("Erro no processamento de IA da pregação:", error);
-      throw new Error(error instanceof Error ? error.message : "Falha ao processar pregação com IA.");
+      console.error("Erro no processamento da pregação:", error);
+      throw new Error(error instanceof Error ? error.message : "Falha ao processar pregação.");
     }
   });

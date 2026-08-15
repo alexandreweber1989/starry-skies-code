@@ -139,7 +139,7 @@ Para tornar a plataforma "Incrível", as seguintes implementações são recomen
 - **Jornada do Membro:** Barra de progresso visual no perfil ("Novo Membro" -> "Batismo" -> "Cursos" -> "Liderança").
 - **Badges/Conquistas:** Medalhas digitais para voluntários com base em horas servidas ou presenças em cursos.
 
-### 5.4 Inteligência & Notificações (Automação)
+### 5.4 Automação & Notificações
 - **Bot no WhatsApp (Integração Gateway):** Envio automático de lembretes de escala e avisos de aniversário sem intervenção humana.
 - **Check-in de Culto por Geolocalização:** Confirmar presença apenas ao estar fisicamente na igreja (opcional).
 
