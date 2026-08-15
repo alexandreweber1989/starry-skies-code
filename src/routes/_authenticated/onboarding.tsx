@@ -35,7 +35,7 @@ import { Badge } from "@/components/ui/badge";
 export const Route = createFileRoute("/_authenticated/onboarding")({
   head: () => ({
     meta: [
-      { title: "Integração de Membros — IB Atos" },
+      { title: "Integração de novos membros — IB Atos" },
       { name: "description", content: "Gerenciamento da trilha de novos membros." }
     ]
   }),
