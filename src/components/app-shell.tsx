@@ -126,8 +126,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                     className={`flex flex-col items-center justify-center gap-2 p-3 rounded-xl transition-all duration-300 group border text-center shadow-sm hover:shadow-md hover:-translate-y-1 ${
                       active
                         ? `font-bold ring-2 ring-current/20 ${item.color}`
-                        : `text-sidebar-foreground/60 hover:text-sidebar-foreground border-transparent bg-sidebar-accent/10 hover:${item.color}`
+                        : `text-sidebar-foreground/60 hover:text-sidebar-foreground border-transparent bg-sidebar-accent/10 hover:border-current/20 active:scale-95`
                     }`}
+                    style={!active ? { '--hover-color': item.color } : {}}
                   >
                     <div className={`p-2 rounded-lg transition-all duration-300 ${active ? "bg-current/20 scale-110" : "bg-sidebar-foreground/5 group-hover:bg-current/20 group-hover:scale-110"}`}>
                       <Icon className={`h-4 w-4 ${active ? "text-current" : "opacity-70 group-hover:text-current group-hover:opacity-100"}`} />
