@@ -619,10 +619,13 @@ function Historia() {
   return (
     <section
       ref={ref}
-      className="relative z-20 bg-background border-t border-border/10"
-      style={{ height: `${capitulos.length * 100}vh` }}
+      className="relative z-20 bg-background border-t border-border/10 overflow-visible"
+      style={{ 
+        height: `${capitulos.length * 100}vh`,
+        perspective: "1200px"
+      }}
     >
-      <div className="sticky top-0 h-screen overflow-hidden flex items-center px-6 lg:px-10">
+      <div className="sticky top-0 h-screen overflow-hidden flex items-center px-6 lg:px-10 perspective-1000">
         {/* Dynamic Atmospheric Light System */}
         <div className="absolute inset-0 z-0">
           <motion.div 
