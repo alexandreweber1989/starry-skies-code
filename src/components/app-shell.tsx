@@ -65,6 +65,7 @@ const nav: NavItem[] = [
   { to: "/livraria", label: "Livraria", icon: BookOpen, requiredRoles: ["admin_geral", "admin_livraria"] },
   { to: "/cantina", label: "Cantina", icon: Coffee, requiredRoles: ["admin_geral", "admin_cantina"] },
   { to: "/midia", label: "Mídia", icon: Layout, requiredRoles: ["admin_geral"] },
+  { to: "/manual", label: "Manual Operacional", icon: FileText, requiredRoles: ["admin_geral"] },
 ];
 
 export function AppShell({ children }: { children: ReactNode }) {
