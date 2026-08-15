@@ -874,19 +874,71 @@ function Historia() {
  * ------------------------------------------------------------------------- */
 
 function Numeros() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"],
+  });
+
+  const y = useTransform(scrollYProgress, [0, 1], [0, -40]);
+
   return (
-    <section className="relative z-20 bg-background py-24 md:py-32 px-6 lg:px-10 border-t border-border/10">
-      <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-8 sm:gap-12 md:gap-6">
-        {numeros.map((n) => (
-          <div key={n.rotulo} className="text-left">
-            <div className="font-serif text-4xl sm:text-6xl md:text-8xl tracking-tight">
-              <Contador para={n.valor} sufixo={n.sufixo} />
-            </div>
-            <div className="font-mono text-[10px] md:text-xs uppercase tracking-[0.3em] text-muted-foreground mt-4">
-              {n.rotulo}
-            </div>
-          </div>
-        ))}
+    <section 
+      ref={containerRef}
+      className="relative z-20 bg-background py-32 md:py-48 px-6 lg:px-10 overflow-hidden"
+    >
+      {/* Background decoration */}
+      <div className="absolute top-0 left-0 w-full h-px bg-linear-to-r from-transparent via-border/30 to-transparent" />
+      
+      <div className="max-w-7xl mx-auto relative">
+        {/* Modern grid with glass cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 lg:gap-16">
+          {numeros.map((n, i) => (
+            <motion.div
+              key={n.rotulo}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ 
+                duration: 0.8, 
+                delay: i * 0.15,
+                ease: [0.22, 1, 0.36, 1] 
+              }}
+              style={{ y: i % 2 === 0 ? 0 : y }}
+              className="group relative"
+            >
+              {/* Card effect */}
+              <div className="absolute -inset-4 bg-foreground/[0.02] rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
+              
+              <div className="relative flex flex-col items-center md:items-start text-center md:text-left">
+                {/* Visual accent */}
+                <motion.div 
+                  initial={{ width: 0 }}
+                  whileInView={{ width: 40 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1, delay: 0.5 + (i * 0.1) }}
+                  className="h-[2px] bg-primary/60 mb-8 rounded-full"
+                />
+
+                <div className="relative">
+                  {/* Glowing background for numbers */}
+                  <div className="absolute -inset-8 bg-primary/5 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                  
+                  <div className="font-serif text-6xl sm:text-7xl md:text-8xl lg:text-9xl tracking-tight leading-none text-foreground flex items-baseline">
+                    <Contador para={n.valor} sufixo={n.sufixo} />
+                  </div>
+                </div>
+
+                <div className="mt-6 md:mt-8 space-y-2">
+                  <div className="font-mono text-[10px] md:text-xs uppercase tracking-[0.4em] text-muted-foreground group-hover:text-primary transition-colors duration-500">
+                    {n.rotulo}
+                  </div>
+                  <div className="h-1 w-0 bg-primary/20 group-hover:w-full transition-all duration-700 ease-out" />
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </section>
   );
