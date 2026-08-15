@@ -25,6 +25,9 @@ import { Badge } from "@/components/ui/badge";
 import { ChurchLogo } from "@/components/ui/church-logo";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
+import { Link } from "@tanstack/react-router";
+
 
 const MODULES = [
   {
@@ -75,6 +78,8 @@ const MODULES = [
   {
     id: "kids",
     title: "Kids & Segurança",
+    path: "/kids",
+
     description: "Proteção total para a próxima geração.",
     icon: Baby,
     details: [
@@ -207,7 +212,7 @@ function PlatformManual() {
             <Input 
               placeholder="Pesquisar no manual..." 
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
               className="pl-10 h-12 rounded-2xl bg-card/50 border-border/40 focus:ring-primary/20"
             />
             <BookOpen className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground/50" />
