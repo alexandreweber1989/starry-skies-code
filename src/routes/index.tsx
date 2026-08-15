@@ -629,20 +629,19 @@ function Historia() {
         {/* Dynamic Atmospheric Light System */}
         <div className="absolute inset-0 z-0">
           <motion.div 
-            animate={{ 
-              opacity: [0.1, 0.15, 0.1],
-              scale: [1, 1.1, 1],
+            style={{ 
+              x: useTransform(scrollYProgress, [0, 1], [0, 100]),
+              opacity: useTransform(scrollYProgress, [0, 0.5, 1], [0.1, 0.2, 0.1]),
+              scale: useTransform(scrollYProgress, [0, 0.5, 1], [1, 1.2, 1])
             }}
-            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
             className="absolute top-1/2 -right-40 -translate-y-1/2 w-[40rem] h-[40rem] bg-primary/20 rounded-full blur-[140px] pointer-events-none" 
           />
           <motion.div 
-            animate={{ 
-              opacity: [0.05, 0.1, 0.05],
-              scale: [1, 1.2, 1],
-              x: [0, 50, 0]
+            style={{ 
+              x: useTransform(scrollYProgress, [0, 1], [0, -100]),
+              opacity: useTransform(scrollYProgress, [0, 0.5, 1], [0.05, 0.15, 0.05]),
+              scale: useTransform(scrollYProgress, [0, 0.5, 1], [1.2, 1, 1.2])
             }}
-            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
             className="absolute bottom-0 -left-40 w-[30rem] h-[30rem] bg-primary/10 rounded-full blur-[120px] pointer-events-none" 
           />
         </div>
