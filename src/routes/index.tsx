@@ -925,7 +925,7 @@ function NumeroScrollItem({ n, index, progress, total }: {
   
   // Opacity for the whole item
   const opacity = useTransform(progress, 
-    [start - 0.1, start, end - 0.1, end], 
+    [Math.max(0, start - 0.1), start, Math.min(1, end - 0.1), end], 
     [0, 1, 1, 0]
   );
   
