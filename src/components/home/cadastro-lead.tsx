@@ -206,33 +206,57 @@ export function CadastroLead() {
       : `Olá! Sou ${form.nome} (${form.bairro}). Vim pelo site e quero conhecer a igreja e participar de uma Mesa.`;
 
   return (
-    <div className="w-full lg:max-w-4xl xl:max-w-5xl mx-auto rounded-xl sm:rounded-2xl lg:rounded-3xl border border-border/60 bg-card/80 backdrop-blur-sm p-4 sm:p-6 lg:p-12 xl:p-16 shadow-sm overflow-hidden">
+    <div className="w-full lg:max-w-4xl xl:max-w-5xl mx-auto rounded-3xl border border-white/10 bg-black/40 backdrop-blur-2xl p-6 lg:p-16 xl:p-20 shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] overflow-hidden relative group">
+      {/* Decorative Glow */}
+      <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 rounded-full blur-[100px] pointer-events-none group-hover:bg-primary/20 transition-colors duration-1000" />
+      
       <AnimatePresence mode="wait">
         {resultado === undefined ? (
           <motion.form
             key="form"
             onSubmit={enviar}
-            initial={reduce ? undefined : { opacity: 0, y: 10 }}
-            animate={reduce ? undefined : { opacity: 1, y: 0 }}
-            exit={reduce ? undefined : { opacity: 0, y: -10 }}
-            transition={{ duration: 0.35, ease: EASE }}
+            initial={reduce ? undefined : { opacity: 0, x: 20 }}
+            animate={reduce ? undefined : { opacity: 1, x: 0 }}
+            exit={reduce ? undefined : { opacity: 0, x: -20 }}
+            transition={{ duration: 0.5, ease: EASE }}
+            className="relative z-10"
           >
-            {/* passos (decorativo) */}
-            <div className="flex gap-1.5 mb-4">
-              <span className="h-1 flex-1 rounded-full bg-primary" />
-              <span className="h-1 flex-1 rounded-full bg-muted" />
-              <span className="h-1 flex-1 rounded-full bg-muted" />
+            <div className="flex gap-2 mb-8">
+              <motion.span 
+                initial={{ width: 0 }}
+                animate={{ width: "33%" }}
+                className="h-1 rounded-full bg-primary" 
+              />
+              <span className="h-1 flex-1 rounded-full bg-white/5" />
+              <span className="h-1 flex-1 rounded-full bg-white/5" />
             </div>
 
-            <div className="font-serif text-[10px] lg:text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
-              Novo por aqui? 👋
-            </div>
-            <h3 className="font-serif text-2xl sm:text-3xl xl:text-4xl font-bold leading-tight mt-1 lg:mt-3">
-              Participe de uma Mesa perto de você
-            </h3>
-            <p className="text-sm lg:text-base xl:text-lg text-muted-foreground mt-2 lg:mt-4 mb-6 lg:mb-8">
-              A ideia é simples: queremos te ajudar a encontrar um grupo acolhedor para caminhar junto, bem pertinho da sua casa.
-            </p>
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="font-mono text-[10px] lg:text-xs font-bold uppercase tracking-[0.3em] text-primary/80 mb-2"
+            >
+              Comece sua jornada 👋
+            </motion.div>
+            
+            <motion.h3 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="font-serif text-3xl sm:text-4xl xl:text-6xl font-bold leading-[0.9] tracking-tighter mb-4"
+            >
+              Encontre sua Mesa.
+            </motion.h3>
+            
+            <motion.p 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="text-base lg:text-lg xl:text-xl text-muted-foreground/80 max-w-2xl mb-10 leading-relaxed"
+            >
+              Acreditamos que ninguém deve caminhar sozinho. Preencha os dados e te ajudaremos a encontrar a Mesa mais próxima da sua casa.
+            </motion.p>
 
             <div className="space-y-3 lg:space-y-6">
               <Campo label="Como podemos te chamar?">
@@ -317,22 +341,25 @@ export function CadastroLead() {
 
             </div>
 
-            <button
+            <motion.button
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
               type="submit"
               disabled={!valido || enviando}
-              className="mt-4 lg:mt-8 w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary text-primary-foreground font-semibold text-sm lg:text-base xl:text-lg h-11 lg:h-14 px-6 lg:px-10 transition-opacity disabled:opacity-50 hover:opacity-90"
+              className="mt-8 lg:mt-12 w-full inline-flex items-center justify-center gap-3 rounded-full bg-primary text-primary-foreground font-bold text-base lg:text-xl h-14 lg:h-20 px-8 lg:px-12 transition-all disabled:opacity-50 hover:scale-[1.02] active:scale-95 shadow-2xl shadow-primary/20 group/btn"
             >
               {enviando ? (
-                <Loader2 className="h-4 w-4 animate-spin motion-keep-spin" />
+                <Loader2 className="h-6 w-6 animate-spin motion-keep-spin" />
               ) : (
                 <>
-                  Começar minha jornada
-                  <ArrowRight className="h-4 w-4" />
+                  Ver minha Mesa ideal
+                  <ArrowRight className="h-6 w-6 transition-transform group-hover/btn:translate-x-2" />
                 </>
               )}
-            </button>
-            <p className="text-[11px] lg:text-xs xl:text-sm text-muted-foreground/80 text-center mt-3 lg:mt-5">
-              Vamos te conectar à Mesa e à liderança mais próxima.
+            </motion.button>
+            <p className="text-xs lg:text-sm text-muted-foreground/60 text-center mt-6">
+              Conectando você ao Reino, um bairro por vez.
             </p>
           </motion.form>
         ) : (
@@ -440,14 +467,18 @@ export function CadastroLead() {
 }
 
 const inputCls =
-  "w-full rounded-lg lg:rounded-xl border border-border/70 bg-background/60 px-3 lg:px-4 h-11 lg:h-14 text-sm sm:text-base xl:text-lg text-foreground outline-none transition-colors focus:border-foreground focus:bg-background disabled:opacity-50";
-
+  "w-full rounded-xl border border-white/5 bg-white/5 px-4 lg:px-6 h-12 lg:h-16 text-base lg:text-lg text-foreground outline-none transition-all focus:border-primary/50 focus:bg-white/10 placeholder:text-muted-foreground/30 disabled:opacity-50 appearance-none";
 
 function Campo({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <label className="block">
-      <span className="block text-[11px] lg:text-xs xl:text-sm font-semibold text-foreground/80 mb-1 lg:mb-2">{label}</span>
+    <motion.label 
+      initial={{ opacity: 0, y: 10 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="block"
+    >
+      <span className="block text-xs lg:text-sm font-bold text-muted-foreground/70 mb-2 lg:mb-3 uppercase tracking-wider">{label}</span>
       {children}
-    </label>
+    </motion.label>
   );
 }

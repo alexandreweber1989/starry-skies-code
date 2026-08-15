@@ -926,35 +926,35 @@ function NumeroScrollItem({ n, index, progress, total }: {
   // Opacity for the whole item
   const opacity = useTransform(progress, 
     [
-      Math.max(0, start - 0.1), 
-      start, 
-      Math.max(start, end - 0.1), 
+      Math.max(0, start - 0.05), 
+      start + 0.1, 
+      Math.max(start + 0.1, end - 0.1), 
       end
     ], 
     [0, 1, 1, 0]
   );
   
-  // Y movement for parallax effect
+  // Y movement for parallax effect - intensified
   const y = useTransform(progress, 
     [start, end], 
-    [100, -100]
+    [150, -150]
   );
 
-  // Scale effect
+  // Scale effect - more dramatic
   const scale = useTransform(progress,
     [
-      Math.max(0, start - 0.1), 
-      start, 
-      Math.max(start, end - 0.1), 
+      Math.max(0, start - 0.05), 
+      start + 0.1, 
+      Math.max(start + 0.1, end - 0.1), 
       end
     ],
-    [0.8, 1, 1, 0.8]
+    [0.7, 1, 1, 0.7]
   );
 
   // Perspective tilt based on progress within the step
   const rotateX = useTransform(progress,
     [start, end],
-    [20, -20]
+    [25, -25]
   );
 
   return (
@@ -978,9 +978,21 @@ function NumeroScrollItem({ n, index, progress, total }: {
         <div className="absolute -inset-20 bg-primary/5 rounded-full blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
         
         <div className="relative flex flex-col items-center">
+          {/* Tech Scan Line */}
+          <motion.div
+            style={{ opacity }}
+            animate={{ top: ['0%', '100%', '0%'] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+            className="absolute left-0 right-0 h-px bg-primary/30 z-20 pointer-events-none shadow-[0_0_15px_rgba(var(--primary),0.5)]"
+          />
+
           <motion.div 
-            className="font-serif text-[15vw] sm:text-[12vw] md:text-[10vw] lg:text-[14rem] tracking-tighter leading-[0.8] text-foreground select-none flex items-baseline"
+            className="font-serif text-[15vw] sm:text-[12vw] md:text-[10vw] lg:text-[14rem] tracking-tighter leading-[0.8] text-foreground select-none flex items-baseline relative"
           >
+            {/* 3D Duplicate for Depth Effect */}
+            <span className="absolute inset-0 text-primary/10 -z-10 blur-sm translate-x-2 translate-y-2 select-none pointer-events-none" aria-hidden="true">
+              <Contador para={n.valor} sufixo={n.sufixo} />
+            </span>
             <Contador para={n.valor} sufixo={n.sufixo} />
           </motion.div>
           
@@ -990,9 +1002,12 @@ function NumeroScrollItem({ n, index, progress, total }: {
               whileInView={{ width: 60 }}
               className="h-px bg-primary/60 mb-6"
             />
-            <span className="font-mono text-xs sm:text-sm uppercase tracking-[0.6em] text-muted-foreground group-hover:text-primary transition-colors duration-500">
-              {n.rotulo}
-            </span>
+            <div className="flex flex-col items-center gap-2">
+              <span className="font-mono text-[10px] text-primary/40 tracking-[0.4em] uppercase">Metric {index + 1}</span>
+              <span className="font-mono text-xs sm:text-sm uppercase tracking-[0.6em] text-muted-foreground group-hover:text-primary transition-colors duration-500">
+                {n.rotulo}
+              </span>
+            </div>
           </div>
         </div>
       </div>
