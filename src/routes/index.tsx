@@ -278,10 +278,10 @@ function PalavraGlitch({ palavras }: { palavras: string[] }) {
           setTexto(alvo);
           setGlitch(false);
         }
-      }, 38);
+      }, 32);
     };
 
-    const agenda = setInterval(proxima, 3200);
+    const agenda = setInterval(proxima, 2200);
     return () => {
       clearInterval(agenda);
       if (scrambleTimer) clearInterval(scrambleTimer);
