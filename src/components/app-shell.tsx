@@ -77,7 +77,6 @@ const navGroups: { label: string; items: NavItem[] }[] = [
       { to: "/livraria", label: "Livraria", icon: BookOpen, requiredRoles: ["admin_geral", "admin_livraria"] },
       { to: "/cantina", label: "Cantina", icon: Coffee, requiredRoles: ["admin_geral", "admin_cantina"] },
       { to: "/midia", label: "Mídia", icon: Layout, requiredRoles: ["admin_geral"] },
-      { to: "/manual", label: "Manual Operacional", icon: FileText, requiredRoles: ["admin_geral"] },
     ],
   },
 ];
@@ -140,6 +139,21 @@ export function AppShell({ children }: { children: ReactNode }) {
         ))}
       </nav>
       <div className="px-3 py-4 border-t border-sidebar-border space-y-1 bg-sidebar/50 backdrop-blur-sm">
+        {isAdmin && (
+          <Link
+            to="/manual"
+            onClick={() => setMobileMenuOpen(false)}
+            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-300 ${
+              pathname === "/manual"
+                ? "bg-primary/10 text-primary font-bold shadow-sm ring-1 ring-primary/20"
+                : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground group"
+            }`}
+          >
+            <BookOpen className={`h-4 w-4 ${pathname === "/manual" ? "text-primary" : "group-hover:scale-110 transition-transform"}`} />
+            Manual Operacional
+          </Link>
+        )}
+
         <Link
           to="/perfil"
           onClick={() => setMobileMenuOpen(false)}
