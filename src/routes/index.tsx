@@ -965,9 +965,16 @@ function Contador({ para, sufixo }: { para: number; sufixo: string }) {
   }, [emVista, para, reduce]);
 
   return (
-    <span ref={ref}>
+    <span ref={ref} className="tabular-nums">
       {valor}
-      {sufixo}
+      <motion.span 
+        initial={{ opacity: 0, x: -10 }}
+        animate={emVista ? { opacity: 1, x: 0 } : {}}
+        transition={{ delay: 1.2, duration: 0.5 }}
+        className="text-primary ml-1"
+      >
+        {sufixo}
+      </motion.span>
     </span>
   );
 }
