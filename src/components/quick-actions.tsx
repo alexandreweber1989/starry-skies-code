@@ -14,6 +14,7 @@ const ACTIONS = [
   { to: "/kids", label: "Check-in Kids", icon: Baby },
   { to: "/livraria", label: "Produto da livraria", icon: BookOpen },
   { to: "/cantina", label: "Item da cantina", icon: Coffee },
+  { to: "/onboarding", label: "Integração de membros", icon: Sprout },
 ] as const;
 
 /** Botão flutuante de ações rápidas: leva direto às telas de cadastro. */

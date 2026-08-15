@@ -228,7 +228,9 @@ function OnboardingLayout() {
               <CardContent className="space-y-6">
                 <div className="p-8 text-center border-2 border-dashed border-border rounded-2xl">
                   <p className="text-muted-foreground italic mb-4">A gestão de etapas está disponível apenas para administradores do sistema.</p>
-                  <Button variant="outline" className="rounded-xl">Editar Etapas</Button>
+                  <Button variant="outline" className="rounded-xl" asChild>
+                    <a href="https://supabase.com" target="_blank" rel="noreferrer">Gerenciar no Banco</a>
+                  </Button>
                 </div>
               </CardContent>
             </Card>
