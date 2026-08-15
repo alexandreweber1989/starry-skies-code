@@ -79,9 +79,9 @@ const MODULES = [
   {
     id: "midia",
     title: "Estúdio de Pregações",
-    description: "Conteúdo e Inteligência IA.",
+    description: "Gestão e automação de conteúdo.",
     icon: Presentation,
-    details: "Integração poderosa com o YouTube. Ao inserir o link da live, o sistema puxa a capa, faz a transcrição completa do vídeo e utiliza IA para gerar um resumo estruturado (tópicos e versículos), ignorando louvores e avisos iniciais.",
+    details: "Integração poderosa com o YouTube. Ao inserir o link da live, o sistema puxa a capa e realiza o processamento completo do conteúdo para gerar um resumo estruturado (tópicos e versículos), ignorando louvores e avisos iniciais.",
   },
   {
     id: "visitantes",
