@@ -1004,8 +1004,8 @@ function NumeroScrollItem({ n, index, progress, total }: {
             />
             <div className="flex flex-col items-center gap-4">
               <span className="font-mono text-[12px] md:text-[14px] text-primary/40 tracking-[0.5em] uppercase">Metric {index + 1}</span>
-              <span className="font-serif italic text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-muted-foreground group-hover:text-primary transition-colors duration-500 text-center balance uppercase tracking-tight">
-                {n.rotulo}
+              <span className="font-serif italic text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-muted-foreground group-hover:text-primary transition-colors duration-500 text-center balance tracking-tight capitalize">
+                {n.rotulo.toLowerCase()}
               </span>
             </div>
           </div>
