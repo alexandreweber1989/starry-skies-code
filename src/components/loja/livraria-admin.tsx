@@ -298,6 +298,10 @@ export function LivrariaAdminOrders() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const filtered = orders?.filter((o: any) =>
+    !q.trim() ? true : o.pickup_code.toLowerCase().includes(q.trim().toLowerCase()),
+  );
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-card border border-border/50 p-6 rounded-[2rem]">
@@ -323,7 +327,8 @@ export function LivrariaAdminOrders() {
 
       <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
         <AnimatePresence mode="popLayout">
-          {filtered?.map((o: any, idx) => {
+          {filtered?.map((o: any, idx: number) => {
+
             const status = ORDER_STATUS[o.status];
             return (
               <motion.div
