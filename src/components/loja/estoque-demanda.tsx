@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { AlertTriangle, PackageCheck, TrendingUp, Package, History } from "lucide-react";
+import { AlertTriangle, PackageCheck, TrendingUp, Package, History, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
+
 import { StatTile } from "@/components/painel/ui";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
