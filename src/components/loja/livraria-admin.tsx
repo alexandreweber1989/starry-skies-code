@@ -158,27 +158,59 @@ export function LivrariaAdminProducts() {
           </Button>
         }
       />
-      <div className="border border-border bg-card rounded-sm overflow-x-auto">
+      <div className="bg-card border border-border/50 rounded-3xl overflow-hidden shadow-sm">
         <table className="w-full text-sm">
-          <thead className="bg-muted/50">
-            <tr className="text-left font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-              <th className="px-4 py-3">Produto</th>
-              <th className="px-4 py-3">Categoria</th>
-              <th className="px-4 py-3">Preço</th>
-              <th className="px-4 py-3">Estoque</th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3" />
+          <thead className="bg-muted/30">
+            <tr className="text-left font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground border-b border-border/50">
+              <th className="px-6 py-4">Produto</th>
+              <th className="px-6 py-4">Categoria</th>
+              <th className="px-6 py-4">Preço</th>
+              <th className="px-6 py-4">Estoque</th>
+              <th className="px-6 py-4">Status</th>
+              <th className="px-6 py-4 text-right">Ações</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border/50">
             {data?.map((p: any) => (
-              <tr key={p.id} className="border-t border-border">
-                <td className="px-4 py-3">{p.name}</td>
-                <td className="px-4 py-3 text-muted-foreground">{p.category}</td>
-                <td className="px-4 py-3 font-mono">{formatBRL(p.price_cents)}</td>
-                <td className="px-4 py-3 font-mono">{p.track_stock ? p.stock : "—"}</td>
-                <td className="px-4 py-3 text-muted-foreground">{p.is_active ? "Ativo" : "Oculto"}</td>
-                <td className="px-4 py-3 text-right">
+              <tr key={p.id} className="group hover:bg-muted/10 transition-colors">
+                <td className="px-6 py-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-xl bg-muted/30 overflow-hidden flex-shrink-0">
+                      {p.image_url ? (
+                        <img src={p.image_url} className="h-full w-full object-cover" />
+                      ) : (
+                        <div className="h-full w-full flex items-center justify-center text-muted-foreground/30 font-serif text-xs">A</div>
+                      )}
+                    </div>
+                    <span className="font-serif text-base">{p.name}</span>
+                  </div>
+                </td>
+                <td className="px-6 py-4">
+                  <Badge variant="secondary" className="bg-muted/50 font-mono text-[9px] uppercase tracking-widest border-border/50 px-2">
+                    {p.category}
+                  </Badge>
+                </td>
+                <td className="px-6 py-4 font-mono font-medium">{formatBRL(p.price_cents)}</td>
+                <td className="px-6 py-4">
+                  {p.track_stock ? (
+                    <span className={cn(
+                      "font-mono text-xs px-2 py-0.5 rounded-md",
+                      p.stock <= 5 ? "bg-destructive/10 text-destructive border border-destructive/20" : "bg-primary/5 text-primary border border-primary/20"
+                    )}>
+                      {p.stock} un
+                    </span>
+                  ) : (
+                    <span className="text-muted-foreground/40 font-mono text-[10px]">ILIMITADO</span>
+                  )}
+                </td>
+                <td className="px-6 py-4">
+                  <span className={cn(
+                    "h-2 w-2 rounded-full inline-block mr-2",
+                    p.is_active ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "bg-muted-foreground/30"
+                  )} />
+                  <span className="text-xs font-light">{p.is_active ? "Ativo" : "Inativo"}</span>
+                </td>
+                <td className="px-6 py-4 text-right">
                   <ProductDialog
                     initial={{
                       id: p.id,
@@ -192,7 +224,7 @@ export function LivrariaAdminProducts() {
                       is_active: p.is_active,
                     }}
                     trigger={
-                      <Button variant="ghost" size="icon">
+                      <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl hover:bg-primary/10 hover:text-primary group-hover:scale-105 transition-transform">
                         <Pencil className="h-4 w-4" />
                       </Button>
                     }
@@ -203,6 +235,7 @@ export function LivrariaAdminProducts() {
           </tbody>
         </table>
       </div>
+
     </div>
   );
 }
