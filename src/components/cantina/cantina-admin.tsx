@@ -131,34 +131,58 @@ export function CantinaAdminItems() {
           </Button>
         }
       />
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {data?.map((i: any) => (
-          <div key={i.id} className="border border-border bg-card rounded-sm p-4 flex items-start justify-between gap-3">
-            <div>
-              <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">{i.category}</div>
-              <div className="font-serif text-xl">{i.name}</div>
-              <div className="font-mono text-sm mt-1">{formatBRL(i.price_cents)}</div>
-              {!i.is_active && <div className="text-xs text-muted-foreground mt-1">Inativo</div>}
-            </div>
-            <ItemDialog
-              initial={{
-                id: i.id,
-                name: i.name,
-                description: i.description ?? "",
-                category: i.category,
-                price_cents: i.price_cents,
-                image_url: i.image_url ?? "",
-                is_active: i.is_active,
-              }}
-              trigger={
-                <Button variant="ghost" size="icon">
-                  <Pencil className="h-4 w-4" />
-                </Button>
-              }
-            />
-          </div>
-        ))}
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <AnimatePresence>
+          {data?.map((i: any, idx: number) => (
+            <motion.div
+              key={i.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.05 }}
+              className="group bg-card border border-border/50 rounded-3xl p-6 shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:border-primary/20 transition-all duration-300 flex items-start justify-between gap-4"
+            >
+              <div className="flex items-center gap-4">
+                <div className="h-16 w-16 rounded-2xl bg-muted/30 overflow-hidden flex-shrink-0">
+                  {i.image_url ? (
+                    <img src={i.image_url} className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  ) : (
+                    <div className="h-full w-full flex items-center justify-center text-muted-foreground/30">
+                      <Utensils className="h-6 w-6" />
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <Badge variant="secondary" className="bg-muted/50 font-mono text-[8px] uppercase tracking-widest border-border/50 px-2 py-0 mb-2">
+                    {i.category}
+                  </Badge>
+                  <div className="font-serif text-xl leading-none">{i.name}</div>
+                  <div className="font-mono text-sm mt-2 text-primary">{formatBRL(i.price_cents)}</div>
+                  {!i.is_active && (
+                    <span className="inline-block mt-2 px-2 py-0.5 rounded font-mono text-[9px] uppercase bg-muted text-muted-foreground">Inativo</span>
+                  )}
+                </div>
+              </div>
+              <ItemDialog
+                initial={{
+                  id: i.id,
+                  name: i.name,
+                  description: i.description ?? "",
+                  category: i.category,
+                  price_cents: i.price_cents,
+                  image_url: i.image_url ?? "",
+                  is_active: i.is_active,
+                }}
+                trigger={
+                  <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-primary/10 hover:text-primary transition-colors">
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                }
+              />
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
+
     </div>
   );
 }
