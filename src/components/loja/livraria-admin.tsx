@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Pencil, Plus } from "lucide-react";
+import { Pencil, Plus, Search, Filter, ShoppingBag, Package, CheckCircle2, Clock, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { formatBRL, ORDER_STATUS } from "@/lib/store";
@@ -10,6 +10,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
+
 
 interface ProductDraft {
   id?: string;
@@ -294,71 +298,135 @@ export function LivrariaAdminOrders() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const filtered = orders?.filter((o: any) =>
-    !q.trim() ? true : o.pickup_code.toLowerCase().includes(q.trim().toLowerCase()),
-  );
-
   return (
-    <div className="space-y-4">
-      <Input
-        className="max-w-xs"
-        placeholder="Buscar pelo código de retirada..."
-        value={q}
-        onChange={(e) => setQ(e.target.value)}
-      />
-      {filtered?.map((o: any) => {
-        const status = ORDER_STATUS[o.status];
-        return (
-          <div key={o.id} className="border border-border bg-card rounded-sm p-5">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="font-serif text-2xl">{o.pickup_code}</div>
-              <span className={`px-3 py-1 rounded-sm font-mono text-[10px] uppercase tracking-widest ${status.className}`}>
-                {status.label}
-              </span>
-            </div>
-            <ul className="mt-3 text-sm text-muted-foreground">
-              {o.items?.map((i: any) => (
-                <li key={i.id}>
-                  {i.quantity}× {i.product_name}
-                </li>
-              ))}
-            </ul>
-            <div className="mt-3 font-serif text-xl">{formatBRL(o.total_cents)}</div>
-            {o.payment_proof_url && (
-              <a
-                href={o.payment_proof_url}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-2 inline-block text-xs underline underline-offset-4"
-              >
-                Ver comprovante enviado
-              </a>
-            )}
-            <div className="mt-4 flex flex-wrap gap-2">
-              {o.status === "aguardando_pagamento" && (
-                <Button size="sm" onClick={() => setStatus.mutate({ order: o, status: "pago" })}>
-                  Confirmar pagamento
-                </Button>
-              )}
-              {o.status === "pago" && (
-                <Button size="sm" onClick={() => setStatus.mutate({ order: o, status: "entregue" })}>
-                  Marcar como entregue
-                </Button>
-              )}
-              {o.status !== "cancelado" && o.status !== "entregue" && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setStatus.mutate({ order: o, status: "cancelado" })}
-                >
-                  Cancelar
-                </Button>
-              )}
-            </div>
+    <div className="space-y-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-card border border-border/50 p-6 rounded-[2rem]">
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            className="pl-11 h-12 rounded-2xl border-border/50 bg-background/50 focus:bg-background transition-all"
+            placeholder="Buscar pelo código de retirada..."
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="icon" className="h-12 w-12 rounded-2xl border-border/50">
+            <Filter className="h-4 w-4" />
+          </Button>
+          <div className="h-12 px-6 rounded-2xl bg-primary/5 border border-primary/10 flex items-center gap-3">
+            <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+            <span className="font-serif text-sm text-primary">{filtered?.length || 0} pedidos encontrados</span>
           </div>
-        );
-      })}
-      {filtered && filtered.length === 0 && <p className="text-muted-foreground">Nenhum pedido encontrado.</p>}
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <AnimatePresence mode="popLayout">
+          {filtered?.map((o: any, idx) => {
+            const status = ORDER_STATUS[o.status];
+            return (
+              <motion.div
+                key={o.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.05 }}
+                className="group border border-border/50 bg-card rounded-[2rem] p-8 shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:border-primary/20 transition-all duration-300 relative overflow-hidden flex flex-col"
+              >
+                <div className="absolute -top-12 -right-12 w-32 h-32 bg-primary/5 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                
+                <div className="flex items-center justify-between mb-6 relative">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-2xl bg-muted/30 flex items-center justify-center">
+                      <ShoppingBag className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                    <div>
+                      <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground block">Código</span>
+                      <span className="font-serif text-2xl text-foreground tracking-tight">{o.pickup_code}</span>
+                    </div>
+                  </div>
+                  <Badge 
+                    variant="outline" 
+                    className={cn(
+                      "font-mono text-[9px] uppercase tracking-widest px-3 py-1 border-opacity-30",
+                      status.className
+                    )}
+                  >
+                    {status.label}
+                  </Badge>
+                </div>
+
+                <div className="space-y-4 mb-8 flex-1">
+                  <div className="space-y-2">
+                    <span className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground block opacity-60">Itens do Pedido</span>
+                    <ul className="space-y-2">
+                      {o.items?.map((i: any) => (
+                        <li key={i.id} className="flex items-center gap-2 text-sm text-foreground/80 font-light">
+                          <Package className="h-3 w-3 text-muted-foreground/50" />
+                          <span>{i.quantity}× {i.product_name}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="pt-4 border-t border-border/50">
+                    <div className="flex items-baseline justify-between">
+                      <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Valor Total</span>
+                      <span className="font-serif text-2xl text-primary">{formatBRL(o.total_cents)}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-3 relative mt-auto">
+                  {o.payment_proof_url && (
+                    <Button variant="outline" className="w-full h-10 rounded-xl text-xs font-serif bg-background/50" asChild>
+                      <a href={o.payment_proof_url} target="_blank" rel="noreferrer">
+                        Ver comprovante de pagamento
+                      </a>
+                    </Button>
+                  )}
+                  
+                  <div className="flex gap-2">
+                    {o.status === "aguardando_pagamento" && (
+                      <Button className="flex-1 h-12 rounded-xl text-sm font-serif shadow-lg shadow-primary/10" onClick={() => setStatus.mutate({ order: o, status: "pago" })}>
+                        Confirmar PIX
+                      </Button>
+                    )}
+                    {o.status === "pago" && (
+                      <Button className="flex-1 h-12 rounded-xl text-sm font-serif shadow-lg shadow-primary/10 bg-emerald-600 hover:bg-emerald-700" onClick={() => setStatus.mutate({ order: o, status: "entregue" })}>
+                        Confirmar Entrega
+                      </Button>
+                    )}
+                    {o.status !== "cancelado" && o.status !== "entregue" && (
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-12 w-12 rounded-xl hover:bg-destructive/10 hover:text-destructive transition-colors"
+                        onClick={() => setStatus.mutate({ order: o, status: "cancelado" })}
+                      >
+                        <XCircle className="h-5 w-5" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+
+                {o.status === "entregue" && (
+                  <div className="absolute bottom-4 right-4 opacity-5 pointer-events-none">
+                    <CheckCircle2 className="h-24 w-24 text-primary" />
+                  </div>
+                )}
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
+      </div>
+      
+      {filtered && filtered.length === 0 && (
+        <div className="text-center py-20 border-2 border-dashed border-border/50 rounded-[2.5rem]">
+          <ShoppingBag className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
+          <p className="text-muted-foreground font-serif">Nenhum pedido encontrado com este critério.</p>
+        </div>
+      )}
     </div>
   );
 }
