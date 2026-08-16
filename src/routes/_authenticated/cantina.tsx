@@ -34,10 +34,11 @@ function CantinaPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Comunhão à mesa"
+        eyebrow="Gastrô & Comunhão"
         title="Cantina"
-        description="O cardápio de cada culto fica aqui. Reserve o seu pedido com antecedência e retire ao final do culto — o pagamento é feito no balcão."
+        description="Sabores que aquecem a comunhão. Confira o menu do próximo culto, garanta sua reserva antecipada e retire no balcão ao final da celebração."
       />
+
       <PageBody>
         <Tabs defaultValue="cardapio">
           <TabsList className="mb-8">

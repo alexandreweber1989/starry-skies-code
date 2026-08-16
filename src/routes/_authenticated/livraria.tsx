@@ -34,10 +34,11 @@ function LivrariaPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Loja da igreja"
+        eyebrow="Shopping & Editorial"
         title="Livraria"
-        description="Livros, camisetas, garrafas e acessórios. Faça o pedido, pague via PIX no CNPJ da igreja e retire presencialmente com o código gerado."
+        description="Uma curadoria de literatura cristã, acessórios e vestuário que expressam a nossa identidade. Reserve seu item, pague via PIX e retire em nosso balcão físico."
       />
+
       <PageBody>
         <Tabs defaultValue="catalogo">
           <TabsList className="mb-8">
