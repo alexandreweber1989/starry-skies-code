@@ -326,82 +326,140 @@ export function CantinaAdminMenus() {
   });
 
   return (
-    <div className="space-y-6">
-      <MenuDialog />
-      {menus?.map((menu: any) => {
-        const active = (menu.reservations ?? []).filter((r: any) => r.status !== "cancelado");
-        const totals = new Map<string, number>();
-        for (const r of active) {
-          for (const i of r.items ?? []) {
-            totals.set(i.item_name, (totals.get(i.item_name) ?? 0) + i.quantity);
-          }
-        }
-        return (
-          <div key={menu.id} className="border border-border bg-card rounded-sm p-6">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                  {new Date(menu.service_date + "T12:00:00").toLocaleDateString("pt-BR")} · {menu.status}
-                </div>
-                <h3 className="font-serif text-2xl">{menu.title}</h3>
-              </div>
-              <div className="flex gap-2">
-                {menu.status !== "encerrado" ? (
-                  <Button size="sm" variant="outline" onClick={() => setMenuStatus.mutate({ id: menu.id, status: "encerrado" })}>
-                    Encerrar
-                  </Button>
-                ) : (
-                  <Button size="sm" variant="outline" onClick={() => setMenuStatus.mutate({ id: menu.id, status: "aberto" })}>
-                    Reabrir
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            <div className="mt-5">
-              <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-2">
-                Produção necessária
-              </div>
-              {totals.size === 0 ? (
-                <p className="text-sm text-muted-foreground">Nenhuma reserva ainda.</p>
-              ) : (
-                <div className="flex flex-wrap gap-2">
-                  {[...totals.entries()].map(([name, qty]) => (
-                    <span key={name} className="border border-border rounded-sm px-3 py-1 text-sm">
-                      <strong className="font-serif text-lg mr-1">{qty}</strong> {name}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {active.length > 0 && (
-              <div className="mt-6 space-y-2">
-                <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                  Reservas ({active.length})
-                </div>
-                {active.map((r: any) => (
-                  <div key={r.id} className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-2 text-sm">
-                    <span className="font-serif text-lg">{r.pickup_code}</span>
-                    <span className="text-muted-foreground flex-1 min-w-40">
-                      {(r.items ?? []).map((i: any) => `${i.quantity}× ${i.item_name}`).join(", ")}
-                    </span>
-                    <span className="font-mono">{formatBRL(r.total_cents)}</span>
-                    <span className={`px-2 py-0.5 rounded-sm font-mono text-[10px] uppercase tracking-widest ${RESERVATION_STATUS[r.status].className}`}>
-                      {RESERVATION_STATUS[r.status].label}
-                    </span>
-                    {r.status === "reservado" && (
-                      <Button size="sm" onClick={() => setResStatus.mutate({ id: r.id, status: "retirado" })}>
-                        Retirado
-                      </Button>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
+    <div className="space-y-10">
+      <div className="flex items-center justify-between bg-card border border-border/50 p-6 rounded-[2rem] shadow-sm">
+        <div className="flex items-center gap-4">
+          <div className="h-12 w-12 rounded-2xl bg-primary/5 flex items-center justify-center">
+            <Utensils className="h-6 w-6 text-primary" />
           </div>
-        );
-      })}
+          <div>
+            <h3 className="font-serif text-2xl tracking-tight">Gestão de Cardápios</h3>
+            <p className="text-xs text-muted-foreground font-light">Publique menus e acompanhe as reservas em tempo real.</p>
+          </div>
+        </div>
+        <MenuDialog />
+      </div>
+
+      <div className="space-y-8">
+        {menus?.map((menu: any, menuIdx: number) => {
+          const active = (menu.reservations ?? []).filter((r: any) => r.status !== "cancelado");
+          const totals = new Map<string, number>();
+          for (const r of active) {
+            for (const i of r.items ?? []) {
+              totals.set(i.item_name, (totals.get(i.item_name) ?? 0) + i.quantity);
+            }
+          }
+          
+          return (
+            <motion.div
+              key={menu.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: menuIdx * 0.1 }}
+              className="group border border-border/50 bg-card rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500"
+            >
+              {/* Menu Header Section */}
+              <div className="bg-muted/30 p-8 border-b border-border/50">
+                <div className="flex flex-wrap items-start justify-between gap-6">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                      <Badge variant="outline" className={cn(
+                        "font-mono text-[9px] uppercase tracking-widest px-3 py-1",
+                        menu.status === "aberto" ? "border-emerald-500/30 text-emerald-600 bg-emerald-50" : "border-muted-foreground/30 text-muted-foreground bg-muted"
+                      )}>
+                        {menu.status === "aberto" ? "Ativo no App" : "Encerrado"}
+                      </Badge>
+                      <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                        {new Date(menu.service_date + "T12:00:00").toLocaleDateString("pt-BR", { weekday: 'long', day: 'numeric', month: 'long' })}
+                      </span>
+                    </div>
+                    <h3 className="font-serif text-3xl text-foreground tracking-tight">{menu.title}</h3>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <Button 
+                      variant="outline" 
+                      className="rounded-xl h-12 px-6 font-serif border-border/50 hover:bg-background"
+                      onClick={() => setMenuStatus.mutate({ id: menu.id, status: menu.status === "aberto" ? "encerrado" : "aberto" })}
+                    >
+                      {menu.status === "aberto" ? "Encerrar Reservas" : "Reabrir Reservas"}
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Production Summary */}
+                <div className="mt-10 bg-background/50 border border-border/50 rounded-3xl p-6">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary/60 block mb-4">Produção Necessária (Cozinha)</span>
+                  {totals.size === 0 ? (
+                    <p className="text-sm text-muted-foreground font-light italic">Aguardando as primeiras reservas...</p>
+                  ) : (
+                    <div className="flex flex-wrap gap-3">
+                      {[...totals.entries()].map(([name, qty]) => (
+                        <div key={name} className="bg-card border border-border/50 rounded-2xl px-5 py-3 flex items-center gap-4 group/item hover:border-primary/30 transition-colors">
+                          <span className="font-serif text-3xl text-primary leading-none">{qty}</span>
+                          <span className="font-light text-sm text-foreground/80">{name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Reservations List Section */}
+              <div className="p-8">
+                <div className="flex items-center gap-4 mb-6">
+                  <h4 className="font-serif text-xl">Fluxo de Retirada</h4>
+                  <Badge className="rounded-full bg-primary/10 text-primary border-none">{active.length} Reservas</Badge>
+                </div>
+
+                <div className="space-y-4">
+                  {active.length === 0 ? (
+                    <div className="text-center py-10 opacity-30">
+                      <Utensils className="h-12 w-12 mx-auto mb-2" />
+                      <p className="font-serif">Nenhuma reserva ativa</p>
+                    </div>
+                  ) : (
+                    active.map((r: any) => (
+                      <div key={r.id} className="flex flex-wrap items-center justify-between gap-6 p-6 bg-muted/20 hover:bg-muted/40 rounded-2xl border border-border/30 transition-colors group/res">
+                        <div className="flex items-center gap-6">
+                          <div className="h-12 w-12 rounded-xl bg-background border border-border/50 flex items-center justify-center font-serif text-2xl text-primary shadow-sm">
+                            {r.pickup_code}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-sm font-light text-foreground/70 mb-1">
+                              {(r.items ?? []).map((i: any) => `${i.quantity}× ${i.item_name}`).join(", ")}
+                            </p>
+                            <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground/60">{formatBRL(r.total_cents)}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-4">
+                          <Badge variant="outline" className={cn(
+                            "font-mono text-[9px] uppercase tracking-widest px-3 py-1",
+                            RESERVATION_STATUS[r.status].className
+                          )}>
+                            {RESERVATION_STATUS[r.status].label}
+                          </Badge>
+                          
+                          {r.status === "reservado" && (
+                            <Button 
+                              size="sm" 
+                              className="rounded-xl h-10 px-5 shadow-lg shadow-primary/10"
+                              onClick={() => setResStatus.mutate({ id: r.id, status: "retirado" })}
+                            >
+                              Dar Baixa
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
     </div>
   );
 }
