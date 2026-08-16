@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Pencil, Plus, Search, Filter, Utensils, CheckCircle2, XCircle } from "lucide-react";
+import { Pencil, Plus, Search, Filter, Utensils, CheckCircle2, XCircle, Upload, Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { formatBRL, RESERVATION_STATUS } from "@/lib/store";
@@ -38,6 +38,7 @@ const emptyItem: ItemDraft = {
 function ItemDialog({ initial, trigger }: { initial: ItemDraft; trigger: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState(initial);
+  const [uploading, setUploading] = useState(false);
   const qc = useQueryClient();
 
   const save = useMutation({
@@ -66,7 +67,7 @@ function ItemDialog({ initial, trigger }: { initial: ItemDraft; trigger: React.R
   return (
     <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (o) setDraft(initial); }}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-serif text-3xl">{draft.id ? "Editar item" : "Novo item"}</DialogTitle>
         </DialogHeader>
@@ -95,8 +96,76 @@ function ItemDialog({ initial, trigger }: { initial: ItemDraft; trigger: React.R
             </div>
           </div>
           <div className="space-y-2">
-            <Label>URL da imagem / arte</Label>
-            <Input value={draft.image_url} onChange={(e) => setDraft({ ...draft, image_url: e.target.value })} />
+            <Label>Imagem / Arte do Item</Label>
+            <div className="flex flex-col gap-4">
+              {draft.image_url ? (
+                <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-border group">
+                  <img src={draft.image_url} alt="Preview" className="w-full h-full object-cover" />
+                  <button
+                    onClick={() => setDraft({ ...draft, image_url: "" })}
+                    className="absolute top-2 right-2 p-1.5 bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ) : (
+                <div className="w-full aspect-video rounded-2xl border-2 border-dashed border-muted flex flex-col items-center justify-center bg-muted/20 gap-2 relative">
+                  <div className="p-3 rounded-full bg-muted">
+                    <Upload className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-medium">Clique para enviar uma foto</p>
+                    <p className="text-xs text-muted-foreground">JPG, PNG ou WebP</p>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+
+                      try {
+                        setUploading(true);
+                        const ext = file.name.split(".").pop();
+                        const path = `canteen/${crypto.randomUUID()}.${ext}`;
+                        
+                        const { error: uploadError } = await supabase.storage
+                          .from("store-assets")
+                          .upload(path, file);
+
+                        if (uploadError) throw uploadError;
+
+                        const { data: { publicUrl } } = supabase.storage
+                          .from("store-assets")
+                          .getPublicUrl(path);
+
+                        setDraft({ ...draft, image_url: publicUrl });
+                        toast.success("Foto enviada com sucesso!");
+                      } catch (err: any) {
+                        toast.error("Erro ao enviar foto: " + err.message);
+                      } finally {
+                        setUploading(false);
+                      }
+                    }}
+                    disabled={uploading}
+                  />
+                  {uploading && (
+                    <div className="absolute inset-0 bg-background/50 flex items-center justify-center rounded-2xl">
+                      <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                    </div>
+                  )}
+                </div>
+              )}
+              <div className="space-y-1">
+                <Label className="text-[10px] uppercase tracking-wider opacity-50">Ou cole uma URL</Label>
+                <Input 
+                  value={draft.image_url} 
+                  placeholder="https://exemplo.com/imagem.jpg"
+                  onChange={(e) => setDraft({ ...draft, image_url: e.target.value })} 
+                />
+              </div>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             <Switch checked={draft.is_active} onCheckedChange={(v) => setDraft({ ...draft, is_active: v })} />
@@ -193,6 +262,7 @@ function MenuDialog() {
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [notes, setNotes] = useState("");
   const [artUrl, setArtUrl] = useState("");
+  const [uploading, setUploading] = useState(false);
   const [selected, setSelected] = useState<Record<string, boolean>>({});
   const qc = useQueryClient();
 
@@ -260,8 +330,76 @@ function MenuDialog() {
             <Textarea rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} />
           </div>
           <div className="space-y-2">
-            <Label>URL da arte de divulgação</Label>
-            <Input value={artUrl} onChange={(e) => setArtUrl(e.target.value)} />
+            <Label>Arte de Divulgação do Cardápio</Label>
+            <div className="flex flex-col gap-4">
+              {artUrl ? (
+                <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-border group">
+                  <img src={artUrl} alt="Preview" className="w-full h-full object-cover" />
+                  <button
+                    onClick={() => setArtUrl("")}
+                    className="absolute top-2 right-2 p-1.5 bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ) : (
+                <div className="w-full aspect-video rounded-2xl border-2 border-dashed border-muted flex flex-col items-center justify-center bg-muted/20 gap-2 relative">
+                  <div className="p-3 rounded-full bg-muted">
+                    <Upload className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-medium">Clique para enviar o banner</p>
+                    <p className="text-xs text-muted-foreground">Banner do culto/cardápio</p>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+
+                      try {
+                        setUploading(true);
+                        const ext = file.name.split(".").pop();
+                        const path = `menus/${crypto.randomUUID()}.${ext}`;
+                        
+                        const { error: uploadError } = await supabase.storage
+                          .from("store-assets")
+                          .upload(path, file);
+
+                        if (uploadError) throw uploadError;
+
+                        const { data: { publicUrl } } = supabase.storage
+                          .from("store-assets")
+                          .getPublicUrl(path);
+
+                        setArtUrl(publicUrl);
+                        toast.success("Banner enviado!");
+                      } catch (err: any) {
+                        toast.error("Erro ao enviar banner: " + err.message);
+                      } finally {
+                        setUploading(false);
+                      }
+                    }}
+                    disabled={uploading}
+                  />
+                  {uploading && (
+                    <div className="absolute inset-0 bg-background/50 flex items-center justify-center rounded-2xl">
+                      <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                    </div>
+                  )}
+                </div>
+              )}
+              <div className="space-y-1">
+                <Label className="text-[10px] uppercase tracking-wider opacity-50">Ou cole a URL do banner</Label>
+                <Input 
+                  value={artUrl} 
+                  placeholder="https://exemplo.com/banner.jpg"
+                  onChange={(e) => setArtUrl(e.target.value)} 
+                />
+              </div>
+            </div>
           </div>
           <div className="space-y-2">
             <Label>Itens do dia</Label>
