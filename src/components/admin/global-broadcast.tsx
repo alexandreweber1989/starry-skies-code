@@ -5,16 +5,16 @@ import { Megaphone, Send, Clock, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { notifyAllMembers } from "@/lib/notifications.functions";
 import { 
   Dialog, 
   DialogContent, 
   DialogHeader, 
   DialogTitle, 
-  DialogDescription,
-  DialogFooter,
-  DialogTrigger
+  DialogDescription, 
+  DialogFooter, 
+  DialogTrigger 
 } from "@/components/ui/dialog";
+import { notifyAllMembers } from "@/lib/notifications.functions";
 
 export function GlobalBroadcast() {
   const [open, setOpen] = useState(false);
@@ -62,7 +62,7 @@ export function GlobalBroadcast() {
   ];
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={(v) => setOpen(v)}>
       <DialogTrigger asChild>
         <Button className="rounded-full gap-2 shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90">
           <Megaphone className="h-4 w-4" />
