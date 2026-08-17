@@ -1,3 +1,4 @@
+import * as React from "react";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -61,8 +62,10 @@ export function GlobalBroadcast() {
     }
   ];
 
+  const handleOpenChange = (v: boolean) => setOpen(v);
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button className="rounded-full gap-2 shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90">
           <Megaphone className="h-4 w-4" />
@@ -105,7 +108,7 @@ export function GlobalBroadcast() {
               <label className="text-sm font-medium">Título do Alerta</label>
               <Input 
                 value={title} 
-                onChange={(e) => setTitle(e.target.value)} 
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)} 
                 placeholder="Ex: Culto de Domingo Iniciado"
                 className="bg-card/50"
               />
@@ -114,7 +117,7 @@ export function GlobalBroadcast() {
               <label className="text-sm font-medium">Mensagem</label>
               <Textarea 
                 value={message} 
-                onChange={(e) => setMessage(e.target.value)} 
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMessage(e.target.value)} 
                 placeholder="Descreva o comunicado detalhadamente..."
                 className="min-h-[100px] bg-card/50"
               />
