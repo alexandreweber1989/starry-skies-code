@@ -1,4 +1,3 @@
-import * as React from "react";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -6,6 +5,7 @@ import { Megaphone, Send, Clock, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { notifyAllMembers } from "@/lib/notifications.functions";
 import { 
   Dialog, 
   DialogContent, 
@@ -15,7 +15,6 @@ import {
   DialogFooter,
   DialogTrigger
 } from "@/components/ui/dialog";
-import { notifyAllMembers } from "@/lib/notifications.functions";
 
 export function GlobalBroadcast() {
   const [open, setOpen] = useState(false);
@@ -41,7 +40,7 @@ export function GlobalBroadcast() {
     }
   });
 
-  const quickTemplates = [
+  const templates = [
     {
       label: "Culto Iniciado",
       title: "O Culto Começou! 🔥",
@@ -84,7 +83,7 @@ export function GlobalBroadcast() {
           <div className="space-y-2">
             <label className="text-xs font-mono uppercase tracking-widest text-muted-foreground">Modelos Rápidos</label>
             <div className="flex flex-wrap gap-2">
-              {quickTemplates.map((t) => (
+              {templates.map((t) => (
                 <Button 
                   key={t.label} 
                   variant="outline" 
