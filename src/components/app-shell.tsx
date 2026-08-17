@@ -34,6 +34,7 @@ import { NotificationsBell } from "@/components/notifications-bell";
 import { QuickActions } from "@/components/quick-actions";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ChurchLogo } from "@/components/ui/church-logo";
+import { GlobalBroadcast } from "@/components/admin/global-broadcast";
 
 interface NavItem {
   to: string;
@@ -222,6 +223,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <GlobalSearch />
               </div>
               <NotificationsBell />
+              {isAdmin && <GlobalBroadcast />}
               <div className="hidden sm:block h-6 w-px bg-border mx-1" />
               <div className="hidden sm:flex items-center gap-2">
                  <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground/60">

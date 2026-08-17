@@ -39,3 +39,13 @@ export async function getSocialAdmins() {
 
   return profiles || [];
 }
+
+export async function getAllMemberProfiles() {
+  const { data: profiles, error } = await supabaseAdmin
+    .from('profiles')
+    .select('id, full_name, email, phone')
+    .not('email', 'is', null);
+
+  if (error) throw error;
+  return profiles || [];
+}
