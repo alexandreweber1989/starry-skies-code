@@ -223,6 +223,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <GlobalSearch />
               </div>
               <NotificationsBell />
+              {isAdmin && <GlobalBroadcast />}
               <div className="hidden sm:block h-6 w-px bg-border mx-1" />
               <div className="hidden sm:flex items-center gap-2">
                  <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground/60">
