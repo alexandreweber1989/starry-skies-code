@@ -1,3 +1,4 @@
+import * as React from "react";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -30,7 +31,7 @@ export function GlobalBroadcast() {
       return notifyAllMembers({ data: { title, message, type } });
     },
     onSuccess: (data: { count: number }) => {
-      toast.success(`Notificação enviada para ${data.count} membros!`);
+      toast.success(\`Notificação enviada para \${data.count} membros!\`);
       setOpen(false);
       setTitle("");
       setMessage("");
