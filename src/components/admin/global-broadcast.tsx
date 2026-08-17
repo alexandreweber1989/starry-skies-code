@@ -30,8 +30,8 @@ export function GlobalBroadcast() {
       }
       return notifyAllMembers({ data: { title, message, type } });
     },
-    onSuccess: (data: { count: number }) => {
-      toast.success(\`Notificação enviada para \${data.count} membros!\`);
+    onSuccess: (data: any) => {
+      toast.success("Notificação enviada!");
       setOpen(false);
       setTitle("");
       setMessage("");
