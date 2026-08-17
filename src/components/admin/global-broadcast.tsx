@@ -20,7 +20,7 @@ export function GlobalBroadcast() {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
-  const [type, setType] = useState<'emergency' | 'announcement' | 'event'>('announcement');
+  const [type, setType] = useState<"emergency" | "announcement" | "event">("announcement");
 
   const broadcast = useMutation({
     mutationFn: async () => {
@@ -79,7 +79,6 @@ export function GlobalBroadcast() {
             Isso enviará uma notificação em tempo real para todos os membros ativos da plataforma.
           </DialogDescription>
         </DialogHeader>
-
         <div className="space-y-6 py-4">
           <div className="space-y-2">
             <label className="text-xs font-mono uppercase tracking-widest text-muted-foreground">Modelos Rápidos</label>
@@ -101,7 +100,6 @@ export function GlobalBroadcast() {
               ))}
             </div>
           </div>
-
           <div className="space-y-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">Título do Alerta</label>
@@ -122,7 +120,6 @@ export function GlobalBroadcast() {
               />
             </div>
           </div>
-
           <div className="p-3 rounded-lg bg-primary/5 border border-primary/10 flex gap-3">
             <Info className="h-5 w-5 text-primary shrink-0" />
             <p className="text-xs text-muted-foreground leading-relaxed">
@@ -130,7 +127,6 @@ export function GlobalBroadcast() {
             </p>
           </div>
         </div>
-
         <DialogFooter>
           <Button variant="ghost" onClick={() => setOpen(false)} disabled={broadcast.isPending}>
             Cancelar
