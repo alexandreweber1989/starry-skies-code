@@ -166,6 +166,20 @@ const MODULES = [
       { label: "Jornada de Integração", content: "Início automático do fluxo de acompanhamento para que ele retorne no próximo domingo." }
     ],
   },
+  {
+    id: "notificacoes",
+    title: "Sistema de Notificações",
+    path: "/dashboard",
+    description: "Comunicação em tempo real com toda a igreja.",
+    icon: Megaphone,
+    details: [
+      { label: "Alertas no Celular", content: "Membros recebem avisos instantâneos via Push (no app) ou WhatsApp para casos urgentes." },
+      { label: "Disparo Global", content: "Administradores podem notificar todos os membros simultaneamente usando o botão 'Notificar Todos' no topo." },
+      { label: "Templates de Culto", content: "Modelos rápidos para avisar o início ou fim das celebrações com um clique." },
+      { label: "Histórico de Alertas", content: "Todas as notificações enviadas ficam registradas no sino de notificações para consulta posterior." },
+      { label: "Como Receber", content: "Para receber alertas, o membro deve estar logado na plataforma e, em casos de WhatsApp, ter o número cadastrado no perfil." }
+    ],
+  },
 ];
 
 export const Route = createFileRoute("/_authenticated/manual")({
