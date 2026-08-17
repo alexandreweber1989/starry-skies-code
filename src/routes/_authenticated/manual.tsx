@@ -42,7 +42,8 @@ const MODULES = [
       { label: "Alertas Críticos", content: "Notificações instantâneas vindas do Módulo Kids (segurança) e do Cuidado Social." },
       { label: "Gestão de Escalas", content: "Visualização rápida de quem está servindo no Louvor e na Faxina hoje." },
       { label: "Atalhos de Ação", content: "Botões rápidos para criar Avisos, Eventos e Notícias sem navegar por menus complexos." },
-      { label: "Avisos da Liderança", content: "Espaço para comunicações importantes que aparecem para todos os membros logados." }
+      { label: "Avisos da Liderança", content: "Espaço para comunicações importantes que aparecem para todos os membros logados." },
+      { label: "Notificações Globais", content: "Sistema de disparo em massa para toda a igreja (Alertas de Culto, Comunicados Urgentes)." }
     ],
   },
   {
