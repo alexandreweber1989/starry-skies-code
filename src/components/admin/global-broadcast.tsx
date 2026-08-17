@@ -10,37 +10,37 @@ import {
   DialogContent, 
   DialogHeader, 
   DialogTitle, 
-  DialogDescription,
-  DialogFooter,
-  DialogTrigger
+  DialogDescription, 
+  DialogFooter, 
+  DialogTrigger 
 } from "@/components/ui/dialog";
 import { notifyAllMembers } from "@/lib/notifications.functions";
 
 export function GlobalBroadcast() {
-  const [open, setOpen] = useState(false);
-  const [title, setTitle] = useState("");
-  const [message, setMessage] = useState("");
-  const [type, setType] = useState<"emergency" | "announcement" | "event">("announcement");
+  const [isOpen, setIsOpen] = useState(false);
+  const [titleStr, setTitleStr] = useState("");
+  const [messageStr, setMessageStr] = useState("");
+  const [alertType, setAlertType] = useState<"emergency" | "announcement" | "event">("announcement");
 
-  const broadcast = useMutation({
+  const broadcastMutation = useMutation({
     mutationFn: async () => {
-      if (!title.trim() || !message.trim()) {
+      if (!titleStr.trim() || !messageStr.trim()) {
         throw new Error("Preencha o título e a mensagem.");
       }
-      return notifyAllMembers({ data: { title, message, type } });
+      return notifyAllMembers({ data: { title: titleStr, message: messageStr, type: alertType } });
     },
     onSuccess: () => {
       toast.success("Notificação enviada!");
-      setOpen(false);
-      setTitle("");
-      setMessage("");
+      setIsOpen(false);
+      setTitleStr("");
+      setMessageStr("");
     },
     onError: (err: any) => {
       toast.error(err.message || "Erro ao realizar o disparo.");
     }
   });
 
-  const templates = [
+  const templatesList = [
     {
       label: "Culto Iniciado",
       title: "O Culto Começou! 🔥",
@@ -62,7 +62,7 @@ export function GlobalBroadcast() {
   ];
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button className="rounded-full gap-2 shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90">
           <Megaphone className="h-4 w-4" />
@@ -83,16 +83,16 @@ export function GlobalBroadcast() {
           <div className="space-y-2">
             <label className="text-xs font-mono uppercase tracking-widest text-muted-foreground">Modelos Rápidos</label>
             <div className="flex flex-wrap gap-2">
-              {templates.map((t) => (
+              {templatesList.map((t) => (
                 <Button 
                   key={t.label} 
                   variant="outline" 
                   size="sm" 
                   className="text-[10px] h-7 rounded-full uppercase tracking-tighter"
                   onClick={() => {
-                    setTitle(t.title);
-                    setMessage(t.message);
-                    setType(t.type);
+                    setTitleStr(t.title);
+                    setMessageStr(t.message);
+                    setAlertType(t.type);
                   }}
                 >
                   {t.label}
@@ -104,8 +104,8 @@ export function GlobalBroadcast() {
             <div className="space-y-2">
               <label className="text-sm font-medium">Título do Alerta</label>
               <Input 
-                value={title} 
-                onChange={(e) => setTitle(e.target.value)} 
+                value={titleStr} 
+                onChange={(e) => setTitleStr(e.target.value)} 
                 placeholder="Ex: Culto de Domingo Iniciado"
                 className="bg-card/50"
               />
@@ -113,8 +113,8 @@ export function GlobalBroadcast() {
             <div className="space-y-2">
               <label className="text-sm font-medium">Mensagem</label>
               <Textarea 
-                value={message} 
-                onChange={(e) => setMessage(e.target.value)} 
+                value={messageStr} 
+                onChange={(e) => setMessageStr(e.target.value)} 
                 placeholder="Descreva o comunicado detalhadamente..."
                 className="min-h-[100px] bg-card/50"
               />
@@ -128,20 +128,20 @@ export function GlobalBroadcast() {
           </div>
         </div>
         <DialogFooter>
-          <Button variant="ghost" onClick={() => setOpen(false)} disabled={broadcast.isPending}>
+          <Button variant="ghost" onClick={() => setIsOpen(false)} disabled={broadcastMutation.isPending}>
             Cancelar
           </Button>
           <Button 
-            onClick={() => broadcast.mutate()} 
-            disabled={broadcast.isPending}
+            onClick={() => broadcastMutation.mutate()} 
+            disabled={broadcastMutation.isPending}
             className="gap-2"
           >
-            {broadcast.isPending ? (
+            {broadcastMutation.isPending ? (
               <Clock className="h-4 w-4 animate-spin" />
             ) : (
               <Send className="h-4 w-4" />
             )}
-            {broadcast.isPending ? "Disparando..." : "Enviar Agora"}
+            {broadcastMutation.isPending ? "Disparando..." : "Enviar Agora"}
           </Button>
         </DialogFooter>
       </DialogContent>
