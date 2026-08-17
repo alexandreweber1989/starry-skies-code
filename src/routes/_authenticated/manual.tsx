@@ -16,7 +16,8 @@ import {
   Info,
   Presentation,
   Sparkles,
-  X
+  X,
+  Megaphone
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -164,6 +165,20 @@ const MODULES = [
       { label: "Presente Digital", content: "Após o cadastro, o visitante recebe imediatamente o E-book 'O Progresso do Peregrino'." },
       { label: "Conexão Imediata", content: "Notificação instantânea para a equipe de recepção e pastores para um cumprimento pessoal." },
       { label: "Jornada de Integração", content: "Início automático do fluxo de acompanhamento para que ele retorne no próximo domingo." }
+    ],
+  },
+  {
+    id: "notificacoes",
+    title: "Sistema de Notificações",
+    path: "/dashboard",
+    description: "Comunicação em tempo real com toda a igreja.",
+    icon: Megaphone,
+    details: [
+      { label: "Alertas no Celular", content: "Membros recebem avisos instantâneos via Push (no app) ou WhatsApp para casos urgentes." },
+      { label: "Disparo Global", content: "Administradores podem notificar todos os membros simultaneamente usando o botão 'Notificar Todos' no topo." },
+      { label: "Templates de Culto", content: "Modelos rápidos para avisar o início ou fim das celebrações com um clique." },
+      { label: "Histórico de Alertas", content: "Todas as notificações enviadas ficam registradas no sino de notificações para consulta posterior." },
+      { label: "Como Receber", content: "Para receber alertas, o membro deve estar logado na plataforma e, em casos de WhatsApp, ter o número cadastrado no perfil." }
     ],
   },
 ];
