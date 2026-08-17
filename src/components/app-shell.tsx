@@ -34,6 +34,7 @@ import { NotificationsBell } from "@/components/notifications-bell";
 import { QuickActions } from "@/components/quick-actions";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ChurchLogo } from "@/components/ui/church-logo";
+import { GlobalBroadcast } from "@/components/admin/global-broadcast";
 
 interface NavItem {
   to: string;
