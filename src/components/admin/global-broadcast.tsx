@@ -1,4 +1,3 @@
-import * as React from "react";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -11,13 +10,13 @@ import {
   DialogContent, 
   DialogHeader, 
   DialogTitle, 
-  DialogDescription,
-  DialogFooter,
-  DialogTrigger
+  DialogDescription, 
+  DialogFooter, 
+  DialogTrigger 
 } from "@/components/ui/dialog";
 import { notifyAllMembers } from "@/lib/notifications.functions";
 
-export function GlobalBroadcast() {
+export const GlobalBroadcast = () => {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
@@ -62,10 +61,8 @@ export function GlobalBroadcast() {
     }
   ];
 
-  const handleOpenChange = (val: boolean) => setOpen(val);
-
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="rounded-full gap-2 shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90">
           <Megaphone className="h-4 w-4" />
@@ -150,4 +147,4 @@ export function GlobalBroadcast() {
       </DialogContent>
     </Dialog>
   );
-}
+};
