@@ -30,7 +30,7 @@ export function GlobalBroadcast() {
       }
       return notifyAllMembers({ data: { title, message, type } });
     },
-    onSuccess: (data: any) => {
+    onSuccess: () => {
       toast.success("Notificação enviada!");
       setOpen(false);
       setTitle("");
@@ -106,7 +106,7 @@ export function GlobalBroadcast() {
               <label className="text-sm font-medium">Título do Alerta</label>
               <Input 
                 value={title} 
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)} 
+                onChange={(e) => setTitle(e.target.value)} 
                 placeholder="Ex: Culto de Domingo Iniciado"
                 className="bg-card/50"
               />
@@ -115,7 +115,7 @@ export function GlobalBroadcast() {
               <label className="text-sm font-medium">Mensagem</label>
               <Textarea 
                 value={message} 
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMessage(e.target.value)} 
+                onChange={(e) => setMessage(e.target.value)} 
                 placeholder="Descreva o comunicado detalhadamente..."
                 className="min-h-[100px] bg-card/50"
               />
