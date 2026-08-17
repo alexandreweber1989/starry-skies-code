@@ -29,7 +29,7 @@ export function GlobalBroadcast() {
       }
       return notifyAllMembers({ data: { title, message, type } });
     },
-    onSuccess: (data) => {
+    onSuccess: (data: { count: number }) => {
       toast.success(`Notificação enviada para ${data.count} membros!`);
       setOpen(false);
       setTitle("");
