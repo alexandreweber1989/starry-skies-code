@@ -10,9 +10,9 @@ import {
   DialogContent, 
   DialogHeader, 
   DialogTitle, 
-  DialogDescription, 
-  DialogFooter, 
-  DialogTrigger 
+  DialogDescription,
+  DialogFooter,
+  DialogTrigger
 } from "@/components/ui/dialog";
 import { notifyAllMembers } from "@/lib/notifications.functions";
 
