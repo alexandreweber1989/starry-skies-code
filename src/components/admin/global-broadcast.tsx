@@ -29,7 +29,7 @@ export function GlobalBroadcast() {
       if (!title.trim() || !message.trim()) {
         throw new Error("Preencha o título e a mensagem.");
       }
-      return notifyAllMembers({ title, message, type });
+      return notifyAllMembers({ data: { title, message, type } });
     },
     onSuccess: (data) => {
       toast.success(`Notificação enviada para ${data.count} membros!`);
