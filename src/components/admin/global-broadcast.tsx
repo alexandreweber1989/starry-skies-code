@@ -1,4 +1,3 @@
-import * as React from "react";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -62,79 +61,90 @@ export function GlobalBroadcast() {
     }
   ];
 
-  return React.createElement(Dialog, { open: open, onOpenChange: setOpen },
-    React.createElement(DialogTrigger, { asChild: true },
-      React.createElement(Button, { className: "rounded-full gap-2 shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90" },
-        React.createElement(Megaphone, { className: "h-4 w-4" }),
-        "Notificar Todos"
-      )
-    ),
-    React.createElement(DialogContent, { className: "sm:max-w-[500px] border-none bg-background/95 backdrop-blur-xl" },
-      React.createElement(DialogHeader, null,
-        React.createElement("div", { className: "h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 text-primary" },
-          React.createElement(Megaphone, { className: "h-6 w-6" })
-        ),
-        React.createElement(DialogTitle, { className: "font-serif text-2xl tracking-tight" }, "Comunicado Global"),
-        React.createElement(DialogDescription, null, "Isso enviará uma notificação em tempo real para todos os membros ativos da plataforma.")
-      ),
-      React.createElement("div", { className: "space-y-6 py-4" },
-        React.createElement("div", { className: "space-y-2" },
-          React.createElement("label", { className: "text-xs font-mono uppercase tracking-widest text-muted-foreground" }, "Modelos Rápidos"),
-          React.createElement("div", { className: "flex flex-wrap gap-2" },
-            templates.map((t) => 
-              React.createElement(Button, { 
-                key: t.label, 
-                variant: "outline", 
-                size: "sm", 
-                className: "text-[10px] h-7 rounded-full uppercase tracking-tighter",
-                onClick: () => {
-                  setTitle(t.title);
-                  setMessage(t.message);
-                  setType(t.type);
-                }
-              }, t.label)
-            )
-          )
-        ),
-        React.createElement("div", { className: "space-y-4" },
-          React.createElement("div", { className: "space-y-2" },
-            React.createElement("label", { className: "text-sm font-medium" }, "Título do Alerta"),
-            React.createElement(Input, { 
-              value: title, 
-              onChange: (e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value), 
-              placeholder: "Ex: Culto de Domingo Iniciado",
-              className: "bg-card/50"
-            })
-          ),
-          React.createElement("div", { className: "space-y-2" },
-            React.createElement("label", { className: "text-sm font-medium" }, "Mensagem"),
-            React.createElement(Textarea, { 
-              value: message, 
-              onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => setMessage(e.target.value), 
-              placeholder: "Descreva o comunicado detalhadamente...",
-              className: "min-h-[100px] bg-card/50"
-            })
-          )
-        ),
-        React.createElement("div", { className: "p-3 rounded-lg bg-primary/5 border border-primary/10 flex gap-3" },
-          React.createElement(Info, { className: "h-5 w-5 text-primary shrink-0" }),
-          React.createElement("p", { className: "text-xs text-muted-foreground leading-relaxed" },
-            React.createElement("strong", null, "Atenção:"),
-            " Esta ação não pode ser desfeita. A notificação ficará registrada no histórico de todos os membros."
-          )
-        )
-      ),
-      React.createElement(DialogFooter, null,
-        React.createElement(Button, { variant: "ghost", onClick: () => setOpen(false), disabled: broadcast.isPending }, "Cancelar"),
-        React.createElement(Button, { 
-          onClick: () => broadcast.mutate(), 
-          disabled: broadcast.isPending,
-          className: "gap-2"
-        },
-          broadcast.isPending ? React.createElement(Clock, { className: "h-4 w-4 animate-spin" }) : React.createElement(Send, { className: "h-4 w-4" }),
-          broadcast.isPending ? "Disparando..." : "Enviar Agora"
-        )
-      )
-    )
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button className="rounded-full gap-2 shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90">
+          <Megaphone className="h-4 w-4" />
+          Notificar Todos
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[500px] border-none bg-background/95 backdrop-blur-xl">
+        <DialogHeader>
+          <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 text-primary">
+            <Megaphone className="h-6 w-6" />
+          </div>
+          <DialogTitle className="font-serif text-2xl tracking-tight">Comunicado Global</DialogTitle>
+          <DialogDescription>
+            Isso enviará uma notificação em tempo real para todos os membros ativos da plataforma.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-6 py-4">
+          <div className="space-y-2">
+            <label className="text-xs font-mono uppercase tracking-widest text-muted-foreground">Modelos Rápidos</label>
+            <div className="flex flex-wrap gap-2">
+              {templates.map((t) => (
+                <Button 
+                  key={t.label} 
+                  variant="outline" 
+                  size="sm" 
+                  className="text-[10px] h-7 rounded-full uppercase tracking-tighter"
+                  onClick={() => {
+                    setTitle(t.title);
+                    setMessage(t.message);
+                    setType(t.type);
+                  }}
+                >
+                  {t.label}
+                </Button>
+              ))}
+            </div>
+          </div>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Título do Alerta</label>
+              <Input 
+                value={title} 
+                onChange={(e) => setTitle(e.target.value)} 
+                placeholder="Ex: Culto de Domingo Iniciado"
+                className="bg-card/50"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Mensagem</label>
+              <Textarea 
+                value={message} 
+                onChange={(e) => setMessage(e.target.value)} 
+                placeholder="Descreva o comunicado detalhadamente..."
+                className="min-h-[100px] bg-card/50"
+              />
+            </div>
+          </div>
+          <div className="p-3 rounded-lg bg-primary/5 border border-primary/10 flex gap-3">
+            <Info className="h-5 w-5 text-primary shrink-0" />
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              <strong>Atenção:</strong> Esta ação não pode ser desfeita. A notificação ficará registrada no histórico de todos os membros.
+            </p>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="ghost" onClick={() => setOpen(false)} disabled={broadcast.isPending}>
+            Cancelar
+          </Button>
+          <Button 
+            onClick={() => broadcast.mutate()} 
+            disabled={broadcast.isPending}
+            className="gap-2"
+          >
+            {broadcast.isPending ? (
+              <Clock className="h-4 w-4 animate-spin" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
+            {broadcast.isPending ? "Disparando..." : "Enviar Agora"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
