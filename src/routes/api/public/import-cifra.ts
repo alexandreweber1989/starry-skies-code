@@ -8,10 +8,23 @@ export const Route = createFileRoute("/api/public/import-cifra")({
         const urlParams = new URL(request.url).searchParams;
         const targetUrl = urlParams.get("url");
 
-        const isCifraClub = targetUrl && targetUrl.includes("cifraclub.com.br");
-        const isCifras = targetUrl && targetUrl.includes("cifras.com.br");
+        // Segurança: valida o HOSTNAME exato (não por substring), impedindo SSRF do
+        // tipo https://169.254.169.254/...?x=cifraclub.com.br. Exige https.
+        let host = "";
+        let protocol = "";
+        try {
+          if (targetUrl) {
+            const parsed = new URL(targetUrl);
+            host = parsed.hostname.toLowerCase();
+            protocol = parsed.protocol;
+          }
+        } catch {
+          host = "";
+        }
+        const isCifraClub = host === "cifraclub.com.br" || host.endsWith(".cifraclub.com.br");
+        const isCifras = host === "cifras.com.br" || host.endsWith(".cifras.com.br");
 
-        if (!targetUrl || (!isCifraClub && !isCifras)) {
+        if (!targetUrl || protocol !== "https:" || (!isCifraClub && !isCifras)) {
           return new Response(JSON.stringify({ error: "URL inválida. Use links do CifraClub ou Cifras.com.br" }), {
             status: 400,
             headers: { "Content-Type": "application/json" },

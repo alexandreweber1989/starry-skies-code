@@ -29,15 +29,36 @@ export const Route = createFileRoute('/api/public/kids-visitor')({
           const body = await request.json()
           const validated = visitorRequestSchema.parse(body)
 
+          // Segurança: o documento só pode apontar para um arquivo do próprio storage
+          // (evita URLs arbitrárias / javascript:). Aceita vazio.
+          if (validated.document_url) {
+            let ok = false
+            try {
+              const u = new URL(validated.document_url)
+              ok = u.protocol === 'https:' && u.pathname.includes('/storage/v1/')
+            } catch {
+              ok = false
+            }
+            if (!ok) {
+              return new Response(JSON.stringify({ error: 'Documento inválido.' }), {
+                status: 400,
+                headers: { 'Content-Type': 'application/json' },
+              })
+            }
+          }
+
           // Usar supabaseAdmin importado dinamicamente para garantir que a inserção ocorra via service_role
           // sem expor a chave no cliente. A tabela kids_visitor_requests tem RLS restrito.
           const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
-          
+
           const { error } = await (supabaseAdmin.from('kids_visitor_requests') as any).insert({
             ...validated,
             status: 'pendente'
           })
 
+          // Bug corrigido: antes o erro do insert era ignorado e a API respondia 201
+          // mesmo em falha, causando perda silenciosa do cadastro.
+          if (error) throw error
 
           return new Response(JSON.stringify({ success: true }), {
             status: 201,
