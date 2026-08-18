@@ -178,7 +178,9 @@ export function CadastroLead() {
     const outrasMesas = listarOutrasMesas(form.perfil, mesaPrincipal);
 
     try {
-      await supabase.from("leads").insert({
+      // O supabase-js NÃO lança em erro de RLS/DB — ele retorna { error }. Antes o
+      // erro era engolido e o formulário mostrava sucesso mesmo sem salvar o lead.
+      const { error } = await supabase.from("leads").insert({
         name: form.nome.trim(),
         phone: numericPhone,
         profile: form.perfil,
@@ -189,9 +191,11 @@ export function CadastroLead() {
         suggested_mesa: mesaPrincipal?.mesa ?? null,
         status: "novo",
       });
+      if (error) console.error("Erro ao salvar lead:", error);
     } catch (err) {
-      console.error("Erro ao salvar lead:", err);
+      console.error("Falha de rede ao salvar lead:", err);
     }
+    // O visitante segue vendo a mesa sugerida e o WhatsApp mesmo se o registro falhar.
     setResultado({ principal: mesaPrincipal ?? null, outras: outrasMesas });
     setEnviando(false);
   }

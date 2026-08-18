@@ -118,15 +118,27 @@ export function suggestClassroom(birthDate?: string | null): KidsClassroom {
 
 const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
+/** Índice aleatório com CSPRNG (crypto), com fallback seguro para Math.random. */
+function secureIndex(max: number): number {
+  const c = typeof globalThis !== "undefined" ? globalThis.crypto : undefined;
+  if (c?.getRandomValues) {
+    const buf = new Uint32Array(1);
+    c.getRandomValues(buf);
+    return buf[0] % max;
+  }
+  return Math.floor(Math.random() * max);
+}
+
 /**
  * Código de segurança da etiqueta (sem caracteres ambíguos como O/0 e I/1).
- * Recebe os códigos já usados na sessão para garantir unicidade local.
+ * Usa aleatoriedade criptográfica; recebe os códigos já usados na sessão para
+ * reduzir colisão. A unicidade forte é garantida pelo índice único no banco.
  */
 export function generateSecurityCode(used: string[] = []): string {
   for (let attempt = 0; attempt < 50; attempt += 1) {
     let code = "";
     for (let i = 0; i < 4; i += 1) {
-      code += CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)];
+      code += CODE_ALPHABET[secureIndex(CODE_ALPHABET.length)];
     }
     if (!used.includes(code)) return code;
   }
