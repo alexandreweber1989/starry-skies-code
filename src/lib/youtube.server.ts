@@ -5,28 +5,29 @@ import { aiGateway } from "@/lib/ai-gateway.server";
  */
 
 export async function fetchYoutubeContent(channelId: string) {
-  // Como não temos a API Key do YouTube configurada nos secrets, 
-  // vamos usar o AI Gateway para simular a extração de metadados 
-  // dos links públicos fornecidos, o que é mais resiliente que scraping direto no Worker.
+  console.log(`Starting AI extraction for YouTube channel: ${channelId}`);
   
   const prompt = `
     Analise o canal do YouTube: https://www.youtube.com/${channelId}
     Considere as seções: /streams (cultos) e /podcasts (estudos bíblicos).
     
-    Retorne uma lista JSON de vídeos recentes (simulados com base no padrão da igreja @BatistaAtos).
-    Cada vídeo deve ter: youtube_id, title, thumbnail_url, type ('service' ou 'podcast'), published_at (ISO).
+    Retorne uma lista JSON de vídeos recentes da Igreja Batista Atos.
+    O JSON deve ser um objeto com uma chave "videos" contendo um array de objetos.
+    Cada vídeo deve ter: youtube_id, title, thumbnail_url, type ('service' ou 'podcast'), published_at (ISO), url.
     
     Exemplo de saída:
-    [
-      {
-        "youtube_id": "vid1",
-        "title": "Culto de Domingo - A Glória de Deus",
-        "thumbnail_url": "https://images.unsplash.com/photo-1510563800743-aed236490d07?w=800&q=80",
-        "type": "service",
-        "published_at": "2026-08-16T19:00:00Z",
-        "url": "https://www.youtube.com/watch?v=vid1"
-      }
-    ]
+    {
+      "videos": [
+        {
+          "youtube_id": "vid1",
+          "title": "Culto de Domingo - Exemplo",
+          "thumbnail_url": "https://images.unsplash.com/photo-1510563800743-aed236490d07?w=800&q=80",
+          "type": "service",
+          "published_at": "2026-08-16T19:00:00Z",
+          "url": "https://www.youtube.com/watch?v=vid1"
+        }
+      ]
+    }
   `;
 
   try {
@@ -37,14 +38,22 @@ export async function fetchYoutubeContent(channelId: string) {
     });
 
     const content = response.choices[0].message.content;
-    if (!content) return [];
+    console.log("AI Gateway raw response received.");
+    
+    if (!content) {
+      console.warn("AI Gateway returned empty content.");
+      return [];
+    }
     
     const parsed = JSON.parse(content);
+    console.log("Successfully parsed AI JSON.");
+    
     // Tenta encontrar a lista de vídeos em diferentes formatos possíveis
     const videoList = parsed.videos || parsed.results || (Array.isArray(parsed) ? parsed : []);
+    console.log(`Extracted ${videoList.length} video entries.`);
     return videoList;
   } catch (error) {
-    console.error("Erro ao buscar conteúdo do YouTube:", error);
+    console.error("Erro ao buscar conteúdo do YouTube via AI:", error);
     return [];
   }
 }
