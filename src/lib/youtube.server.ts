@@ -11,9 +11,9 @@ export async function fetchYoutubeContent(channelId: string) {
     Analise o canal do YouTube: https://www.youtube.com/${channelId}
     Considere as seções: /streams (cultos) e /podcasts (estudos bíblicos).
     
-    Retorne uma lista JSON de vídeos recentes da Igreja Batista Atos.
-    O JSON deve ser um objeto com uma chave "videos" contendo um array de objetos.
-    Cada vídeo deve ter: youtube_id, title, thumbnail_url, type ('service' ou 'podcast'), published_at (ISO), url.
+    Retorne uma lista JSON de vídeos recentes da Igreja Batista Atos. O JSON deve ser um objeto com uma única chave "videos" contendo um array de objetos.
+    Cada vídeo deve ter OBRIGATORIAMENTE: youtube_id, title, thumbnail_url, type ('service' ou 'podcast'), published_at (ISO), url.
+
     
     Exemplo de saída:
     {
