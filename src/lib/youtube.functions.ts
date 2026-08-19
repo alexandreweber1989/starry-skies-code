@@ -30,17 +30,29 @@ export const syncYoutubeContent = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     // Verificar se é admin
-    const { data: isAdmin } = await context.supabase.rpc("has_role", {
+    console.log("Checking admin role for user:", context.userId);
+    const { data: isAdmin, error: roleError } = await context.supabase.rpc("has_role", {
       _user_id: context.userId,
       _role: "admin_geral",
     });
     
-    if (!isAdmin) throw new Error("Apenas administradores podem sincronizar o conteúdo.");
+    if (roleError) {
+      console.error("Error checking role:", roleError);
+      throw new Error("Erro ao verificar permissões.");
+    }
 
+    if (!isAdmin) {
+      console.error("User is not admin_geral");
+      throw new Error("Apenas administradores podem sincronizar o conteúdo.");
+    }
+
+    console.log("Fetching content from YouTube via AI...");
     const { fetchYoutubeContent } = await import("./youtube.server");
     const videos = await fetchYoutubeContent("@BatistaAtos");
+    console.log(`Fetched ${videos?.length || 0} videos.`);
 
     if (videos && videos.length > 0) {
+      console.log("Upserting videos to DB...");
       const { error } = await context.supabase
         .from("youtube_videos")
         .upsert(
@@ -50,13 +62,16 @@ export const syncYoutubeContent = createServerFn({ method: "POST" })
             thumbnail_url: v.thumbnail_url,
             type: v.type,
             url: v.url,
-            published_at: v.published_at
+            published_at: v.published_at || new Date().toISOString()
           })),
           { onConflict: 'youtube_id' }
         );
 
-      if (error) throw new Error(error.message);
+      if (error) {
+        console.error("Upsert error:", error);
+        throw new Error(error.message);
+      }
     }
 
-    return { success: true, count: videos.length };
+    return { success: true, count: videos?.length || 0 };
   });
