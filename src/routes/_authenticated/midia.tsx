@@ -25,7 +25,11 @@ import { Input } from "@/components/ui/input";
 import { useState, useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LiveStreamCard } from "@/components/midia/live-stream-card";
-import { Video, MonitorPlay, Play } from "lucide-react";
+import { Video, MonitorPlay, Play, Radio, ListVideo, Podcast } from "lucide-react";
+import { YoutubeVideoCard } from "@/components/midia/youtube-video-card";
+import { getYoutubeVideos, syncYoutubeContent } from "@/lib/youtube.functions";
+import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
 
 
 
@@ -60,6 +64,29 @@ function MediaModule() {
       return data || [];
     },
   });
+
+  const fetchVideos = useServerFn(getYoutubeVideos);
+  const syncVideosFn = useServerFn(syncYoutubeContent);
+
+  const { data: youtubeVideos, refetch: refetchYoutube } = useQuery({
+    queryKey: ["youtube-videos"],
+    queryFn: () => fetchVideos({ data: { limit: 12 } }),
+  });
+
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  const handleSync = async () => {
+    setIsSyncing(true);
+    try {
+      await syncVideosFn();
+      toast.success("Conteúdo do YouTube sincronizado com sucesso!");
+      refetchYoutube();
+    } catch (error) {
+      toast.error("Erro ao sincronizar conteúdo.");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   const filteredAssets = useMemo(() => {
     const term = q.trim().toLowerCase();
@@ -103,8 +130,12 @@ function MediaModule() {
                 )}
               </TabsTrigger>
               <TabsTrigger value="live" className="gap-2">
-                <MonitorPlay className="h-4 w-4" />
+                <Radio className="h-4 w-4" />
                 <span>Transmissão</span>
+              </TabsTrigger>
+              <TabsTrigger value="youtube" className="gap-2">
+                <Video className="h-4 w-4" />
+                <span>YouTube Atos</span>
               </TabsTrigger>
             </TabsList>
 
@@ -328,6 +359,81 @@ function MediaModule() {
                     </CardContent>
                   </Card>
                 </div>
+              </div>
+            </div>
+          </TabsContent>
+          <TabsContent value="youtube" className="mt-0 animate-in fade-in duration-500">
+            <div className="space-y-8">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="font-serif text-3xl">Arquivo de Vídeo</h2>
+                  <p className="text-muted-foreground text-sm">Cultos de Domingo e Estudos Bíblicos (Mesacast)</p>
+                </div>
+                <Button 
+                  onClick={handleSync} 
+                  disabled={isSyncing}
+                  variant="outline"
+                  className="gap-2 border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
+                >
+                  <ListVideo className={`h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
+                  {isSyncing ? 'Sincronizando...' : 'Sincronizar YouTube'}
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {!youtubeVideos || youtubeVideos.length === 0 ? (
+                  <div className="col-span-full py-20 text-center space-y-4">
+                    <Video className="h-12 w-12 text-muted-foreground/20 mx-auto" />
+                    <p className="text-muted-foreground">Nenhum vídeo sincronizado ainda.</p>
+                    <Button onClick={handleSync} variant="secondary">Sincronizar Agora</Button>
+                  </div>
+                ) : (
+                  youtubeVideos.map((video, index) => (
+                    <YoutubeVideoCard key={video.id} video={video as any} index={index} />
+                  ))
+                )}
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-8 pt-8">
+                <Card className="bg-red-500/5 border-red-500/20">
+                  <CardHeader className="flex flex-row items-center gap-4">
+                    <div className="h-12 w-12 rounded-full bg-red-600/10 flex items-center justify-center">
+                      <Radio className="h-6 w-6 text-red-600" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg">Cultos ao Vivo</CardTitle>
+                      <CardDescription>Domingos às 19:00</CardDescription>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Acompanhe nossas transmissões em tempo real. Os cultos ficam salvos automaticamente na seção /streams do canal.
+                    </p>
+                    <Button variant="outline" className="w-full" asChild>
+                      <a href="https://www.youtube.com/@BatistaAtos/streams" target="_blank" rel="noreferrer">Ver no YouTube</a>
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-blue-500/5 border-blue-500/20">
+                  <CardHeader className="flex flex-row items-center gap-4">
+                    <div className="h-12 w-12 rounded-full bg-blue-600/10 flex items-center justify-center">
+                      <Podcast className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg">Mesacast (EBD)</CardTitle>
+                      <CardDescription>Domingos de Manhã</CardDescription>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Nossos estudos bíblicos dominicais agora em formato de Podcast. Profundidade teológica e aplicação prática.
+                    </p>
+                    <Button variant="outline" className="w-full" asChild>
+                      <a href="https://www.youtube.com/@BatistaAtos/podcasts" target="_blank" rel="noreferrer">Ver no YouTube</a>
+                    </Button>
+                  </CardContent>
+                </Card>
               </div>
             </div>
           </TabsContent>

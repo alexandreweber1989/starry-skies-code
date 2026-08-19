@@ -17,7 +17,8 @@ import {
   Presentation,
   Sparkles,
   X,
-  Megaphone
+  Megaphone,
+  Video
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -149,7 +150,21 @@ const MODULES = [
       { label: "Resumo Estruturado", content: "O sistema processa o áudio e gera um resumo completo com tópicos e versículos citados." },
       { label: "Filtro de Conteúdo", content: "Remove automaticamente partes não relacionadas à mensagem (como avisos ou louvores iniciais)." },
       { label: "Arquivo de Mensagens", content: "Biblioteca organizada por data e tema para consulta posterior dos membros." },
-      { label: "Gerador de Capas", content: "Puxa a identidade visual do vídeo original para manter a organização estética." }
+      { label: "Gerador de Capas", content: "Puxa a identidade visual do vídeo original para manter a organização estética." },
+      { label: "Sincronização Atos", content: "Botão dedicado para buscar os Cultos de Domingo e Estudos Bíblicos diretamente do canal oficial da igreja no YouTube." }
+    ],
+  },
+  {
+    id: "youtube-integration",
+    title: "Youtube Atos",
+    path: "/midia",
+    description: "Integração direta com o conteúdo audiovisual da @BatistaAtos.",
+    icon: Video,
+    details: [
+      { label: "Cultos de Domingo", content: "Sincronização automática dos vídeos da aba /streams. O último culto aparece em destaque no Painel." },
+      { label: "Estudos Bíblicos (Mesacast)", content: "Acesso ágil aos vídeos da EBD dominical (aba /podcasts). Membros podem assistir direto na plataforma." },
+      { label: "Visualização Prática", content: "Cards modernos com thumbnail, data e tipo de conteúdo, otimizados para visualização mobile e desktop." },
+      { label: "Sincronização Manual", content: "Administradores podem forçar a atualização dos vídeos no botão 'Sincronizar YouTube' na aba Central de Mídia." }
     ],
   },
   {
