@@ -78,11 +78,16 @@ function MediaModule() {
   const handleSync = async () => {
     setIsSyncing(true);
     try {
-      await syncVideosFn();
-      toast.success("Conteúdo do YouTube sincronizado com sucesso!");
-      refetchYoutube();
-    } catch (error) {
-      toast.error("Erro ao sincronizar conteúdo.");
+      const result = await syncVideosFn();
+      if (result.success) {
+        toast.success(result.message || "Conteúdo do YouTube sincronizado com sucesso!");
+        refetchYoutube();
+      } else {
+        toast.error(result.message || "Falha na sincronização.");
+      }
+    } catch (error: any) {
+      console.error("Sync error:", error);
+      toast.error(error.message || "Erro ao sincronizar conteúdo.");
     } finally {
       setIsSyncing(false);
     }
