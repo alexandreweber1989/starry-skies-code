@@ -1,4 +1,4 @@
-import { Play, ExternalLink, Calendar, Youtube } from "lucide-react";
+import { Play, ExternalLink, Calendar, YoutubeIcon } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -35,7 +35,7 @@ export function YoutubeVideoCard({ video, index = 0 }: YoutubeVideoCardProps) {
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center opacity-20">
-              <Youtube className="h-12 w-12" />
+              <YoutubeIcon className="h-12 w-12" />
             </div>
           )}
           
