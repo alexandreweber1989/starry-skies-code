@@ -39,8 +39,10 @@ export async function fetchYoutubeContent(channelId: string) {
     const content = response.choices[0].message.content;
     if (!content) return [];
     
-    const data = JSON.parse(content);
-    return Array.isArray(data.videos) ? data.videos : (data.results || []);
+    const parsed = JSON.parse(content);
+    // Tenta encontrar a lista de vídeos em diferentes formatos possíveis
+    const videoList = parsed.videos || parsed.results || (Array.isArray(parsed) ? parsed : []);
+    return videoList;
   } catch (error) {
     console.error("Erro ao buscar conteúdo do YouTube:", error);
     return [];
