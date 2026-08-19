@@ -25,7 +25,7 @@ import { Input } from "@/components/ui/input";
 import { useState, useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LiveStreamCard } from "@/components/midia/live-stream-card";
-import { Video, MonitorPlay, Play, YoutubeIcon, Radio, ListVideo, Podcast } from "lucide-react";
+import { Video, MonitorPlay, Play, Radio, ListVideo, Podcast, Youtube } from "lucide-react";
 import { YoutubeVideoCard } from "@/components/midia/youtube-video-card";
 import { getYoutubeVideos, syncYoutubeContent } from "@/lib/youtube.functions";
 import { toast } from "sonner";
@@ -70,7 +70,7 @@ function MediaModule() {
 
   const { data: youtubeVideos, refetch: refetchYoutube } = useQuery({
     queryKey: ["youtube-videos"],
-    queryFn: () => fetchVideos({ limit: 12 }),
+    queryFn: () => fetchVideos({ data: { limit: 12 } }),
   });
 
   const [isSyncing, setIsSyncing] = useState(false);
@@ -134,7 +134,7 @@ function MediaModule() {
                 <span>Transmissão</span>
               </TabsTrigger>
               <TabsTrigger value="youtube" className="gap-2">
-                <YoutubeIcon className="h-4 w-4" />
+                <Youtube className="h-4 w-4" />
                 <span>YouTube Atos</span>
               </TabsTrigger>
             </TabsList>
