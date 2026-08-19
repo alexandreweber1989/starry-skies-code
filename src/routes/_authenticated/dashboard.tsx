@@ -35,6 +35,9 @@ import { ProximosEventos } from "@/components/painel/proximos-eventos";
 import { ContribuicaoPix } from "@/components/painel/contribuicao-pix";
 import { AvisosRecentes } from "@/components/painel/avisos-recentes";
 import { LiveStreamCard } from "@/components/midia/live-stream-card";
+import { YoutubeVideoCard } from "@/components/midia/youtube-video-card";
+import { getYoutubeVideos } from "@/lib/youtube.functions";
+import { useServerFn } from "@tanstack/react-start";
 
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -151,6 +154,12 @@ function Dashboard() {
           | undefined,
       };
     },
+  });
+
+  const fetchVideos = useServerFn(getYoutubeVideos);
+  const { data: latestPodcast } = useQuery({
+    queryKey: ["latest-podcast"],
+    queryFn: () => fetchVideos({ data: { type: 'podcast', limit: 1 } }),
   });
 
   const nomeCompleto = profile?.full_name || user?.user_metadata?.["full_name"];
@@ -274,7 +283,18 @@ function Dashboard() {
             <MeusLideres />
           </div>
           <div>
-            <LiveStreamCard />
+            <div className="space-y-6">
+              <LiveStreamCard />
+              {latestPodcast && latestPodcast.length > 0 && (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between px-1">
+                    <h3 className="font-mono text-[10px] uppercase tracking-widest text-primary font-bold">Último Mesacast</h3>
+                    <Link to="/midia" className="text-[10px] text-muted-foreground hover:text-primary uppercase tracking-tighter">Ver todos</Link>
+                  </div>
+                  <YoutubeVideoCard video={latestPodcast[0] as any} />
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
