@@ -29,6 +29,12 @@ export const getYoutubeVideos = createServerFn({ method: "GET" })
 export const syncYoutubeContent = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    // Check for environment variables at runtime
+    if (!process.env['SUPABASE_URL'] || !process.env['SUPABASE_PUBLISHABLE_KEY']) {
+      console.error("Missing Supabase environment variables in syncYoutubeContent handler");
+      throw new Error("Erro de configuração do servidor (Variaveis de ambiente ausentes). Verifique o Lovable Cloud.");
+    }
+
     // 1. Verificar se é admin
     const { data: isAdmin, error: roleError } = await context.supabase.rpc("has_role", {
       _user_id: context.userId,
