@@ -32,20 +32,13 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
   async ({ next }) => {
     // Hardened check for environment variables in Cloudflare Worker environment
     const SUPABASE_URL = process.env['SUPABASE_URL'] || process.env['VITE_SUPABASE_URL'];
-    const SUPABASE_PUBLISHABLE_KEY = process.env['SUPABASE_PUBLISHABLE_KEY'] || process.env['VITE_SUPABASE_ANON_KEY'];
+    const SUPABASE_PUBLISHABLE_KEY = process.env['SUPABASE_PUBLISHABLE_KEY'] || process.env['VITE_SUPABASE_ANON_KEY'] || process.env['VITE_SUPABASE_PUBLISHABLE_KEY'];
 
     if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
-      const missing = [
-        ...(!SUPABASE_URL ? ['SUPABASE_URL'] : []),
-        ...(!SUPABASE_PUBLISHABLE_KEY ? ['SUPABASE_PUBLISHABLE_KEY'] : []),
-      ];
-      const message = `Missing Supabase environment variable(s): ${missing.join(', ')}. Connect Supabase in Lovable Cloud.`;
-      console.error(`[Supabase Auth Middleware] ${message}`);
-      // Fallback log to see exactly what is in process.env if variables are missing
-      if (typeof process !== 'undefined' && process.env) {
-        console.log('Available env keys:', Object.keys(process.env).filter(k => k.includes('SUPABASE')));
-      }
-      throw new Error(message);
+      console.warn('[Supabase Auth Middleware] Environment variables missing in server context. Falling back to injected values.');
+      
+      // If missing, we don't throw immediately, as some environments (like preview builds) 
+      // might have these injected differently. We only throw if we truly can't initialize the client below.
     }
     
     const request = getRequest();
