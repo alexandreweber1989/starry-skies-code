@@ -111,10 +111,12 @@ function MediaModule() {
         className="border-b-[3px] border-[var(--group-primary)]"
         description="Biblioteca de ativos, logos, artes e central de solicitações para o time de design da IB Atos."
         actions={
-          <Button className="gap-2 shadow-lg shadow-pink-500/20" style={{ backgroundColor: "var(--group-primary)" }}>
-            <MessageSquarePlus className="h-4 w-4" />
-            Nova Solicitação
-          </Button>
+          activeTab !== "youtube" && (
+            <Button className="gap-2 shadow-lg shadow-pink-500/20" style={{ backgroundColor: "var(--group-primary)" }}>
+              <MessageSquarePlus className="h-4 w-4" />
+              Nova Solicitação
+            </Button>
+          )
         }
       />
       <PageBody>
