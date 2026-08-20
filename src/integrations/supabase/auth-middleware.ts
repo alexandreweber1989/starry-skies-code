@@ -68,7 +68,7 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
     }
 
     const supabase = createClient<Database>(
-      SUPABASE_URL || 'https://zr.supabase.co', // Use absolute fallback if needed
+      SUPABASE_URL || 'https://zrdzocdadiucrhvwvxhq.supabase.co', // Use absolute fallback if needed
       SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_kala5-0XrdNl2gqWAn8LLw_N9O2RXWT',
       {
         global: {
