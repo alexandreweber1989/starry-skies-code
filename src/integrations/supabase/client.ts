@@ -28,10 +28,14 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
 
 
 function createSupabaseClient() {
-  // Use import.meta.env for client-side (Vite build-time replacement)
-  // Fall back to process.env for SSR (server-side rendering)
-  const SUPABASE_URL = import.meta.env['VITE_SUPABASE_URL'] || process.env['SUPABASE_URL'];
-  const SUPABASE_PUBLISHABLE_KEY = import.meta.env['VITE_SUPABASE_PUBLISHABLE_KEY'] || process.env['SUPABASE_PUBLISHABLE_KEY'];
+  // Try both process.env and import.meta.env to ensure coverage across all contexts
+  const SUPABASE_URL = 
+    (typeof process !== 'undefined' && process.env ? process.env['SUPABASE_URL'] : null) || 
+    import.meta.env['VITE_SUPABASE_URL'];
+    
+  const SUPABASE_PUBLISHABLE_KEY = 
+    (typeof process !== 'undefined' && process.env ? process.env['SUPABASE_PUBLISHABLE_KEY'] : null) || 
+    import.meta.env['VITE_SUPABASE_PUBLISHABLE_KEY'];
 
   if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
     const missing = [
@@ -39,7 +43,14 @@ function createSupabaseClient() {
       ...(!SUPABASE_PUBLISHABLE_KEY ? ['SUPABASE_PUBLISHABLE_KEY'] : []),
     ];
     const message = `Missing Supabase environment variable(s): ${missing.join(', ')}. Connect Supabase in Lovable Cloud.`;
-    console.error(`[Supabase] ${message}`);
+    console.error(`[Supabase Client] ${message}`);
+    
+    // In production, we might want to be less aggressive if this is just a pre-render check,
+    // but for now, we follow the generated pattern with extra logging.
+    if (import.meta.env.PROD) {
+      console.warn("Database variables missing in production bundle. This may be expected during certain build phases.");
+    }
+    
     throw new Error(message);
   }
 
@@ -65,4 +76,3 @@ export const supabase = new Proxy({} as ReturnType<typeof createSupabaseClient>,
     return Reflect.get(_supabase, prop, receiver);
   },
 });
-
