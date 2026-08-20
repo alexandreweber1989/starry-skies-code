@@ -63,6 +63,7 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
     }
 
     if (token.split('.').length !== 3) {
+      console.error('[Supabase Auth Middleware] Invalid token format (expected JWT 3-parts)');
       throw new Error('Unauthorized: Invalid token');
     }
 
@@ -86,6 +87,7 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
 
     const { data, error } = await supabase.auth.getClaims(token);
     if (error || !data?.claims) {
+      console.error('[Supabase Auth Middleware] Failed to get claims from token:', error);
       throw new Error('Unauthorized: Invalid token');
     }
 
