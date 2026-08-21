@@ -32,6 +32,8 @@ import { YoutubeVideoCard } from "@/components/midia/youtube-video-card";
 import { getYoutubeVideos, syncYoutubeContent, syncSingleYoutubeVideo } from "@/lib/youtube.functions";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
+import { Label } from "@/components/ui/label";
+import { Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
