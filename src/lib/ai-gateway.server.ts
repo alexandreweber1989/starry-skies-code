@@ -11,17 +11,16 @@ export const aiGateway = {
   }) => {
     const apiKey = process.env['LOVABLE_AI_GATEWAY_KEY'] || process.env['OPENAI_API_KEY'];
     
-    // Fallback: If no custom keys are provided, use the internal Lovable AI Gateway
+    // Fallback: If no custom keys are provided, the platform uses the internal Lovable AI Gateway.
     if (!apiKey) {
-      console.log("AI Gateway: Using default Lovable AI Gateway (no custom key detected).");
-      // The platform handles routing to the internal gateway when no Authorization header is present 
-      // or when it matches the internal environment.
+      console.log("AI Gateway: Using internal Lovable AI Gateway.");
     }
 
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
     };
 
+    // If a key is present, attach it. If not, the platform injects the managed gateway key via proxy.
     if (apiKey) {
       headers["Authorization"] = `Bearer ${apiKey}`;
     }
@@ -38,6 +37,10 @@ export const aiGateway = {
 
     if (!response.ok) {
       const err = await response.text();
+      // Handle 401 specifically to provide context about the API key
+      if (response.status === 401) {
+        throw new Error(`AI Gateway Auth Error: ${response.status} - Ensure the platform AI gateway is active or valid keys are set.`);
+      }
       throw new Error(`AI Gateway Error: ${response.status} - ${err}`);
     }
 
