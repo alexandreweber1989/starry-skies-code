@@ -5,7 +5,7 @@
 
 export const googleGateway = {
   /**
-   * Chamada ao Gemini 1.5 Flash (Gratuito até 15 RPM).
+   * Chamada ao Gemini 2.5 Flash (Gratuito até 15 RPM).
    */
   gemini: async (prompt: string, options: { jsonMode?: boolean } = {}) => {
     const apiKey = process.env['GOOGLE_API_KEY'];
@@ -14,7 +14,7 @@ export const googleGateway = {
       throw new Error("Google API Key não configurada. Por favor, adicione GOOGLE_API_KEY nos Secrets da plataforma.");
     }
 
-    const model = "gemini-1.5-flash";
+    const model = "gemini-2.5-flash";
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
     const body = {
