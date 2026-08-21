@@ -11,31 +11,46 @@ export const aiGateway = {
   }) => {
     const apiKey = process.env['LOVABLE_AI_GATEWAY_KEY'] || process.env['OPENAI_API_KEY'];
     
-    // Fallback para quando as chaves ainda não estão configuradas (usando endpoint mock ou erro amigável)
-    if (!apiKey) {
-      console.warn("AI Gateway: Nenhuma chave de API configurada (LOVABLE_AI_GATEWAY_KEY ou OPENAI_API_KEY).");
+    // Configuração de headers padrão
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+
+    /**
+     * IMPORTANTE: No Lovable Cloud, se nenhuma chave customizada for fornecida,
+     * o Gateway de IA gerenciado é injetado automaticamente pelo proxy se 
+     * NÃO enviarmos o header Authorization.
+     */
+    if (apiKey) {
+      headers["Authorization"] = `Bearer ${apiKey}`;
     }
 
-    // O Lovable AI Gateway é injetado automaticamente pelo ambiente se disponível.
-    // Para TanStack Start v1 no Cloudflare Workers, usamos fetch nativo.
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: options.model || "gpt-4o-mini",
-        messages: options.messages,
-        response_format: options.response_format,
-      }),
-    });
+    try {
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          model: options.model || "gpt-4o-mini",
+          messages: options.messages,
+          response_format: options.response_format,
+        }),
+      });
 
-    if (!response.ok) {
-      const err = await response.text();
-      throw new Error(`AI Gateway Error: ${response.status} - ${err}`);
+      if (!response.ok) {
+        const errBody = await response.text();
+        
+        // Se retornar 401, informamos ao usuário para configurar a chave nos Secrets
+        if (response.status === 401) {
+          throw new Error("Erro de Autenticação (401): Nenhuma chave de API configurada. Por favor, adicione sua chave OpenAI nos Secrets da plataforma (Configurações > Secrets > OPENAI_API_KEY).");
+        }
+        
+        throw new Error(`AI Gateway Error (${response.status}): ${errBody}`);
+      }
+
+      return await response.json();
+    } catch (error: any) {
+      console.error("[AI Gateway] Connection error:", error);
+      throw error;
     }
-
-    return await response.json();
   }
 };
