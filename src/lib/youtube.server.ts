@@ -40,7 +40,7 @@ export async function fetchYoutubeContent(channelId: string) {
     console.log("[YouTube Server] Calling AI Gateway...");
     const response = await aiGateway.chat({
       messages: [{ role: "user", content: prompt }],
-      model: "gpt-4o",
+      model: "gpt-4o-mini",
       response_format: { type: "json_object" }
     });
 

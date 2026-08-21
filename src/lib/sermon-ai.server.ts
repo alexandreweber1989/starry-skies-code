@@ -49,7 +49,7 @@ export async function generateSermonSummary(youtubeUrl: string) {
 
   const response = await aiGateway.chat({
     messages: [{ role: "user", content: prompt }],
-    model: "gpt-4o", // Utilizando um modelo robusto para análise de conteúdo
+    model: "gpt-4o-mini", // Utilizando um modelo robusto para análise de conteúdo
     response_format: { type: "json_object" }
   });
 

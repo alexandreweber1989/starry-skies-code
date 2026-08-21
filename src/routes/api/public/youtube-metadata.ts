@@ -55,7 +55,7 @@ export const Route = createFileRoute("/api/public/youtube-metadata")({
 
           const aiResponse = await aiGateway.chat({
             messages: [{ role: "user", content: prompt }],
-            model: "gpt-4o",
+            model: "gpt-4o-mini",
             response_format: { type: "json_object" }
           });
 
