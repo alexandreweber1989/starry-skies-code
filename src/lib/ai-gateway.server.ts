@@ -41,7 +41,7 @@ export const aiGateway = {
         
         // Se retornar 401, informamos ao usuário para configurar a chave nos Secrets
         if (response.status === 401) {
-          throw new Error("Erro de Autenticação (401): Nenhuma chave de API configurada. Por favor, adicione sua chave OpenAI nos Secrets da plataforma (Configurações > Secrets > OPENAI_API_KEY).");
+          throw new Error("Erro de Autenticação (401): Nenhuma chave de API (OpenAI ou Google) configurada. Para automação gratuita, adicione GOOGLE_API_KEY nos Secrets (Configurações > Secrets).");
         }
         
         throw new Error(`AI Gateway Error (${response.status}): ${errBody}`);
