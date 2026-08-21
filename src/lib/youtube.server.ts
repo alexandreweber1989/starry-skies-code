@@ -24,7 +24,7 @@ export async function fetchYoutubeContent(channelHandle: string) {
 
     return (videosRes.items || []).map((item: any) => {
       const title = item.snippet.title.toLowerCase();
-      // Melhora a classificação baseada em palavras-chave comuns
+      // Classificação avançada: Mesacast/Estudo vs Culto de Domingo
       let type: 'service' | 'podcast' = 'service';
       
       if (
@@ -32,7 +32,9 @@ export async function fetchYoutubeContent(channelHandle: string) {
         title.includes("podcast") || 
         title.includes("estudo") || 
         title.includes("conversa") ||
-        title.includes("entrevista")
+        title.includes("entrevista") ||
+        title.includes("ebd") ||
+        title.includes("escola bíblica")
       ) {
         type = 'podcast';
       } else if (
@@ -40,7 +42,8 @@ export async function fetchYoutubeContent(channelHandle: string) {
         title.includes("domingo") || 
         title.includes("celebração") ||
         title.includes("pregacao") ||
-        title.includes("pregação")
+        title.includes("pregação") ||
+        title.includes("noite")
       ) {
         type = 'service';
       }
@@ -56,7 +59,6 @@ export async function fetchYoutubeContent(channelHandle: string) {
     });
   } catch (error: any) {
     console.error("[YouTube Server] Error:", error.message);
-    // Em caso de erro (ex: cota), não retornamos array vazio silenciosamente se for erro de API
     if (error.message.includes("YouTube API Error")) throw error;
     return [];
   }
@@ -80,7 +82,8 @@ export async function getYoutubeMetadata(videoUrl: string) {
     type: (
       item.snippet.title.toLowerCase().includes("mesacast") || 
       item.snippet.title.toLowerCase().includes("podcast") || 
-      item.snippet.title.toLowerCase().includes("estudo")
+      item.snippet.title.toLowerCase().includes("estudo") ||
+      item.snippet.title.toLowerCase().includes("ebd")
     ) ? 'podcast' : 'service',
     published_at: item.snippet.publishedAt,
     thumbnail_url: item.snippet.thumbnails?.maxres?.url || item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.default?.url
