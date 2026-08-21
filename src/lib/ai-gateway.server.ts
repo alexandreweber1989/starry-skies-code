@@ -11,19 +11,24 @@ export const aiGateway = {
   }) => {
     const apiKey = process.env['LOVABLE_AI_GATEWAY_KEY'] || process.env['OPENAI_API_KEY'];
     
-    // Fallback para quando as chaves ainda não estão configuradas (usando endpoint mock ou erro amigável)
+    // Fallback: If no custom keys are provided, use the internal Lovable AI Gateway
     if (!apiKey) {
-      console.warn("AI Gateway: Nenhuma chave de API configurada (LOVABLE_AI_GATEWAY_KEY ou OPENAI_API_KEY).");
+      console.log("AI Gateway: Using default Lovable AI Gateway (no custom key detected).");
+      // The platform handles routing to the internal gateway when no Authorization header is present 
+      // or when it matches the internal environment.
     }
 
-    // O Lovable AI Gateway é injetado automaticamente pelo ambiente se disponível.
-    // Para TanStack Start v1 no Cloudflare Workers, usamos fetch nativo.
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+
+    if (apiKey) {
+      headers["Authorization"] = `Bearer ${apiKey}`;
+    }
+
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`,
-      },
+      headers,
       body: JSON.stringify({
         model: options.model || "gpt-4o-mini",
         messages: options.messages,
