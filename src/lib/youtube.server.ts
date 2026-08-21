@@ -22,18 +22,43 @@ export async function fetchYoutubeContent(channelHandle: string) {
       maxResults: "50"
     });
 
-    return (videosRes.items || []).map((item: any) => ({
-      youtube_id: item.id.videoId,
-      title: item.snippet.title,
-      thumbnail_url: item.snippet.thumbnails?.maxres?.url || item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.default?.url,
-      type: (item.snippet.title.toLowerCase().includes("estudo") || item.snippet.title.toLowerCase().includes("podcast")) 
-        ? 'podcast' : 'service',
-      published_at: item.snippet.publishedAt,
-      url: `https://www.youtube.com/watch?v=${item.id.videoId}`
-    }));
+    return (videosRes.items || []).map((item: any) => {
+      const title = item.snippet.title.toLowerCase();
+      // Classificação avançada: Mesacast/Estudo vs Culto de Domingo
+      let type: 'service' | 'podcast' = 'service';
+      
+      if (
+        title.includes("mesacast") || 
+        title.includes("podcast") || 
+        title.includes("estudo") || 
+        title.includes("conversa") ||
+        title.includes("entrevista") ||
+        title.includes("ebd") ||
+        title.includes("escola bíblica")
+      ) {
+        type = 'podcast';
+      } else if (
+        title.includes("culto") || 
+        title.includes("domingo") || 
+        title.includes("celebração") ||
+        title.includes("pregacao") ||
+        title.includes("pregação") ||
+        title.includes("noite")
+      ) {
+        type = 'service';
+      }
+
+      return {
+        youtube_id: item.id.videoId,
+        title: item.snippet.title,
+        thumbnail_url: item.snippet.thumbnails?.maxres?.url || item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.default?.url,
+        type,
+        published_at: item.snippet.publishedAt,
+        url: `https://www.youtube.com/watch?v=${item.id.videoId}`
+      };
+    });
   } catch (error: any) {
     console.error("[YouTube Server] Error:", error.message);
-    // Em caso de erro (ex: cota), não retornamos array vazio silenciosamente se for erro de API
     if (error.message.includes("YouTube API Error")) throw error;
     return [];
   }
@@ -54,8 +79,12 @@ export async function getYoutubeMetadata(videoUrl: string) {
   return {
     title: item.snippet.title,
     youtube_id: videoId,
-    type: (item.snippet.title.toLowerCase().includes("estudo") || item.snippet.title.toLowerCase().includes("podcast")) 
-      ? 'podcast' : 'service',
+    type: (
+      item.snippet.title.toLowerCase().includes("mesacast") || 
+      item.snippet.title.toLowerCase().includes("podcast") || 
+      item.snippet.title.toLowerCase().includes("estudo") ||
+      item.snippet.title.toLowerCase().includes("ebd")
+    ) ? 'podcast' : 'service',
     published_at: item.snippet.publishedAt,
     thumbnail_url: item.snippet.thumbnails?.maxres?.url || item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.default?.url
   };
