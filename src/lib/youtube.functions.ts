@@ -29,9 +29,11 @@ export const getYoutubeVideos = createServerFn({ method: "GET" })
 export const syncYoutubeContent = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    console.log(`[Sync] Starting sync for user: ${context.userId}`);
+    
     // Check for environment variables at runtime
     if (!process.env['SUPABASE_URL'] || !process.env['SUPABASE_PUBLISHABLE_KEY']) {
-      console.error("Missing Supabase environment variables in syncYoutubeContent handler");
+      console.error("[Sync] Missing Supabase environment variables");
       throw new Error("Erro de configuração do servidor (Variaveis de ambiente ausentes). Verifique o Lovable Cloud.");
     }
 
@@ -42,22 +44,26 @@ export const syncYoutubeContent = createServerFn({ method: "POST" })
     });
     
     if (roleError) {
-      console.error("Erro ao verificar papel do usuário:", roleError);
+      console.error("[Sync] Role check error:", roleError);
       throw new Error("Falha na verificação de permissões.");
     }
 
     if (!isAdmin) {
-      console.error(`Usuário ${context.userId} tentou sincronizar sem ser admin_geral`);
+      console.error(`[Sync] User ${context.userId} is not admin_geral`);
       throw new Error("Apenas administradores podem realizar esta ação.");
     }
 
     // 2. Buscar conteúdo
     try {
+      console.log("[Sync] Fetching content via AI...");
       const { fetchYoutubeContent } = await import("./youtube.server");
       const videos = await fetchYoutubeContent("@BatistaAtos");
 
+      console.log(`[Sync] AI returned ${videos?.length || 0} videos`);
+
       if (!videos || !Array.isArray(videos) || videos.length === 0) {
-        return { success: true, count: 0, message: "Nenhum vídeo novo encontrado." };
+        console.warn("[Sync] No videos found by AI");
+        return { success: true, count: 0, message: "Nenhum vídeo novo encontrado (AI não localizou registros)." };
       }
 
       // 3. Validar e Formatar
@@ -66,29 +72,33 @@ export const syncYoutubeContent = createServerFn({ method: "POST" })
         .map((v: any) => ({
           youtube_id: String(v.youtube_id),
           title: String(v.title),
-          thumbnail_url: v.thumbnail_url ? String(v.thumbnail_url) : null,
+          thumbnail_url: v.thumbnail_url ? String(v.thumbnail_url) : `https://img.youtube.com/vi/${v.youtube_id}/maxresdefault.jpg`,
           type: (v.type === 'podcast' || v.type === 'service') ? v.type : 'service',
           url: String(v.url),
           published_at: v.published_at || new Date().toISOString()
         }));
+
+      console.log(`[Sync] Validated ${validVideos.length} videos`);
 
       if (validVideos.length === 0) {
         return { success: true, count: 0, message: "Os dados retornados pelo YouTube são inválidos." };
       }
 
       // 4. Salvar no Banco
+      console.log("[Sync] Saving to database...");
       const { error: upsertError } = await context.supabase
         .from("youtube_videos")
         .upsert(validVideos, { onConflict: 'youtube_id' });
 
       if (upsertError) {
-        console.error("Erro no upsert de vídeos:", upsertError);
+        console.error("[Sync] Upsert error:", upsertError);
         throw new Error(`Erro de banco de dados: ${upsertError.message}`);
       }
 
+      console.log("[Sync] Finished successfully");
       return { success: true, count: validVideos.length };
     } catch (err: any) {
-      console.error("Erro crítico na sincronização do YouTube:", err);
+      console.error("[Sync] Critical error:", err);
       throw new Error(err.message || "Ocorreu um erro inesperado ao sincronizar.");
     }
   });
