@@ -122,21 +122,13 @@ export const syncSingleYoutubeVideo = createServerFn({ method: "POST" })
     }
 
     try {
-      // 2. Chamar a API de metadados (internamente)
-      const baseUrl = process.env['VITE_SITE_URL'] || 'http://localhost:8080';
-      const metadataUrl = `${baseUrl}/api/public/youtube-metadata?url=${encodeURIComponent(data.url)}`;
-      
-      const res = await fetch(metadataUrl);
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.error || "Falha ao obter metadados do vídeo.");
-      }
-      
-      const video = await res.json();
+      const { getYoutubeMetadata } = await import("./youtube.server");
+      const video = await getYoutubeMetadata(data.url);
       
       if (!video.youtube_id || !video.title) {
         throw new Error("Dados do vídeo incompletos.");
       }
+
 
       // 3. Salvar no banco
       const payload = {
