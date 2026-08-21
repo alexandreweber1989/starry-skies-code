@@ -77,8 +77,11 @@ export async function getYoutubeMetadata(videoUrl: string) {
   return {
     title: item.snippet.title,
     youtube_id: videoId,
-    type: (item.snippet.title.toLowerCase().includes("estudo") || item.snippet.title.toLowerCase().includes("podcast")) 
-      ? 'podcast' : 'service',
+    type: (
+      item.snippet.title.toLowerCase().includes("mesacast") || 
+      item.snippet.title.toLowerCase().includes("podcast") || 
+      item.snippet.title.toLowerCase().includes("estudo")
+    ) ? 'podcast' : 'service',
     published_at: item.snippet.publishedAt,
     thumbnail_url: item.snippet.thumbnails?.maxres?.url || item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.default?.url
   };
