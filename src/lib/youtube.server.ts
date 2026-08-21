@@ -22,15 +22,38 @@ export async function fetchYoutubeContent(channelHandle: string) {
       maxResults: "50"
     });
 
-    return (videosRes.items || []).map((item: any) => ({
-      youtube_id: item.id.videoId,
-      title: item.snippet.title,
-      thumbnail_url: item.snippet.thumbnails?.maxres?.url || item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.default?.url,
-      type: (item.snippet.title.toLowerCase().includes("estudo") || item.snippet.title.toLowerCase().includes("podcast")) 
-        ? 'podcast' : 'service',
-      published_at: item.snippet.publishedAt,
-      url: `https://www.youtube.com/watch?v=${item.id.videoId}`
-    }));
+    return (videosRes.items || []).map((item: any) => {
+      const title = item.snippet.title.toLowerCase();
+      // Melhora a classificação baseada em palavras-chave comuns
+      let type: 'service' | 'podcast' = 'service';
+      
+      if (
+        title.includes("mesacast") || 
+        title.includes("podcast") || 
+        title.includes("estudo") || 
+        title.includes("conversa") ||
+        title.includes("entrevista")
+      ) {
+        type = 'podcast';
+      } else if (
+        title.includes("culto") || 
+        title.includes("domingo") || 
+        title.includes("celebração") ||
+        title.includes("pregacao") ||
+        title.includes("pregação")
+      ) {
+        type = 'service';
+      }
+
+      return {
+        youtube_id: item.id.videoId,
+        title: item.snippet.title,
+        thumbnail_url: item.snippet.thumbnails?.maxres?.url || item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.default?.url,
+        type,
+        published_at: item.snippet.publishedAt,
+        url: `https://www.youtube.com/watch?v=${item.id.videoId}`
+      };
+    });
   } catch (error: any) {
     console.error("[YouTube Server] Error:", error.message);
     // Em caso de erro (ex: cota), não retornamos array vazio silenciosamente se for erro de API
