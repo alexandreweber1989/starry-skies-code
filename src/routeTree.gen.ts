@@ -40,6 +40,7 @@ import { Route as AuthenticatedAvisosRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedAgendaRouteImport } from './routes/_authenticated/agenda'
 import { Route as AuthenticatedMinisteriosIndexRouteImport } from './routes/_authenticated/ministerios.index'
 import { Route as ApiPublicYoutubeOembedRouteImport } from './routes/api/public/youtube-oembed'
+import { Route as ApiPublicYoutubeMetadataRouteImport } from './routes/api/public/youtube-metadata'
 import { Route as ApiPublicSmsWhatsappRouteImport } from './routes/api/public/sms-whatsapp'
 import { Route as ApiPublicNotificationsRouteImport } from './routes/api/public/notifications'
 import { Route as ApiPublicLiveStatusRouteImport } from './routes/api/public/live-status'
@@ -205,6 +206,12 @@ const ApiPublicYoutubeOembedRoute = ApiPublicYoutubeOembedRouteImport.update({
   path: '/api/public/youtube-oembed',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicYoutubeMetadataRoute =
+  ApiPublicYoutubeMetadataRouteImport.update({
+    id: '/api/public/youtube-metadata',
+    path: '/api/public/youtube-metadata',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicSmsWhatsappRoute = ApiPublicSmsWhatsappRouteImport.update({
   id: '/api/public/sms-whatsapp',
   path: '/api/public/sms-whatsapp',
@@ -286,6 +293,7 @@ export interface FileRoutesByFullPath {
   '/api/public/live-status': typeof ApiPublicLiveStatusRoute
   '/api/public/notifications': typeof ApiPublicNotificationsRoute
   '/api/public/sms-whatsapp': typeof ApiPublicSmsWhatsappRoute
+  '/api/public/youtube-metadata': typeof ApiPublicYoutubeMetadataRoute
   '/api/public/youtube-oembed': typeof ApiPublicYoutubeOembedRoute
   '/ministerios/': typeof AuthenticatedMinisteriosIndexRoute
 }
@@ -326,6 +334,7 @@ export interface FileRoutesByTo {
   '/api/public/live-status': typeof ApiPublicLiveStatusRoute
   '/api/public/notifications': typeof ApiPublicNotificationsRoute
   '/api/public/sms-whatsapp': typeof ApiPublicSmsWhatsappRoute
+  '/api/public/youtube-metadata': typeof ApiPublicYoutubeMetadataRoute
   '/api/public/youtube-oembed': typeof ApiPublicYoutubeOembedRoute
   '/ministerios': typeof AuthenticatedMinisteriosIndexRoute
 }
@@ -368,6 +377,7 @@ export interface FileRoutesById {
   '/api/public/live-status': typeof ApiPublicLiveStatusRoute
   '/api/public/notifications': typeof ApiPublicNotificationsRoute
   '/api/public/sms-whatsapp': typeof ApiPublicSmsWhatsappRoute
+  '/api/public/youtube-metadata': typeof ApiPublicYoutubeMetadataRoute
   '/api/public/youtube-oembed': typeof ApiPublicYoutubeOembedRoute
   '/_authenticated/ministerios/': typeof AuthenticatedMinisteriosIndexRoute
 }
@@ -410,6 +420,7 @@ export interface FileRouteTypes {
     | '/api/public/live-status'
     | '/api/public/notifications'
     | '/api/public/sms-whatsapp'
+    | '/api/public/youtube-metadata'
     | '/api/public/youtube-oembed'
     | '/ministerios/'
   fileRoutesByTo: FileRoutesByTo
@@ -450,6 +461,7 @@ export interface FileRouteTypes {
     | '/api/public/live-status'
     | '/api/public/notifications'
     | '/api/public/sms-whatsapp'
+    | '/api/public/youtube-metadata'
     | '/api/public/youtube-oembed'
     | '/ministerios'
   id:
@@ -491,6 +503,7 @@ export interface FileRouteTypes {
     | '/api/public/live-status'
     | '/api/public/notifications'
     | '/api/public/sms-whatsapp'
+    | '/api/public/youtube-metadata'
     | '/api/public/youtube-oembed'
     | '/_authenticated/ministerios/'
   fileRoutesById: FileRoutesById
@@ -507,6 +520,7 @@ export interface RootRouteChildren {
   ApiPublicLiveStatusRoute: typeof ApiPublicLiveStatusRoute
   ApiPublicNotificationsRoute: typeof ApiPublicNotificationsRoute
   ApiPublicSmsWhatsappRoute: typeof ApiPublicSmsWhatsappRoute
+  ApiPublicYoutubeMetadataRoute: typeof ApiPublicYoutubeMetadataRoute
   ApiPublicYoutubeOembedRoute: typeof ApiPublicYoutubeOembedRoute
 }
 
@@ -729,6 +743,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicYoutubeOembedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/youtube-metadata': {
+      id: '/api/public/youtube-metadata'
+      path: '/api/public/youtube-metadata'
+      fullPath: '/api/public/youtube-metadata'
+      preLoaderRoute: typeof ApiPublicYoutubeMetadataRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/sms-whatsapp': {
       id: '/api/public/sms-whatsapp'
       path: '/api/public/sms-whatsapp'
@@ -881,6 +902,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicLiveStatusRoute: ApiPublicLiveStatusRoute,
   ApiPublicNotificationsRoute: ApiPublicNotificationsRoute,
   ApiPublicSmsWhatsappRoute: ApiPublicSmsWhatsappRoute,
+  ApiPublicYoutubeMetadataRoute: ApiPublicYoutubeMetadataRoute,
   ApiPublicYoutubeOembedRoute: ApiPublicYoutubeOembedRoute,
 }
 export const routeTree = rootRouteImport

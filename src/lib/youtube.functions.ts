@@ -102,3 +102,61 @@ export const syncYoutubeContent = createServerFn({ method: "POST" })
       throw new Error(err.message || "Ocorreu um erro inesperado ao sincronizar.");
     }
   });
+
+export const syncSingleYoutubeVideo = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => 
+    z.object({ 
+      url: z.string().url()
+    }).parse(input)
+  )
+  .handler(async ({ data, context }) => {
+    // 1. Verificar se é admin
+    const { data: isAdmin, error: roleError } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin_geral",
+    });
+    
+    if (roleError || !isAdmin) {
+      throw new Error("Apenas administradores podem realizar esta ação.");
+    }
+
+    try {
+      // 2. Chamar a API de metadados (internamente)
+      const baseUrl = process.env['VITE_SITE_URL'] || 'http://localhost:8080';
+      const metadataUrl = `${baseUrl}/api/public/youtube-metadata?url=${encodeURIComponent(data.url)}`;
+      
+      const res = await fetch(metadataUrl);
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || "Falha ao obter metadados do vídeo.");
+      }
+      
+      const video = await res.json();
+      
+      if (!video.youtube_id || !video.title) {
+        throw new Error("Dados do vídeo incompletos.");
+      }
+
+      // 3. Salvar no banco
+      const payload = {
+        youtube_id: video.youtube_id,
+        title: video.title,
+        thumbnail_url: video.thumbnail_url,
+        type: video.type || 'service',
+        url: data.url,
+        published_at: video.published_at || new Date().toISOString()
+      };
+
+      const { error: upsertError } = await context.supabase
+        .from("youtube_videos")
+        .upsert(payload, { onConflict: 'youtube_id' });
+
+      if (upsertError) throw new Error(upsertError.message);
+
+      return { success: true, video: payload };
+    } catch (err: any) {
+      console.error("[Sync Single] Error:", err);
+      throw new Error(err.message || "Erro ao adicionar vídeo.");
+    }
+  });

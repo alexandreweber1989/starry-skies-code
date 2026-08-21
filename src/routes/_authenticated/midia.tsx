@@ -17,6 +17,8 @@ import {
   Download,
   ExternalLink,
   MessageSquarePlus,
+  Link2,
+  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,9 +29,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LiveStreamCard } from "@/components/midia/live-stream-card";
 import { Video, MonitorPlay, Play, Radio, ListVideo, Podcast } from "lucide-react";
 import { YoutubeVideoCard } from "@/components/midia/youtube-video-card";
-import { getYoutubeVideos, syncYoutubeContent } from "@/lib/youtube.functions";
+import { getYoutubeVideos, syncYoutubeContent, syncSingleYoutubeVideo } from "@/lib/youtube.functions";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
+import { Label } from "@/components/ui/label";
+import { Loader2 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 
 
@@ -67,6 +80,7 @@ function MediaModule() {
 
   const fetchVideos = useServerFn(getYoutubeVideos);
   const syncVideosFn = useServerFn(syncYoutubeContent);
+  const syncSingleVideoFn = useServerFn(syncSingleYoutubeVideo);
 
   const { data: youtubeVideos, refetch: refetchYoutube } = useQuery({
     queryKey: ["youtube-videos"],
@@ -90,6 +104,33 @@ function MediaModule() {
       toast.error(error.message || "Erro ao sincronizar conteúdo.");
     } finally {
       setIsSyncing(false);
+    }
+  };
+
+  const [singleUrl, setSingleUrl] = useState("");
+  const [isSyncingSingle, setIsSyncingSingle] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleSyncSingle = async () => {
+    if (!singleUrl.trim()) {
+      toast.error("Por favor, insira um link do YouTube.");
+      return;
+    }
+
+    setIsSyncingSingle(true);
+    try {
+      const result = await syncSingleVideoFn({ data: { url: singleUrl.trim() } });
+      if (result.success) {
+        toast.success("Vídeo adicionado com sucesso!");
+        setSingleUrl("");
+        setIsDialogOpen(false);
+        refetchYoutube();
+      }
+    } catch (error: any) {
+      console.error("Single sync error:", error);
+      toast.error(error.message || "Erro ao adicionar vídeo.");
+    } finally {
+      setIsSyncingSingle(false);
     }
   };
 
@@ -376,15 +417,64 @@ function MediaModule() {
                   <h2 className="font-serif text-3xl">Arquivo de Vídeo</h2>
                   <p className="text-muted-foreground text-sm">Cultos de Domingo e Estudos Bíblicos (Mesacast)</p>
                 </div>
-                <Button 
-                  onClick={handleSync} 
-                  disabled={isSyncing}
-                  variant="outline"
-                  className="gap-2 border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
-                >
-                  <ListVideo className={`h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
-                  {isSyncing ? 'Sincronizando...' : 'Sincronizar YouTube'}
-                </Button>
+                <div className="flex gap-2">
+                  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button 
+                        variant="outline"
+                        className="gap-2 border-primary/20 text-primary hover:bg-primary hover:text-white transition-colors"
+                      >
+                        <Link2 className="h-4 w-4" />
+                        Adicionar por Link
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Adicionar Vídeo</DialogTitle>
+                        <DialogDescription>
+                          Cole o link do vídeo do YouTube para organizá-lo automaticamente na plataforma.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="py-4">
+                        <Label htmlFor="youtube-url" className="mb-2 block">Link do Vídeo</Label>
+                        <Input 
+                          id="youtube-url"
+                          placeholder="https://www.youtube.com/watch?v=..."
+                          value={singleUrl}
+                          onChange={(e) => setSingleUrl(e.target.value)}
+                        />
+                        <p className="text-[10px] text-muted-foreground mt-2 flex items-center gap-1">
+                          <AlertCircle className="h-3 w-3" />
+                          A automação irá extrair a data e o título original.
+                        </p>
+                      </div>
+                      <DialogFooter>
+                        <Button 
+                          onClick={handleSyncSingle} 
+                          disabled={isSyncingSingle}
+                          className="w-full bg-red-600 hover:bg-red-700 text-white"
+                        >
+                          {isSyncingSingle ? (
+                            <>
+                              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                              Sincronizando...
+                            </>
+                          ) : 'Adicionar Agora'}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+
+                  <Button 
+                    onClick={handleSync} 
+                    disabled={isSyncing}
+                    variant="outline"
+                    className="gap-2 border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
+                  >
+                    <ListVideo className={`h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
+                    {isSyncing ? 'Sincronizando...' : 'Sincronizar Canal'}
+                  </Button>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
