@@ -1,71 +1,47 @@
-import { aiGateway } from "@/lib/ai-gateway.server";
+import { googleGateway } from "@/lib/google-gateway.server";
 
 /**
- * Lógica de integração com YouTube no servidor.
+ * Lógica de integração com YouTube no servidor utilizando a API oficial.
  */
 
-export async function fetchYoutubeContent(channelId: string) {
-  console.log(`[YouTube Server] Starting extraction for: ${channelId}`);
+export async function fetchYoutubeContent(channelHandle: string) {
+  console.log(`[YouTube Server] Fetching real data for: ${channelHandle}`);
   
-  const prompt = `
-    Você é um assistente especializado em extração de dados da Igreja Batista Atos (@BatistaAtos).
-    
-    URL do canal: https://www.youtube.com/${channelId}
-    
-    INSTRUÇÃO: Gere uma lista de 15 a 20 vídeos REAIS e HISTÓRICOS do canal @BatistaAtos.
-    O usuário reclamou que a sincronização não está trazendo vídeos. 
-    Se você não conseguir acessar a URL em tempo real, use sua base de conhecimento para identificar vídeos conhecidos desta igreja no YouTube.
-    
-    Inclua:
-    1. Cultos de Celebração de Domingos (2024, 2025, 2026).
-    2. Episódios do Mesacast / Estudos Bíblicos.
-    3. Vídeos de eventos especiais.
-
-    Retorne EXCLUSIVAMENTE um objeto JSON:
-    {
-      "videos": [
-        {
-          "youtube_id": "string",
-          "title": "string",
-          "thumbnail_url": "https://img.youtube.com/vi/[ID]/maxresdefault.jpg",
-          "type": "service" | "podcast",
-          "published_at": "ISO Date",
-          "url": "https://www.youtube.com/watch?v=[ID]"
-        }
-      ]
-    }
-  `;
-
   try {
-    console.log("[YouTube Server] Calling AI Gateway...");
-    const response = await aiGateway.chat({
-      messages: [{ role: "user", content: prompt }],
-      model: "gpt-4o-mini",
-      response_format: { type: "json_object" }
+    // 1. Obter Channel ID a partir do handle
+    const searchRes = await googleGateway.youtube("search", {
+      q: channelHandle,
+      type: "channel",
+      part: "id",
+      maxResults: "1"
     });
 
-    const content = response.choices[0].message.content;
-    console.log("[YouTube Server] AI Response received");
-    
-    if (!content) {
-      console.warn("[YouTube Server] Empty AI content");
-      return [];
-    }
-    
-    const parsed = JSON.parse(content);
-    const videoList = parsed.videos || parsed.results || (Array.isArray(parsed) ? parsed : []);
-    
-    const normalized = videoList.map((v: any) => {
-      if (!v.thumbnail_url && v.youtube_id) {
-        v.thumbnail_url = `https://img.youtube.com/vi/${v.youtube_id}/maxresdefault.jpg`;
-      }
-      return v;
+    const channelId = searchRes.items?.[0]?.id?.channelId;
+    if (!channelId) throw new Error("Canal não encontrado.");
+
+    // 2. Buscar vídeos recentes
+    const videosRes = await googleGateway.youtube("search", {
+      channelId,
+      part: "snippet",
+      order: "date",
+      type: "video",
+      maxResults: "25"
     });
 
-    console.log(`[YouTube Server] Returning ${normalized.length} videos`);
-    return normalized;
+    const videos = (videosRes.items || []).map((item: any) => ({
+      youtube_id: item.id.videoId,
+      title: item.snippet.title,
+      thumbnail_url: item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.default?.url,
+      // Classificação heurística baseada no título para manter compatibilidade
+      type: (item.snippet.title.toLowerCase().includes("estudo") || item.snippet.title.toLowerCase().includes("podcast")) 
+        ? 'podcast' : 'service',
+      published_at: item.snippet.publishedAt,
+      url: `https://www.youtube.com/watch?v=${item.id.videoId}`
+    }));
+
+    return videos;
   } catch (error) {
-    console.error("[YouTube Server] Extraction error:", error);
+    console.error("[YouTube Server] Error fetching via Google API:", error);
     return [];
   }
 }

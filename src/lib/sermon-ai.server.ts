@@ -1,60 +1,43 @@
-import { aiGateway } from "@/lib/ai-gateway.server";
+import { googleGateway } from "@/lib/google-gateway.server";
 
 /**
- * Lógica de processamento de pregações no servidor.
- * Este arquivo é protegido e nunca chega ao bundle do cliente.
+ * Lógica de processamento de pregações no servidor utilizando Google Gemini (Gratuito).
  */
 
 export async function generateSermonSummary(youtubeUrl: string) {
-  // Extração do ID do YouTube
   const videoId = youtubeUrl.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/)?.[1];
   if (!videoId) throw new Error("ID do vídeo não encontrado no link.");
 
-  /**
-   * NOTA: Em um ambiente real, aqui faríamos o download da legenda/transcrição do YouTube.
-   * Como não temos acesso a binários como yt-dlp ou bibliotecas de extração pesadas no Worker,
-   * vamos utilizar o Gateway de IA para processar a transcrição via o conteúdo do vídeo
-   * ou via uma simulação de extração de metadados se a API de transcrição for restrita.
-   * 
-   * Para este projeto, utilizaremos o prompt de IA para simular a transcrição a partir do contexto do vídeo
-   * e gerar o resumo estruturado solicitado pelo usuário.
-   */
-
+  // Como não temos transcrição real no Worker, usamos o Gemini para simular baseado no título/contexto
+  // se o link for público ou se houver metadados disponíveis.
+  
   const prompt = `
     Analise a pregação do vídeo do YouTube: ${youtubeUrl}
     
     OBJETIVO:
-    Gerar um resumo completo e estruturado da pregação.
+    Gerar um resumo completo e estruturado da pregação para a Igreja Batista Atos.
     
     REGRAS:
-    1. Desconsidere o louvor inicial, avisos e momento de ofertas/dízimos. Foque APENAS na mensagem/pregação.
-    2. Identifique os tópicos principais abordados.
-    3. Extraia e liste os versículos bíblicos citados ou utilizados como base.
-    4. Crie um resumo executivo da mensagem central.
-    5. O tom deve ser inspirador e fiel à mensagem original.
+    1. Foque APENAS na mensagem central.
+    2. Identifique tópicos principais.
+    3. Extraia versículos bíblicos.
     
-    FORMATO DE SAÍDA (JSON):
+    RETORNE EXCLUSIVAMENTE UM JSON com esta estrutura:
     {
-      "title": "Título sugerido para a pregação",
-      "theme": "Frase de impacto central (tema)",
-      "base_verse": "O versículo principal utilizado",
-      "summary": "Resumo executivo completo (parágrafo)",
-      "points": [
-        { "title": "Título do Ponto 1", "detail": "Explicação detalhada do ponto 1" },
-        ...
-      ],
-      "verses": ["Versículo 1", "Versículo 2", ...]
+      "title": "Título sugerido",
+      "theme": "Frase de impacto",
+      "base_verse": "Versículo principal",
+      "summary": "Resumo completo",
+      "points": [{ "title": "Ponto", "detail": "Detalhe" }],
+      "verses": ["Versículo 1", "Versículo 2"]
     }
   `;
 
-  const response = await aiGateway.chat({
-    messages: [{ role: "user", content: prompt }],
-    model: "gpt-4o-mini", // Utilizando um modelo robusto para análise de conteúdo
-    response_format: { type: "json_object" }
-  });
-
-  const content = response.choices[0].message.content;
-  if (!content) throw new Error("A IA não retornou um conteúdo válido.");
-
-  return JSON.parse(content);
+  try {
+    const responseText = await googleGateway.gemini(prompt, { jsonMode: true });
+    return JSON.parse(responseText);
+  } catch (error) {
+    console.error("[Sermon AI] Gemini processing error:", error);
+    throw new Error("Falha ao gerar resumo da pregação via Gemini.");
+  }
 }
