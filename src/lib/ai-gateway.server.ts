@@ -11,16 +11,12 @@ export const aiGateway = {
   }) => {
     const apiKey = process.env['LOVABLE_AI_GATEWAY_KEY'] || process.env['OPENAI_API_KEY'];
     
-    // Fallback: If no custom keys are provided, the platform uses the internal Lovable AI Gateway.
-    if (!apiKey) {
-      console.log("AI Gateway: Using internal Lovable AI Gateway.");
-    }
-
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
     };
 
-    // If a key is present, attach it. If not, the platform injects the managed gateway key via proxy.
+    // If a key is present, attach it. 
+    // If not, the platform's Lovable AI Gateway proxy will handle it if the Authorization header is omitted.
     if (apiKey) {
       headers["Authorization"] = `Bearer ${apiKey}`;
     }
@@ -37,10 +33,19 @@ export const aiGateway = {
 
     if (!response.ok) {
       const err = await response.text();
-      // Handle 401 specifically to provide context about the API key
+      
+      // If we get a 401 and we had a key, it's an invalid key.
+      // If we get a 401 and we HAD NO key, then the Lovable AI Gateway itself is returning 401.
       if (response.status === 401) {
-        throw new Error(`AI Gateway Auth Error: ${response.status} - Ensure the platform AI gateway is active or valid keys are set.`);
+        if (apiKey) {
+          throw new Error(`AI Gateway Error: 401 - Chave de API inválida ou expirada.`);
+        } else {
+          // This usually means the internal gateway is not configured for this specific model or project yet.
+          // Or the platform expects a different endpoint for the managed gateway.
+          throw new Error(`AI Gateway Error: 401 - O Gateway de IA gerenciado não pôde ser autenticado. Por favor, configure uma chave OpenAI em Configurações > Secrets.`);
+        }
       }
+      
       throw new Error(`AI Gateway Error: ${response.status} - ${err}`);
     }
 
