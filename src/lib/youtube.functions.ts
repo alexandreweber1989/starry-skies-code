@@ -7,7 +7,7 @@ export const getYoutubeVideos = createServerFn({ method: "GET" })
   .inputValidator((input: unknown) => 
     z.object({ 
       type: z.enum(['service', 'podcast']).optional(),
-      limit: z.number().default(10)
+      limit: z.number().default(50)
     }).parse(input)
   )
   .handler(async ({ data, context }) => {

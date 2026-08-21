@@ -9,12 +9,13 @@ export async function fetchYoutubeContent(channelId: string) {
   
   const prompt = `
     Analise o canal do YouTube: https://www.youtube.com/${channelId}
-    Considere as seções: /streams (cultos) e /podcasts (estudos bíblicos).
+    Considere as seções: /streams (cultos ao vivo e gravados), /videos (todos os vídeos) e /podcasts (estudos bíblicos).
     
-    Retorne uma lista JSON de vídeos recentes da Igreja Batista Atos. O JSON deve ser um objeto com uma única chave "videos" contendo um array de objetos.
+    INSTRUÇÃO IMPORTANTE: Você deve buscar não apenas os vídeos mais recentes, mas também vídeos históricos/anteriores das seções mencionadas para preencher o arquivo da plataforma.
+    
+    Retorne uma lista JSON de vídeos da Igreja Batista Atos. O JSON deve ser um objeto com uma única chave "videos" contendo um array de objetos.
     Cada vídeo deve ter OBRIGATORIAMENTE: youtube_id, title, thumbnail_url, type ('service' ou 'podcast'), published_at (ISO), url.
 
-    
     Exemplo de saída:
     {
       "videos": [

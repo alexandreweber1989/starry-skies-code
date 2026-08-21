@@ -70,7 +70,7 @@ function MediaModule() {
 
   const { data: youtubeVideos, refetch: refetchYoutube } = useQuery({
     queryKey: ["youtube-videos"],
-    queryFn: () => fetchVideos({ data: { limit: 12 } }),
+    queryFn: () => fetchVideos({ data: { limit: 50 } }),
   });
 
   const [isSyncing, setIsSyncing] = useState(false);
