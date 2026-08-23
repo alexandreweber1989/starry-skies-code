@@ -109,7 +109,9 @@ export async function ativarPush(userId: string): Promise<PushStatus> {
     },
     { onConflict: "endpoint" },
   );
-  if (error) throw new Error("Não foi possível salvar a assinatura deste aparelho.");
+  // Detalhe do erro incluído de propósito: sem ele, diagnosticar falha de
+  // gravação vira adivinhação.
+  if (error) throw new Error(`Não foi possível salvar a assinatura deste aparelho: ${error.message}`);
 
   return "ativo";
 }

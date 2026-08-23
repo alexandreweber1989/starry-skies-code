@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import webpush from "web-push";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
@@ -39,36 +40,91 @@ export async function obterVapid(): Promise<VapidKeys | null> {
     };
   }
 
-  const { data } = await (supabaseAdmin.from("push_config" as any) as any)
-    .select("public_key, private_key, subject")
-    .maybeSingle();
-  if (!data?.public_key || !data?.private_key) return null;
+  // 2) Configuração explícita guardada no banco (se a tabela existir).
+  try {
+    const { data } = await (supabaseAdmin.from("push_config" as any) as any)
+      .select("public_key, private_key, subject")
+      .maybeSingle();
+    if (data?.public_key && data?.private_key) {
+      return {
+        publicKey: data.public_key,
+        privateKey: data.private_key,
+        subject: data.subject || ASSUNTO_PADRAO,
+      };
+    }
+  } catch {
+    // Tabela ausente ou indisponível: seguimos para a derivação automática.
+  }
+
+  // 3) Derivação automática — funciona sem nenhuma configuração.
+  return derivarVapid();
+}
+
+const ASSUNTO_PADRAO = "mailto:contato@igrejabatistaatos.com.br";
+
+/**
+ * Deriva o par de chaves VAPID a partir de um segredo que o servidor já possui.
+ * É determinístico: as mesmas chaves são obtidas sempre, então as assinaturas
+ * dos celulares continuam válidas entre deploys — sem tabela e sem variável
+ * de ambiente para configurar.
+ */
+export function derivarVapid(): VapidKeys | null {
+  const segredo =
+    process.env["SUPABASE_SERVICE_ROLE_KEY"] ||
+    process.env["SUPABASE_SECRET_KEY"] ||
+    process.env["SUPABASE_PUBLISHABLE_KEY"] ||
+    process.env["VITE_SUPABASE_PUBLISHABLE_KEY"];
+  if (!segredo) return null;
+
+  const escalar = Buffer.from(
+    crypto.hkdfSync(
+      "sha256",
+      Buffer.from(segredo, "utf8"),
+      Buffer.from("iba-atos-push-vapid-v1"),
+      Buffer.from("vapid"),
+      32,
+    ),
+  );
+  const ecdh = crypto.createECDH("prime256v1");
+  ecdh.setPrivateKey(escalar);
   return {
-    publicKey: data.public_key,
-    privateKey: data.private_key,
-    subject: data.subject || "mailto:contato@igrejabatistaatos.com.br",
+    publicKey: ecdh.getPublicKey().toString("base64url"),
+    privateKey: escalar.toString("base64url"),
+    subject: process.env["VAPID_SUBJECT"] || ASSUNTO_PADRAO,
   };
 }
 
-/** Gera e guarda um par de chaves caso ainda não exista. Devolve a pública. */
+/**
+ * Garante que existem chaves utilizáveis. Como a derivação automática cobre o
+ * caso sem configuração, isto praticamente nunca falha; a gravação no banco é
+ * apenas um registro (best-effort) para permitir troca manual no futuro.
+ */
 export async function garantirVapid(): Promise<VapidKeys> {
-  const atual = await obterVapid();
-  if (atual) return atual;
+  const chaves = await obterVapid();
+  if (!chaves) {
+    throw new Error(
+      "O servidor não tem nenhum segredo disponível para gerar as chaves de notificação. " +
+        "Confira as variáveis de ambiente do Supabase na publicação.",
+    );
+  }
 
-  const geradas = webpush.generateVAPIDKeys();
-  const subject = process.env["VAPID_SUBJECT"] || "mailto:contato@igrejabatistaatos.com.br";
-  const { error } = await (supabaseAdmin.from("push_config" as any) as any).upsert(
-    {
-      id: true,
-      public_key: geradas.publicKey,
-      private_key: geradas.privateKey,
-      subject,
-      updated_at: new Date().toISOString(),
-    },
-    { onConflict: "id" },
-  );
-  if (error) throw new Error("Não foi possível salvar as chaves de notificação.");
-  return { publicKey: geradas.publicKey, privateKey: geradas.privateKey, subject };
+  // Registro opcional: se a tabela não existir, seguimos normalmente.
+  try {
+    await (supabaseAdmin.from("push_config" as any) as any).upsert(
+      {
+        id: true,
+        public_key: chaves.publicKey,
+        private_key: chaves.privateKey,
+        subject: chaves.subject,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "id" },
+    );
+  } catch {
+    // Sem problema: as chaves derivadas continuam válidas a cada requisição.
+  }
+
+  return chaves;
 }
 
 async function configurarVapid(): Promise<boolean> {
@@ -101,7 +157,7 @@ export async function enviarPush(
     .select("id, user_id, endpoint, p256dh, auth")
     .in("user_id", userIds)
     .not("endpoint", "is", null);
-  if (error) throw new Error("Falha ao carregar os aparelhos cadastrados.");
+  if (error) throw new Error(`Falha ao carregar os aparelhos cadastrados: ${error.message}`);
 
   const lista = (assinaturas ?? []) as {
     id: string;

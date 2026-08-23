@@ -4,32 +4,23 @@ Sistema **gratuito**: usa o push do próprio navegador (Google/Mozilla/Apple),
 autenticado por chaves VAPID da igreja. Não há serviço pago nem custo por
 mensagem enviada.
 
-## Configuração (uma única vez)
+## Configuração
 
-**Jeito recomendado — por dentro da plataforma, sem deploy:** o administrador
-abre **Meu perfil** e toca em **Ativar** no cartão de notificações. Na primeira
-vez, o sistema gera as chaves da igreja e guarda no banco (tabela `push_config`,
-acessível apenas pelo servidor). Não é preciso mexer em variável de ambiente.
+**Não é preciso configurar nada.** As chaves VAPID são derivadas automaticamente
+de um segredo que o servidor já possui, de forma determinística — as mesmas
+chaves a cada requisição, então as assinaturas dos celulares seguem válidas
+entre deploys.
 
-**Alternativa — por variáveis de ambiente:** se preferir, defina as três abaixo
-no serviço que publica o site (**a Vercel, no caso — as variáveis do Lovable não
-chegam à Vercel**) e faça um novo deploy. Quando existem, elas têm prioridade
-sobre o banco:
+Ordem de prioridade, se você quiser assumir o controle:
 
-| Variável | Valor |
-| --- | --- |
-| `VAPID_PUBLIC_KEY` | a chave pública gerada |
-| `VAPID_PRIVATE_KEY` | a chave privada gerada (secreta) |
-| `VAPID_SUBJECT` | `mailto:contato@igrejabatistaatos.com.br` |
+1. **Variáveis de ambiente** (`VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`,
+   `VAPID_SUBJECT`) — definidas **no serviço que publica o site** (a Vercel;
+   variáveis do Lovable não chegam até lá).
+2. **Tabela `push_config`** — se existir uma linha gravada.
+3. **Derivação automática** — o padrão, sem configuração.
 
-Para gerar um novo par de chaves, se necessário:
-
-```bash
-npx web-push generate-vapid-keys
-```
-
-> A chave privada nunca é exposta ao navegador — o app lê apenas a pública,
-> pela rota `/api/push/vapid-key`.
+> Atenção ao trocar de método: chaves diferentes invalidam as assinaturas já
+> feitas, e cada pessoa precisa tocar em **Ativar** de novo.
 
 ## Como o membro ativa
 
