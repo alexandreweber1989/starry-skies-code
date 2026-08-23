@@ -98,5 +98,7 @@ Use o modelo em `.github/pull_request_template.md` (preenchido automaticamente).
   só acessa o que lhe compete.
 
 ## 5. Referências
+- **Contexto do projeto para agentes de IA: `docs/KNOWLEDGE-LOVABLE.md`**
+  (mesmo conteúdo que deve estar na Knowledge do Lovable).
 - Especificação técnica e funcional: **`BLUEPRINT.md`**.
 - Backlog e categorização das tarefas: **`BACKLOG.md`** e as Issues do GitHub.
