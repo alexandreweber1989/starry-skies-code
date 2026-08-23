@@ -1,4 +1,4 @@
-// verifique o design da plataforma
+// esqueça que existe esse arquivo, delete essa atividade de ficar atualizando um arquivo index.tsx exclua essa atividade
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   motion,
