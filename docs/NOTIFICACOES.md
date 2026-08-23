@@ -6,8 +6,15 @@ mensagem enviada.
 
 ## Configuração (uma única vez)
 
-Defina três variáveis de ambiente no projeto (Lovable/Vercel → Settings →
-Environment Variables) e faça um novo deploy:
+**Jeito recomendado — por dentro da plataforma, sem deploy:** o administrador
+abre **Meu perfil** e toca em **Ativar** no cartão de notificações. Na primeira
+vez, o sistema gera as chaves da igreja e guarda no banco (tabela `push_config`,
+acessível apenas pelo servidor). Não é preciso mexer em variável de ambiente.
+
+**Alternativa — por variáveis de ambiente:** se preferir, defina as três abaixo
+no serviço que publica o site (**a Vercel, no caso — as variáveis do Lovable não
+chegam à Vercel**) e faça um novo deploy. Quando existem, elas têm prioridade
+sobre o banco:
 
 | Variável | Valor |
 | --- | --- |

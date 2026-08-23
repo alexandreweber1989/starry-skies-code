@@ -57,3 +57,35 @@ export const enviarNotificacaoTeste = createServerFn({ method: "POST" })
       { audience: "teste", sentBy: context.userId },
     );
   });
+
+/**
+ * Ativa as notificações da igreja: gera e guarda as chaves VAPID caso ainda não
+ * existam. Assim a configuração é feita por um botão, sem depender de variáveis
+ * de ambiente do serviço de publicação. Exclusivo do admin geral.
+ */
+export const configurarPushIgreja = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data: isAdmin } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin_geral",
+    });
+    if (!isAdmin) throw new Error("Apenas a administração pode ativar as notificações.");
+
+    const { garantirVapid } = await import("./push.server");
+    try {
+      const chaves = await garantirVapid();
+      // Só a chave pública volta ao navegador.
+      return { publicKey: chaves.publicKey };
+    } catch (erro) {
+      const detalhe = erro instanceof Error ? erro.message : String(erro);
+      // Mensagem acionável em vez do erro cru de configuração do servidor.
+      if (/SERVICE_ROLE|SUPABASE_URL|Missing/i.test(detalhe)) {
+        throw new Error(
+          "O servidor está sem a chave de administração do banco (SUPABASE_SERVICE_ROLE_KEY). " +
+            "Adicione-a nas variáveis de ambiente da publicação e tente novamente.",
+        );
+      }
+      throw new Error(`Não foi possível ativar as notificações: ${detalhe}`);
+    }
+  });

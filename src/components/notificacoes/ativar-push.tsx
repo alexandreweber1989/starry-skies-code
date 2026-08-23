@@ -3,7 +3,7 @@ import { BellRing, BellOff, Smartphone, ShieldAlert, Check, Loader2, Share, Send
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
-import { enviarNotificacaoTeste } from "@/lib/push.functions";
+import { configurarPushIgreja, enviarNotificacaoTeste } from "@/lib/push.functions";
 import {
   ativarPush,
   desativarPush,
@@ -17,7 +17,7 @@ import {
  * Cada celular é assinado separadamente — ligar no celular não afeta o computador.
  */
 export function AtivarPush({ compact = false }: { compact?: boolean }) {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [status, setStatus] = useState<PushStatus>("desativado");
   const [carregando, setCarregando] = useState(false);
   const [testando, setTestando] = useState(false);
@@ -39,7 +39,23 @@ export function AtivarPush({ compact = false }: { compact?: boolean }) {
         setStatus(await desativarPush());
         toast.success("Notificações desligadas neste aparelho.");
       } else {
-        const novo = await ativarPush(user.id);
+        let novo: PushStatus;
+        try {
+          novo = await ativarPush(user.id);
+        } catch (erro) {
+          // Primeira vez: a igreja ainda não tem chaves. O admin ativa aqui mesmo,
+          // sem precisar mexer em variáveis de ambiente nem refazer o deploy.
+          const naoConfigurado =
+            erro instanceof Error && /não foram ativadas|não configurad/i.test(erro.message);
+          if (!naoConfigurado) throw erro;
+          if (!isAdmin) {
+            toast.error("As notificações ainda não foram ativadas pela igreja.");
+            return;
+          }
+          toast.info("Ativando as notificações da igreja...");
+          await configurarPushIgreja();
+          novo = await ativarPush(user.id);
+        }
         setStatus(novo);
         if (novo === "ativo") toast.success("Pronto! Você receberá os avisos da igreja.");
         else if (novo === "bloqueado")
