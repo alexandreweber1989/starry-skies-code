@@ -37,7 +37,7 @@ function DashboardPage() {
         supabase
           .from("worship_schedules")
           .select("id", { count: "exact" })
-          .eq("status", "pending"),
+          .eq("status", "rascunho"),
         supabase
           .from("visitor_checkins")
           .select("id", { count: "exact", head: true })

@@ -92,7 +92,7 @@ function VisitorsAdminPage() {
                     <span className="flex items-center gap-1">
                       <MessageSquare className="h-3 w-3" /> {v.whatsapp || "N/A"}
                     </span>
-                    <span>Chegou em: {format(new Date(v.created_at), "HH:mm 'de' d/MM", { locale: ptBR })}</span>
+                    <span>Chegou em: {v.created_at ? format(new Date(v.created_at), "HH:mm 'de' d/MM", { locale: ptBR }) : "—"}</span>
                   </div>
                 </div>
 
