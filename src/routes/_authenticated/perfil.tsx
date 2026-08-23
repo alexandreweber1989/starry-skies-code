@@ -9,6 +9,7 @@ import { ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MemberFormDialog } from "@/components/membros/member-form-dialog";
 import { ProfileForm } from "@/components/membros/profile-form";
+import { AtivarPush } from "@/components/notificacoes/ativar-push";
 
 import {
   MARITAL_STATUS,
@@ -63,6 +64,9 @@ function PerfilPage() {
     <>
       <PageHeader eyebrow="Sua conta" title="Meu perfil" description={profile?.full_name ?? user?.email ?? ""} />
       <PageBody>
+        <div className="mb-8">
+          <AtivarPush />
+        </div>
         <div className="mb-8">
           <ProfileForm profile={profile ?? null} userId={user?.id} />
         </div>

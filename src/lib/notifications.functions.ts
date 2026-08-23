@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export const sendUrgentNotification = createServerFn({ method: "POST" })
   .inputValidator((data) => z.object({
@@ -43,44 +44,29 @@ export const sendUrgentNotification = createServerFn({ method: "POST" })
   });
 
 export const notifyAllMembers = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data) => z.object({
     title: z.string(),
     message: z.string(),
     type: z.enum(['emergency', 'announcement', 'event']).default('announcement')
   }).parse(data))
-  .handler(async ({ data }) => {
-    const { getAllMemberProfiles } = await import("./notifications.server");
-    const profiles = await getAllMemberProfiles();
-    const userIds = profiles.map(p => p.id);
+  .handler(async ({ data, context }) => {
+    // Antes esta função chamava http://localhost:8080 — o que nunca funcionaria
+    // em produção. Agora entrega de fato, pelo mesmo caminho do painel de envio.
+    const { data: isAdmin } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin_geral",
+    });
+    if (!isAdmin) throw new Error("Apenas a administração pode notificar todos os membros.");
 
+    const { enviarPush, resolverPublico } = await import("./push.server");
+    const userIds = await resolverPublico("todos");
     if (userIds.length === 0) return { success: true, count: 0 };
 
-    // Dispara via API de Notificações Interna (que já lida com o histórico)
-    const baseUrl = process.env.VITE_SUPABASE_URL?.replace('.supabase.co', '.lovable.app');
-    // Em ambiente Lovable/TanStack, chamamos a rota diretamente ou via fetch interno
-    // Como estamos no servidor, podemos importar o handler da rota ou fazer um fetch.
-    // Para manter desacoplado, faremos um fetch para o endpoint local.
-    
-    try {
-      const response = await fetch('http://localhost:8080/api/public/notifications', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userIds,
-          title: data.title,
-          body: data.message,
-          type: data.type
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('Falha ao disparar notificações via API');
-      }
-
-      const result = await response.json();
-      return { success: true, count: userIds.length, apiResult: result };
-    } catch (error) {
-      console.error('Erro ao notificar membros:', error);
-      throw new Error('Falha ao processar notificações globais');
-    }
+    const resultado = await enviarPush(
+      userIds,
+      { title: data.title, body: data.message, url: "/dashboard", type: data.type },
+      { audience: "todos", sentBy: context.userId },
+    );
+    return { success: true, count: userIds.length, ...resultado };
   });

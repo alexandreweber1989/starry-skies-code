@@ -88,6 +88,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Comunidade cristã dedicada a edificar um lugar de oração para todos os povos em Ponta Grossa. Forjando discípulos através do relacionamento, da mesa e da paternidade.",
       },
       { name: "author", content: "Igreja Batista Atos" },
+      { name: "theme-color", content: "#111216" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-title", content: "IB Atos" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { property: "og:title", content: "Igreja Batista Atos | Uma casa sobre a rocha" },
       {
         property: "og:description",
@@ -119,6 +123,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: appCss,
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "apple-touch-icon", href: "/icons/icon-192.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {

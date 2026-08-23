@@ -1,29 +1,23 @@
 import { useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { registrarServiceWorker, pushSuportado } from "@/lib/push";
 
+/**
+ * Registra o service worker (necessário para receber push com o app fechado)
+ * e reassina quando o navegador rotaciona a assinatura.
+ * A ativação em si é feita pela pessoa, no cartão "Ativar notificações".
+ */
 export function usePushNotifications() {
   useEffect(() => {
-    const registerToken = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+    if (!pushSuportado()) return;
+    void registrarServiceWorker();
 
-      const mockToken = "web-push-token-" + user.id.substring(0, 8);
-
-      try {
-        await (supabase
-          .from("user_push_tokens" as any) as any)
-          .upsert({
-            user_id: user.id,
-            token: mockToken,
-            device_type: "web"
-          }, { onConflict: "user_id,token" });
-        
-        console.log("Push Token registrado para o usuário.");
-      } catch (err) {
-        console.error("Falha ao registrar Push Token:", err);
+    const onMessage = (event: MessageEvent) => {
+      if (event.data?.type === "PUSH_SUBSCRIPTION_CHANGED") {
+        // O navegador trocou a assinatura; a próxima visita ao perfil reativa.
+        console.info("Assinatura de push renovada pelo navegador.");
       }
     };
-
-    registerToken();
+    navigator.serviceWorker.addEventListener("message", onMessage);
+    return () => navigator.serviceWorker.removeEventListener("message", onMessage);
   }, []);
 }
