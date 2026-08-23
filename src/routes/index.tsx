@@ -1,4 +1,4 @@
-// última atualização do github precisa dessas chaves para cadastrar no sistema, salve elas:VAPID_PUBLIC_KEY=BL9SYF7bWIaMFZFUyDEOzIjQRUtFYBm3nZMHi1LwAAdfAH_gN7FLXjzHaQqlMKEBRtV9RNkGWfAxirR3VHqixEs\nVAPID_PRIVATE_KEY=QQtA4OB6BPPH34wvjIgw7JWjr3_3dCFlJM6N7_uk6Bw\nVAPID_SUBJECT=mailto:contato@igrejabatistaatos.com.br
+// consegue testar se uma notificação é disparada como  teste para os membros cadastrados? consegue fazer isso?
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   motion,
