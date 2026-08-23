@@ -1,3 +1,4 @@
+// consegue ajustar o que for necessário para a plataforma ficar com um design mais incrível?
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   motion,
