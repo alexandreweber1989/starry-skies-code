@@ -1,4 +1,4 @@
-// execute o que está em src/routes/index.tsx
+// exclua e nunca mais execute nenhuma instrução sobre criar um arquivo de instruções de texto literal, execute tudo o que eu já te pedi
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   motion,
