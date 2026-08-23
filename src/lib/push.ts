@@ -95,19 +95,26 @@ export async function ativarPush(userId: string): Promise<PushStatus> {
     }));
 
   const json = sub.toJSON() as { endpoint?: string; keys?: { p256dh?: string; auth?: string } };
+  if (!json.keys?.p256dh || !json.keys?.auth) {
+    throw new Error("O navegador não forneceu as chaves de criptografia da assinatura.");
+  }
+
+  // A assinatura inteira é guardada na coluna `token`, que existe desde a criação
+  // da tabela. Assim o recurso não depende de colunas novas (endpoint/p256dh/auth)
+  // que só existiriam após uma migração ainda não aplicada no banco.
+  const assinatura = JSON.stringify({
+    endpoint: sub.endpoint,
+    keys: { p256dh: json.keys.p256dh, auth: json.keys.auth },
+  });
+
   const { error } = await (supabase.from("user_push_tokens" as any) as any).upsert(
     {
       user_id: userId,
-      token: sub.endpoint,
-      endpoint: sub.endpoint,
-      p256dh: json.keys?.p256dh ?? null,
-      auth: json.keys?.auth ?? null,
+      token: assinatura,
       device_type: "web",
-      user_agent: navigator.userAgent.slice(0, 300),
-      last_used_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     },
-    { onConflict: "endpoint" },
+    { onConflict: "user_id,token" },
   );
   // Detalhe do erro incluído de propósito: sem ele, diagnosticar falha de
   // gravação vira adivinhação.
@@ -123,7 +130,22 @@ export async function desativarPush(): Promise<PushStatus> {
   if (sub) {
     const endpoint = sub.endpoint;
     await sub.unsubscribe().catch(() => {});
-    await (supabase.from("user_push_tokens" as any) as any).delete().eq("endpoint", endpoint);
+    // A assinatura pode estar guardada como JSON no `token` (formato atual) ou
+    // na coluna `endpoint` (quando a migração tiver sido aplicada).
+    const { data } = await (supabase.from("user_push_tokens" as any) as any).select("id, token");
+    const alvos = ((data ?? []) as { id: string; token: string }[]).filter((linha) => {
+      if (linha.token === endpoint) return true;
+      try {
+        return JSON.parse(linha.token)?.endpoint === endpoint;
+      } catch {
+        return false;
+      }
+    });
+    if (alvos.length > 0) {
+      await (supabase.from("user_push_tokens" as any) as any)
+        .delete()
+        .in("id", alvos.map((a) => a.id));
+    }
   }
   return "desativado";
 }
