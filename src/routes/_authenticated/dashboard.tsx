@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { PageHeader, PageBody } from "@/components/app-shell";
 import { StatTile } from "@/components/painel/ui";
+import { StatTileSkeleton } from "@/components/ui/loading-states";
 import type { Database } from "@/integrations/supabase/types";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -77,7 +78,7 @@ function DashboardPage() {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {isLoading ? (
               Array.from({ length: isAdmin ? 5 : 3 }).map((_, i) => (
-                <div key={i} className="h-24 bg-card border border-border rounded-xl animate-pulse" />
+                <StatTileSkeleton key={i} />
               ))
             ) : isAdmin ? (
               <>
