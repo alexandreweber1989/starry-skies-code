@@ -7,9 +7,7 @@ import {
   useReducedMotion,
   useMotionValue,
   useMotionValueEvent,
-  useInView,
-  animate,
-  AnimatePresence,
+  type MotionValue,
 } from "framer-motion";
 import { useRef, useState, useEffect, type ReactNode } from "react";
 import {
@@ -572,118 +570,156 @@ function CadastroSection() {
   );
 }
 
-function Historia() {
+/* ---------------------------------------------------------------------------
+ * Nossa Gênese — scrollytelling contínuo
+ *
+ * Antes os capítulos trocavam em degraus (um índice de estado + AnimatePresence),
+ * então a animação começava depois do scroll e sempre com a mesma duração fixa.
+ * Agora as três camadas coexistem e cada uma tem opacidade, deslocamento, escala
+ * e desfoque derivados direto do progresso — a página responde ao dedo, quadro a
+ * quadro, e o título ainda se monta palavra por palavra conforme se desce.
+ * ------------------------------------------------------------------------- */
+
+// Quantos vh de rolagem cada capítulo ocupa. Menos que os 180 anteriores: o
+// trecho ficava com muito scroll morto entre uma troca e outra.
+const ALTURA_CAPITULO_VH = 150;
+
+// Marca d'água do capítulo: o ano quando existe, senão a própria marca por
+// extenso. Antes o fallback virava "02"/"03", números que não diziam nada.
+function marcaDeFundo(marca: string) {
+  return marca.replace(/\D/g, "") || marca;
+}
+
+// O servidor não sabe se o visitante pede menos animação, então a primeira
+// renderização no cliente precisa ser igual à do servidor — só depois trocamos
+// para a versão sem movimento. Sem isso o React descarta e refaz a árvore.
+function usaMenosMovimento() {
   const reduce = useReducedMotion();
+  const [montado, setMontado] = useState(false);
+  useEffect(() => setMontado(true), []);
+  return montado && !!reduce;
+}
+
+function Historia() {
+  const reduce = usaMenosMovimento();
+  return reduce ? <HistoriaEmpilhada /> : <HistoriaScroll />;
+}
+
+// Fallback sem animação: pilha simples, legível e acessível.
+function HistoriaEmpilhada() {
+  return (
+    <section className="relative z-20 bg-background border-t border-border/10 py-32 px-6 lg:px-10">
+      <div className="max-w-4xl mx-auto">
+        <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-10">
+          § 01 — Nossa Gênese
+        </div>
+        <div className="space-y-16">
+          {capitulos.map((c) => (
+            <div key={c.titulo}>
+              <div className="font-mono text-sm text-primary mb-3">{c.marca}</div>
+              <h3 className="font-serif text-4xl md:text-5xl mb-4">{c.titulo}</h3>
+              <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl">
+                {c.texto}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function HistoriaScroll() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end end"],
   });
 
+  // O valor bruto do scroll é entrecortado (uma amostra por evento). A mola dá
+  // inércia: o conteúdo alcança o dedo com um leve atraso, em vez de tremer.
+  const p = useSpring(scrollYProgress, {
+    stiffness: 120,
+    damping: 30,
+    mass: 0.4,
+  });
+
   const [ativo, setAtivo] = useState(0);
-  
   useMotionValueEvent(scrollYProgress, "change", (v) => {
-    const progress = Math.max(0, Math.min(0.999, v));
-    const idx = Math.floor(progress * capitulos.length);
+    const idx = Math.floor(Math.max(0, Math.min(0.999, v)) * capitulos.length);
     setAtivo(idx);
   });
 
-  // Fallback sem animação: pilha simples, legível e acessível.
-  if (reduce) {
-    return (
-      <section className="relative z-20 bg-background border-t border-border/10 py-32 px-6 lg:px-10">
-        <div className="max-w-4xl mx-auto">
-          <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-10">
-            § 01 — Nossa Gênese
-          </div>
-          <div className="space-y-16">
-            {capitulos.map((c) => (
-              <div key={c.titulo}>
-                <div className="font-mono text-sm text-primary mb-3">
-                  {c.marca}
-                </div>
-                <h3 className="font-serif text-4xl md:text-5xl mb-4">
-                  {c.titulo}
-                </h3>
-                <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl">
-                  {c.texto}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-    );
-  }
+  // Luzes de fundo: derivam do valor suavizado para não pulsar junto com a roda.
+  const luzAX = useTransform(p, [0, 1], [0, 120]);
+  const luzAOpacidade = useTransform(p, [0, 0.5, 1], [0.08, 0.2, 0.08]);
+  const luzAEscala = useTransform(p, [0, 0.5, 1], [1, 1.25, 1]);
+  const luzBX = useTransform(p, [0, 1], [0, -120]);
+  const luzBOpacidade = useTransform(p, [0, 0.5, 1], [0.05, 0.15, 0.05]);
+  const luzBEscala = useTransform(p, [0, 0.5, 1], [1.2, 1, 1.2]);
+
+  // A grade de fundo desliza devagar: dá profundidade sem chamar atenção.
+  const grade = useTransform(p, [0, 1], ["0px 0px", "0px -140px"]);
+
+  const marcadorTopo = useTransform(p, (v) => `${v * 100}%`);
+  const marcadorOpacidade = useTransform(p, [0, 0.04, 0.96, 1], [0, 1, 1, 0]);
+  const percentual = useTransform(p, (v) => `${Math.round(v * 100)}%`);
+  const tracoEyebrow = useTransform(p, [0, 1], [0.4, 1.6]);
+
+  const irParaCapitulo = (i: number) => {
+    const alvo = ref.current;
+    if (!alvo) return;
+    // Meio da janela do capítulo: cai com ele já montado, não na transição.
+    const dentro = ((i + 0.45) / capitulos.length) * alvo.offsetHeight;
+    window.scrollTo({ top: alvo.offsetTop + dentro, behavior: "smooth" });
+  };
 
   return (
     <section
       ref={ref}
-      className="relative z-20 bg-background border-t border-border/10 overflow-visible"
-      style={{ 
-        height: `${capitulos.length * 180}vh`,
-        perspective: "1200px"
-      }}
+      className="relative z-20 bg-background border-t border-border/10"
+      style={{ height: `${capitulos.length * ALTURA_CAPITULO_VH}vh` }}
     >
-      <div className="sticky top-0 h-screen overflow-hidden flex items-center px-6 lg:px-10 perspective-1000">
-        {/* Dynamic Atmospheric Light System */}
-        <div className="absolute inset-0 z-0">
-          <motion.div 
-            style={{ 
-              x: useTransform(scrollYProgress, [0, 1], [0, 100]),
-              opacity: useTransform(scrollYProgress, [0, 0.5, 1], [0.1, 0.2, 0.1]),
-              scale: useTransform(scrollYProgress, [0, 0.5, 1], [1, 1.2, 1])
-            }}
-            className="absolute top-1/2 -right-40 -translate-y-1/2 w-[40rem] h-[40rem] bg-primary/20 rounded-full blur-[140px] pointer-events-none" 
+      <div className="sticky top-0 h-screen overflow-hidden flex items-center px-6 lg:px-10">
+        {/* Luz atmosférica */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <motion.div
+            style={{ x: luzAX, opacity: luzAOpacidade, scale: luzAEscala }}
+            className="absolute top-1/2 -right-40 -translate-y-1/2 w-[40rem] h-[40rem] bg-primary/20 rounded-full blur-[140px]"
           />
-          <motion.div 
-            style={{ 
-              x: useTransform(scrollYProgress, [0, 1], [0, -100]),
-              opacity: useTransform(scrollYProgress, [0, 0.5, 1], [0.05, 0.15, 0.05]),
-              scale: useTransform(scrollYProgress, [0, 0.5, 1], [1.2, 1, 1.2])
-            }}
-            className="absolute bottom-0 -left-40 w-[30rem] h-[30rem] bg-primary/10 rounded-full blur-[120px] pointer-events-none" 
+          <motion.div
+            style={{ x: luzBX, opacity: luzBOpacidade, scale: luzBEscala }}
+            className="absolute bottom-0 -left-40 w-[30rem] h-[30rem] bg-primary/10 rounded-full blur-[120px]"
           />
         </div>
 
-        {/* Background Grid for the section */}
-        <div 
-          className="absolute inset-0 z-0 opacity-[0.03]"
+        {/* Grade de fundo */}
+        <motion.div
+          className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none"
           style={{
             backgroundImage: `linear-gradient(to right, var(--foreground) 1px, transparent 1px), linear-gradient(to bottom, var(--foreground) 1px, transparent 1px)`,
-            backgroundSize: '100px 100px',
-            maskImage: 'linear-gradient(to bottom, transparent, black 20%, black 80%, transparent)'
+            backgroundSize: "100px 100px",
+            backgroundPosition: grade,
+            maskImage:
+              "linear-gradient(to bottom, transparent, black 20%, black 80%, transparent)",
           }}
         />
 
         <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-[200px_1fr] gap-12 sm:gap-20 lg:gap-32 items-center relative z-10">
-          {/* Vertical Timeline Navigation */}
+          {/* Sumário vertical */}
           <div className="hidden lg:flex flex-col gap-10 relative py-10">
-            {/* Timeline Line with Progress indicator */}
             <div className="absolute left-[7px] top-0 bottom-0 w-[2px] bg-foreground/5">
-              <motion.div 
-                className="absolute top-0 left-0 w-full bg-primary origin-top"
-                style={{ 
-                  scaleY: scrollYProgress,
-                }}
-              />
-              
-              {/* Floating Percentage Indicator */}
               <motion.div
-                style={{ 
-                  top: useTransform(scrollYProgress, (v) => `${v * 100}%`),
-                  opacity: useTransform(scrollYProgress, [0, 0.05, 0.95, 1], [0, 1, 1, 0])
-                }}
-                className="absolute left-4 -translate-y-1/2 whitespace-nowrap"
+                className="absolute top-0 left-0 w-full bg-primary origin-top"
+                style={{ scaleY: p }}
+              />
+              <motion.div
+                style={{ top: marcadorTopo, opacity: marcadorOpacidade }}
+                className="absolute right-5 -translate-y-1/2 whitespace-nowrap"
               >
-                <motion.span 
-                  className="font-mono text-[8px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded-sm"
-                  style={{
-                    display: 'inline-block'
-                  }}
-                >
-                  <motion.span>{useTransform(scrollYProgress, (v) => `${Math.round(v * 100)}%`)}</motion.span>
-                </motion.span>
+                <span className="font-mono text-[8px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded-sm inline-block">
+                  <motion.span>{percentual}</motion.span>
+                </span>
               </motion.div>
             </div>
 
@@ -691,27 +727,23 @@ function Historia() {
               <button
                 key={c.titulo}
                 type="button"
-                onClick={() => {
-                  const targetScroll = (i / capitulos.length) * ref.current!.offsetHeight;
-                  window.scrollTo({
-                    top: ref.current!.offsetTop + targetScroll,
-                    behavior: 'smooth'
-                  });
-                }}
+                onClick={() => irParaCapitulo(i)}
                 className="relative flex items-center gap-8 group text-left outline-none"
               >
-                <motion.div 
+                <motion.div
                   animate={{
                     scale: i === ativo ? 1.2 : 1,
                     backgroundColor: i <= ativo ? "var(--primary)" : "transparent",
-                    borderColor: i <= ativo ? "var(--primary)" : "rgba(255,255,255,0.2)"
+                    borderColor:
+                      i <= ativo ? "var(--primary)" : "rgba(128,128,128,0.25)",
                   }}
-                  className="relative z-10 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors duration-500"
+                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                  className="relative z-10 w-4 h-4 rounded-full border-2 flex items-center justify-center"
                 >
                   {i === ativo && (
-                    <motion.div 
+                    <motion.div
                       layoutId="active-dot-glow"
-                      className="absolute inset-0 rounded-full bg-primary blur-[6px] opacity-50" 
+                      className="absolute inset-0 rounded-full bg-primary blur-[6px] opacity-50"
                     />
                   )}
                 </motion.div>
@@ -723,9 +755,13 @@ function Historia() {
                   >
                     Cap. 0{i + 1}
                   </span>
+                  {/* Antes os títulos inativos ficavam invisíveis e o sumário não
+                      servia de sumário. Agora só recuam. */}
                   <span
                     className={`font-serif text-sm font-semibold transition-all duration-500 ${
-                      i === ativo ? "text-foreground opacity-100" : "text-muted-foreground opacity-0 -translate-x-2"
+                      i === ativo
+                        ? "text-foreground opacity-100 translate-x-0"
+                        : "text-muted-foreground opacity-30 -translate-x-1 group-hover:opacity-70"
                     }`}
                   >
                     {c.titulo}
@@ -735,133 +771,53 @@ function Historia() {
             ))}
           </div>
 
-          {/* Mobile Navigation & Progress */}
-          <div className="lg:hidden flex flex-col items-center gap-6 mb-8 w-full">
-            <div className="flex justify-center gap-4">
-              {capitulos.map((_, i) => (
-                <div 
-                  key={i}
+          {/* Sumário no mobile */}
+          <div className="lg:hidden flex flex-col items-center gap-4 mb-6 w-full">
+            <div className="flex justify-center gap-2">
+              {capitulos.map((c, i) => (
+                <button
+                  key={c.titulo}
+                  type="button"
+                  aria-label={`Capítulo ${i + 1}: ${c.titulo}`}
+                  onClick={() => irParaCapitulo(i)}
                   className={`h-1.5 rounded-full transition-all duration-500 ${
-                    i === ativo ? "w-8 bg-primary" : "w-2 bg-foreground/10"
+                    i === ativo ? "w-10 bg-primary" : "w-2 bg-foreground/15"
                   }`}
                 />
               ))}
             </div>
-            
-            {/* Mobile Horizontal Progress Bar */}
-            <div className="w-full max-w-[200px] h-1 bg-foreground/5 rounded-full overflow-hidden relative">
-              <motion.div 
-                className="absolute top-0 left-0 h-full bg-primary/60 origin-left"
-                style={{ scaleX: scrollYProgress }}
+            <div className="w-full max-w-[200px] h-px bg-foreground/10 relative overflow-hidden">
+              <motion.div
+                className="absolute inset-0 bg-primary/60 origin-left"
+                style={{ scaleX: p }}
               />
             </div>
           </div>
 
-          {/* Active Chapter Content */}
-          <div className="relative min-h-[24rem] sm:min-h-[30rem] flex flex-col justify-center" style={{ perspective: "1000px", transformStyle: "preserve-3d" }}>
+          {/* Camadas dos capítulos: todas montadas, reveladas pelo scroll */}
+          <div className="relative flex flex-col justify-center">
             <div className="font-mono text-[9px] sm:text-[11px] uppercase tracking-[0.4em] text-primary/60 mb-6 sm:mb-12 flex items-center gap-4">
-              <span className="h-px w-8 bg-primary/40" />
+              <motion.span
+                className="h-px bg-primary/40 origin-left"
+                style={{ width: 32, scaleX: tracoEyebrow }}
+              />
               Nossa Gênese
             </div>
-            
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={ativo}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                variants={{
-                  initial: { 
-                    opacity: 0, 
-                    z: -500,
-                    scale: 0.8,
-                    rotateX: 10
-                  },
-                  animate: { 
-                    opacity: 1, 
-                    z: 0,
-                    scale: 1,
-                    rotateX: 0,
-                    transition: { 
-                      duration: 1.2,
-                      ease: [0.22, 1, 0.36, 1],
-                      staggerChildren: 0.1 
-                    } 
-                  },
-                  exit: { 
-                    opacity: 0, 
-                    z: 300,
-                    scale: 1.2,
-                    rotateX: -5,
-                    transition: { duration: 0.8, ease: "easeInOut" } 
-                  }
-                }}
-                className="will-change-transform"
-                style={{ transformStyle: "preserve-3d" }}
-              >
-                {/* Background Layer: Big Year Indicator */}
-                <motion.div
-                  variants={{
-                    initial: { opacity: 0, scale: 0.5, z: -200 },
-                    animate: { opacity: 0.05, scale: 1.2, z: -100 },
-                    exit: { opacity: 0, scale: 1.5, z: 0 }
-                  }}
-                  className="absolute -top-20 -left-10 text-[20vw] font-serif font-black text-foreground pointer-events-none select-none z-0"
-                >
-                  {capitulos[ativo].marca.replace(/\D/g, '') || "0" + (ativo + 1)}
-                </motion.div>
 
-                {/* Middle Layer: Content */}
-                <div className="relative z-10" style={{ transformStyle: "preserve-3d" }}>
-                  <motion.div 
-                    variants={{
-                      initial: { opacity: 0, x: -30, z: -50 },
-                      animate: { opacity: 1, x: 0, z: 0 },
-                      exit: { opacity: 0, x: 50, z: 50 }
-                    }}
-                    transition={{ duration: 0.8 }}
-                    className="font-serif text-primary text-3xl md:text-5xl font-light mb-6 italic tracking-tight"
-                  >
-                    {capitulos[ativo].marca}
-                  </motion.div>
-                  
-                  <motion.h2 
-                    variants={{
-                      initial: { opacity: 0, y: 40, z: -20 },
-                      animate: { opacity: 1, y: 0, z: 0 },
-                      exit: { opacity: 0, y: -40, z: 100 }
-                    }}
-                    transition={{ duration: 0.9 }}
-                    className="font-serif text-3xl sm:text-5xl md:text-8xl lg:text-9xl leading-[0.9] font-bold tracking-[-0.04em] mb-6 sm:mb-12 uppercase text-foreground"
-                  >
-                    {capitulos[ativo].titulo}
-                  </motion.h2>
-                  
-                  <motion.p 
-                    variants={{
-                      initial: { opacity: 0, y: 30, z: -10 },
-                      animate: { opacity: 1, y: 0, z: 0 },
-                      exit: { opacity: 0, y: 20, z: 80 }
-                    }}
-                    transition={{ duration: 1 }}
-                    className="text-base sm:text-lg md:text-2xl text-muted-foreground leading-relaxed max-w-2xl font-medium tracking-tight"
-                  >
-                    {capitulos[ativo].texto}
-                  </motion.p>
-                </div>
-
-                {/* Foreground Layer: Accent Line */}
-                <motion.div
-                  variants={{
-                    initial: { opacity: 0, scaleX: 0, z: -50 },
-                    animate: { opacity: 1, scaleX: 1, z: 50 },
-                    exit: { opacity: 0, scaleX: 0, z: 150 }
-                  }}
-                  transition={{ duration: 1, delay: 0.4 }}
-                  className="h-px w-24 bg-primary/40 mt-16 origin-left relative z-20"
+            {/* O contêiner precisa de altura própria: as camadas são absolutas e,
+                sem isso, colapsavam por cima do rótulo acima. */}
+            <div className="relative min-h-[26rem] sm:min-h-[32rem]">
+              {capitulos.map((c, i) => (
+                <CapituloCamada
+                  key={c.titulo}
+                  capitulo={c}
+                  indice={i}
+                  total={capitulos.length}
+                  progresso={p}
+                  ativo={i === ativo}
                 />
-              </motion.div>
-            </AnimatePresence>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -869,142 +825,329 @@ function Historia() {
   );
 }
 
+function CapituloCamada({
+  capitulo,
+  indice,
+  total,
+  progresso,
+  ativo,
+}: {
+  capitulo: (typeof capitulos)[number];
+  indice: number;
+  total: number;
+  progresso: MotionValue<number>;
+  ativo: boolean;
+}) {
+  const passo = 1 / total;
+  const inicio = indice * passo;
+  const fim = inicio + passo;
+
+  // Janelas com sobreposição: um capítulo termina de entrar antes de o anterior
+  // acabar de sair, então nunca existe um quadro em branco no meio.
+  const entrada = inicio + passo * 0.3;
+  const saida = fim - passo * 0.18;
+  const primeiro = indice === 0;
+  const ultimo = indice === total - 1;
+  const antes = primeiro ? -0.001 : inicio - passo * 0.2;
+  const depois = ultimo ? 1.001 : fim + passo * 0.05;
+  const janela = [antes, entrada, saida, depois];
+
+  const opacity = useTransform(progresso, janela, [primeiro ? 1 : 0, 1, 1, ultimo ? 1 : 0]);
+  const y = useTransform(progresso, janela, [primeiro ? 0 : 90, 0, 0, ultimo ? 0 : -90]);
+  const scale = useTransform(progresso, janela, [primeiro ? 1 : 0.95, 1, 1, ultimo ? 1 : 1.05]);
+  const desfoque = useTransform(progresso, janela, [primeiro ? 0 : 12, 0, 0, ultimo ? 0 : 10]);
+  const filter = useTransform(desfoque, (v) => `blur(${v.toFixed(2)}px)`);
+
+  // Marca d'água: entra deslocada e vai se assentando ao longo do capítulo.
+  const marcaX = useTransform(progresso, [antes, depois], [60, -60]);
+  const marcaOpacidade = useTransform(
+    progresso,
+    janela,
+    [0, 0.05, 0.05, 0],
+  );
+
+  // Progresso interno do capítulo — alimenta o traço de baixo.
+  const local = useTransform(progresso, [inicio, fim], [0, 1]);
+
+  const palavras = capitulo.titulo.split(" ");
+
+  return (
+    <motion.div
+      aria-hidden={!ativo}
+      style={{ opacity, y, scale, filter }}
+      className="absolute inset-x-0 top-1/2 -translate-y-1/2 will-change-transform"
+    >
+      {/* Fundo: marca d'água gigante */}
+      <motion.div
+        style={{
+          x: marcaX,
+          opacity: marcaOpacidade,
+          // Ano cabe em 18vw; marcas por extenso ("A CAMINHO") precisam encolher
+          // ou vazam para fora da tela.
+          fontSize: `${Math.min(18, 150 / Math.max(4, marcaDeFundo(capitulo.marca).length))}vw`,
+        }}
+        className="absolute -top-24 -left-10 font-serif font-extrabold uppercase text-foreground pointer-events-none select-none z-0 leading-none tracking-tighter whitespace-nowrap"
+      >
+        {marcaDeFundo(capitulo.marca)}
+      </motion.div>
+
+      <div className="relative z-10">
+        <div className="font-serif text-primary text-3xl md:text-5xl font-light mb-6 italic tracking-tight">
+          {capitulo.marca}
+        </div>
+
+        {/* Título montado palavra a palavra pelo próprio scroll */}
+        <h2 className="font-serif text-3xl sm:text-5xl md:text-8xl lg:text-9xl leading-[0.9] font-bold tracking-[-0.04em] mb-6 sm:mb-12 uppercase text-foreground">
+          {palavras.map((palavra, j) => (
+            <PalavraGenese
+              key={`${palavra}-${j}`}
+              palavra={palavra}
+              progresso={progresso}
+              de={inicio + (entrada - inicio) * (j / (palavras.length + 1))}
+              ate={inicio + (entrada - inicio) * ((j + 1.6) / (palavras.length + 1))}
+            />
+          ))}
+        </h2>
+
+        <p className="text-base sm:text-lg md:text-2xl text-muted-foreground leading-relaxed max-w-2xl font-medium tracking-tight">
+          {capitulo.texto}
+        </p>
+
+        {/* Traço-medidor: cresce enquanto o capítulo está em cena */}
+        <div className="mt-10 sm:mt-16 h-px w-32 bg-foreground/10 relative overflow-hidden">
+          <motion.div
+            className="absolute inset-0 bg-primary/50 origin-left"
+            style={{ scaleX: local }}
+          />
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// Uma palavra do título: sobe, desembaça e aparece no seu próprio trecho de
+// rolagem. O `overflow-hidden` externo faz a palavra emergir de trás da linha.
+function PalavraGenese({
+  palavra,
+  progresso,
+  de,
+  ate,
+}: {
+  palavra: string;
+  progresso: MotionValue<number>;
+  de: number;
+  ate: number;
+}) {
+  const opacity = useTransform(progresso, [de, ate], [0, 1]);
+  const y = useTransform(progresso, [de, ate], ["0.55em", "0em"]);
+  const desfoque = useTransform(progresso, [de, ate], [10, 0]);
+  const filter = useTransform(desfoque, (v) => `blur(${v.toFixed(2)}px)`);
+
+  return (
+    <span className="inline-block overflow-hidden align-bottom mr-[0.22em] pb-[0.06em]">
+      <motion.span style={{ opacity, y, filter }} className="inline-block">
+        {palavra}
+      </motion.span>
+    </span>
+  );
+}
+
 /* ---------------------------------------------------------------------------
- * Números — contadores animados ao entrar na tela
+ * Números — a contagem acompanha a rolagem
+ *
+ * O contador antigo usava `useInView({ once: true })` dentro de um bloco fixo:
+ * os três números já estavam "em vista" quando a seção encostava na tela, então
+ * os três contavam de uma vez e, ao chegar no segundo e no terceiro, a animação
+ * já tinha acabado. Agora cada número conta dentro da sua própria faixa de
+ * scroll — e o número da sombra reaproveita o mesmo valor, sem dessincronizar.
  * ------------------------------------------------------------------------- */
 
 function Numeros() {
+  const reduce = usaMenosMovimento();
+  return reduce ? <NumerosEstaticos /> : <NumerosScroll />;
+}
+
+function NumerosEstaticos() {
+  return (
+    <section className="relative z-20 bg-background py-32 px-6">
+      <div className="max-w-5xl mx-auto grid gap-16 sm:grid-cols-3 text-center">
+        {numeros.map((n) => (
+          <div key={n.rotulo}>
+            <div className="font-serif text-7xl tracking-tighter text-foreground tabular-nums">
+              {n.valor}
+              <span className="text-primary ml-1">{n.sufixo}</span>
+            </div>
+            <div className="mt-4 font-serif italic text-xl text-muted-foreground">
+              {n.rotulo.toLowerCase()}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function NumerosScroll() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end end"],
   });
+  const p = useSpring(scrollYProgress, {
+    stiffness: 120,
+    damping: 30,
+    mass: 0.4,
+  });
 
   return (
-    <section 
-      ref={sectionRef} 
+    <section
+      ref={sectionRef}
       className="relative z-20 bg-background"
-      style={{ height: "300vh" }}
+      style={{ height: `${numeros.length * 110}vh` }}
     >
       <div className="sticky top-0 h-screen w-full flex flex-col justify-center items-center overflow-hidden px-6">
-        {/* Background Visuals */}
         <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none">
-          <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, var(--foreground) 1px, transparent 0)', backgroundSize: '40px 40px' }} />
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at 2px 2px, var(--foreground) 1px, transparent 0)",
+              backgroundSize: "40px 40px",
+            }}
+          />
         </div>
 
         <div className="max-w-7xl mx-auto w-full relative z-10 h-full flex flex-col justify-center">
           {numeros.map((n, i) => (
-            <NumeroScrollItem 
-              key={n.rotulo} 
-              n={n} 
-              index={i} 
-              progress={scrollYProgress} 
+            <NumeroScrollItem
+              key={n.rotulo}
+              n={n}
+              index={i}
+              progress={p}
               total={numeros.length}
             />
           ))}
         </div>
-        
-        {/* Scroll Indicator */}
-        <motion.div 
-          style={{ scaleX: scrollYProgress }}
-          className="absolute bottom-0 left-0 h-1 bg-primary/40 w-full origin-left z-20" 
+
+        <motion.div
+          style={{ scaleX: p }}
+          className="absolute bottom-0 left-0 h-1 bg-primary/40 w-full origin-left z-20"
         />
       </div>
     </section>
   );
 }
 
-function NumeroScrollItem({ n, index, progress, total }: { 
-  n: typeof numeros[0], 
-  index: number, 
-  progress: any,
-  total: number 
+// Conta de 0 até `para` conforme o scroll atravessa [de, ate]. A mola remove os
+// degraus do scroll e dá a inércia de um odômetro.
+function useContagemPorScroll(
+  progresso: MotionValue<number>,
+  de: number,
+  ate: number,
+  para: number,
+) {
+  const bruto = useTransform(progresso, [de, ate], [0, para]);
+  const suave = useSpring(bruto, { stiffness: 90, damping: 26, mass: 0.5 });
+  const [valor, setValor] = useState(() => Math.round(bruto.get()));
+  useMotionValueEvent(suave, "change", (v) => setValor(Math.round(v)));
+  return valor;
+}
+
+function NumeroScrollItem({
+  n,
+  index,
+  progress,
+  total,
+}: {
+  n: (typeof numeros)[number];
+  index: number;
+  progress: MotionValue<number>;
+  total: number;
 }) {
-  const start = index / total;
-  const end = (index + 1) / total;
-  
-  // Opacity for the whole item
-  const opacity = useTransform(progress, 
-    [
-      Math.max(0, start - 0.05), 
-      start + 0.1, 
-      Math.max(start + 0.1, end - 0.1), 
-      end
-    ], 
-    [0, 1, 1, 0]
-  );
-  
-  // Y movement for parallax effect - extreme range to fill the screen transition
-  const y = useTransform(progress, 
-    [start, end], 
-    [250, -250]
-  );
+  const passo = 1 / total;
+  const start = index * passo;
+  const end = start + passo;
+  const primeiro = index === 0;
+  const ultimo = index === total - 1;
 
-  // Scale effect - more dramatic
-  const scale = useTransform(progress,
-    [
-      Math.max(0, start - 0.05), 
-      start + 0.1, 
-      Math.max(start + 0.1, end - 0.1), 
-      end
-    ],
-    [0.7, 1, 1, 0.7]
-  );
+  const antes = primeiro ? -0.001 : start - passo * 0.12;
+  const entrada = start + passo * 0.22;
+  const saida = end - passo * 0.18;
+  const depois = ultimo ? 1.001 : end + passo * 0.05;
+  const janela = [antes, entrada, saida, depois];
 
-  // Perspective tilt based on progress within the step
-  const rotateX = useTransform(progress,
-    [start, end],
-    [25, -25]
+  const opacity = useTransform(progress, janela, [primeiro ? 1 : 0, 1, 1, ultimo ? 1 : 0]);
+  const scale = useTransform(progress, janela, [primeiro ? 1 : 0.72, 1, 1, ultimo ? 1 : 0.72]);
+  // Deslocamento contido: o bloco tem ~700px de altura, e a amplitude antiga
+  // (±250) jogava o algarismo para fora do topo da tela no meio da janela.
+  const y = useTransform(progress, [antes, depois], [primeiro ? 0 : 150, ultimo ? 0 : -110]);
+  // `transformPerspective` e não `perspective`: perspective no próprio elemento
+  // só afeta os filhos, então o rotateX antigo saía achatado.
+  const rotateX = useTransform(progress, [antes, depois], [primeiro ? 0 : 22, ultimo ? 0 : -22]);
+
+  // A contagem cabe na primeira metade da janela e depois segura o valor.
+  const valor = useContagemPorScroll(progress, start, start + passo * 0.42, n.valor);
+  const traco = useTransform(progress, [start, start + passo * 0.5], [0, 1]);
+
+  const digitos = (
+    <span className="tabular-nums">
+      {valor}
+      <span className="text-primary ml-1">{n.sufixo}</span>
+    </span>
   );
 
   return (
     <motion.div
-      style={{ 
-        opacity, 
-        y, 
+      style={{
+        opacity,
+        y,
         scale,
-        perspective: "1000px",
         rotateX,
-        position: 'absolute',
-        top: '50%',
-        left: '0',
-        right: '0',
-        translateY: '-50%',
+        transformPerspective: 1000,
+        position: "absolute",
+        top: "50%",
+        left: 0,
+        right: 0,
+        translateY: "-50%",
       }}
-      className="w-full flex flex-col items-center justify-center text-center py-20"
+      className="w-full flex flex-col items-center justify-center text-center will-change-transform"
     >
       <div className="relative group cursor-default">
-        {/* Hover Glow */}
         <div className="absolute -inset-20 bg-primary/5 rounded-full blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-        
+
         <div className="relative flex flex-col items-center">
-          {/* Tech Scan Line */}
+          {/* Varredura: o brilho antigo usava rgba(var(--primary)), mas o token
+              é oklch() e a sombra era descartada em silêncio. */}
           <motion.div
             style={{ opacity }}
-            animate={{ top: ['0%', '100%', '0%'] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-            className="absolute left-0 right-0 h-px bg-primary/30 z-20 pointer-events-none shadow-[0_0_15px_rgba(var(--primary),0.5)]"
+            animate={{ top: ["0%", "100%", "0%"] }}
+            transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+            className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent z-20 pointer-events-none"
           />
 
-          <motion.div 
-            className="font-serif text-[22vw] sm:text-[20vw] md:text-[18vw] lg:text-[22rem] tracking-tighter leading-[0.75] text-foreground select-none flex items-baseline relative"
-          >
-            {/* 3D Duplicate for Depth Effect - Increased blur and offset */}
-            <span className="absolute inset-0 text-primary/15 -z-10 blur-md translate-x-4 translate-y-4 select-none pointer-events-none" aria-hidden="true">
-              <Contador para={n.valor} sufixo={n.sufixo} />
+          <div className="font-serif text-[22vw] sm:text-[20vw] md:text-[18vw] lg:text-[22rem] tracking-tighter leading-[0.75] text-foreground select-none flex items-baseline relative">
+            {/* Sombra 3D — mesmo valor do número da frente, sem contador extra */}
+            <span
+              className="absolute inset-0 text-primary/15 -z-10 blur-md translate-x-4 translate-y-4 select-none pointer-events-none"
+              aria-hidden="true"
+            >
+              {digitos}
             </span>
-            <Contador para={n.valor} sufixo={n.sufixo} />
-          </motion.div>
-          
+            {digitos}
+          </div>
+
           <div className="mt-12 md:mt-16 flex flex-col items-center w-full max-w-4xl px-6">
-            <motion.div 
-              initial={{ width: 0 }}
-              whileInView={{ width: 120 }}
-              className="h-px bg-primary/60 mb-8"
-            />
+            <div className="h-px w-[120px] bg-foreground/10 mb-8 relative overflow-hidden">
+              <motion.div
+                className="absolute inset-0 bg-primary/60 origin-left"
+                style={{ scaleX: traco }}
+              />
+            </div>
             <div className="flex flex-col items-center gap-4">
-              <span className="font-mono text-[12px] md:text-[14px] text-primary/40 tracking-[0.5em] uppercase">Metric {index + 1}</span>
-              <span className="font-serif italic text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-muted-foreground group-hover:text-primary transition-colors duration-500 text-center balance tracking-tight capitalize">
+              <span className="font-mono text-[12px] md:text-[14px] text-primary/40 tracking-[0.5em] uppercase">
+                0{index + 1} / 0{total}
+              </span>
+              <span className="font-serif italic text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-muted-foreground group-hover:text-primary transition-colors duration-500 text-center tracking-tight">
                 {n.rotulo.toLowerCase()}
               </span>
             </div>
@@ -1012,41 +1155,6 @@ function NumeroScrollItem({ n, index, progress, total }: {
         </div>
       </div>
     </motion.div>
-  );
-}
-
-function Contador({ para, sufixo }: { para: number; sufixo: string }) {
-  const reduce = useReducedMotion();
-  const ref = useRef<HTMLSpanElement>(null);
-  const emVista = useInView(ref, { once: true, margin: "-80px" });
-  const [valor, setValor] = useState(0);
-
-  useEffect(() => {
-    if (!emVista) return;
-    if (reduce) {
-      setValor(para);
-      return;
-    }
-    const controls = animate(0, para, {
-      duration: 1.4,
-      ease: [0.22, 1, 0.36, 1],
-      onUpdate: (v) => setValor(Math.round(v)),
-    });
-    return () => controls.stop();
-  }, [emVista, para, reduce]);
-
-  return (
-    <span ref={ref} className="tabular-nums">
-      {valor}
-      <motion.span 
-        initial={{ opacity: 0, x: -10 }}
-        animate={emVista ? { opacity: 1, x: 0 } : {}}
-        transition={{ delay: 1.2, duration: 0.5 }}
-        className="text-primary ml-1"
-      >
-        {sufixo}
-      </motion.span>
-    </span>
   );
 }
 
