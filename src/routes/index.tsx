@@ -1,4 +1,4 @@
-// consegue testar se uma notificação é disparada como  teste para os membros cadastrados? consegue fazer isso?
+// execute o que está depois dos dois pontos:realize o teste agora de notificação
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   motion,
