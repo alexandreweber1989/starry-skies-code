@@ -4,7 +4,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export const getYoutubeVideos = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => 
+  .validator((input: unknown) => 
     z.object({ 
       type: z.enum(['service', 'podcast']).optional(),
       limit: z.number().default(50)
@@ -105,7 +105,7 @@ export const syncYoutubeContent = createServerFn({ method: "POST" })
 
 export const syncSingleYoutubeVideo = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => 
+  .validator((input: unknown) => 
     z.object({ 
       url: z.string().url()
     }).parse(input)

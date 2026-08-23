@@ -3,7 +3,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 
 export const registerVisitor = createServerFn({ method: "POST" })
-  .inputValidator((data) =>
+  .validator((data) =>
     z.object({
       full_name: z.string().min(3),
       whatsapp: z.string().min(10),

@@ -8,7 +8,7 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
  * Em produção, aqui integraríamos com uma API como Twilio, Zapi, ou similar.
  */
 export const sendWhatsAppNotification = createServerFn({ method: "POST" })
-  .inputValidator((data) =>
+  .validator((data) =>
     z
       .object({
         phone: z.string(),

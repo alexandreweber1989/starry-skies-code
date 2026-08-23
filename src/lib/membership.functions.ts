@@ -25,7 +25,7 @@ async function assertAdmin(context: { supabase: any; userId: string }) {
  */
 export const approveMembershipRequest = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => approveSchema.parse(input))
+  .validator((input: unknown) => approveSchema.parse(input))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
 
@@ -80,7 +80,7 @@ export const approveMembershipRequest = createServerFn({ method: "POST" })
 /** Remove definitivamente um membro da plataforma (conta + ficha). */
 export const deleteMemberAccount = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => deleteSchema.parse(input))
+  .validator((input: unknown) => deleteSchema.parse(input))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     if (data.user_id === context.userId) throw new Error("Você não pode excluir a própria conta.");

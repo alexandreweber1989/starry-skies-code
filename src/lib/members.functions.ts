@@ -77,7 +77,7 @@ const schema = z.object({
  */
 export const createMemberAccount = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => schema.parse(input))
+  .validator((input: unknown) => schema.parse(input))
   .handler(async ({ data, context }) => {
     const { data: isAdmin, error: roleError } = await context.supabase.rpc("has_role", {
       _user_id: context.userId,
@@ -153,7 +153,7 @@ const credentialsSchema = z
  */
 export const updateMemberCredentials = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => credentialsSchema.parse(input))
+  .validator((input: unknown) => credentialsSchema.parse(input))
   .handler(async ({ data, context }) => {
     const { data: isAdmin, error: roleError } = await context.supabase.rpc("has_role", {
       _user_id: context.userId,
@@ -208,7 +208,7 @@ const rolesSchema = z.object({
  */
 export const updateMemberRoles = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => rolesSchema.parse(input))
+  .validator((input: unknown) => rolesSchema.parse(input))
   .handler(async ({ data, context }) => {
     const { data: isAdmin, error: roleError } = await context.supabase.rpc("has_role", {
       _user_id: context.userId,
