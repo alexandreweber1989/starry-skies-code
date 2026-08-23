@@ -63,17 +63,36 @@ export async function obterVapid(): Promise<VapidKeys | null> {
 const ASSUNTO_PADRAO = "mailto:contato@igrejabatistaatos.com.br";
 
 /**
+ * Segredo usado para derivar as chaves. Procura no ambiente e, se nada houver,
+ * usa a própria credencial com que o cliente admin foi construído — que pode
+ * vir de um valor embutido no arquivo gerado do Supabase. Foi exatamente esse
+ * o caso que fez a derivação falhar: process.env estava vazio no servidor,
+ * embora o cliente admin funcionasse.
+ */
+function segredoDoServidor(): string | null {
+  const doAmbiente =
+    process.env["VAPID_SEED"] ||
+    process.env["SUPABASE_SERVICE_ROLE_KEY"] ||
+    process.env["SUPABASE_SECRET_KEY"];
+  if (doAmbiente) return doAmbiente;
+
+  try {
+    const chave = (supabaseAdmin as unknown as { supabaseKey?: string }).supabaseKey;
+    if (typeof chave === "string" && chave.length >= 20) return chave;
+  } catch {
+    // Cliente admin indisponível: sem segredo para derivar.
+  }
+  return null;
+}
+
+/**
  * Deriva o par de chaves VAPID a partir de um segredo que o servidor já possui.
  * É determinístico: as mesmas chaves são obtidas sempre, então as assinaturas
  * dos celulares continuam válidas entre deploys — sem tabela e sem variável
  * de ambiente para configurar.
  */
 export function derivarVapid(): VapidKeys | null {
-  const segredo =
-    process.env["SUPABASE_SERVICE_ROLE_KEY"] ||
-    process.env["SUPABASE_SECRET_KEY"] ||
-    process.env["SUPABASE_PUBLISHABLE_KEY"] ||
-    process.env["VITE_SUPABASE_PUBLISHABLE_KEY"];
+  const segredo = segredoDoServidor();
   if (!segredo) return null;
 
   const escalar = Buffer.from(
