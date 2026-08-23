@@ -1,4 +1,4 @@
-// verifique se as notificações no celular estão funcionando
+// verifique o design da plataforma
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   motion,
