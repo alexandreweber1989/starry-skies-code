@@ -1,4 +1,3 @@
-// o que podemos fazer para melhorar a plataforma ainda?
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   motion,
