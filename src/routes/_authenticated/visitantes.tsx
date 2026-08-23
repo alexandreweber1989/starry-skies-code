@@ -9,6 +9,9 @@ import { CheckCircle, Clock, MessageSquare, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import type { Database } from '@/integrations/supabase/types';
+
+type Visitor = Database['public']['Tables']['visitor_checkins']['Row'];
 
 export const Route = createFileRoute('/_authenticated/visitantes')({
   component: VisitorsAdminPage,
@@ -19,18 +22,18 @@ function VisitorsAdminPage() {
   const { data: visitors, isLoading } = useQuery({
     queryKey: ['visitors'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('visitor_checkins')
         .select('*')
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return data as any[];
+      return data;
     },
   });
 
   const updateStatus = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const { error } = await (supabase as any)
+    mutationFn: async ({ id, status }: { id: string; status: Visitor['status'] }) => {
+      const { error } = await supabase
         .from('visitor_checkins')
         .update({ status, reviewed_at: new Date().toISOString() })
         .eq('id', id);
@@ -44,7 +47,7 @@ function VisitorsAdminPage() {
 
   const remove = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('visitor_checkins')
         .delete()
         .eq('id', id);
@@ -87,9 +90,9 @@ function VisitorsAdminPage() {
                   </div>
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
                     <span className="flex items-center gap-1">
-                      <MessageSquare className="h-3 w-3" /> {v.whatsapp}
+                      <MessageSquare className="h-3 w-3" /> {v.whatsapp || "N/A"}
                     </span>
-                    <span>Chegou em: {format(new Date(v.created_at), "HH:mm 'de' d/MM", { locale: ptBR })}</span>
+                    <span>Chegou em: {v.created_at ? format(new Date(v.created_at), "HH:mm 'de' d/MM", { locale: ptBR }) : "—"}</span>
                   </div>
                 </div>
 
@@ -100,7 +103,7 @@ function VisitorsAdminPage() {
                     asChild
                     className="flex-1 sm:flex-none"
                   >
-                    <a href={`https://wa.me/55${v.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noreferrer">
+                    <a href={`https://wa.me/55${(v.whatsapp || '').replace(/\D/g, '')}`} target="_blank" rel="noreferrer">
                       WhatsApp
                     </a>
                   </Button>

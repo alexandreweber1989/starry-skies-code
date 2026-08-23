@@ -7,7 +7,7 @@ const updateUserPasswordSchema = z.object({
 });
 
 export const updateUserPassword = createServerFn({ method: "POST" })
-  .inputValidator((data) => updateUserPasswordSchema.parse(data))
+  .validator((data) => updateUserPasswordSchema.parse(data))
   .handler(async ({ data }) => {
     console.log(`[Auth] Attempting to set password for ${data.email}`);
     

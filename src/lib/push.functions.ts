@@ -14,7 +14,7 @@ const envioSchema = z.object({
 /** Envia a notificação para o público escolhido. Exclusivo do admin geral. */
 export const enviarNotificacao = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => envioSchema.parse(input))
+  .validator((input: unknown) => envioSchema.parse(input))
   .handler(async ({ data, context }) => {
     const { data: isAdmin } = await context.supabase.rpc("has_role", {
       _user_id: context.userId,

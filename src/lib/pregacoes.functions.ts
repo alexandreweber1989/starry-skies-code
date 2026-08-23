@@ -13,7 +13,7 @@ const processSermonSchema = z.object({
 
 export const processSermon = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => processSermonSchema.parse(input))
+  .validator((input: unknown) => processSermonSchema.parse(input))
   .handler(async ({ data, context }) => {
     // 1. Verificar se o usuário é admin
     const { data: isAdmin, error: roleError } = await context.supabase.rpc("has_role", {

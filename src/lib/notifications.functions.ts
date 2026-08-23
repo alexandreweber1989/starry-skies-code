@@ -3,7 +3,7 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export const sendUrgentNotification = createServerFn({ method: "POST" })
-  .inputValidator((data) => z.object({
+  .validator((data) => z.object({
     type: z.enum(["prayer", "social"]),
     content: z.string(),
     userName: z.string(),
@@ -45,7 +45,7 @@ export const sendUrgentNotification = createServerFn({ method: "POST" })
 
 export const notifyAllMembers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data) => z.object({
+  .validator((data) => z.object({
     title: z.string(),
     message: z.string(),
     type: z.enum(['emergency', 'announcement', 'event']).default('announcement')

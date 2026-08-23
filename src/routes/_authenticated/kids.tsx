@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader, PageBody } from "@/components/app-shell";
 import { KidsCheckinDashboard } from "@/components/kids/kids-dashboard";
+import { PanelSkeleton } from "@/components/ui/loading-states";
 import { useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/_authenticated/kids")({
@@ -19,8 +20,14 @@ function KidsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <div className="flex flex-col min-h-full">
+        <PageHeader eyebrow="Ministério Infantil" title="Kids" />
+        <PageBody>
+          <div className="grid md:grid-cols-2 gap-6">
+            <PanelSkeleton rows={4} />
+            <PanelSkeleton rows={4} />
+          </div>
+        </PageBody>
       </div>
     );
   }
