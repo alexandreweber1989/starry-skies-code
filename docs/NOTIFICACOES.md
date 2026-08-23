@@ -6,10 +6,12 @@ mensagem enviada.
 
 ## Configuração
 
-**Não é preciso configurar nada.** As chaves VAPID são derivadas automaticamente
-de um segredo que o servidor já possui, de forma determinística — as mesmas
-chaves a cada requisição, então as assinaturas dos celulares seguem válidas
-entre deploys.
+**Não é preciso configurar nada.** As chaves VAPID são derivadas
+automaticamente, de forma determinística, a partir da credencial de servidor do
+Supabase — a mesma que o cliente admin usa, venha ela de variável de ambiente ou
+do valor embutido no arquivo gerado `client.server.ts`. Resultado: as mesmas
+chaves a cada requisição, e as assinaturas dos celulares seguem válidas entre
+deploys.
 
 Ordem de prioridade, se você quiser assumir o controle:
 
