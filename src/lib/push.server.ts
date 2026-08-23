@@ -146,6 +146,30 @@ export async function garantirVapid(): Promise<VapidKeys> {
   return chaves;
 }
 
+export interface AssinaturaWeb {
+  endpoint: string;
+  keys: { p256dh: string; auth: string };
+}
+
+/**
+ * Monta a assinatura a partir da linha do banco, aceitando os dois formatos:
+ * as colunas dedicadas (quando existirem) ou o JSON guardado em `token`.
+ */
+function assinaturaDe(linha: Record<string, any>): AssinaturaWeb | null {
+  if (linha.endpoint && linha.p256dh && linha.auth) {
+    return { endpoint: linha.endpoint, keys: { p256dh: linha.p256dh, auth: linha.auth } };
+  }
+  try {
+    const j = JSON.parse(linha.token ?? "");
+    if (j?.endpoint && j?.keys?.p256dh && j?.keys?.auth) {
+      return { endpoint: j.endpoint, keys: { p256dh: j.keys.p256dh, auth: j.keys.auth } };
+    }
+  } catch {
+    // `token` antigo/simulado: ignorado.
+  }
+  return null;
+}
+
 async function configurarVapid(): Promise<boolean> {
   const chaves = await obterVapid();
   if (!chaves) return false;
@@ -172,19 +196,17 @@ export async function enviarPush(
     );
   }
 
+  // select("*") de propósito: a tabela pode ou não ter as colunas endpoint/p256dh/
+  // auth, dependendo de a migração ter sido aplicada. Pedir colunas inexistentes
+  // faria a consulta falhar.
   const { data: assinaturas, error } = await (supabaseAdmin.from("user_push_tokens" as any) as any)
-    .select("id, user_id, endpoint, p256dh, auth")
-    .in("user_id", userIds)
-    .not("endpoint", "is", null);
+    .select("*")
+    .in("user_id", userIds);
   if (error) throw new Error(`Falha ao carregar os aparelhos cadastrados: ${error.message}`);
 
-  const lista = (assinaturas ?? []) as {
-    id: string;
-    user_id: string;
-    endpoint: string;
-    p256dh: string | null;
-    auth: string | null;
-  }[];
+  const lista = ((assinaturas ?? []) as Record<string, any>[])
+    .map((linha) => ({ id: linha.id as string, user_id: linha.user_id as string, sub: assinaturaDe(linha) }))
+    .filter((x): x is { id: string; user_id: string; sub: AssinaturaWeb } => x.sub !== null);
 
   const comAparelho = new Set(lista.map((a) => a.user_id));
   resultado.semAparelho = userIds.filter((id) => !comAparelho.has(id)).length;
@@ -194,13 +216,9 @@ export async function enviarPush(
 
   await Promise.all(
     lista.map(async (a) => {
-      if (!a.p256dh || !a.auth) {
-        resultado.falhas += 1;
-        return;
-      }
       try {
         await webpush.sendNotification(
-          { endpoint: a.endpoint, keys: { p256dh: a.p256dh, auth: a.auth } },
+          a.sub,
           corpo,
           { TTL: 60 * 60 * 24, urgency: payload.type === "emergency" ? "high" : "normal" },
         );
@@ -223,18 +241,26 @@ export async function enviarPush(
   }
 
   // Histórico: alimenta o painel de envios e o registro do que foi comunicado.
-  await (supabaseAdmin.from("notifications_history" as any) as any).insert(
-    userIds.map((uid) => ({
-      user_id: uid,
-      title: payload.title,
-      body: payload.body,
-      type: payload.type ?? "announcement",
+  // As colunas url/audience/sent_by podem não existir ainda; se a inserção
+  // completa falhar, grava o essencial em vez de derrubar um envio bem-sucedido.
+  const baseHistorico = userIds.map((uid) => ({
+    user_id: uid,
+    title: payload.title,
+    body: payload.body,
+    type: payload.type ?? "announcement",
+    status: comAparelho.has(uid) ? "enviado" : "sem_aparelho",
+  }));
+  const historico = await (supabaseAdmin.from("notifications_history" as any) as any).insert(
+    baseHistorico.map((h) => ({
+      ...h,
       url: payload.url ?? null,
       audience: meta.audience ?? null,
       sent_by: meta.sentBy ?? null,
-      status: comAparelho.has(uid) ? "enviado" : "sem_aparelho",
     })),
   );
+  if (historico?.error) {
+    await (supabaseAdmin.from("notifications_history" as any) as any).insert(baseHistorico);
+  }
 
   return resultado;
 }
