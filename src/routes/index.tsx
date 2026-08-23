@@ -1,4 +1,4 @@
-// execute o que está depois dos dois pontos:realize o teste agora de notificação
+// execute o que está em src/routes/index.tsx
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   motion,
