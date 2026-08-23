@@ -1,4 +1,3 @@
-// melhore o forms de Comece sua Jornada, melhore para que possa ser mais dinâmico e bonito o forms para a pessoa que vai fazer inserir os dados
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   motion,

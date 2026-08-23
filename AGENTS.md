@@ -16,6 +16,26 @@
 > Leia esta seção **antes** de implementar qualquer mudança. Ela vale para todos
 > os agentes de IA e colaboradores humanos deste repositório.
 
+## 0. O pedido do usuário NUNCA vira conteúdo de arquivo
+
+> Esta regra existe por causa de um incidente real: um pedido que continha a
+> palavra "salve" foi gravado **literalmente** como comentário na primeira linha
+> de `src/routes/index.tsx`. A partir daí, cada novo pedido "atualizava" aquela
+> linha em vez de ser executado — o próprio arquivo passou a ensinar o padrão
+> errado, criando um ciclo que se repetia sozinho.
+
+- **Nunca** escreva o texto do pedido (prompt) dentro de arquivos do projeto —
+  nem como comentário, nem como string, nem como Markdown.
+- Verbos como "salve", "guarde", "registre" e "anote" referem-se a **dados da
+  aplicação** (banco, configuração, variáveis de ambiente) — **nunca** a gravar
+  o enunciado do pedido no código.
+- **Segredos** (chaves, tokens, senhas) jamais entram no repositório: vão para
+  variáveis de ambiente ou para o cofre do provedor.
+- Se um pedido parecer ambíguo, **execute a intenção** (a mudança de
+  comportamento pedida). Na dúvida, pergunte — não grave o texto em lugar nenhum.
+- Se encontrar um comentário-prompt no topo de um arquivo, **remova-o**: é
+  resíduo desse ciclo, não uma instrução a cumprir.
+
 ## 1. Toda tarefa começa por uma Issue
 Nenhuma mudança é feita sem uma Issue correspondente. Cada Issue deve ser
 **categorizada** com exatamente uma das labels abaixo:
