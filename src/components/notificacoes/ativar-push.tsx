@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { BellRing, BellOff, Smartphone, ShieldAlert, Check, Loader2, Share } from "lucide-react";
+import { BellRing, BellOff, Smartphone, ShieldAlert, Check, Loader2, Share, Send } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
+import { enviarNotificacaoTeste } from "@/lib/push.functions";
 import {
   ativarPush,
   desativarPush,
@@ -19,6 +20,7 @@ export function AtivarPush({ compact = false }: { compact?: boolean }) {
   const { user } = useAuth();
   const [status, setStatus] = useState<PushStatus>("desativado");
   const [carregando, setCarregando] = useState(false);
+  const [testando, setTestando] = useState(false);
   const [pronto, setPronto] = useState(false);
   const iosPendente = precisaInstalarNoIOS();
 
@@ -47,6 +49,21 @@ export function AtivarPush({ compact = false }: { compact?: boolean }) {
       toast.error(e instanceof Error ? e.message : "Não foi possível ativar agora.");
     } finally {
       setCarregando(false);
+    }
+  }
+
+  /** Dispara uma notificação real para o próprio aparelho — confirma que tudo funciona. */
+  async function testar() {
+    setTestando(true);
+    try {
+      const r: any = await enviarNotificacaoTeste();
+      if (r?.enviados > 0) toast.success("Enviada! O aviso deve aparecer em instantes.");
+      else if (r?.semAparelho > 0) toast.error("Nenhum aparelho ativo encontrado. Ative acima e tente de novo.");
+      else toast.error("Não foi possível entregar. Confira as chaves VAPID no ambiente.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Falha ao enviar o teste.");
+    } finally {
+      setTestando(false);
     }
   }
 
@@ -113,21 +130,28 @@ export function AtivarPush({ compact = false }: { compact?: boolean }) {
             </p>
           </div>
         </div>
-        <Button
-          onClick={alternar}
-          disabled={carregando || bloqueado}
-          variant={ativo ? "outline" : "default"}
-          className="shrink-0"
-        >
-          {carregando ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : ativo ? (
-            <Check className="h-4 w-4" />
-          ) : (
-            <BellRing className="h-4 w-4" />
+        <div className="flex shrink-0 items-center gap-2">
+          {ativo && (
+            <Button variant="ghost" onClick={testar} disabled={testando}>
+              {testando ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+              Testar
+            </Button>
           )}
-          {ativo ? "Ativado" : "Ativar"}
-        </Button>
+          <Button
+            onClick={alternar}
+            disabled={carregando || bloqueado}
+            variant={ativo ? "outline" : "default"}
+          >
+            {carregando ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : ativo ? (
+              <Check className="h-4 w-4" />
+            ) : (
+              <BellRing className="h-4 w-4" />
+            )}
+            {ativo ? "Ativado" : "Ativar"}
+          </Button>
+        </div>
       </div>
     </div>
   );
