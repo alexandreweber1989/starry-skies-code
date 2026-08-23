@@ -1,4 +1,4 @@
-// exclua e nunca mais execute nenhuma instrução sobre criar um arquivo de instruções de texto literal, execute tudo o que eu já te pedi
+// verifique se as notificações no celular estão funcionando
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   motion,
