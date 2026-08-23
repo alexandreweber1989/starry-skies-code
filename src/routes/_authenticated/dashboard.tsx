@@ -202,69 +202,63 @@ function Dashboard() {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {isAdmin ? (
-              <StatTile
-                label="Membros ativos"
-                value={data?.ativos ?? "—"}
-                hint={data ? `${data.novos} novo(s) neste mês` : undefined}
-                icon={Users}
-                to="/membros"
-              />
+              <>
+                <StatTile
+                  label="Membros ativos"
+                  value={data?.ativos ?? "—"}
+                  hint={data ? `${data.novos} novo(s) neste mês` : undefined}
+                  icon={Users}
+                  to="/membros"
+                />
+                <StatTile
+                  label="Ministérios"
+                  value={data?.ministries ?? "—"}
+                  icon={Sparkles}
+                  to="/ministerios"
+                />
+                <StatTile
+                  label="Mesas ativas"
+                  value={data?.mesas ?? "—"}
+                  icon={UtensilsCrossed}
+                  to="/mesas"
+                />
+                <StatTile
+                  label="Escalas pendentes"
+                  value={data?.pendentes ?? "—"}
+                  hint="Aguardando confirmação"
+                  icon={CalendarDays}
+                  to="/louvor"
+                />
+                <StatTile
+                  label="Visitantes"
+                  value={data?.v_pendentes ?? "—"}
+                  hint="Novos hoje (via QR Code)"
+                  icon={Sparkles}
+                  to="/visitantes"
+                />
+              </>
             ) : (
-              <StatTile
-                label="Ministérios"
-                value={data?.ministries ?? "—"}
-                icon={Sparkles}
-                to="/ministerios"
-              />
-            )}
-            {isAdmin ? (
-              <StatTile
-                label="Ministérios"
-                value={data?.ministries ?? "—"}
-                icon={Sparkles}
-                to="/ministerios"
-              />
-            ) : (
-              <StatTile
-                label="Mesas ativas"
-                value={data?.mesas ?? "—"}
-                icon={UtensilsCrossed}
-                to="/mesas"
-              />
-            )}
-            {isAdmin ? (
-              <StatTile
-                label="Mesas ativas"
-                value={data?.mesas ?? "—"}
-                icon={UtensilsCrossed}
-                to="/mesas"
-              />
-            ) : (
-              <StatTile
-                label="Escalas pendentes"
-                value={data?.pendentes ?? "—"}
-                hint="Aguardando confirmação"
-                icon={CalendarDays}
-                to="/louvor"
-              />
-            )}
-            {isAdmin && (
-              <StatTile
-                label="Escalas pendentes"
-                value={data?.pendentes ?? "—"}
-                hint="Aguardando confirmação"
-                icon={CalendarDays}
-                to="/louvor"
-              />
-            )}
-            {isAdmin && (
-              <StatTile
-                label="Visitantes"
-                value={data?.v_pendentes ?? "—"}
-                hint="Novos hoje (via QR Code)"
-                icon={Sparkles}
-                to="/visitantes"
-              />
+              <>
+                <StatTile
+                  label="Ministérios"
+                  value={data?.ministries ?? "—"}
+                  icon={Sparkles}
+                  to="/ministerios"
+                />
+                <StatTile
+                  label="Mesas ativas"
+                  value={data?.mesas ?? "—"}
+                  icon={UtensilsCrossed}
+                  to="/mesas"
+                />
+                <StatTile
+                  label="Escalas pendentes"
+                  value={data?.pendentes ?? "—"}
+                  hint="Aguardando confirmação"
+                  icon={CalendarDays}
+                  to="/louvor"
+                />
+              </>
             )}
           </div>
         )}
