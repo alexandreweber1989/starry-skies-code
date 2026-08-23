@@ -23,6 +23,7 @@ import { MemberFormDialog } from "@/components/membros/member-form-dialog";
 import { MemberWizardDialog } from "@/components/membros/member-wizard-dialog";
 import { RequestMemberDialog } from "@/components/membros/request-member-dialog";
 import { MembershipRequestsPanel } from "@/components/membros/membership-requests-panel";
+import { RowsSkeleton } from "@/components/ui/loading-states";
 import { deleteMemberAccount } from "@/lib/membership.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { MemberStats } from "@/components/membros/member-stats";
@@ -83,8 +84,15 @@ function MembrosPage() {
 
   if (loading) {
     return (
-      <div className="min-h-[50vh] grid place-items-center">
-        <div className="animate-spin size-6 border-2 border-primary border-t-transparent rounded-full" />
+      <div className="flex flex-col min-h-full">
+        <PageHeader 
+          eyebrow="Carregando..." 
+          title="Membros" 
+          description="Aguarde enquanto preparamos a listagem da membresia." 
+        />
+        <PageBody>
+          <RowsSkeleton rows={10} />
+        </PageBody>
       </div>
     );
   }
@@ -284,11 +292,7 @@ function MembrosPage() {
         )}
 
         {isLoading ? (
-          <div className="space-y-2">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <Skeleton key={i} className="h-12 w-full" />
-            ))}
-          </div>
+          <RowsSkeleton rows={PAGE_SIZE} />
         ) : view === "table" ? (
           <div className="border border-border bg-card rounded-sm overflow-x-auto">
             <table className="w-full text-sm">
