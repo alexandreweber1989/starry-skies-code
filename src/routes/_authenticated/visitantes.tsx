@@ -9,6 +9,9 @@ import { CheckCircle, Clock, MessageSquare, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import type { Database } from '@/integrations/supabase/types';
+
+type Visitor = Database['public']['Tables']['visitor_checkins']['Row'];
 
 export const Route = createFileRoute('/_authenticated/visitantes')({
   component: VisitorsAdminPage,
@@ -19,18 +22,18 @@ function VisitorsAdminPage() {
   const { data: visitors, isLoading } = useQuery({
     queryKey: ['visitors'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('visitor_checkins')
         .select('*')
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return data as any[];
+      return data;
     },
   });
 
   const updateStatus = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const { error } = await (supabase as any)
+    mutationFn: async ({ id, status }: { id: string; status: Visitor['status'] }) => {
+      const { error } = await supabase
         .from('visitor_checkins')
         .update({ status, reviewed_at: new Date().toISOString() })
         .eq('id', id);
@@ -44,7 +47,7 @@ function VisitorsAdminPage() {
 
   const remove = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('visitor_checkins')
         .delete()
         .eq('id', id);
