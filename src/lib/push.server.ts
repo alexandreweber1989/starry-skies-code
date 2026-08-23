@@ -17,12 +17,64 @@ export interface ResultadoEnvio {
   expiradas: number;
 }
 
-function configurarVapid(): boolean {
-  const publicKey = process.env["VAPID_PUBLIC_KEY"];
-  const privateKey = process.env["VAPID_PRIVATE_KEY"];
-  if (!publicKey || !privateKey) return false;
-  const assunto = process.env["VAPID_SUBJECT"] || "mailto:contato@igrejabatistaatos.com.br";
-  webpush.setVapidDetails(assunto, publicKey, privateKey);
+export interface VapidKeys {
+  publicKey: string;
+  privateKey: string;
+  subject: string;
+}
+
+/**
+ * Chaves VAPID: primeiro do ambiente (se a igreja preferir configurar por lá),
+ * senão do banco. Guardar no banco evita depender de variáveis de ambiente do
+ * serviço de publicação, que foi o que impediu o recurso de funcionar.
+ */
+export async function obterVapid(): Promise<VapidKeys | null> {
+  const envPub = process.env["VAPID_PUBLIC_KEY"];
+  const envPriv = process.env["VAPID_PRIVATE_KEY"];
+  if (envPub && envPriv) {
+    return {
+      publicKey: envPub,
+      privateKey: envPriv,
+      subject: process.env["VAPID_SUBJECT"] || "mailto:contato@igrejabatistaatos.com.br",
+    };
+  }
+
+  const { data } = await (supabaseAdmin.from("push_config" as any) as any)
+    .select("public_key, private_key, subject")
+    .maybeSingle();
+  if (!data?.public_key || !data?.private_key) return null;
+  return {
+    publicKey: data.public_key,
+    privateKey: data.private_key,
+    subject: data.subject || "mailto:contato@igrejabatistaatos.com.br",
+  };
+}
+
+/** Gera e guarda um par de chaves caso ainda não exista. Devolve a pública. */
+export async function garantirVapid(): Promise<VapidKeys> {
+  const atual = await obterVapid();
+  if (atual) return atual;
+
+  const geradas = webpush.generateVAPIDKeys();
+  const subject = process.env["VAPID_SUBJECT"] || "mailto:contato@igrejabatistaatos.com.br";
+  const { error } = await (supabaseAdmin.from("push_config" as any) as any).upsert(
+    {
+      id: true,
+      public_key: geradas.publicKey,
+      private_key: geradas.privateKey,
+      subject,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "id" },
+  );
+  if (error) throw new Error("Não foi possível salvar as chaves de notificação.");
+  return { publicKey: geradas.publicKey, privateKey: geradas.privateKey, subject };
+}
+
+async function configurarVapid(): Promise<boolean> {
+  const chaves = await obterVapid();
+  if (!chaves) return false;
+  webpush.setVapidDetails(chaves.subject, chaves.publicKey, chaves.privateKey);
   return true;
 }
 
@@ -39,9 +91,9 @@ export async function enviarPush(
   const resultado: ResultadoEnvio = { enviados: 0, falhas: 0, semAparelho: 0, expiradas: 0 };
   if (userIds.length === 0) return resultado;
 
-  if (!configurarVapid()) {
+  if (!(await configurarVapid())) {
     throw new Error(
-      "Notificações não configuradas: defina VAPID_PUBLIC_KEY e VAPID_PRIVATE_KEY no ambiente.",
+      "Notificações ainda não configuradas. Um administrador precisa ativá-las em Meu perfil.",
     );
   }
 
