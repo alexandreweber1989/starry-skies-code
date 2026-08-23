@@ -1,6 +1,9 @@
-# Knowledge — Plataforma Igreja Batista Atos
+# Knowledge do Workspace — regras gerais
 
-Contexto permanente para qualquer agente de IA que trabalhe neste projeto.
+Vale para **todos os projetos** do workspace. O contexto específico da
+plataforma da Igreja Batista Atos (domínio, tabelas, convenções e armadilhas)
+está em `docs/KNOWLEDGE-PROJETO.md`, que deve ser colado na Knowledge **do
+projeto** no Lovable.
 
 ---
 
