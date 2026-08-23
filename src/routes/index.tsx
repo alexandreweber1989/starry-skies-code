@@ -593,7 +593,7 @@ function marcaDeFundo(marca: string) {
 // O servidor não sabe se o visitante pede menos animação, então a primeira
 // renderização no cliente precisa ser igual à do servidor — só depois trocamos
 // para a versão sem movimento. Sem isso o React descarta e refaz a árvore.
-function usaMenosMovimento() {
+function useMenosMovimento() {
   const reduce = useReducedMotion();
   const [montado, setMontado] = useState(false);
   useEffect(() => setMontado(true), []);
@@ -601,7 +601,7 @@ function usaMenosMovimento() {
 }
 
 function Historia() {
-  const reduce = usaMenosMovimento();
+  const reduce = useMenosMovimento();
   return reduce ? <HistoriaEmpilhada /> : <HistoriaScroll />;
 }
 
@@ -618,9 +618,7 @@ function HistoriaEmpilhada() {
             <div key={c.titulo}>
               <div className="font-mono text-sm text-primary mb-3">{c.marca}</div>
               <h3 className="font-serif text-4xl md:text-5xl mb-4">{c.titulo}</h3>
-              <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl">
-                {c.texto}
-              </p>
+              <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl">{c.texto}</p>
             </div>
           ))}
         </div>
@@ -700,8 +698,7 @@ function HistoriaScroll() {
             backgroundImage: `linear-gradient(to right, var(--foreground) 1px, transparent 1px), linear-gradient(to bottom, var(--foreground) 1px, transparent 1px)`,
             backgroundSize: "100px 100px",
             backgroundPosition: grade,
-            maskImage:
-              "linear-gradient(to bottom, transparent, black 20%, black 80%, transparent)",
+            maskImage: "linear-gradient(to bottom, transparent, black 20%, black 80%, transparent)",
           }}
         />
 
@@ -734,8 +731,7 @@ function HistoriaScroll() {
                   animate={{
                     scale: i === ativo ? 1.2 : 1,
                     backgroundColor: i <= ativo ? "var(--primary)" : "transparent",
-                    borderColor:
-                      i <= ativo ? "var(--primary)" : "rgba(128,128,128,0.25)",
+                    borderColor: i <= ativo ? "var(--primary)" : "rgba(128,128,128,0.25)",
                   }}
                   transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                   className="relative z-10 w-4 h-4 rounded-full border-2 flex items-center justify-center"
@@ -860,11 +856,7 @@ function CapituloCamada({
 
   // Marca d'água: entra deslocada e vai se assentando ao longo do capítulo.
   const marcaX = useTransform(progresso, [antes, depois], [60, -60]);
-  const marcaOpacidade = useTransform(
-    progresso,
-    janela,
-    [0, 0.05, 0.05, 0],
-  );
+  const marcaOpacidade = useTransform(progresso, janela, [0, 0.05, 0.05, 0]);
 
   // Progresso interno do capítulo — alimenta o traço de baixo.
   const local = useTransform(progresso, [inicio, fim], [0, 1]);
@@ -882,9 +874,11 @@ function CapituloCamada({
         style={{
           x: marcaX,
           opacity: marcaOpacidade,
-          // Ano cabe em 18vw; marcas por extenso ("A CAMINHO") precisam encolher
-          // ou vazam para fora da tela.
-          fontSize: `${Math.min(18, 150 / Math.max(4, marcaDeFundo(capitulo.marca).length))}vw`,
+          // Um ano ("2014") cabe em 18vw; marcas por extenso ("A CAMINHO") são
+          // longas demais e vazavam para fora da tela. Em Syne extrabold cada
+          // caractere ocupa ~0,65em, então 95/nº de caracteres mantém a marca
+          // dentro de ~62vw, que é a largura útil da coluna de conteúdo.
+          fontSize: `${Math.min(18, 95 / marcaDeFundo(capitulo.marca).length)}vw`,
         }}
         className="absolute -top-24 -left-10 font-serif font-extrabold uppercase text-foreground pointer-events-none select-none z-0 leading-none tracking-tighter whitespace-nowrap"
       >
@@ -963,7 +957,7 @@ function PalavraGenese({
  * ------------------------------------------------------------------------- */
 
 function Numeros() {
-  const reduce = usaMenosMovimento();
+  const reduce = useMenosMovimento();
   return reduce ? <NumerosEstaticos /> : <NumerosScroll />;
 }
 
@@ -1019,13 +1013,7 @@ function NumerosScroll() {
 
         <div className="max-w-7xl mx-auto w-full relative z-10 h-full flex flex-col justify-center">
           {numeros.map((n, i) => (
-            <NumeroScrollItem
-              key={n.rotulo}
-              n={n}
-              index={i}
-              progress={p}
-              total={numeros.length}
-            />
+            <NumeroScrollItem key={n.rotulo} n={n} index={i} progress={p} total={numeros.length} />
           ))}
         </div>
 
