@@ -116,13 +116,39 @@ const ministerios = [
   { icon: HeartHandshake, nome: "Atos de Amor", tag: "Ação social" },
 ];
 
-const anosDeCaminhada = new Date().getFullYear() - 2014;
+const ANO_FUNDACAO = 2014;
+const anosDeCaminhada = new Date().getFullYear() - ANO_FUNDACAO;
 
+// Cada métrica carrega o desenho que a representa: `glifo` escolhe a figura e
+// `nota`/`legenda` dão o contexto que o algarismo sozinho não dá.
 const numeros = [
-  { valor: anosDeCaminhada, sufixo: "+", rotulo: "Anos de caminhada" },
-  { valor: 9, sufixo: "", rotulo: "Ministérios ativos" },
-  { valor: 4, sufixo: "", rotulo: "Redes de relacionamento" },
-];
+  {
+    valor: anosDeCaminhada,
+    sufixo: "+",
+    rotulo: "Anos de caminhada",
+    glifo: "regua",
+    nota: `${ANO_FUNDACAO} — ${ANO_FUNDACAO + anosDeCaminhada}`,
+    legenda: "Um traço para cada ano. O último é o que estamos vivendo agora.",
+  },
+  {
+    // Vem do próprio catálogo abaixo: incluir um ministério já corrige o número.
+    valor: ministerios.length,
+    sufixo: "",
+    rotulo: "Ministérios ativos",
+    glifo: "grade",
+    nota: "Nove frentes, um só corpo",
+    legenda:
+      "Louvor, Mídia, Dança, Sabaoth, Zadoque, Jovens, Adolescentes, Kids e Atos de Amor.",
+  },
+  {
+    valor: 4,
+    sufixo: "",
+    rotulo: "Redes de relacionamento",
+    glifo: "rede",
+    nota: "Seis laços entre quatro redes",
+    legenda: "Quatro redes ligadas entre si — nenhuma caminha sozinha.",
+  },
+] as const;
 
 /* ---------------------------------------------------------------------------
  * Página
@@ -947,13 +973,14 @@ function PalavraGenese({
 }
 
 /* ---------------------------------------------------------------------------
- * Números — a contagem acompanha a rolagem
+ * Em números — painel editorial
  *
- * O contador antigo usava `useInView({ once: true })` dentro de um bloco fixo:
- * os três números já estavam "em vista" quando a seção encostava na tela, então
- * os três contavam de uma vez e, ao chegar no segundo e no terceiro, a animação
- * já tinha acabado. Agora cada número conta dentro da sua própria faixa de
- * scroll — e o número da sombra reaproveita o mesmo valor, sem dessincronizar.
+ * Antes eram três outdoors: um algarismo gigante centralizado por vez. Lia-se
+ * o número, mas não se via a quantidade. Agora cada métrica ocupa um painel de
+ * duas colunas — o algarismo em Syne de um lado, e do outro um desenho que
+ * mostra o próprio número: um traço por ano, uma célula por ministério, um nó
+ * por rede (com todos os laços entre elas). O desenho se constrói com a
+ * rolagem, no mesmo ritmo da contagem.
  * ------------------------------------------------------------------------- */
 
 function Numeros() {
@@ -962,20 +989,30 @@ function Numeros() {
 }
 
 function NumerosEstaticos() {
+  // Sem movimento: os glifos aparecem prontos (progresso fixo em 1).
+  const pronto = useMotionValue(1);
   return (
-    <section className="relative z-20 bg-background py-32 px-6">
-      <div className="max-w-5xl mx-auto grid gap-16 sm:grid-cols-3 text-center">
-        {numeros.map((n) => (
-          <div key={n.rotulo}>
-            <div className="font-serif text-7xl tracking-tighter text-foreground tabular-nums">
-              {n.valor}
-              <span className="text-primary ml-1">{n.sufixo}</span>
+    <section className="relative z-20 bg-background py-28 px-6 lg:px-10">
+      <div className="max-w-6xl mx-auto">
+        <RotuloSecao />
+        <div className="mt-16 grid gap-20 sm:grid-cols-3">
+          {numeros.map((n, i) => (
+            <div key={n.rotulo} className="flex flex-col items-start gap-6">
+              <Algarismo valor={n.valor} sufixo={n.sufixo} classe="text-6xl sm:text-7xl" />
+              <div>
+                <div className="font-serif italic text-2xl text-muted-foreground">
+                  {n.rotulo.toLowerCase()}
+                </div>
+                <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.3em] text-primary/40">
+                  {n.nota}
+                </div>
+              </div>
+              <div className="w-full max-w-[14rem]">
+                <Glifo metrica={n} progresso={pronto} indice={i} />
+              </div>
             </div>
-            <div className="mt-4 font-serif italic text-xl text-muted-foreground">
-              {n.rotulo.toLowerCase()}
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -993,36 +1030,201 @@ function NumerosScroll() {
     mass: 0.4,
   });
 
+  const [ativo, setAtivo] = useState(0);
+  useMotionValueEvent(scrollYProgress, "change", (v) => {
+    setAtivo(Math.floor(Math.max(0, Math.min(0.999, v)) * numeros.length));
+  });
+
+  const irPara = (i: number) => {
+    const alvo = sectionRef.current;
+    if (!alvo) return;
+    const util = alvo.offsetHeight - window.innerHeight;
+    window.scrollTo({
+      top: alvo.offsetTop + util * ((i + 0.4) / numeros.length),
+      behavior: "smooth",
+    });
+  };
+
   return (
     <section
       ref={sectionRef}
       className="relative z-20 bg-background"
-      style={{ height: `${numeros.length * 110}vh` }}
+      style={{ height: `${numeros.length * 115}vh` }}
     >
-      <div className="sticky top-0 h-screen w-full flex flex-col justify-center items-center overflow-hidden px-6">
-        <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 2px 2px, var(--foreground) 1px, transparent 0)",
-              backgroundSize: "40px 40px",
-            }}
-          />
+      <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col px-6 lg:px-10">
+        {/* Textura de fundo */}
+        <div
+          className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 2px 2px, var(--foreground) 1px, transparent 0)",
+            backgroundSize: "40px 40px",
+          }}
+        />
+
+        <div className="max-w-7xl mx-auto w-full relative z-10 pt-24 sm:pt-28">
+          <RotuloSecao />
         </div>
 
-        <div className="max-w-7xl mx-auto w-full relative z-10 h-full flex flex-col justify-center">
+        {/* O painel ocupa toda a faixa entre o rótulo e o índice */}
+        <div className="max-w-7xl mx-auto w-full relative z-10 flex-1">
           {numeros.map((n, i) => (
-            <NumeroScrollItem key={n.rotulo} n={n} index={i} progress={p} total={numeros.length} />
+            <PainelNumero
+              key={n.rotulo}
+              metrica={n}
+              indice={i}
+              total={numeros.length}
+              progresso={p}
+              ativo={i === ativo}
+            />
           ))}
+        </div>
+
+        {/* Índice das métricas */}
+        <div className="relative z-20 pb-10 pt-6">
+          <div className="max-w-7xl mx-auto flex items-center gap-6">
+            {numeros.map((n, i) => (
+              <button
+                key={n.rotulo}
+                type="button"
+                onClick={() => irPara(i)}
+                aria-label={n.rotulo}
+                className="group flex items-center gap-3 outline-none"
+              >
+                <span
+                  className={`font-mono text-[10px] tracking-[0.3em] transition-colors duration-500 ${
+                    i === ativo ? "text-primary" : "text-muted-foreground/35"
+                  }`}
+                >
+                  0{i + 1}
+                </span>
+                <span
+                  className={`h-px transition-all duration-500 ${
+                    i === ativo ? "w-14 bg-primary" : "w-6 bg-foreground/15 group-hover:w-10"
+                  }`}
+                />
+              </button>
+            ))}
+          </div>
         </div>
 
         <motion.div
           style={{ scaleX: p }}
-          className="absolute bottom-0 left-0 h-1 bg-primary/40 w-full origin-left z-20"
+          className="absolute bottom-0 left-0 h-px bg-primary/50 w-full origin-left z-20"
         />
       </div>
     </section>
+  );
+}
+
+function RotuloSecao() {
+  return (
+    <div className="font-mono text-[9px] sm:text-[11px] uppercase tracking-[0.4em] text-primary/60 flex items-center gap-4">
+      <span className="h-px w-8 bg-primary/40" />
+      Em números
+    </div>
+  );
+}
+
+function PainelNumero({
+  metrica,
+  indice,
+  total,
+  progresso,
+  ativo,
+}: {
+  metrica: (typeof numeros)[number];
+  indice: number;
+  total: number;
+  progresso: MotionValue<number>;
+  ativo: boolean;
+}) {
+  const passo = 1 / total;
+  const inicio = indice * passo;
+  const fim = inicio + passo;
+  const primeiro = indice === 0;
+  const ultimo = indice === total - 1;
+
+  const antes = primeiro ? -0.001 : inicio - passo * 0.1;
+  const entrada = inicio + passo * 0.16;
+  const saida = fim - passo * 0.12;
+  const depois = ultimo ? 1.001 : fim + passo * 0.04;
+  const janela = [antes, entrada, saida, depois];
+
+  // Sem rotateX: com duas colunas a inclinação virava ruído. Entra e sai por
+  // opacidade, um respiro vertical e uma variação mínima de escala.
+  const opacity = useTransform(progresso, janela, [primeiro ? 1 : 0, 1, 1, ultimo ? 1 : 0]);
+  const y = useTransform(progresso, janela, [primeiro ? 0 : 70, 0, 0, ultimo ? 0 : -70]);
+  const scale = useTransform(progresso, janela, [primeiro ? 1 : 0.96, 1, 1, ultimo ? 1 : 1.03]);
+
+  // Progresso interno do painel: dirige a contagem, o traço e o glifo.
+  const local = useTransform(progresso, [inicio, fim], [0, 1]);
+  // A contagem começa antes de o painel aparecer: assim ele entra em cena já com
+  // um número na tela, em vez de um "0" surgindo por trás do painel anterior.
+  const valor = useContagemPorScroll(
+    progresso,
+    inicio - passo * 0.1,
+    inicio + passo * 0.36,
+    metrica.valor,
+  );
+  const traco = useTransform(progresso, [inicio + passo * 0.05, inicio + passo * 0.45], [0, 1]);
+
+  return (
+    <motion.div
+      aria-hidden={!ativo}
+      style={{ opacity, y, scale }}
+      className="absolute inset-0 flex items-center will-change-transform"
+    >
+      <div className="w-full grid gap-10 sm:gap-14 lg:grid-cols-[1.05fr_1fr] lg:gap-24 items-center">
+        {/* Coluna do algarismo */}
+        <div>
+          <Algarismo
+            valor={valor}
+            sufixo={metrica.sufixo}
+            classe="text-[26vw] sm:text-[19vw] lg:text-[13rem]"
+          />
+
+          <div className="mt-6 sm:mt-8 h-px w-40 bg-foreground/10 relative overflow-hidden">
+            <motion.div
+              className="absolute inset-0 bg-primary/60 origin-left"
+              style={{ scaleX: traco }}
+            />
+          </div>
+
+          <h3 className="mt-6 font-serif italic text-2xl sm:text-4xl lg:text-5xl text-muted-foreground tracking-tight">
+            {metrica.rotulo.toLowerCase()}
+          </h3>
+          <div className="mt-3 font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.3em] text-primary/40">
+            {metrica.nota}
+          </div>
+        </div>
+
+        {/* Coluna do glifo — o número desenhado */}
+        <div className="flex flex-col items-start lg:items-center gap-6">
+          <Glifo metrica={metrica} progresso={local} indice={indice} />
+          <p className="max-w-xs text-sm sm:text-base text-muted-foreground/70 leading-relaxed lg:text-center">
+            {metrica.legenda}
+          </p>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// Algarismo em Syne com o sufixo em sobrescrito — mais editorial que o "+"
+// colado na linha de base.
+function Algarismo({ valor, sufixo, classe }: { valor: number; sufixo: string; classe: string }) {
+  return (
+    <div
+      className={`font-serif font-bold tracking-tighter leading-[0.8] text-foreground select-none tabular-nums ${classe}`}
+    >
+      {valor}
+      {sufixo && (
+        <span className="align-top text-[0.24em] text-primary ml-[0.08em] tracking-normal leading-none">
+          {sufixo}
+        </span>
+      )}
+    </div>
   );
 }
 
@@ -1041,108 +1243,200 @@ function useContagemPorScroll(
   return valor;
 }
 
-function NumeroScrollItem({
-  n,
-  index,
-  progress,
-  total,
+/* --- Glifos: cada métrica desenhada na sua própria lógica ----------------- */
+
+function Glifo({
+  metrica,
+  progresso,
+  indice,
 }: {
-  n: (typeof numeros)[number];
-  index: number;
-  progress: MotionValue<number>;
-  total: number;
+  metrica: (typeof numeros)[number];
+  progresso: MotionValue<number>;
+  indice: number;
 }) {
-  const passo = 1 / total;
-  const start = index * passo;
-  const end = start + passo;
-  const primeiro = index === 0;
-  const ultimo = index === total - 1;
+  if (metrica.glifo === "grade") {
+    return <GlifoGrade total={metrica.valor} progresso={progresso} />;
+  }
+  if (metrica.glifo === "rede") {
+    return <GlifoRede total={metrica.valor} progresso={progresso} />;
+  }
+  return <GlifoRegua total={metrica.valor} progresso={progresso} indice={indice} />;
+}
 
-  const antes = primeiro ? -0.001 : start - passo * 0.12;
-  const entrada = start + passo * 0.22;
-  const saida = end - passo * 0.18;
-  const depois = ultimo ? 1.001 : end + passo * 0.05;
-  const janela = [antes, entrada, saida, depois];
-
-  const opacity = useTransform(progress, janela, [primeiro ? 1 : 0, 1, 1, ultimo ? 1 : 0]);
-  const scale = useTransform(progress, janela, [primeiro ? 1 : 0.72, 1, 1, ultimo ? 1 : 0.72]);
-  // Deslocamento contido: o bloco tem ~700px de altura, e a amplitude antiga
-  // (±250) jogava o algarismo para fora do topo da tela no meio da janela.
-  const y = useTransform(progress, [antes, depois], [primeiro ? 0 : 150, ultimo ? 0 : -110]);
-  // `transformPerspective` e não `perspective`: perspective no próprio elemento
-  // só afeta os filhos, então o rotateX antigo saía achatado.
-  const rotateX = useTransform(progress, [antes, depois], [primeiro ? 0 : 22, ultimo ? 0 : -22]);
-
-  // A contagem cabe na primeira metade da janela e depois segura o valor.
-  const valor = useContagemPorScroll(progress, start, start + passo * 0.42, n.valor);
-  const traco = useTransform(progress, [start, start + passo * 0.5], [0, 1]);
-
-  const digitos = (
-    <span className="tabular-nums">
-      {valor}
-      <span className="text-primary ml-1">{n.sufixo}</span>
-    </span>
+// Um traço por ano, crescendo — o último é o ano que estamos vivendo.
+function GlifoRegua({
+  total,
+  progresso,
+}: {
+  total: number;
+  progresso: MotionValue<number>;
+  indice: number;
+}) {
+  return (
+    <div className="w-full max-w-[22rem] lg:max-w-[26rem]">
+      <div className="flex items-end gap-[3%] h-32 sm:h-44">
+        {Array.from({ length: total }, (_, i) => (
+          <TracoAno key={i} indice={i} total={total} progresso={progresso} />
+        ))}
+      </div>
+      <div className="mt-4 flex justify-between font-mono text-[10px] tracking-[0.28em] text-muted-foreground/45">
+        <span>{ANO_FUNDACAO}</span>
+        <span>{ANO_FUNDACAO + total}</span>
+      </div>
+    </div>
   );
+}
+
+function TracoAno({
+  indice,
+  total,
+  progresso,
+}: {
+  indice: number;
+  total: number;
+  progresso: MotionValue<number>;
+}) {
+  const de = 0.04 + (indice / total) * 0.26;
+  const scaleY = useTransform(progresso, [de, de + 0.1], [0, 1]);
+  const opacity = useTransform(progresso, [de, de + 0.1], [0, 1]);
+  const ultimo = indice === total - 1;
+  // Altura crescente: a régua conta os anos e ao mesmo tempo desenha a subida.
+  const altura = 34 + (indice / Math.max(1, total - 1)) * 66;
 
   return (
     <motion.div
-      style={{
-        opacity,
-        y,
-        scale,
-        rotateX,
-        transformPerspective: 1000,
-        position: "absolute",
-        top: "50%",
-        left: 0,
-        right: 0,
-        translateY: "-50%",
-      }}
-      className="w-full flex flex-col items-center justify-center text-center will-change-transform"
+      style={{ scaleY, opacity, height: `${altura}%` }}
+      className={`flex-1 origin-bottom rounded-t-[2px] ${
+        ultimo ? "bg-primary" : "bg-foreground/25"
+      }`}
+    />
+  );
+}
+
+// Nove ministérios em 3×3 — o número já é a forma.
+function GlifoGrade({ total, progresso }: { total: number; progresso: MotionValue<number> }) {
+  return (
+    <div className="grid grid-cols-3 gap-3 sm:gap-4 w-full max-w-[16rem] sm:max-w-[20rem] aspect-square">
+      {Array.from({ length: total }, (_, i) => (
+        <CelulaGrade key={i} indice={i} total={total} progresso={progresso} />
+      ))}
+    </div>
+  );
+}
+
+function CelulaGrade({
+  indice,
+  total,
+  progresso,
+}: {
+  indice: number;
+  total: number;
+  progresso: MotionValue<number>;
+}) {
+  const de = 0.04 + (indice / total) * 0.24;
+  const escala = useTransform(progresso, [de, de + 0.12], [0, 1]);
+  const opacity = useTransform(progresso, [de, de + 0.12], [0, 1]);
+
+  return (
+    <div className="relative border border-foreground/15">
+      <motion.div
+        style={{ scale: escala, opacity }}
+        className="absolute inset-[22%] bg-primary origin-center"
+      />
+    </div>
+  );
+}
+
+// Quatro redes e os seis laços entre elas — a figura é a própria ideia de rede.
+function GlifoRede({ total, progresso }: { total: number; progresso: MotionValue<number> }) {
+  const posicoes: Array<[number, number]> = [
+    [24, 22],
+    [78, 26],
+    [20, 76],
+    [80, 74],
+  ];
+  const nos = posicoes.slice(0, total);
+  const lacos: Array<[[number, number], [number, number]]> = [];
+  for (let a = 0; a < nos.length; a++) {
+    for (let b = a + 1; b < nos.length; b++) lacos.push([nos[a], nos[b]]);
+  }
+
+  return (
+    <svg
+      viewBox="0 0 100 100"
+      fill="none"
+      className="w-full max-w-[16rem] sm:max-w-[20rem] overflow-visible"
+      aria-hidden="true"
     >
-      <div className="relative group cursor-default">
-        <div className="absolute -inset-20 bg-primary/5 rounded-full blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+      {lacos.map(([a, b], i) => (
+        <LacoRede key={`l${i}`} a={a} b={b} indice={i} total={lacos.length} progresso={progresso} />
+      ))}
+      {nos.map((n, i) => (
+        <NoRede key={`n${i}`} p={n} indice={i} total={nos.length} progresso={progresso} />
+      ))}
+    </svg>
+  );
+}
 
-        <div className="relative flex flex-col items-center">
-          {/* Varredura: o brilho antigo usava rgba(var(--primary)), mas o token
-              é oklch() e a sombra era descartada em silêncio. */}
-          <motion.div
-            style={{ opacity }}
-            animate={{ top: ["0%", "100%", "0%"] }}
-            transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
-            className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent z-20 pointer-events-none"
-          />
+function LacoRede({
+  a,
+  b,
+  indice,
+  total,
+  progresso,
+}: {
+  a: [number, number];
+  b: [number, number];
+  indice: number;
+  total: number;
+  progresso: MotionValue<number>;
+}) {
+  const de = 0.12 + (indice / total) * 0.18;
+  const pathLength = useTransform(progresso, [de, de + 0.12], [0, 1]);
+  const opacity = useTransform(progresso, [de, de + 0.12], [0, 1]);
 
-          <div className="font-serif text-[22vw] sm:text-[20vw] md:text-[18vw] lg:text-[22rem] tracking-tighter leading-[0.75] text-foreground select-none flex items-baseline relative">
-            {/* Sombra 3D — mesmo valor do número da frente, sem contador extra */}
-            <span
-              className="absolute inset-0 text-primary/15 -z-10 blur-md translate-x-4 translate-y-4 select-none pointer-events-none"
-              aria-hidden="true"
-            >
-              {digitos}
-            </span>
-            {digitos}
-          </div>
+  return (
+    <motion.line
+      x1={a[0]}
+      y1={a[1]}
+      x2={b[0]}
+      y2={b[1]}
+      stroke="currentColor"
+      strokeWidth={0.7}
+      className="text-foreground/30"
+      style={{ pathLength, opacity }}
+    />
+  );
+}
 
-          <div className="mt-12 md:mt-16 flex flex-col items-center w-full max-w-4xl px-6">
-            <div className="h-px w-[120px] bg-foreground/10 mb-8 relative overflow-hidden">
-              <motion.div
-                className="absolute inset-0 bg-primary/60 origin-left"
-                style={{ scaleX: traco }}
-              />
-            </div>
-            <div className="flex flex-col items-center gap-4">
-              <span className="font-mono text-[12px] md:text-[14px] text-primary/40 tracking-[0.5em] uppercase">
-                0{index + 1} / 0{total}
-              </span>
-              <span className="font-serif italic text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-muted-foreground group-hover:text-primary transition-colors duration-500 text-center tracking-tight">
-                {n.rotulo.toLowerCase()}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </motion.div>
+function NoRede({
+  p,
+  indice,
+  total,
+  progresso,
+}: {
+  p: [number, number];
+  indice: number;
+  total: number;
+  progresso: MotionValue<number>;
+}) {
+  const de = 0.02 + (indice / total) * 0.08;
+  const opacity = useTransform(progresso, [de, de + 0.1], [0, 1]);
+  const anel = useTransform(progresso, [de, de + 0.16], [0, 1]);
+
+  return (
+    <g>
+      <motion.circle
+        cx={p[0]}
+        cy={p[1]}
+        r={7}
+        stroke="currentColor"
+        strokeWidth={0.7}
+        className="text-primary/40"
+        style={{ pathLength: anel, opacity }}
+      />
+      <motion.circle cx={p[0]} cy={p[1]} r={2.6} className="fill-primary" style={{ opacity }} />
+    </g>
   );
 }
 
