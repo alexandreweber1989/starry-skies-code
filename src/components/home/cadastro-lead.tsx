@@ -257,7 +257,7 @@ export function CadastroLead() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="text-base lg:text-lg xl:text-xl text-muted-foreground/80 max-w-2xl mb-10 leading-relaxed"
+              className="text-base lg:text-lg xl:text-xl text-zinc-300 max-w-2xl mb-10 leading-relaxed"
             >
               Acreditamos que ninguém deve caminhar sozinho. Preencha os dados e te ajudaremos a encontrar a Mesa mais próxima da sua casa.
             </motion.p>
@@ -351,7 +351,7 @@ export function CadastroLead() {
               transition={{ delay: 0.6 }}
               type="submit"
               disabled={!valido || enviando}
-              className="mt-10 lg:mt-14 w-full inline-flex items-center justify-center gap-3 rounded-[2rem] bg-foreground text-background font-bold text-lg lg:text-xl h-16 lg:h-[76px] px-8 lg:px-12 transition-all duration-300 disabled:opacity-50 hover:scale-[1.02] hover:bg-white hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] active:scale-95 group/btn"
+              className="mt-10 lg:mt-14 w-full inline-flex items-center justify-center gap-3 rounded-[2rem] bg-zinc-900 border border-white/10 text-white font-bold text-lg lg:text-xl h-16 lg:h-[76px] px-8 lg:px-12 transition-all duration-300 disabled:opacity-50 hover:bg-white hover:text-black hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(255,255,255,0.4)] active:scale-95 group/btn"
             >
               {enviando ? (
                 <Loader2 className="h-6 w-6 animate-spin motion-keep-spin" />
@@ -471,7 +471,7 @@ export function CadastroLead() {
 }
 
 const inputCls =
-  "w-full rounded-2xl border border-white/5 bg-white/5 px-5 lg:px-6 h-14 lg:h-[72px] text-base lg:text-xl text-foreground !outline-none transition-all duration-300 focus:border-primary/50 focus:bg-primary/10 focus:shadow-[0_0_30px_-5px_rgba(255,255,255,0.1)] placeholder:text-muted-foreground/30 disabled:opacity-50 appearance-none shadow-inner";
+  "w-full rounded-2xl border border-white/10 bg-white/5 px-5 lg:px-6 h-14 lg:h-[72px] text-base lg:text-xl text-white !outline-none transition-all duration-300 focus:border-white/40 focus:bg-white/10 focus:shadow-[0_0_30px_-5px_rgba(255,255,255,0.1)] placeholder:text-white/30 disabled:opacity-50 appearance-none shadow-inner";
 
 function Campo({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -481,7 +481,7 @@ function Campo({ label, children }: { label: string; children: React.ReactNode }
       viewport={{ once: true }}
       className="block"
     >
-      <span className="block text-xs lg:text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-[0.15em] ml-1">{label}</span>
+      <span className="block text-xs lg:text-sm font-semibold text-zinc-300 mb-3 uppercase tracking-[0.15em] ml-1">{label}</span>
       {children}
     </motion.label>
   );
