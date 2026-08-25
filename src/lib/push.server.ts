@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import webpush from "web-push";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { supabase } from "@/integrations/supabase/client";
 
 /** Conteúdo que chega no celular. */
 export interface PushPayload {
@@ -199,9 +200,20 @@ export async function enviarPush(
   // select("*") de propósito: a tabela pode ou não ter as colunas endpoint/p256dh/
   // auth, dependendo de a migração ter sido aplicada. Pedir colunas inexistentes
   // faria a consulta falhar.
-  const { data: assinaturas, error } = await (supabaseAdmin.from("user_push_tokens" as any) as any)
-    .select("*")
-    .in("user_id", userIds);
+  
+  // TENTATIVA 1: Tentar puxar dados com o supabase cliente (se RLS permitir pro role admin)
+  let assinaturas, error;
+  const clientRes = await supabase.from("user_push_tokens" as any).select("*").in("user_id", userIds);
+  
+  if (!clientRes.error) {
+    assinaturas = clientRes.data;
+  } else {
+    // TENTATIVA 2: Supabase Server/Admin quebre, cai direto pro backend RPC se possível
+    const adminRes = await (supabaseAdmin.from("user_push_tokens" as any) as any).select("*").in("user_id", userIds);
+    assinaturas = adminRes.data;
+    error = adminRes.error;
+  }
+
   if (error) throw new Error(`Falha ao carregar os aparelhos cadastrados: ${error.message}`);
 
   const lista = ((assinaturas ?? []) as Record<string, any>[])
