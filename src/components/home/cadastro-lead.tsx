@@ -210,9 +210,9 @@ export function CadastroLead() {
       : `Olá! Sou ${form.nome} (${form.bairro}). Vim pelo site e quero conhecer a igreja e participar de uma Mesa.`;
 
   return (
-    <div className="w-full lg:max-w-4xl xl:max-w-5xl mx-auto rounded-3xl border border-white/10 bg-black/40 backdrop-blur-2xl p-6 lg:p-16 xl:p-20 shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] overflow-hidden relative group">
+    <div className="w-full lg:max-w-4xl xl:max-w-5xl mx-auto rounded-[2.5rem] border border-white/10 bg-zinc-950/40 backdrop-blur-[40px] p-8 lg:p-16 xl:p-20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_30px_60px_-15px_rgba(0,0,0,0.6)] overflow-hidden relative group">
       {/* Decorative Glow */}
-      <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 rounded-full blur-[100px] pointer-events-none group-hover:bg-primary/20 transition-colors duration-1000" />
+      <div className="absolute -top-24 -right-24 w-[800px] h-[800px] bg-primary/15 rounded-full blur-[150px] pointer-events-none group-hover:bg-primary/20 transition-colors duration-1000" />
       
       <AnimatePresence mode="wait">
         {resultado === undefined ? (
@@ -229,10 +229,10 @@ export function CadastroLead() {
               <motion.span 
                 initial={{ width: 0 }}
                 animate={{ width: "33%" }}
-                className="h-1 rounded-full bg-primary" 
+                className="h-1.5 rounded-full bg-primary shadow-[0_0_10px_rgba(255,255,255,0.3)]" 
               />
-              <span className="h-1 flex-1 rounded-full bg-white/5" />
-              <span className="h-1 flex-1 rounded-full bg-white/5" />
+              <span className="h-1.5 flex-1 rounded-full bg-primary/10" />
+              <span className="h-1.5 flex-1 rounded-full bg-primary/10" />
             </div>
 
             <motion.div 
@@ -351,7 +351,7 @@ export function CadastroLead() {
               transition={{ delay: 0.6 }}
               type="submit"
               disabled={!valido || enviando}
-              className="mt-8 lg:mt-12 w-full inline-flex items-center justify-center gap-3 rounded-full bg-primary text-primary-foreground font-bold text-base lg:text-xl h-14 lg:h-20 px-8 lg:px-12 transition-all disabled:opacity-50 hover:scale-[1.02] active:scale-95 shadow-2xl shadow-primary/20 group/btn"
+              className="mt-10 lg:mt-14 w-full inline-flex items-center justify-center gap-3 rounded-[2rem] bg-foreground text-background font-bold text-lg lg:text-xl h-16 lg:h-[76px] px-8 lg:px-12 transition-all duration-300 disabled:opacity-50 hover:scale-[1.02] hover:bg-white hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] active:scale-95 group/btn"
             >
               {enviando ? (
                 <Loader2 className="h-6 w-6 animate-spin motion-keep-spin" />
@@ -471,7 +471,7 @@ export function CadastroLead() {
 }
 
 const inputCls =
-  "w-full rounded-xl border border-white/5 bg-white/5 px-4 lg:px-6 h-12 lg:h-16 text-base lg:text-lg text-foreground outline-none transition-all focus:border-primary/50 focus:bg-white/10 placeholder:text-muted-foreground/30 disabled:opacity-50 appearance-none";
+  "w-full rounded-2xl border border-white/5 bg-white/5 px-5 lg:px-6 h-14 lg:h-[72px] text-base lg:text-xl text-foreground !outline-none transition-all duration-300 focus:border-primary/50 focus:bg-primary/10 focus:shadow-[0_0_30px_-5px_rgba(255,255,255,0.1)] placeholder:text-muted-foreground/30 disabled:opacity-50 appearance-none shadow-inner";
 
 function Campo({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -481,7 +481,7 @@ function Campo({ label, children }: { label: string; children: React.ReactNode }
       viewport={{ once: true }}
       className="block"
     >
-      <span className="block text-xs lg:text-sm font-bold text-muted-foreground/70 mb-2 lg:mb-3 uppercase tracking-wider">{label}</span>
+      <span className="block text-xs lg:text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-[0.15em] ml-1">{label}</span>
       {children}
     </motion.label>
   );
