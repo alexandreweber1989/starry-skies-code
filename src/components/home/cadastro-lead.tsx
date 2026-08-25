@@ -129,24 +129,35 @@ export function CadastroLead() {
                     Não fomos feitos para caminhar sozinhos. Nos diga um pouco sobre você e encontraremos a célula mais próxima da sua casa.
                   </p>
 
-                  <div className="mb-4">
-                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest pl-1 block mb-3">Qual perfil te descreve?</span>
-                    <div className="flex flex-wrap gap-2">
+                                    <div className="mb-6 lg:mb-8">
+                    <span className="text-xs font-semibold text-foreground uppercase tracking-widest pl-1 block mb-3">
+                      1. Qual perfil te descreve? <span className="text-primary">*</span>
+                    </span>
+                    <div className="grid grid-cols-2 gap-3 lg:gap-4">
                       {PERFIS.map(p => (
                         <button
                           key={p.v} type="button"
                           onClick={() => setForm(f => ({ ...f, perfil: p.v }))}
-                          className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 border ${
-                            form.perfil === p.v 
-                            ? "bg-primary text-primary-foreground border-primary shadow-md" 
-                            : "bg-background/40 border-border/50 text-foreground hover:bg-muted hover:border-border"
-                          }`}
+                          className={`
+                            relative overflow-hidden flex items-center justify-between px-5 h-14 rounded-xl text-sm md:text-base font-bold transition-all duration-300 border-2
+                            ${
+                              form.perfil === p.v 
+                              ? "bg-primary/10 border-primary text-foreground shadow-[0_4px_20px_-5px_rgba(var(--primary),0.3)] scale-[1.02]" 
+                              : "bg-background/60 border-border/60 text-muted-foreground hover:bg-muted hover:border-foreground/30 hover:text-foreground"
+                            }
+                          `}
                         >
-                          {p.label}
+                          <span className="relative z-10">{p.label}</span>
+                          
+                          {/* Checked Indicator */}
+                          <div className={`transition-all duration-300 flex items-center justify-center w-5 h-5 rounded-full ${form.perfil === p.v ? 'bg-primary text-primary-foreground scale-100 opacity-100' : 'scale-50 opacity-0'}`}>
+                            <Check className="w-3.5 h-3.5" />
+                          </div>
                         </button>
                       ))}
                     </div>
                   </div>
+                </div>
                 </div>
 
                 {/* Lado Direito (Campos) */}
