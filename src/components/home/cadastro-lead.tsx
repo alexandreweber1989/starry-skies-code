@@ -1,27 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { ArrowRight, Check, Loader2, MapPin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLocalidades } from "@/hooks/use-localidades";
 
-/* ---------------------------------------------------------------------------
- * DADOS DE EXEMPLO — troque pelos reais depois (líderes, WhatsApp e os
- * bairros que cada Mesa atende). O encaminhamento usa este mapa para achar a
- * Mesa mais próxima do bairro, dentro da Rede certa (por perfil).
- * WhatsApp no formato internacional só com números: 55 + DDD + número.
- * ------------------------------------------------------------------------- */
-type Mesa = {
-  perfil: string;
-  rede: string;
-  mesa: string;
-  dia: string;
-  hora: string;
-  local: string;
-  bairros: string[];
-  cidade?: string;
-  lider: string;
-  whatsapp: string;
-};
+// --- DADOS TEMPORÁRIOS DE ROTEAMENTO (Mantidos do anterior) ---
+type Mesa = { perfil: string; rede: string; mesa: string; dia: string; hora: string; local: string; bairros: string[]; cidade?: string; lider: string; whatsapp: string; };
 
 const MESAS_EXEMPLO: Mesa[] = [
   { perfil: "homem", rede: "Rede Zadoque", mesa: "Mesa Zadoque 1", dia: "Quarta", hora: "20h", local: "Uvaranas", bairros: ["Uvaranas", "Oficinas", "Chapada"], cidade: "Ponta Grossa", lider: "Ap. André", whatsapp: "5542999990001" },
@@ -31,30 +15,22 @@ const MESAS_EXEMPLO: Mesa[] = [
   { perfil: "jovem", rede: "Rede de Jovens", mesa: "Mesa dos Jovens", dia: "Sábado", hora: "19h", local: "Templo", bairros: [], cidade: "Ponta Grossa", lider: "Líder Lucas", whatsapp: "5542999990005" },
   { perfil: "adolescente", rede: "Rede de Adolescentes", mesa: "Mesa dos Teens", dia: "Sábado", hora: "16h", local: "Sala Teens", bairros: [], cidade: "Ponta Grossa", lider: "Líder Ana", whatsapp: "5542999990006" },
 ];
-
-// Número geral da igreja (fallback quando não encontramos Mesa) — troque pelo real.
 const WHATSAPP_IGREJA = "5542900000000";
 
 const PERFIS = [
   { v: "mulher", label: "Mulher" },
   { v: "homem", label: "Homem" },
   { v: "jovem", label: "Jovem (16+)" },
-  { v: "adolescente", label: "Adolescente (7–15)" },
+  { v: "adolescente", label: "Adolescente (7-15)" },
 ];
 
 function acharMesa(perfil: string, bairro: string, cidade: string): Mesa | null {
   const daRede = MESAS_EXEMPLO.filter((m) => m.perfil === perfil);
   if (daRede.length === 0) return null;
-  
-  // Prioridade 1: Mesmo bairro e cidade
   const porBairro = daRede.find((m) => m.bairros.includes(bairro) && m.cidade === cidade);
   if (porBairro) return porBairro;
-
-  // Prioridade 2: Mesma cidade
   const porCidade = daRede.find((m) => m.cidade === cidade);
   if (porCidade) return porCidade;
-
-  // Fallback
   return daRede[0];
 }
 
@@ -66,9 +42,6 @@ function linkWhatsApp(numero: string, msg: string) {
   return `https://wa.me/${numero}?text=${encodeURIComponent(msg)}`;
 }
 
-const EASE = [0.22, 1, 0.36, 1] as const;
-
-
 const CIDADES_HABILITADAS = [
   { id: 4104808, nome: "Cascavel", uf: "PR" },
   { id: 4202100, nome: "Barra Velha", uf: "SC" },
@@ -77,96 +50,43 @@ const CIDADES_HABILITADAS = [
 ];
 
 const BAIRROS_POR_CIDADE: Record<string, string[]> = {
-  "4104808": [ // Cascavel
-    "14 de Novembro", "Alto Alegre", "Brasmadeira", "Cancelli", "Caravelle", 
-    "Cascavel Velho", "Centro", "Coqueiral", "Country", "Esmeralda", "Fag", 
-    "Floresta", "Guarujá", "Interlagos", "Jardim Itália", "Maria Luiza", "Neva", 
-    "Pacaembu", "Parque São Paulo", "Parque Verde", "Pioneiros", 
-    "Região do Lago", "Santa Cruz", "Santa Felicidade", "Santo Onofre", 
-    "Santos Dumont", "São Cristóvão", "Universitário"
-  ],
-  "4202100": [ // Barra Velha
-    "Centro", "Escalvado", "Icaraí", "Itajuba", "Medeiros", "Pedreiras", 
-    "Quinta dos Açorianos", "São Cristóvão", "Tabuleiro", "Vila Nova"
-  ],
-  "4104907": [ // Castro
-    "Alvorada", "Cantagalo", "Centro", "Invernada", "Jardim Araucária", 
-    "Jardim Arapongas", "Jardim Colonial", "Jardim Primavera", "Jardim das Agulhas", 
-    "Jardim das Flores", "Jardim das Nações", "Morada do Sol", "Santa Cruz", "Vila Rio Branco"
-  ],
-  "4119905": [ // Ponta Grossa
-    "Boa Vista", "Cará-Cará", "Centro", "Chapada", "Colônia Dona Luíza",
-    "Contorno", "Estrela", "Guaragi", "Itaiacoca", "Jardim Carvalho",
-    "Neves", "Nova Rússia", "Oficinas", "Olarias", "Piriquitos",
-    "Ronda", "Uvaia", "Uvaranas"
-  ]
+  "4104907": ["Centro", "Jardim Araucária", "Vila Rio Branco"],
+  "4119905": ["Boa Vista", "Centro", "Jardim Carvalho", "Nova Rússia", "Oficinas", "Uvaranas"]
 };
 
+// COMPONENTE PRINCIPAL
 export function CadastroLead() {
   const reduce = useReducedMotion();
   const { bairros, buscarBairros, loadingBairros } = useLocalidades();
   
-  const [form, setForm] = useState({ 
-    nome: "", 
-    whatsapp: "", 
-    perfil: "", 
-    uf: "",
-    cidadeId: "",
-    cidadeNome: "",
-    bairro: "",
-    bairroManual: ""
-  });
-
-
+  const [form, setForm] = useState({ nome: "", whatsapp: "", perfil: "", uf: "", cidadeId: "", cidadeNome: "", bairro: "", bairroManual: "" });
   const [enviando, setEnviando] = useState(false);
   const [resultado, setResultado] = useState<{ principal: Mesa | null; outras: Mesa[] } | undefined>(undefined);
 
   const formatWhatsApp = (value: string) => {
-    const numbers = value.replace(/\D/g, "");
-    if (numbers.length <= 2) return numbers;
-    if (numbers.length <= 3) return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
-    if (numbers.length <= 7) return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 3)} ${numbers.slice(3)}`;
-    if (numbers.length <= 11) return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 3)} ${numbers.slice(3, 7)}-${numbers.slice(7)}`;
-    return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 3)} ${numbers.slice(3, 7)}-${numbers.slice(7, 11)}`;
+    const v = value.replace(/\D/g, "");
+    if (v.length <= 2) return v;
+    if (v.length <= 3) return `(${v.slice(0, 2)}) ${v.slice(2)}`;
+    if (v.length <= 7) return `(${v.slice(0, 2)}) ${v.slice(2, 3)} ${v.slice(3)}`;
+    return `(${v.slice(0, 2)}) ${v.slice(2, 3)} ${v.slice(3, 7)}-${v.slice(7, 11)}`;
   };
 
   const set = (k: keyof typeof form) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     let value = e.target.value;
-    if (k === "whatsapp") {
-      value = formatWhatsApp(value);
-    }
+    if (k === "whatsapp") value = formatWhatsApp(value);
     
     if (k === "cidadeId") {
       const city = CIDADES_HABILITADAS.find(c => c.id.toString() === value);
       buscarBairros(Number(value));
-      setForm((f) => ({ 
-        ...f, 
-        cidadeId: value, 
-        cidadeNome: city?.nome || "", 
-        uf: city?.uf || "",
-        bairro: "" 
-      }));
+      setForm(f => ({ ...f, cidadeId: value, cidadeNome: city?.nome || "", uf: city?.uf || "", bairro: "" }));
       return;
     }
-
-
-    setForm((f) => ({ ...f, [k]: value }));
-    if (k === "bairro" && value !== "Outro") {
-      setForm(f => ({ ...f, bairroManual: "" }));
-    }
+    setForm(f => ({ ...f, [k]: value }));
   };
 
-
-  const valido =
-    form.nome.trim().length > 1 && 
-    form.whatsapp.replace(/\D/g, "").length >= 10 && 
-    form.perfil && 
-    form.uf &&
-    form.cidadeId &&
-    (form.bairro === "Outro" ? form.bairroManual.trim().length > 1 : form.bairro);
-
+  const valido = form.nome.length > 2 && form.whatsapp.replace(/\D/g, "").length >= 10 && form.perfil && form.cidadeId && (form.bairro === "Outro" ? form.bairroManual.length > 1 : form.bairro);
 
   async function enviar(e: React.FormEvent) {
     e.preventDefault();
@@ -175,294 +95,128 @@ export function CadastroLead() {
     const numericPhone = form.whatsapp.replace(/\D/g, "");
     const bairroFinal = form.bairro === "Outro" ? form.bairroManual.trim() : form.bairro;
     const mesaPrincipal = acharMesa(form.perfil, bairroFinal, form.cidadeNome);
-    const outrasMesas = listarOutrasMesas(form.perfil, mesaPrincipal);
-
+    
     try {
-      // O supabase-js NÃO lança em erro de RLS/DB — ele retorna { error }. Antes o
-      // erro era engolido e o formulário mostrava sucesso mesmo sem salvar o lead.
-      const { error } = await supabase.from("leads").insert({
-        name: form.nome.trim(),
-        phone: numericPhone,
-        profile: form.perfil,
-        neighborhood: bairroFinal,
-
-        city: form.cidadeNome,
-        state: form.uf,
-        suggested_mesa: mesaPrincipal?.mesa ?? null,
-        status: "novo",
+      await supabase.from("leads").insert({
+        name: form.nome.trim(), phone: numericPhone, profile: form.perfil,
+        neighborhood: bairroFinal, city: form.cidadeNome, state: form.uf,
+        suggested_mesa: mesaPrincipal?.mesa ?? null, status: "novo",
       });
-      if (error) console.error("Erro ao salvar lead:", error);
-    } catch (err) {
-      console.error("Falha de rede ao salvar lead:", err);
-    }
-    // O visitante segue vendo a mesa sugerida e o WhatsApp mesmo se o registro falhar.
-    setResultado({ principal: mesaPrincipal ?? null, outras: outrasMesas });
+    } catch (err) {}
+    
+    setResultado({ principal: mesaPrincipal ?? null, outras: listarOutrasMesas(form.perfil, mesaPrincipal) });
     setEnviando(false);
   }
 
-
-
-  const primeiroNome = form.nome.trim().split(" ")[0] || "";
-
-  const mensagemWhats = (mesa: Mesa | null) =>
-    mesa
-      ? `Olá! Sou ${form.nome} (${form.bairro}). Vim pelo site e quero participar da ${mesa.mesa} (${mesa.dia} ${mesa.hora}). Pode me ajudar?`
-      : `Olá! Sou ${form.nome} (${form.bairro}). Vim pelo site e quero conhecer a igreja e participar de uma Mesa.`;
+  const anim = !reduce ? { initial: { opacity: 0, y: 30 }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, scale: 0.95 } } : {};
 
   return (
-    <div className="w-full lg:max-w-4xl xl:max-w-5xl mx-auto rounded-[2.5rem] border border-white/10 bg-zinc-950/40 backdrop-blur-[40px] p-8 lg:p-16 xl:p-20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_30px_60px_-15px_rgba(0,0,0,0.6)] overflow-hidden relative group">
-      {/* Decorative Glow */}
-      <div className="absolute -top-24 -right-24 w-[800px] h-[800px] bg-primary/15 rounded-full blur-[150px] pointer-events-none group-hover:bg-primary/20 transition-colors duration-1000" />
-      
+    <div className="w-full relative mx-auto my-12" style={{ maxWidth: "1100px" }}>
+      {/* Background Decorativo Aberto (não é mais uma caixa preta, integra no site) */}
+      <div className="absolute top-0 right-10 w-[500px] h-[500px] bg-primary/10 blur-[130px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[400px] bg-sky-600/10 blur-[150px] rounded-full pointer-events-none" />
+
       <AnimatePresence mode="wait">
-        {resultado === undefined ? (
-          <motion.form
-            key="form"
-            onSubmit={enviar}
-            initial={reduce ? undefined : { opacity: 0, x: 20 }}
-            animate={reduce ? undefined : { opacity: 1, x: 0 }}
-            exit={reduce ? undefined : { opacity: 0, x: -20 }}
-            transition={{ duration: 0.5, ease: EASE }}
-            className="relative z-10"
-          >
-            <div className="flex gap-2 mb-8">
-              <motion.span 
-                initial={{ width: 0 }}
-                animate={{ width: "33%" }}
-                className="h-1.5 rounded-full bg-primary shadow-[0_0_10px_rgba(255,255,255,0.3)]" 
-              />
-              <span className="h-1.5 flex-1 rounded-full bg-primary/10" />
-              <span className="h-1.5 flex-1 rounded-full bg-primary/10" />
-            </div>
-
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="font-mono text-[10px] lg:text-xs font-bold uppercase tracking-[0.3em] text-primary/80 mb-2"
-            >
-              Comece sua jornada 👋
-            </motion.div>
+        {!resultado ? (
+          <motion.form key="form" onSubmit={enviar} {...anim} transition={{ duration: 0.6 }} className="relative z-10 w-full flex flex-col lg:flex-row gap-12 xl:gap-20">
             
-            <motion.h3 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="font-serif text-3xl sm:text-4xl xl:text-6xl font-bold leading-[0.9] tracking-tighter mb-4"
-            >
-              Encontre sua Mesa.
-            </motion.h3>
-            
-            <motion.p 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="text-base lg:text-lg xl:text-xl text-zinc-300 max-w-2xl mb-10 leading-relaxed"
-            >
-              Acreditamos que ninguém deve caminhar sozinho. Preencha os dados e te ajudaremos a encontrar a Mesa mais próxima da sua casa.
-            </motion.p>
+            {/* Coluna da Esquerda - Títulos e Perfil */}
+            <div className="flex-1 lg:max-w-md flex flex-col justify-start">
+              <h3 className="font-serif text-4xl sm:text-5xl lg:text-7xl font-bold leading-[0.95] tracking-tight text-white mb-6">
+                Descubra a sua <br/><span className="text-primary italic font-light">Mesa.</span>
+              </h3>
+              <p className="text-zinc-400 text-lg leading-relaxed mb-12">
+                A resposta não está num prédio enorme, está na simplicidade de uma mesa. Diz pra gente quem você é e onde está.
+              </p>
 
-            <div className="space-y-3 lg:space-y-6">
-              <Campo label="Como podemos te chamar?">
-                <input
-                  value={form.nome}
-                  onChange={set("nome")}
-                  placeholder="Seu nome"
-                  className={inputCls}
-                  autoComplete="name"
-                />
-              </Campo>
-              <Campo label="Seu WhatsApp">
-                <input
-                  value={form.whatsapp}
-                  onChange={set("whatsapp")}
-                  placeholder="(42) 9 0000-0000"
-                  inputMode="tel"
-                  className={inputCls}
-                  autoComplete="tel"
-                />
-              </Campo>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:gap-6">
-                <Campo label="Você é">
-                  <select value={form.perfil} onChange={set("perfil")} className={inputCls}>
-                    <option value="">Selecione…</option>
-                    {PERFIS.map((p) => (
-                      <option key={p.v} value={p.v}>{p.label}</option>
-                    ))}
-                  </select>
-                </Campo>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:gap-6">
-                <Campo label="Cidade">
-                  <select 
-                    value={form.cidadeId} 
-                    onChange={set("cidadeId")} 
-                    className={inputCls}
-                  >
-                    <option value="">Selecione a Cidade…</option>
-                    {CIDADES_HABILITADAS.map((c) => (
-                      <option key={c.id} value={c.id.toString()}>{c.nome} ({c.uf})</option>
-                    ))}
-                  </select>
-                </Campo>
-
-                <Campo label="Bairro">
-                  <select 
-                    value={form.bairro} 
-                    onChange={set("bairro")} 
-                    className={inputCls}
-                    disabled={!form.cidadeId || loadingBairros}
-                  >
-                    <option value="">{loadingBairros ? "Carregando…" : "Selecione o Bairro…"}</option>
-                    {BAIRROS_POR_CIDADE[form.cidadeId] ? (
-                      BAIRROS_POR_CIDADE[form.cidadeId].sort().map((b) => (
-                        <option key={b} value={b}>{b}</option>
-                      ))
-                    ) : (
-                      bairros.length > 0 && bairros.map((b) => (
-                        <option key={b.id} value={b.nome}>{b.nome}</option>
-                      ))
-                    )}
-                    {form.cidadeId && !loadingBairros && (
-                      <option value="Outro">Digitar outro bairro...</option>
-                    )}
-                  </select>
-                </Campo>
-                {form.bairro === "Outro" && (
-                  <Campo label="Qual o seu bairro?">
-                    <input
-                      type="text"
-                      className={inputCls}
-                      placeholder="Ex: Jardim das Flores"
-                      onChange={(e) => setForm(f => ({ ...f, bairroManual: e.target.value }))}
-                      required
-                    />
-                  </Campo>
-                )}
-              </div>
-
-
-            </div>
-
-            <motion.button
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              type="submit"
-              disabled={!valido || enviando}
-              className="mt-10 lg:mt-14 w-full inline-flex items-center justify-center gap-3 rounded-[2rem] bg-zinc-900 border border-white/10 text-white font-bold text-lg lg:text-xl h-16 lg:h-[76px] px-8 lg:px-12 transition-all duration-300 disabled:opacity-50 hover:bg-white hover:text-black hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(255,255,255,0.4)] active:scale-95 group/btn"
-            >
-              {enviando ? (
-                <Loader2 className="h-6 w-6 animate-spin motion-keep-spin" />
-              ) : (
-                <>
-                  Ver minha Mesa ideal
-                  <ArrowRight className="h-6 w-6 transition-transform group-hover/btn:translate-x-2" />
-                </>
-              )}
-            </motion.button>
-            <p className="text-xs lg:text-sm text-muted-foreground/60 text-center mt-6">
-              Conectando você ao Reino, um bairro por vez.
-            </p>
-          </motion.form>
-        ) : (
-          <motion.div
-            key="resultado"
-            initial={reduce ? undefined : { opacity: 0, y: 10 }}
-            animate={reduce ? undefined : { opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: EASE }}
-          >
-            <div className="flex items-center gap-2 text-primary">
-              <span className="grid place-items-center h-7 w-7 rounded-full bg-primary text-primary-foreground">
-                <Check className="h-4 w-4" />
-              </span>
-              <span className="font-serif text-sm font-bold">
-                Que alegria, {primeiroNome}! 🎉
-              </span>
-            </div>
-
-            {resultado.principal ? (
-              <>
-                <p className="text-xs text-muted-foreground mt-3">
-                  Sua Mesa mais próxima é:
-                </p>
-                <div className="mt-2 rounded-xl bg-foreground text-background p-4">
-                  <div className="font-mono text-[9px] uppercase tracking-[0.2em] text-background/55">
-                    {resultado.principal.rede}
-                  </div>
-                  <div className="font-serif text-lg font-bold mt-0.5">{resultado.principal.mesa}</div>
-                  <div className="text-xs text-background/70 mt-0.5">
-                    {resultado.principal.dia} · {resultado.principal.hora} · {resultado.principal.local}
-                  </div>
-                  <div className="flex items-center gap-2 mt-3 text-xs text-background/85">
-                    <span className="grid place-items-center h-6 w-6 rounded-full bg-background text-foreground font-serif text-[10px] font-bold">
-                      {resultado.principal.lider.replace(/[^A-Za-zÀ-ÿ]/g, "").slice(0, 2).toUpperCase()}
-                    </span>
-                    Responsável: {resultado.principal.lider}
-                  </div>
-                </div>
-                <a
-                  href={linkWhatsApp(resultado.principal.whatsapp, mensagemWhats(resultado.principal))}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-3 w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary text-primary-foreground font-semibold text-sm h-11 px-6 hover:opacity-90 transition-opacity"
-                >
-                  Falar com {resultado.principal.lider.split(" ").slice(-1)[0]} no WhatsApp
-                </a>
-              </>
-            ) : (
-              <>
-                <p className="text-xs text-muted-foreground mt-3">
-                  Recebemos seu contato! Vamos encontrar a melhor Mesa para você.
-                  Envie uma mensagem para que a nossa liderança possa te acolher.
-                </p>
-                <a
-                  href={linkWhatsApp(WHATSAPP_IGREJA, mensagemWhats(null))}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-3 w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary text-primary-foreground font-semibold text-sm h-11 px-6 hover:opacity-90 transition-opacity"
-                >
-                  Falar no WhatsApp
-                </a>
-              </>
-            )}
-
-            {resultado.outras.length > 0 && (
-              <div className="mt-6">
-                <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                  Outras opções de Mesas para você:
-                </p>
-                <div className="mt-2 space-y-2 max-h-40 overflow-y-auto pr-2 scrollbar-thin">
-                  {resultado.outras.map((outra) => (
-                    <div key={outra.mesa} className="p-3 rounded-lg border border-border/40 bg-card/50 flex justify-between items-center group">
-                      <div>
-                        <div className="text-[10px] font-bold text-primary uppercase">{outra.rede}</div>
-                        <div className="text-sm font-serif font-bold">{outra.mesa}</div>
-                        <div className="text-[10px] text-muted-foreground">{outra.dia} · {outra.hora}</div>
-                      </div>
-                      <a
-                        href={linkWhatsApp(outra.whatsapp, mensagemWhats(outra))}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="h-8 w-8 rounded-full bg-muted flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors"
-                      >
-                        <ArrowRight className="h-4 w-4" />
-                      </a>
-                    </div>
+              {/* Box de Perfil Moderno (Botões em vez de select) */}
+              <div className="mb-4">
+                <span className="text-xs font-semibold text-zinc-500 uppercase tracking-widest pl-2 block mb-4">Em qual grupo você está?</span>
+                <div className="flex flex-wrap gap-2">
+                  {PERFIS.map(p => (
+                    <button
+                      key={p.v} type="button"
+                      onClick={() => setForm(f => ({ ...f, perfil: p.v }))}
+                      className={`px-5 py-3 rounded-full text-sm font-medium transition-all duration-300 border ${
+                        form.perfil === p.v 
+                        ? "bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.2)]" 
+                        : "bg-white/5 border-white/10 text-zinc-300 hover:bg-white/10 hover:border-white/20"
+                      }`}
+                    >
+                      {p.label}
+                    </button>
                   ))}
                 </div>
               </div>
+            </div>
+
+            {/* Coluna da Direita - Campos de Texto Glass */}
+            <div className="flex-1 flex flex-col justify-center gap-6 pt-4 lg:pt-0">
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <InputClean label="Como chamamos você?" val={form.nome} onChange={set("nome")} hold="Seu nome" />
+                <InputClean label="DDD + WhatsApp" val={form.whatsapp} onChange={set("whatsapp")} hold="(42) 90000-0000" type="tel" />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <SelectClean label="Sua Cidade" val={form.cidadeId} onChange={set("cidadeId")} options={CIDADES_HABILITADAS.map(c => ({val: c.id.toString(), num: `${c.nome}`}))} />
+                <SelectClean label="Seu Bairro" val={form.bairro} onChange={set("bairro")} disabled={!form.cidadeId}
+                  options={[
+                    ...(BAIRROS_POR_CIDADE[form.cidadeId] ? BAIRROS_POR_CIDADE[form.cidadeId].sort().map(b => ({val: b, num: b})) : (bairros.map(b => ({val: b.nome, num: b.nome})))),
+                    ...(form.cidadeId ? [{val:"Outro", num:"Outro bairro..."}] : [])
+                  ]} 
+                />
+              </div>
+
+              {form.bairro === "Outro" && (
+                <div className="animate-in fade-in slide-in-from-top-4 duration-300">
+                  <InputClean label="Digite o bairro" val={form.bairroManual} onChange={(e) => setForm(f => ({...f, bairroManual: e.target.value}))} hold="Seu bairro" />
+                </div>
+              )}
+
+              {/* Botão Flutuante Diferenciado */}
+              <button
+                type="submit" disabled={!valido || enviando}
+                className="mt-8 relative overflow-hidden group w-full h-[80px] rounded-2xl bg-zinc-900 border border-white/10 text-white flex items-center justify-between px-8 transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:border-white/30"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <span className="font-serif italic text-2xl lg:text-3xl relative z-10 group-hover:text-primary transition-colors">
+                  {enviando ? "Preparando..." : "Mostrar meu próximo passo"}
+                </span>
+                <div className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-primary group-hover:border-primary group-hover:text-black transition-all group-hover:-translate-x-2 relative z-10">
+                  {enviando ? <Loader2 className="animate-spin w-5 h-5"/> : <ArrowRight className="w-6 h-6" />}
+                </div>
+              </button>
+
+            </div>
+          </motion.form>
+        ) : (
+          <motion.div key="result" {...anim} className="w-full max-w-3xl mx-auto rounded-3xl bg-zinc-950/60 backdrop-blur-2xl border border-white/10 p-10 lg:p-20 text-center relative overflow-hidden">
+            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50" />
+            <div className="mx-auto w-20 h-20 rounded-full bg-primary/20 text-primary flex items-center justify-center mb-6">
+              <Check className="w-10 h-10" />
+            </div>
+            
+            <h3 className="font-serif text-3xl lg:text-6xl text-white mb-2">Tudo pronto, {form.nome.split(" ")[0]}!</h3>
+            <p className="text-zinc-400 text-lg mb-12">Seu lugar já está lá, falta apenas você chegar.</p>
+
+            {resultado.principal ? (
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-6 lg:p-10 mb-8 text-left relative overflow-hidden group">
+                <div className="text-xs font-bold text-primary tracking-[0.2em] uppercase mb-4">{resultado.principal.rede}</div>
+                <div className="text-4xl lg:text-5xl font-serif text-white mb-2 group-hover:text-primary transition-colors">{resultado.principal.mesa}</div>
+                <div className="text-zinc-400 text-lg mb-6 flex items-center gap-2"><MapPin className="w-4 h-4"/> {resultado.principal.local} — {resultado.principal.dia}, às {resultado.principal.hora}</div>
+                
+                <a href={linkWhatsApp(resultado.principal.whatsapp, `Olá, quero participar da ${resultado.principal.mesa}`)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 bg-white text-black px-8 h-14 rounded-full font-bold text-lg hover:scale-105 transition-transform">
+                  Falar no WhatsApp <ArrowRight className="w-5 h-5"/>
+                </a>
+              </div>
+            ) : (
+             <a href={linkWhatsApp(WHATSAPP_IGREJA, "Olá! Vim pelo site...")} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 bg-white text-black px-8 h-14 rounded-full font-bold text-lg hover:scale-105 transition-transform">
+                Falar com a Central <ArrowRight className="w-5 h-5"/>
+             </a>
             )}
 
-            <button
-              type="button"
-              onClick={() => setResultado(undefined)}
-              className="mt-6 w-full text-[11px] text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center gap-1"
-            >
-              ← Voltar ao início
-            </button>
-
+            <button onClick={() => setResultado(undefined)} className="text-sm text-zinc-500 hover:text-white transition-colors uppercase tracking-widest mt-8">← Tentar Novamente</button>
           </motion.div>
         )}
       </AnimatePresence>
@@ -470,19 +224,23 @@ export function CadastroLead() {
   );
 }
 
-const inputCls =
-  "w-full rounded-2xl border border-white/10 bg-white/5 px-5 lg:px-6 h-14 lg:h-[72px] text-base lg:text-xl text-white !outline-none transition-all duration-300 focus:border-white/40 focus:bg-white/10 focus:shadow-[0_0_30px_-5px_rgba(255,255,255,0.1)] placeholder:text-white/30 disabled:opacity-50 appearance-none shadow-inner";
-
-function Campo({ label, children }: { label: string; children: React.ReactNode }) {
+function InputClean({ label, val, hold, onChange, type="text" }: any) {
   return (
-    <motion.label 
-      initial={{ opacity: 0, y: 10 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      className="block"
-    >
-      <span className="block text-xs lg:text-sm font-semibold text-zinc-300 mb-3 uppercase tracking-[0.15em] ml-1">{label}</span>
-      {children}
-    </motion.label>
+    <label className="flex flex-col gap-2 group">
+      <span className="text-xs uppercase tracking-widest font-medium text-zinc-500 group-focus-within:text-white transition-colors pl-2">{label}</span>
+      <input type={type} value={val} onChange={onChange} placeholder={hold} className="h-16 px-5 rounded-2xl bg-zinc-900/50 border border-white/10 text-white text-lg placeholder:text-zinc-700 outline-none transition-all focus:bg-white/5 focus:border-white/30 focus:shadow-[0_0_20px_rgba(255,255,255,0.05)]" />
+    </label>
+  );
+}
+
+function SelectClean({ label, val, options, onChange, disabled }: any) {
+  return (
+    <label className={`flex flex-col gap-2 group ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`}>
+      <span className="text-xs uppercase tracking-widest font-medium text-zinc-500 group-focus-within:text-white transition-colors pl-2">{label}</span>
+      <select value={val} onChange={onChange} disabled={disabled} className="h-16 px-5 rounded-2xl bg-zinc-900/50 border border-white/10 text-white text-lg outline-none transition-all focus:bg-white/5 focus:border-white/30 appearance-none disabled:cursor-not-allowed">
+        <option value="" className="text-zinc-800">Selecione...</option>
+        {options.map((o: any) => <option key={o.val} value={o.val} className="text-black">{o.num}</option>)}
+      </select>
+    </label>
   );
 }
