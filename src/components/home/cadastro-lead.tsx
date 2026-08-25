@@ -4,7 +4,6 @@ import { ArrowRight, Check, Loader2, MapPin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLocalidades } from "@/hooks/use-localidades";
 
-// --- DADOS TEMPORÁRIOS DE ROTEAMENTO (Mantidos do anterior) ---
 type Mesa = { perfil: string; rede: string; mesa: string; dia: string; hora: string; local: string; bairros: string[]; cidade?: string; lider: string; whatsapp: string; };
 
 const MESAS_EXEMPLO: Mesa[] = [
@@ -21,7 +20,7 @@ const PERFIS = [
   { v: "mulher", label: "Mulher" },
   { v: "homem", label: "Homem" },
   { v: "jovem", label: "Jovem (16+)" },
-  { v: "adolescente", label: "Adolescente (7-15)" },
+  { v: "adolescente", label: "Adolescente" },
 ];
 
 function acharMesa(perfil: string, bairro: string, cidade: string): Mesa | null {
@@ -54,7 +53,6 @@ const BAIRROS_POR_CIDADE: Record<string, string[]> = {
   "4119905": ["Boa Vista", "Centro", "Jardim Carvalho", "Nova Rússia", "Oficinas", "Uvaranas"]
 };
 
-// COMPONENTE PRINCIPAL
 export function CadastroLead() {
   const reduce = useReducedMotion();
   const { bairros, buscarBairros, loadingBairros } = useLocalidades();
@@ -71,9 +69,7 @@ export function CadastroLead() {
     return `(${v.slice(0, 2)}) ${v.slice(2, 3)} ${v.slice(3, 7)}-${v.slice(7, 11)}`;
   };
 
-  const set = (k: keyof typeof form) => (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) => {
+  const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     let value = e.target.value;
     if (k === "whatsapp") value = formatWhatsApp(value);
     
@@ -108,138 +104,137 @@ export function CadastroLead() {
     setEnviando(false);
   }
 
-  const anim = !reduce ? { initial: { opacity: 0, y: 30 }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, scale: 0.95 } } : {};
+  const anim = !reduce ? { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, scale: 0.98 } } : {};
 
   return (
-    <div className="w-full relative mx-auto my-12" style={{ maxWidth: "1100px" }}>
-      {/* Background Decorativo Aberto (não é mais uma caixa preta, integra no site) */}
-      <div className="absolute top-0 right-10 w-[500px] h-[500px] bg-primary/10 blur-[130px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[400px] bg-sky-600/10 blur-[150px] rounded-full pointer-events-none" />
+    <div className="w-full relative mx-auto my-6 lg:my-12">
+      {/* Container Premium harmonizado com o tema base via classes do Shadcn/Radix */}
+      <div className="w-full lg:max-w-6xl mx-auto rounded-3xl border border-border/40 bg-card/10 backdrop-blur-3xl shadow-2xl relative overflow-hidden group">
+        
+        {/* Glow Effects atrelados à cor theme-primary */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full pointer-events-none group-hover:bg-primary/10 transition-colors duration-1000" />
+        <div className="absolute inset-x-0 top-0 h-[1px] w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
 
-      <AnimatePresence mode="wait">
-        {!resultado ? (
-          <motion.form key="form" onSubmit={enviar} {...anim} transition={{ duration: 0.6 }} className="relative z-10 w-full flex flex-col lg:flex-row gap-12 xl:gap-20">
-            
-            {/* Coluna da Esquerda - Títulos e Perfil */}
-            <div className="flex-1 lg:max-w-md flex flex-col justify-start">
-              <h3 className="font-serif text-4xl sm:text-5xl lg:text-7xl font-bold leading-[0.95] tracking-tight text-white mb-6">
-                Descubra a sua <br/><span className="text-primary italic font-light">Mesa.</span>
-              </h3>
-              <p className="text-zinc-400 text-lg leading-relaxed mb-12">
-                A resposta não está num prédio enorme, está na simplicidade de uma mesa. Diz pra gente quem você é e onde está.
-              </p>
-
-              {/* Box de Perfil Moderno (Botões em vez de select) */}
-              <div className="mb-4">
-                <span className="text-xs font-semibold text-zinc-500 uppercase tracking-widest pl-2 block mb-4">Em qual grupo você está?</span>
-                <div className="flex flex-wrap gap-2">
-                  {PERFIS.map(p => (
-                    <button
-                      key={p.v} type="button"
-                      onClick={() => setForm(f => ({ ...f, perfil: p.v }))}
-                      className={`px-5 py-3 rounded-full text-sm font-medium transition-all duration-300 border ${
-                        form.perfil === p.v 
-                        ? "bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.2)]" 
-                        : "bg-white/5 border-white/10 text-zinc-300 hover:bg-white/10 hover:border-white/20"
-                      }`}
-                    >
-                      {p.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Coluna da Direita - Campos de Texto Glass */}
-            <div className="flex-1 flex flex-col justify-center gap-6 pt-4 lg:pt-0">
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <InputClean label="Como chamamos você?" val={form.nome} onChange={set("nome")} hold="Seu nome" />
-                <InputClean label="DDD + WhatsApp" val={form.whatsapp} onChange={set("whatsapp")} hold="(42) 90000-0000" type="tel" />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <SelectClean label="Sua Cidade" val={form.cidadeId} onChange={set("cidadeId")} options={CIDADES_HABILITADAS.map(c => ({val: c.id.toString(), num: `${c.nome}`}))} />
-                <SelectClean label="Seu Bairro" val={form.bairro} onChange={set("bairro")} disabled={!form.cidadeId}
-                  options={[
-                    ...(BAIRROS_POR_CIDADE[form.cidadeId] ? BAIRROS_POR_CIDADE[form.cidadeId].sort().map(b => ({val: b, num: b})) : (bairros.map(b => ({val: b.nome, num: b.nome})))),
-                    ...(form.cidadeId ? [{val:"Outro", num:"Outro bairro..."}] : [])
-                  ]} 
-                />
-              </div>
-
-              {form.bairro === "Outro" && (
-                <div className="animate-in fade-in slide-in-from-top-4 duration-300">
-                  <InputClean label="Digite o bairro" val={form.bairroManual} onChange={(e) => setForm(f => ({...f, bairroManual: e.target.value}))} hold="Seu bairro" />
-                </div>
-              )}
-
-              {/* Botão Flutuante Diferenciado */}
-              <button
-                type="submit" disabled={!valido || enviando}
-                className="mt-8 relative overflow-hidden group w-full h-[80px] rounded-2xl bg-zinc-900 border border-white/10 text-white flex items-center justify-between px-8 transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:border-white/30"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                <span className="font-serif italic text-2xl lg:text-3xl relative z-10 group-hover:text-primary transition-colors">
-                  {enviando ? "Preparando..." : "Mostrar meu próximo passo"}
-                </span>
-                <div className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-primary group-hover:border-primary group-hover:text-black transition-all group-hover:-translate-x-2 relative z-10">
-                  {enviando ? <Loader2 className="animate-spin w-5 h-5"/> : <ArrowRight className="w-6 h-6" />}
-                </div>
-              </button>
-
-            </div>
-          </motion.form>
-        ) : (
-          <motion.div key="result" {...anim} className="w-full max-w-3xl mx-auto rounded-3xl bg-zinc-950/60 backdrop-blur-2xl border border-white/10 p-10 lg:p-20 text-center relative overflow-hidden">
-            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50" />
-            <div className="mx-auto w-20 h-20 rounded-full bg-primary/20 text-primary flex items-center justify-center mb-6">
-              <Check className="w-10 h-10" />
-            </div>
-            
-            <h3 className="font-serif text-3xl lg:text-6xl text-white mb-2">Tudo pronto, {form.nome.split(" ")[0]}!</h3>
-            <p className="text-zinc-400 text-lg mb-12">Seu lugar já está lá, falta apenas você chegar.</p>
-
-            {resultado.principal ? (
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-6 lg:p-10 mb-8 text-left relative overflow-hidden group">
-                <div className="text-xs font-bold text-primary tracking-[0.2em] uppercase mb-4">{resultado.principal.rede}</div>
-                <div className="text-4xl lg:text-5xl font-serif text-white mb-2 group-hover:text-primary transition-colors">{resultado.principal.mesa}</div>
-                <div className="text-zinc-400 text-lg mb-6 flex items-center gap-2"><MapPin className="w-4 h-4"/> {resultado.principal.local} — {resultado.principal.dia}, às {resultado.principal.hora}</div>
+        <div className="p-8 lg:p-16">
+          <AnimatePresence mode="wait">
+            {!resultado ? (
+              <motion.form key="form" onSubmit={enviar} {...anim} transition={{ duration: 0.5 }} className="w-full flex flex-col lg:flex-row gap-12">
                 
-                <a href={linkWhatsApp(resultado.principal.whatsapp, `Olá, quero participar da ${resultado.principal.mesa}`)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 bg-white text-black px-8 h-14 rounded-full font-bold text-lg hover:scale-105 transition-transform">
-                  Falar no WhatsApp <ArrowRight className="w-5 h-5"/>
-                </a>
-              </div>
-            ) : (
-             <a href={linkWhatsApp(WHATSAPP_IGREJA, "Olá! Vim pelo site...")} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 bg-white text-black px-8 h-14 rounded-full font-bold text-lg hover:scale-105 transition-transform">
-                Falar com a Central <ArrowRight className="w-5 h-5"/>
-             </a>
-            )}
+                {/* Lado Esquerdo */}
+                <div className="flex-1 lg:max-w-md flex flex-col justify-center">
+                  <h3 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight tracking-tight text-foreground mb-4">
+                    Conecte-se a<br/><span className="text-primary italic font-semibold">uma Mesa.</span>
+                  </h3>
+                  <p className="text-muted-foreground text-sm lg:text-base leading-relaxed mb-8">
+                    Não fomos feitos para caminhar sozinhos. Nos diga um pouco sobre você e encontraremos a célula mais próxima da sua casa.
+                  </p>
 
-            <button onClick={() => setResultado(undefined)} className="text-sm text-zinc-500 hover:text-white transition-colors uppercase tracking-widest mt-8">← Tentar Novamente</button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                  <div className="mb-4">
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest pl-1 block mb-3">Qual perfil te descreve?</span>
+                    <div className="flex flex-wrap gap-2">
+                      {PERFIS.map(p => (
+                        <button
+                          key={p.v} type="button"
+                          onClick={() => setForm(f => ({ ...f, perfil: p.v }))}
+                          className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 border ${
+                            form.perfil === p.v 
+                            ? "bg-primary text-primary-foreground border-primary shadow-md" 
+                            : "bg-background/40 border-border/50 text-foreground hover:bg-muted hover:border-border"
+                          }`}
+                        >
+                          {p.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Lado Direito (Campos) */}
+                <div className="flex-1 flex flex-col justify-center gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <InputTheme label="Seu Nome" val={form.nome} onChange={set("nome")} hold="Como podemos te chamar" />
+                    <InputTheme label="WhatsApp" val={form.whatsapp} onChange={set("whatsapp")} hold="(42) 90000-0000" type="tel" />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <SelectTheme label="Sua Cidade" val={form.cidadeId} onChange={set("cidadeId")} options={CIDADES_HABILITADAS.map(c => ({val: c.id.toString(), num: `${c.nome}`}))} />
+                    <SelectTheme label="Seu Bairro" val={form.bairro} onChange={set("bairro")} disabled={!form.cidadeId}
+                      options={[
+                        ...(BAIRROS_POR_CIDADE[form.cidadeId] ? BAIRROS_POR_CIDADE[form.cidadeId].sort().map(b => ({val: b, num: b})) : (bairros.map(b => ({val: b.nome, num: b.nome})))),
+                        ...(form.cidadeId ? [{val:"Outro", num:"Outro bairro..."}] : [])
+                      ]} 
+                    />
+                  </div>
+
+                  {form.bairro === "Outro" && (
+                    <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                      <InputTheme label="Digite o bairro (Manual)" val={form.bairroManual} onChange={(e) => setForm(f => ({...f, bairroManual: e.target.value}))} hold="Bairro exato" />
+                    </div>
+                  )}
+
+                  <button
+                    type="submit" disabled={!valido || enviando}
+                    className="mt-6 w-full h-[64px] rounded-xl bg-foreground text-background font-bold text-lg flex items-center justify-center gap-3 transition-all duration-300 disabled:opacity-50 hover:bg-primary hover:text-primary-foreground active:scale-[0.98]"
+                  >
+                    {enviando ? <Loader2 className="animate-spin w-5 h-5"/> : (
+                      <>Mostrar meu próximo passo <ArrowRight className="w-5 h-5" /></>
+                    )}
+                  </button>
+                </div>
+              </motion.form>
+            ) : (
+              <motion.div key="result" {...anim} className="w-full text-center py-6">
+                <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-6">
+                  <Check className="w-8 h-8" />
+                </div>
+                
+                <h3 className="font-serif text-3xl lg:text-5xl text-foreground mb-3">Conexão encontrada, {form.nome.split(" ")[0]}!</h3>
+                <p className="text-muted-foreground text-base max-w-lg mx-auto mb-10">Tudo centralizado e preparado. Só precisamos que você dê o um "Oi" para que seu líder te coloque no grupo.</p>
+
+                {resultado.principal ? (
+                  <div className="max-w-2xl mx-auto bg-card border border-border rounded-2xl p-8 text-left shadow-lg">
+                    <div className="text-xs font-bold text-primary tracking-widest uppercase mb-2">{resultado.principal.rede}</div>
+                    <div className="text-3xl lg:text-4xl font-serif text-foreground mb-3">{resultado.principal.mesa}</div>
+                    <div className="text-muted-foreground text-sm flex items-center gap-2 mb-8"><MapPin className="w-4 h-4"/> {resultado.principal.local} — Toda {resultado.principal.dia}, às {resultado.principal.hora}</div>
+                    
+                    <a href={linkWhatsApp(resultado.principal.whatsapp, `Olá, quero participar da ${resultado.principal.mesa}`)} target="_blank" rel="noopener noreferrer" className="w-full md:w-auto inline-flex justify-center items-center gap-2 bg-primary text-primary-foreground px-8 h-12 rounded-xl font-bold hover:opacity-90 transition-opacity">
+                      Falar direto no WhatsApp <ArrowRight className="w-4 h-4"/>
+                    </a>
+                  </div>
+                ) : (
+                  <a href={linkWhatsApp(WHATSAPP_IGREJA, "Olá! Vim pelo site...")} target="_blank" rel="noopener noreferrer" className="inline-flex justify-center items-center gap-2 bg-primary text-primary-foreground px-8 h-12 rounded-xl font-bold hover:opacity-90 transition-opacity">
+                    Falar com a Secretaria <ArrowRight className="w-4 h-4"/>
+                  </a>
+                )}
+                
+                <button onClick={() => setResultado(undefined)} className="block mx-auto mt-12 text-sm text-muted-foreground hover:text-foreground transition-colors uppercase tracking-widest">
+                  ← Voltar e refazer
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
     </div>
   );
 }
 
-function InputClean({ label, val, hold, onChange, type="text" }: any) {
+function InputTheme({ label, val, hold, onChange, type="text" }: any) {
   return (
-    <label className="flex flex-col gap-2 group">
-      <span className="text-xs uppercase tracking-widest font-medium text-zinc-500 group-focus-within:text-white transition-colors pl-2">{label}</span>
-      <input type={type} value={val} onChange={onChange} placeholder={hold} className="h-16 px-5 rounded-2xl bg-zinc-900/50 border border-white/10 text-white text-lg placeholder:text-zinc-700 outline-none transition-all focus:bg-white/5 focus:border-white/30 focus:shadow-[0_0_20px_rgba(255,255,255,0.05)]" />
+    <label className="flex flex-col gap-1.5 focus-within:text-foreground text-muted-foreground transition-colors">
+      <span className="text-xs uppercase tracking-widest font-semibold ml-1">{label}</span>
+      <input type={type} value={val} onChange={onChange} placeholder={hold} className="h-14 lg:h-16 px-4 lg:px-5 rounded-xl bg-background/50 border border-border text-foreground text-base placeholder:text-muted-foreground/40 outline-none transition-all focus:bg-background focus:border-primary focus:ring-1 focus:ring-primary/50" />
     </label>
   );
 }
 
-function SelectClean({ label, val, options, onChange, disabled }: any) {
+function SelectTheme({ label, val, options, onChange, disabled }: any) {
   return (
-    <label className={`flex flex-col gap-2 group ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`}>
-      <span className="text-xs uppercase tracking-widest font-medium text-zinc-500 group-focus-within:text-white transition-colors pl-2">{label}</span>
-      <select value={val} onChange={onChange} disabled={disabled} className="h-16 px-5 rounded-2xl bg-zinc-900/50 border border-white/10 text-white text-lg outline-none transition-all focus:bg-white/5 focus:border-white/30 appearance-none disabled:cursor-not-allowed">
-        <option value="" className="text-zinc-800">Selecione...</option>
-        {options.map((o: any) => <option key={o.val} value={o.val} className="text-black">{o.num}</option>)}
+    <label className={`flex flex-col gap-1.5 focus-within:text-foreground text-muted-foreground transition-colors ${disabled ? 'opacity-50' : ''}`}>
+      <span className="text-xs uppercase tracking-widest font-semibold ml-1">{label}</span>
+      <select value={val} onChange={onChange} disabled={disabled} className="h-14 lg:h-16 px-4 lg:px-5 rounded-xl bg-background/50 border border-border text-foreground text-base outline-none transition-all focus:bg-background focus:border-primary focus:ring-1 focus:ring-primary/50 appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M6%209L12%2015L18%209%22%20stroke%3D%22%23666%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[position:right_1rem_center]">
+        <option value="" className="text-muted-foreground">Selecione...</option>
+        {options.map((o: any) => <option key={o.val} value={o.val}>{o.num}</option>)}
       </select>
     </label>
   );
