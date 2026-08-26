@@ -158,7 +158,6 @@ export function CadastroLead() {
                     </div>
                   </div>
                 </div>
-                </div>
 
                 {/* Lado Direito (Campos) */}
                 <div className="flex-1 flex flex-col justify-center gap-6">
