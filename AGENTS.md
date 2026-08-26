@@ -97,7 +97,28 @@ Use o modelo em `.github/pull_request_template.md` (preenchido automaticamente).
 - Respeite o RBAC/RLS: cada papel (Admin, Pastor, Apascentador, Líder, Membro)
   só acessa o que lhe compete.
 
-## 5. Referências
+## 5. Time de agentes deste repositório
+
+Em `.claude/` moram especialistas com o contexto desta plataforma já embutido —
+o domínio da igreja, o design system e as armadilhas que já nos custaram caro.
+Use-os em vez de reexplicar o projeto do zero a cada tarefa.
+
+| Agente | Para quê |
+|---|---|
+| `auditor-seguranca` | Quem lê e escreve o quê: RLS, dados pessoais, endpoints públicos. |
+| `revisor-dados` | Se a escrita realmente grava, e se a migration é segura e idempotente. |
+| `designer-plataforma` | Tipografia, tokens, reuso do shadcn, mobile e movimento. |
+| `guardiao-produto` | Se a ideia deve existir — filosofia pastoral e duplicação de módulo. |
+| `explorador-plataforma` | Onde algo está e como um fluxo funciona ponta a ponta. |
+
+Os quatro primeiros **relatam e não editam**: quem aplica a correção é a thread
+principal, para não ter três agentes mexendo no mesmo arquivo.
+
+A skill `auditoria-plataforma` orquestra o time e consolida os achados num
+relatório único. Ela **verifica cada achado no código antes de reportar** —
+relatório de agente é hipótese, não fato.
+
+## 6. Referências
 - **Contexto para agentes de IA** — o mesmo conteúdo deve estar na Knowledge do
   Lovable, em dois níveis:
   - `docs/KNOWLEDGE-WORKSPACE.md` → Knowledge do **Workspace** (regras gerais);
