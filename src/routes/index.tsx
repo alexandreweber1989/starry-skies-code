@@ -29,6 +29,8 @@ import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { CadastroLead } from "@/components/home/cadastro-lead";
 import { ChurchLogo } from "@/components/ui/church-logo";
+import { LifePromise } from "@/components/home/LifePromise";
+import { PracticalInfo } from "@/components/home/PracticalInfo";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -143,6 +145,8 @@ function Landing() {
       <NoiseOverlay />
       <FloatingNav cta={cta} />
       <Hero cta={cta} />
+      <LifePromise />
+      <PracticalInfo variant="hero" />
       <CadastroSection />
       <Historia />
       <Numeros />
@@ -1328,6 +1332,8 @@ function FinalCTA({ cta }: { cta: { to: string; label: string } }) {
             </div>
           </div>
         </motion.div>
+
+        <PracticalInfo variant="footer" />
 
         <div className="mt-20 sm:mt-28 md:mt-40 pt-10 border-t border-background/10 flex flex-col md:flex-row items-center justify-between gap-8 text-background/40 font-mono text-[10px] uppercase tracking-[0.3em]">
           <div className="flex items-center gap-3">
