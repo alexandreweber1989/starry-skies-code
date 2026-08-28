@@ -308,7 +308,7 @@ export function CantinaMenus() {
                               <Button 
                                 variant="ghost" 
                                 size="icon" 
-                                className="h-6 w-6 rounded-md opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive transition-all"
+                                className="h-6 w-6 rounded-md opacity-100 lg:opacity-0 lg:group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive transition-all"
                                 onClick={() => setQty(id, -qty)}
                               >
                                 <Minus className="h-3 w-3" />
