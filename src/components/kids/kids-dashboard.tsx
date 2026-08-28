@@ -333,7 +333,7 @@ function EmptyState({
       </div>
       <div className="space-y-1">
         <h3 className="font-serif text-2xl text-foreground/80">{title}</h3>
-        <p className="max-w-xs text-sm text-muted-foreground/70">{description}</p>
+        <p className="max-w-xs text-sm text-muted-foreground">{description}</p>
       </div>
     </div>
   );
