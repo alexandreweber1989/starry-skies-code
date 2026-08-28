@@ -5,6 +5,7 @@ import * as SelectPrimitive from "@radix-ui/react-select";
 import { Check, ChevronDown, ChevronUp } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { useFieldLabelId } from "@/components/ui/field-label-context";
 
 const Select = SelectPrimitive.Root;
 
@@ -15,9 +16,17 @@ const SelectValue = SelectPrimitive.Value;
 const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
+>(({ className, children, ...props }, ref) => {
+  // Herda o nome do rotulo do Field envolvente. Um aria-label ou
+  // aria-labelledby informado explicitamente sempre tem prioridade.
+  const idDoRotulo = useFieldLabelId();
+  const rotuladoPor =
+    props["aria-labelledby"] ??
+    (props["aria-label"] ? undefined : idDoRotulo);
+  return (
   <SelectPrimitive.Trigger
     ref={ref}
+    aria-labelledby={rotuladoPor}
     className={cn(
       "flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background cursor-pointer data-[placeholder]:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
       className,
@@ -29,7 +38,8 @@ const SelectTrigger = React.forwardRef<
       <ChevronDown className="h-4 w-4 opacity-50" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
-));
+  );
+});
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
 
 const SelectScrollUpButton = React.forwardRef<
