@@ -163,7 +163,9 @@ function PerfilPage() {
 function Row({ label, value }: { label: string; value: any }) {
   return (
     <div className="flex items-baseline justify-between border-b border-border pb-3">
-      <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{label}</div>
+      {/* Nomeia cada dado do perfil (Telefone, Nascimento...). Sem ele, o valor
+          ao lado nao significa nada -- entao precisa ser legivel de fato. */}
+      <div className="font-mono text-sm uppercase tracking-[0.08em] text-muted-foreground">{label}</div>
       <div>{value || <span className="text-muted-foreground">—</span>}</div>
     </div>
   );

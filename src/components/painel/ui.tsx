@@ -22,7 +22,7 @@ export function PanelSection({
     <section className={cn("border border-border bg-card/50 backdrop-blur-sm rounded-xl shadow-sm transition-all duration-300 hover:shadow-md hover:border-border/80", className)}>
       <header className="flex flex-wrap items-end justify-between gap-3 px-4 sm:px-6 pt-5 sm:pt-6 pb-4 border-b border-border">
         <div>
-          <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+          <div className="font-mono text-xs uppercase tracking-[0.1em] text-muted-foreground">
             {label}
           </div>
           <h2 className="font-serif text-2xl mt-1 leading-none">{title}</h2>
@@ -57,7 +57,13 @@ export function StatTile({
         )}
       </div>
       <div className="font-serif text-2xl sm:text-3xl md:text-4xl mt-4 sm:mt-6 leading-none tabular-nums truncate">{value}</div>
-      <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground mt-2">
+      {/*
+        Este rotulo e a UNICA coisa que diz o que o numero significa. A 10px com
+        0.2em de espacamento, a distancia do braco se le o numero e nao se sabe
+        de que. Sobe para 14px com espacamento contido -- a familia tipografica
+        e o caixa-alta seguem os mesmos.
+      */}
+      <div className="font-mono text-sm uppercase tracking-[0.08em] text-muted-foreground mt-2">
         {label}
       </div>
       {hint && <div className="text-xs text-muted-foreground mt-1">{hint}</div>}

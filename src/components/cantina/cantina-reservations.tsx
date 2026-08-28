@@ -100,7 +100,7 @@ export function CantinaMyReservations() {
               </div>
 
               {serviceDate && (
-                <div className="flex items-center gap-2 mb-6 text-[10px] font-mono uppercase tracking-widest text-muted-foreground/70">
+                <div className="flex items-center gap-2 mb-6 text-xs font-mono uppercase tracking-[0.1em] text-muted-foreground">
                   <Calendar className="h-3 w-3" />
                   {serviceDate.toLocaleDateString("pt-BR", { weekday: 'long', day: 'numeric', month: 'long' })}
                 </div>
@@ -140,7 +140,7 @@ export function CantinaMyReservations() {
                       </p>
                     </div>
                     <button
-                      className="text-[10px] text-muted-foreground/40 hover:text-destructive transition-colors underline underline-offset-4 w-fit"
+                      className="text-sm text-muted-foreground hover:text-destructive transition-colors underline underline-offset-4 w-fit"
                       onClick={() => cancel.mutate(r.id)}
                     >
                       Cancelar Reserva
