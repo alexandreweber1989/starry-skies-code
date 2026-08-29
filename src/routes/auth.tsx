@@ -10,8 +10,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { useServerFn } from "@tanstack/react-start";
-import { updateUserPassword } from "@/lib/auth-admin.functions";
 
 
 export const Route = createFileRoute("/auth")({
@@ -36,9 +34,6 @@ function AuthPage() {
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [notes, setNotes] = useState("");
-  const [adminSetupEmail, setAdminSetupEmail] = useState("alew15_7@hotmail.com");
-  const [adminSetupPassword, setAdminSetupPassword] = useState("");
-  const updatePasswordFn = useServerFn(updateUserPassword);
 
 
   useEffect(() => {
@@ -138,23 +133,6 @@ function AuthPage() {
     }
     toast.success("Enviamos um link de redefinição para o seu e-mail. Verifique também a pasta de Spam.");
   }
-
-  async function handleAdminSetup(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      await updatePasswordFn({ data: { email: adminSetupEmail, password: adminSetupPassword } });
-      toast.success("Senha configurada com sucesso! Agora você já pode entrar.");
-      setMode("signin");
-      setEmail(adminSetupEmail);
-      setPassword(adminSetupPassword);
-    } catch (err: any) {
-      toast.error(err.message || "Erro ao configurar senha.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
 
   return (
     <div className="min-h-screen bg-background text-foreground grid grid-cols-1 lg:grid-cols-2">
