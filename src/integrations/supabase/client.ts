@@ -29,23 +29,25 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
 
 
 function createSupabaseClient() {
-  // Try multiple fallback sources for environment variables
+  // Environment variables are REQUIRED - no hardcoded fallbacks.
+  // Configure these in your deployment platform (Vercel, Lovable, etc.)
   const SUPABASE_URL = 
     (typeof process !== 'undefined' && process.env ? process.env['SUPABASE_URL'] : null) || 
     (typeof process !== 'undefined' && process.env ? process.env['VITE_SUPABASE_URL'] : null) ||
-    import.meta.env['VITE_SUPABASE_URL'] ||
-    'https://zrdzocdadiucrhvwvxhq.supabase.co';
+    import.meta.env['VITE_SUPABASE_URL'];
     
   const SUPABASE_PUBLISHABLE_KEY = 
     (typeof process !== 'undefined' && process.env ? process.env['SUPABASE_PUBLISHABLE_KEY'] : null) || 
     (typeof process !== 'undefined' && process.env ? process.env['VITE_SUPABASE_PUBLISHABLE_KEY'] : null) ||
     (typeof process !== 'undefined' && process.env ? process.env['VITE_SUPABASE_ANON_KEY'] : null) ||
     import.meta.env['VITE_SUPABASE_PUBLISHABLE_KEY'] ||
-    import.meta.env['VITE_SUPABASE_ANON_KEY'] ||
-    'sb_publishable_kala5-0XrdNl2gqWAn8LLw_N9O2RXWT';
+    import.meta.env['VITE_SUPABASE_ANON_KEY'];
 
   if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
-    console.warn("[Supabase Client] Environment variables missing. Using hardcoded connection strings as ultimate fallback.");
+    throw new Error(
+      '[Supabase Client] Environment variables SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY (or VITE_* equivalents) are required. ' +
+      'Configure them in your deployment platform. No hardcoded fallbacks allowed for security.'
+    );
   }
 
   return createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
