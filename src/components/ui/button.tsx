@@ -40,11 +40,20 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground hover:-translate-y-0.5",
         link: "text-primary underline-offset-4 hover:underline",
       },
+      /**
+       * Alturas mínimas de toque.
+       *
+       * O público majoritário acessa pelo celular e uma parcela relevante da
+       * membresia é mais velha, com dificuldade de mira. Por isso o piso aqui é
+       * 44px (`h-11`) — a menor área que uma pessoa alcança com o polegar sem
+       * errar. `sm` fica em 40px, reservado a ações secundárias em densidade
+       * alta; abaixo disso não existe tamanho.
+       */
       size: {
-        default: "h-9 px-4 py-2",
-        sm: "h-8 rounded-md px-3 text-xs",
-        lg: "h-10 rounded-md px-8",
-        icon: "h-9 w-9",
+        default: "h-11 px-5 py-2",
+        sm: "h-10 rounded-md px-4 text-sm",
+        lg: "h-12 rounded-md px-8",
+        icon: "h-11 w-11",
       },
     },
     defaultVariants: {
