@@ -1,5 +1,5 @@
 /** ID do ministério de Louvor (usado como escopo padrão do módulo). */
-export const LOUVOR_MINISTRY_ID = "7cc9c01b-b760-4dc7-985e-2e6e8505384b";
+export const LOUVOR_MINISTRY_ID = "28637c04-f1f7-4927-a7af-75eb7501364f";
 
 /**
  * Funções do louvor na ordem em que aparecem na escala.
