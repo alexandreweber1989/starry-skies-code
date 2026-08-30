@@ -1,3 +1,4 @@
+import type React from "react";
 import { useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { ArrowRight, Check, Loader2, MapPin } from "lucide-react";
