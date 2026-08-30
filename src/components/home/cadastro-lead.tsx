@@ -1,3 +1,4 @@
+import type React from "react";
 import { useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { ArrowRight, Check, Loader2, MapPin } from "lucide-react";
@@ -178,7 +179,7 @@ export function CadastroLead() {
 
                   {form.bairro === "Outro" && (
                     <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                      <InputTheme label="Digite o bairro (Manual)" val={form.bairroManual} onChange={(e) => setForm(f => ({...f, bairroManual: e.target.value}))} hold="Bairro exato" />
+                      <InputTheme label="Digite o bairro (Manual)" val={form.bairroManual} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm(f => ({...f, bairroManual: e.target.value}))} hold="Bairro exato" />
                     </div>
                   )}
 
