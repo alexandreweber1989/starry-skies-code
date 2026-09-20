@@ -29,6 +29,12 @@ import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { CadastroLead } from "@/components/home/cadastro-lead";
 import { ChurchLogo } from "@/components/ui/church-logo";
+import { LifePromise } from "@/components/home/LifePromise";
+import { PracticalInfo } from "@/components/home/PracticalInfo";
+import { SundayExperience } from "@/components/home/SundayExperience";
+import { PastoralFAQ } from "@/components/home/PastoralFAQ";
+import { WelcomeTeam } from "@/components/home/WelcomeTeam";
+import { Testimonials } from "@/components/home/Testimonials";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -143,11 +149,17 @@ function Landing() {
       <NoiseOverlay />
       <FloatingNav cta={cta} />
       <Hero cta={cta} />
+      <LifePromise />
+      <PracticalInfo variant="hero" />
       <CadastroSection />
       <Historia />
       <Numeros />
+      <SundayExperience />
       <Pilares />
+      <PastoralFAQ />
+      <WelcomeTeam />
       <Ministerios />
+      <Testimonials />
       <FinalCTA cta={cta} />
     </div>
   );
