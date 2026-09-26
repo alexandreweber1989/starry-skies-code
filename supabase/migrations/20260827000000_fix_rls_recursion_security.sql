@@ -4,7 +4,7 @@
 -- PROBLEMA: Políticas com EXISTS correlacionado causam "infinite recursion detected in policy"
 -- quando tabelas se referenciam mutuamente (redes ↔ mesas ↔ mesa_members).
 -- SOLUÇÃO: Delegar checagem para funções SECURITY DEFINER (já existentes no banco):
---   can_view_mesa(mesa_id), can_view_rede(rede_id), has_role(user_id, role)
+--   can_view_mesa(mesa_id), can_view_rede(rede_id), has_role(user_id, role), has_ministry_role(user_id, ministry_id)
 -- Estas funções não reavaliam RLS internamente, quebrando o ciclo.
 -- ============================================================================
 
@@ -31,8 +31,7 @@ USING (
   OR public.has_role(auth.uid(), 'admin_geral')
 );
 
--- 4. Políticas para ministry_members — usar has_ministry_role() ou can_view_ministry() se existir
--- Se não existir função específica, usar has_role + ministry_id check via SECURITY DEFINER
+-- 4. Políticas para ministry_members — usar has_ministry_role()
 DROP POLICY IF EXISTS "Members can view their own ministry members" ON public.ministry_members;
 CREATE POLICY "Members can view their own ministry members" ON public.ministry_members
 FOR SELECT TO authenticated

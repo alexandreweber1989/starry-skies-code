@@ -28,11 +28,29 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
 }
 
 function createSupabaseAdminClient() {
-  const SUPABASE_URL = process.env['SUPABASE_URL'] || import.meta.env.VITE_SUPABASE_URL || 'https://zrdzocdadiucrhvwvxhq.supabase.co';
-  const SUPABASE_SERVICE_ROLE_KEY = process.env['SUPABASE_SERVICE_ROLE_KEY'] || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_kala5-0XrdNl2gqWAn8LLw_N9O2RXWT';
+  const SUPABASE_URL = process.env['SUPABASE_URL'] || import.meta.env.VITE_SUPABASE_URL;
+  const SUPABASE_SERVICE_ROLE_KEY = process.env['SUPABASE_SERVICE_ROLE_KEY'] || import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
 
-  if (!process.env['SUPABASE_URL'] || !process.env['SUPABASE_SERVICE_ROLE_KEY']) {
-    console.warn("[Supabase Admin] Environment variables missing in server context. Using fallback connection strings.");
+  if (!SUPABASE_URL) {
+    throw new Error('[Supabase Admin] SUPABASE_URL is required. Configure it in your deployment platform.');
+  }
+
+  if (!SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error(
+      '[Supabase Admin] SUPABASE_SERVICE_ROLE_KEY is required. ' +
+      'This MUST be a service_role key (starts with sb_secret_ or similar), NOT a publishable/anon key. ' +
+      'Configure it in your deployment platform (Vercel, etc.). ' +
+      'Using a publishable key as service role key will NOT bypass RLS and is a security vulnerability.'
+    );
+  }
+
+  // Validate it's actually a service role key (basic check)
+  if (SUPABASE_SERVICE_ROLE_KEY.startsWith('sb_publishable_') || SUPABASE_SERVICE_ROLE_KEY.startsWith('sb_anon_')) {
+    throw new Error(
+      '[Supabase Admin] SUPABASE_SERVICE_ROLE_KEY appears to be a publishable/anon key, not a service role key. ' +
+      'Service role keys typically start with "sb_secret_" or similar. ' +
+      'Using the wrong key type will NOT bypass RLS and exposes data.'
+    );
   }
 
   return createClient<Database>(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
