@@ -1,75 +1,61 @@
 ---
 name: auditoria-plataforma
-description: Roda uma auditoria da plataforma da Igreja Batista Atos com o time de agentes (segurança/RLS, dados, design, produto) e consolida os achados num relatório único, verificado, ordenado por severidade. Use quando pedirem para auditar, revisar, "ver o que dá para melhorar" na plataforma, ou antes de uma entrega grande. Aceita um escopo opcional — um caminho, um módulo ou "tudo".
+description: O gatilho do TIME DE AGENTES da plataforma Igreja Batista Atos. Use quando o usuário mandar o time atuar — "time de agentes, atuem", "ativa o time", "roda os agentes", "auditoria da plataforma", "revisa/verifica a plataforma", ou pedir uma varredura minuciosa. Aciona os líderes peritos e seus especialistas em paralelo, verifica cada achado no código e consolida um relatório único priorizado. Aceita escopo opcional (um caminho, um módulo, ou "tudo").
 ---
 
-# Auditoria da plataforma
+# Time de agentes — procedimento
 
-Consolida a leitura de vários especialistas num relatório só. O valor está na
-**verificação** e na **priorização**, não no volume de achados.
+Quando o usuário manda o time atuar, VOCÊ (thread principal) é o maestro. Conduza
+com profissionalismo e maestria: nada de relatório inchado, nada de achado não
+verificado. O valor está na **priorização** e na **verificação**, não no volume.
+
+## Arquitetura (como o time realmente funciona)
+
+É de um nível: **você** ativa os agentes; eles não ativam uns aos outros.
+
+- **Líderes peritos** (lentes de domínio + síntese): `auditor-seguranca`,
+  `revisor-dados`, `designer-plataforma`, `guardiao-produto`, `explorador-plataforma`.
+- **Especialistas** (o trabalho árduo, estreito e paralelo) — você ativa direto:
+  - Segurança → `seg-rls-scanner`, `seg-pii-scanner`, `seg-endpoint-scanner`
+  - Dados → `dados-erro-scanner`, `dados-migration-scanner`
+  - Design → `design-tipografia-token-scanner`, `design-mobile-a11y-scanner`
+- `guardiao-produto` e `explorador-plataforma` são peritos de julgamento — sem
+  especialistas sob eles; ative-os direto quando o escopo pedir.
 
 ## Escopo
 
-O argumento define o alvo. Sem argumento, audite o que mudou em relação à `main`
-(`git diff --stat origin/main...HEAD`) — auditar 80 tabelas sem motivo gasta
-muito e entrega pouco.
+O argumento define o alvo. **Sem argumento**, audite o que mudou vs `main`
+(`git diff --stat origin/main...HEAD`) — varrer tudo sem motivo gasta muito e
+entrega pouco. Um caminho/módulo → só ele. `"tudo"` → varredura completa; avise
+que vai demorar e custar mais.
 
-- Um caminho ou módulo (`src/routes/_authenticated/kids`, "louvor") → só ele.
-- `tudo` → varredura completa; avise que vai demorar.
+## Procedimento
 
-## Quem chamar
+1. **Escopar.** Determine os caminhos reais. Decida quais domínios o escopo toca
+   (não acione os sete especialistas por reflexo — só os que o escopo exige).
+2. **Fan-out em paralelo.** Ative, num único lote, os especialistas dos domínios
+   em jogo (e os peritos de julgamento quando couber). Passe a cada um o **escopo
+   concreto** (caminhos), não "audite a plataforma". Cada um cava fundo no seu
+   recorte e devolve o relatório dele.
+3. **Síntese do líder.** Para cada domínio, assuma a lente do líder perito e
+   junte os achados dos seus especialistas, removendo duplicatas.
+4. **Verificação (o passo que não se pula).** Para cada achado que vai entrar no
+   relatório final, **abra o arquivo e confirme**. Descarte o que não se sustenta.
+   Lembre: a última definição de uma policy é a que vale; achado em migration não
+   aplicada descreve o futuro, não o presente; achado que depende de coluna
+   inexistente ainda não é bug. O que não confirmou entra como **suspeita** ou não
+   entra. Nunca apresente conclusão de agente como se você tivesse verificado.
+5. **Relatório único.** Ordene por gravidade real (quem é afetado, quão
+   silenciosa é a falha). Para cada item: o que acontece (cenário concreto),
+   `arquivo:linha`, a correção (SQL/trecho, idempotente quando for migration), e
+   qual especialista levantou. Feche com o que foi examinado e o que ficou de
+   fora. Se nada relevante apareceu, diga em uma linha — auditoria limpa é
+   resultado legítimo.
 
-Escolha pelo escopo, **não chame os quatro por reflexo**:
+## Aplicar correções
 
-| Agente | Chame quando o escopo toca |
-|---|---|
-| `auditor-seguranca` | migrations, policies, `profiles`/papéis, `src/routes/api/public/` |
-| `revisor-dados` | qualquer escrita no banco, migrations novas, server functions |
-| `designer-plataforma` | telas, componentes, animação, tipografia |
-| `guardiao-produto` | proposta de módulo, métrica ou automação nova |
-
-Dispare em paralelo, num único bloco. Cada um lê o próprio pedaço e devolve o
-relatório dele — nenhum deles edita arquivo.
-
-Passe a cada agente o **escopo concreto** (caminhos), não "audite a plataforma".
-
-## Verificar antes de reportar
-
-Este é o passo que não se pula. Relatório de agente é hipótese, não fato.
-
-Para cada achado que você vai incluir, **abra o arquivo e confirme**. Descarte,
-sem dó, o que não se sustentar. Em particular:
-
-- Policy citada de migration antiga pode ter sido substituída por outra mais
-  nova — vale a **última** definição.
-- Achado em migration ainda **não aplicada** no Supabase descreve o futuro, não o
-  presente; diga isso.
-- Achado que depende de coluna ou função que não existe ainda não é bug real.
-
-Achado que você não conseguiu confirmar entra marcado como **suspeita**, ou não
-entra. Nunca apresente conclusão de agente como se você tivesse verificado.
-
-## Relatório
-
-Ordene por severidade real (quem é afetado, quão silenciosa é a falha), não por
-agente. Para cada item:
-
-- **O que acontece** — o cenário concreto, não a categoria. "Qualquer membro
-  autenticado lê o telefone de toda a igreja", não "exposição de dados".
-- **Onde** — `arquivo:linha`.
-- **Correção** — o trecho ou o SQL, idempotente quando for migration.
-- **Origem** — qual agente levantou, e se você confirmou.
-
-Feche com o que foi examinado e o que **ficou de fora** — um escopo declarado
-vale mais que um relatório que finge ter olhado tudo.
-
-Se nada relevante apareceu, diga isso em uma linha. Auditoria limpa é resultado
-legítimo; encher o relatório para parecer útil destrói a confiança nele.
-
-## Depois
-
-Você relata; a correção é decisão do usuário. Não saia corrigindo os achados sem
-confirmar quais ele quer — exceto quando ele já tiver pedido "audite e corrija".
-
-Correções entram pelo fluxo do `AGENTS.md`: branch + PR, migration idempotente
-em `supabase/migrations/`, e nada de merge com check vermelho.
+O time **relata e propõe**; você aplica pelo fluxo normal do `AGENTS.md`: branch +
+PR, migration idempotente, nada de merge com check vermelho. Só aplique
+automaticamente se o usuário já tiver dito "corrija"; caso contrário, confirme
+quais ele quer. **Sempre** peça confirmação antes de: migration destrutiva,
+mudança de auth/permissão, remoção de dados, ou algo que afete todos de uma vez.
