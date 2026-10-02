@@ -114,9 +114,32 @@ Use-os em vez de reexplicar o projeto do zero a cada tarefa.
 Os quatro primeiros **relatam e não editam**: quem aplica a correção é a thread
 principal, para não ter três agentes mexendo no mesmo arquivo.
 
-A skill `auditoria-plataforma` orquestra o time e consolida os achados num
-relatório único. Ela **verifica cada achado no código antes de reportar** —
-relatório de agente é hipótese, não fato.
+### Dois níveis: líderes peritos + especialistas
+
+Os três líderes de auditoria pesada têm, sob eles, **especialistas estreitos**
+que fazem o trabalho minucioso em paralelo. Quem **ativa** os especialistas é a
+thread principal (um agente não ativa outro de forma confiável no Claude Code);
+o líder entra como lente de domínio e **síntese**.
+
+| Líder | Especialistas (um mandato cada) |
+|---|---|
+| `auditor-seguranca` | `seg-rls-scanner`, `seg-pii-scanner`, `seg-endpoint-scanner` |
+| `revisor-dados` | `dados-erro-scanner`, `dados-migration-scanner` |
+| `designer-plataforma` | `design-tipografia-token-scanner`, `design-mobile-a11y-scanner` |
+
+`guardiao-produto` e `explorador-plataforma` são peritos de julgamento — sem
+especialistas sob eles. Todos os especialistas **só relatam**.
+
+### Gatilho único: o time atua
+
+A skill `auditoria-plataforma` é o **gatilho do time**: o usuário manda o time
+atuar ("time de agentes, atuem", "ativa o time", "roda os agentes", "auditoria
+da plataforma") e a thread principal conduz o procedimento inteiro — escopa,
+ativa os especialistas dos domínios em jogo em paralelo, **verifica cada achado
+no código** (relatório de agente é hipótese, não fato; migration não aplicada
+descreve o futuro) e consolida um relatório único priorizado. Correções entram
+pelo fluxo normal (branch + PR), com confirmação humana para o que é destrutivo
+ou afeta todos de uma vez.
 
 ### Skills instaladas
 
