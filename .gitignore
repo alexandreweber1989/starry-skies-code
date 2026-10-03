@@ -31,3 +31,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Saída da migração do Supabase (dados pessoais e hashes de senha — nunca comitar)
+migracao-saida/

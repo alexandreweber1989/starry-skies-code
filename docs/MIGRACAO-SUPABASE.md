@@ -4,272 +4,245 @@
 > (`zrdzocdadiucrhvwvxhq`) e colocá-lo num projeto Supabase **que você controla**,
 > sem perder dados, contas de membros nem arquivos.
 
-Este documento é o passo a passo esmiuçado. Leia a seção 0 inteira antes de começar.
+Leia a seção 0 inteira antes de começar. Os scripts estão em
+[`scripts/migracao-supabase/`](../scripts/migracao-supabase/) e foram **ensaiados de ponta a
+ponta** num Postgres local que imita o Supabase (ver seção 10).
 
 ---
 
-## 0. Como funciona (e por que você precisa fazer alguns passos)
+## 0. Como funciona
 
-A "migração" na verdade são **quatro cargas diferentes**, que viajam por caminhos diferentes:
+A migração são **quatro cargas**, e **todas saem do banco de origem**:
 
-| Carga | O que é | De onde sai | Reconstruível do repositório? |
-| :-- | :-- | :-- | :-- |
-| **1. Schema** | 76 tabelas, 13 enums, 35 functions, 35 triggers, 238 policies, 1 bucket | das `supabase/migrations/` do repo | ✅ **Sim, 100%** |
-| **2. Dados** | as linhas das tabelas (membros, mesas, eventos…) | só existem no banco de origem | ❌ precisa exportar |
-| **3. Contas** | `auth.users` + senhas (hash) dos membros | só existem no banco de origem | ❌ precisa exportar |
-| **4. Arquivos** | fotos do Kids, imagens de produtos | Storage (S3) da origem | ❌ precisa copiar |
+| Carga           | O que é                                                                                    | Como vai                                        |
+| :-------------- | :----------------------------------------------------------------------------------------- | :---------------------------------------------- |
+| **1. Schema**   | tabelas, enums, functions, triggers, policies, grants                                      | `migrar.sh` (dump do schema `public` da origem) |
+| **2. Dados**    | as linhas das tabelas (membros, mesas, eventos…)                                           | `migrar.sh`                                     |
+| **3. Contas**   | `auth.users` + `auth.identities` (com os hashes de senha)                                  | `migrar.sh`                                     |
+| **4. Arquivos** | 5 buckets: `kids-photos`, `kids-documents-v2`, `event-arts`, `store-assets`, `sermon-arts` | `copiar-storage.mjs`                            |
 
-**O que isto significa:** o schema eu reconstruo do repositório. As cargas 2–4 **só saem com
-uma credencial legítima do projeto de origem** — e essa credencial só você consegue obter,
-pelo painel. Por segurança, este container **não** procura chaves vazadas nem acessa o banco
-direto; os comandos de exportação/importação abaixo são feitos **por você** (ou numa máquina
-sua), onde as senhas nunca passam por aqui.
+### Por que o schema NÃO sai das `supabase/migrations/` do repositório
 
-**Resultado final:** produção (`ibaatos.vercel.app`) passa a usar **o seu** projeto Supabase,
-com você no controle total (SQL, backups, auth, storage).
+Tentamos — e não funciona. Aplicando as 78 migrations em ordem num banco vazio, **6 falham**
+e saem 64 tabelas em vez das 76 de produção:
 
----
+- `20260730002237` faz seed de `worship_songs` apontando para um ministério
+  (`7cc9c01b-…`) que **só existe nos dados de produção** → violação de chave estrangeira;
+- `20260809032811` reinsere ministérios cujo `slug` já existe → violação de unicidade;
+- `20260813000002` e `20260813000004` usam o valor de enum `admin`, que não existe em `app_role`;
+- `20260813051415`, `20260813055400` e `20260819225214` recriam tabelas que já existem.
 
-## 1. Pré-requisitos e decisão do projeto destino
+Além disso, só **1 dos 5 buckets** (`sermon-arts`) é criado por migration — os outros 4 foram
+criados pelo painel. Conclusão: a **origem é a única fonte fiel** do que está no ar. O script
+copia o schema dela.
 
-### 1.1 Você vai precisar de
-- [ ] Acesso ao painel **Supabase** (o seu, `supabase.com/dashboard`).
-- [ ] Acesso de **leitura ao banco de origem** (Lovable) — veja a seção 2.
-- [ ] Um computador com **terminal** e as ferramentas `psql` e `pg_dump`
-      (vêm com o PostgreSQL 15+; no Mac: `brew install postgresql@16`; no Windows: instalador oficial).
-- [ ] (Opcional, recomendado) a **Supabase CLI**: `npm i -g supabase`.
+### Quem faz o quê
 
-### 1.2 Escolha o projeto destino
-Duas opções — escolha uma:
-
-- **Opção recomendada — projeto NOVO e limpo.** No Supabase, **New project**,
-  nome por exemplo `iba-atos-producao`. Região: **South America (São Paulo)** se disponível
-  (menor latência). Guarde a **senha do banco** que você definir.
-- **Reaproveitar um existente** (ex.: `iba-atos-claude-new`). Só se ele estiver **vazio/de teste**.
-  Reative-o (sai do estado *PAUSED*) e, em **Settings → Database**, confirme que não há dados
-  importantes — a importação assume um banco limpo.
-
-> Anote o **Reference ID** do destino (Settings → General). Vou chamá-lo de `DEST_REF`
-> no restante do guia. O da origem é `zrdzocdadiucrhvwvxhq` (chamado `ORIG_REF`).
+As cargas só saem com uma **credencial legítima da origem** (senha do banco + chave
+`service_role`), que só você consegue obter pelo painel. Por isso os scripts rodam **na sua
+máquina**: as senhas ficam em variáveis de ambiente do seu terminal e nunca entram no
+repositório nem neste chat.
 
 ---
 
-## 2. Conseguir acesso ao banco de ORIGEM (Lovable) — do jeito certo
+## 1. Pré-requisitos
 
-O projeto `zrdzocdadiucrhvwvxhq` é um Supabase provisionado pela Lovable. Tente, em ordem:
+- [ ] Acesso ao painel do Supabase (`supabase.com/dashboard`) com a **sua** conta.
+- [ ] Acesso ao projeto de **origem** (seção 2).
+- [ ] **PostgreSQL client 17** (`psql` e `pg_dump`). O `pg_dump` precisa ser da **mesma versão
+      ou mais nova** que o servidor — projetos Supabase atuais rodam Postgres 17.
+      Mac: `brew install postgresql@17` · Windows: instalador oficial · Linux: pacote `postgresql-client-17`.
+      O `./migrar.sh checar` confere isso para você.
+- [ ] **Node 20+** e este repositório clonado com `npm install` (para o script do Storage).
+- [ ] Um terminal **bash** (Mac/Linux; no Windows use WSL ou Git Bash).
 
-1. **Pela Lovable:** abra o projeto na Lovable → configurações de **Cloud/Backend**. Versões
-   recentes têm um botão para **abrir/gerenciar o Supabase** ou para **conectar seu próprio
-   Supabase**. Se existir "abrir no Supabase", você cai direto no projeto de origem.
-2. **Resetar a senha do banco da origem:** dentro do projeto de origem no Supabase →
-   **Settings → Database → Reset database password**. Isso te dá uma senha nova **sem precisar
-   da antiga**. Guarde-a — vou chamá-la de `ORIG_DB_PWD`.
-3. **Pegar a connection string da origem:** mesma tela, em **Connection string → URI**
-   (use a de **Session**/porta 5432 para dump). Formato:
+---
+
+## 2. Acesso ao banco de ORIGEM (Lovable)
+
+1. **Pela Lovable:** projeto → configurações de **Cloud/Backend**. Se houver "abrir no
+   Supabase", você cai direto no projeto `zrdzocdadiucrhvwvxhq`.
+2. **Senha do banco:** no projeto de origem → **Settings → Database → Reset database password**.
+   Isso dá uma senha nova sem precisar da antiga.
+3. **Connection string:** mesma tela → **Connect → Session pooler** (porta 5432) ou
+   _Direct connection_. Formato:
    ```
-   postgresql://postgres:ORIG_DB_PWD@db.zrdzocdadiucrhvwvxhq.supabase.co:5432/postgres
+   postgresql://postgres.zrdzocdadiucrhvwvxhq:SENHA@aws-0-REGIAO.pooler.supabase.com:5432/postgres
    ```
-4. **Se você não tiver nenhum acesso:** fale com o **suporte da Lovable** pedindo o
-   *export* do backend ou a transferência de propriedade do projeto Supabase. Sem um desses,
-   as cargas 2–4 não têm como sair — não há atalho seguro.
-
-> A mesma tela do **destino** te dá a connection string dele (`DEST_DB_PWD`, `DEST_REF`).
+   > Use **session** (5432), **não** _transaction_ (6543): o `pg_dump` não funciona no modo transaction.
+4. **Chave `service_role` da origem:** **Settings → API** (para copiar os arquivos do Storage).
+5. **Sem nenhum acesso?** Peça ao **suporte da Lovable** o export do backend ou a transferência
+   do projeto Supabase para a sua organização. Não há atalho seguro.
 
 ---
 
-## 3. PASSO A — Montar o schema no destino
+## 3. Criar o projeto DESTINO
 
-Você tem duas formas. A **CLI é a mais limpa**; o SQL Editor é a mais simples.
+1. No Supabase: **New project** → nome `iba-atos-producao` → região **South America (São Paulo)**.
+   Guarde a senha do banco.
+2. **Não crie nada nele** — nem tabela, nem bucket, nem `supabase db push`. O script exige um
+   projeto **novo e vazio** (e recusa se o schema `public` tiver qualquer tabela).
+3. Anote o **Reference ID** (Settings → General): é o `DEST_REF`.
+4. Pegue a connection string (session, 5432) e a `service_role` do destino, como na seção 2.
 
-### A.1 (recomendado) Supabase CLI aplica as migrations do repo
+---
+
+## 4. PASSO A — Schema, dados e contas (`migrar.sh`)
+
+Congele a origem antes: avise a liderança, e **não edite nada na Lovable** durante a migração —
+o que for gravado na origem depois do `exportar` fica para trás.
+
 ```bash
-# na raiz do repositório clonado
-supabase login
-supabase link --project-ref DEST_REF          # pede a senha do banco destino
-supabase db push                               # aplica supabase/migrations/ em ordem
+cd scripts/migracao-supabase
+
+# as senhas ficam SÓ no seu terminal (o espaço no início evita ir para o histórico do bash)
+ export ORIG_DB_URL='postgresql://postgres.zrdzocdadiucrhvwvxhq:SENHA_ORIGEM@...:5432/postgres'
+ export DEST_DB_URL='postgresql://postgres.DEST_REF:SENHA_DESTINO@...:5432/postgres'
+
+./migrar.sh checar      # versões, conexão e destino vazio
+./migrar.sh exportar    # lê a origem → ./migracao-saida/
+./migrar.sh importar    # grava no destino, numa ÚNICA transação
+./migrar.sh conferir    # contagem EXATA de linhas, tabela a tabela
 ```
 
-### A.2 (alternativa) SQL Editor
-- Gere/pegue o arquivo único `supabase/schema_consolidado.sql` (ou copie as migrations em
-  ordem) e cole no **SQL Editor** do projeto destino → **Run**.
-- Rode **uma vez só**, num banco vazio.
+O que cada etapa faz:
 
-> Ao final, o destino tem todas as tabelas, enums, functions, triggers, policies e o bucket,
-> mas **sem dados** ainda.
+| Arquivo gerado                | Conteúdo                                                                                                              |
+| :---------------------------- | :-------------------------------------------------------------------------------------------------------------------- |
+| `01_schema_public.sql`        | schema `public` completo da origem (tabelas, enums, functions, triggers, policies, grants)                            |
+| `02_auth_storage_extras.sql`  | triggers em `auth.users` (`handle_new_user`, `elevate_specific_admin`) e policies do Storage — moram fora de `public` |
+| `03_auth_storage_dados.sql`   | **só** `auth.users`, `auth.identities` e `storage.buckets` (com `public`/limites de cada bucket)                      |
+| `04_dados_public.sql`         | todas as linhas de `public` (as sequences vêm junto)                                                                  |
+| `05_historico_migrations.sql` | histórico `supabase_migrations`, se existir na origem                                                                 |
+| `contagens_origem.txt`        | contagem exata de cada tabela, para o `conferir`                                                                      |
+
+Decisões que evitam os erros clássicos:
+
+- **Carga com `session_replication_role = replica`:** não disparam triggers nem checagem de FK
+  durante a carga. Sem isso, o `handle_new_user` criaria perfis em duplicidade ao inserir cada
+  `auth.users`. (`pg_dump --disable-triggers` **não serve** no Supabase: exige superusuário.)
+- **Só `auth.users` + `auth.identities`:** o schema `auth` inteiro traria `schema_migrations`,
+  sessões, tokens e logs, que colidem com o projeto novo. Consequência: **todos precisarão
+  entrar de novo** (as sessões não migram) — mas com a **mesma senha**.
+- **Uma transação só:** qualquer erro desfaz tudo; o destino volta a ficar vazio e você pode
+  rodar de novo.
+
+> ⚠️ `migracao-saida/` contém **dados pessoais e hashes de senha**. Está no `.gitignore`; guarde
+> numa pasta segura (é o seu backup completo) e apague das máquinas temporárias.
 
 ---
 
-## 4. PASSO B — Migrar DADOS + CONTAS dos membros
+## 5. PASSO B — Arquivos do Storage (`copiar-storage.mjs`)
 
-A ideia: exportar **só os dados** (sem recriar schema, que já existe) dos schemas `public` e
-`auth`, e carregar no destino com os gatilhos desligados (para não disparar efeitos colaterais
-nem travar em ordem de chave estrangeira).
-
-### B.1 Exportar os dados da origem
 ```bash
-pg_dump \
-  --data-only \
-  --schema=public \
-  --schema=auth \
-  --no-owner --no-privileges \
-  --disable-triggers \
-  --column-inserts \
-  "postgresql://postgres:ORIG_DB_PWD@db.zrdzocdadiucrhvwvxhq.supabase.co:5432/postgres" \
-  > dados_origem.sql
-```
-- `--data-only`: não recria tabelas (o schema já foi no Passo A).
-- `--schema=auth`: leva as **contas dos membros** (`auth.users`, `auth.identities`) **com os
-  hashes de senha**, então os logins por e-mail/senha continuam funcionando.
-- `--disable-triggers`: evita que triggers rodem durante a carga.
-- `--column-inserts`: mais lento, porém mais robusto e legível (bom para depurar).
+# na raiz do repositório (precisa do npm install)
+ export ORIG_SUPABASE_URL='https://zrdzocdadiucrhvwvxhq.supabase.co'
+ export ORIG_SERVICE_ROLE_KEY='...'
+ export DEST_SUPABASE_URL='https://DEST_REF.supabase.co'
+ export DEST_SERVICE_ROLE_KEY='...'
 
-### B.2 Carregar no destino
-```bash
-psql \
-  "postgresql://postgres:DEST_DB_PWD@db.DEST_REF.supabase.co:5432/postgres" \
-  -v ON_ERROR_STOP=1 \
-  -f dados_origem.sql
-```
-Se aparecerem erros de ordem/chave estrangeira apesar do `--disable-triggers`, rode o arquivo
-dentro de uma sessão com replicação em modo réplica (ignora FKs durante a carga):
-```sql
--- no topo do psql, antes do \i
-SET session_replication_role = replica;
--- ...carregar...
-SET session_replication_role = origin;
+node scripts/migracao-supabase/copiar-storage.mjs
 ```
 
-### B.3 Reancorar as sequências (IDs automáticos)
-Depois da carga, os contadores de ID podem estar atrás. No **SQL Editor** do destino:
-```sql
--- gera e executa os SELECT setval(...) para todas as sequences de 'public'
-SELECT 'SELECT setval(' || quote_literal(seq) || ', COALESCE((SELECT MAX(' ||
-       quote_ident(col) || ') FROM ' || quote_ident(tab) || '), 1));'
-FROM (
-  SELECT s.relname AS seq, t.relname AS tab, a.attname AS col
-  FROM pg_class s
-  JOIN pg_depend d ON d.objid = s.oid
-  JOIN pg_class t ON t.oid = d.refobjid
-  JOIN pg_attribute a ON a.attrelid = t.oid AND a.attnum = d.refobjsubid
-  WHERE s.relkind = 'S'
-) x;
-```
-Copie a saída e rode-a (é um lote de `setval`).
+Percorre todos os buckets da origem (inclusive subpastas), baixa cada arquivo e envia ao
+destino com o mesmo caminho e tipo. Cria o bucket no destino se faltar. Pode ser rodado de
+novo sem risco (regrava). Termina com `Copiados: N. Falhas: 0.` — se houver falhas, lista
+cada arquivo.
 
 ---
 
-## 5. PASSO C — Migrar os ARQUIVOS do Storage (fotos/imagens)
+## 6. PASSO C — Religar a aplicação ao novo banco
 
-O `pg_dump` levou só os **metadados** de `storage.objects`, **não** os arquivos em si.
-Para copiar os arquivos:
+> Daqui em diante a produção muda. **Anote os valores atuais antes de trocar** (rollback, seção 8).
 
-### C.1 (recomendado) Supabase CLI
-```bash
-# baixa tudo da origem para uma pasta local
-supabase storage cp --recursive \
-  --project-ref zrdzocdadiucrhvwvxhq \
-  ss://<nome-do-bucket> ./storage_backup
+### 6.1 Variáveis na Vercel
 
-# envia para o destino
-supabase storage cp --recursive \
-  --project-ref DEST_REF \
-  ./storage_backup ss://<nome-do-bucket>
-```
-> O nome do bucket está nas migrations (há 1 bucket). Confira em **Storage** no painel.
+Projeto **`ibaatos`** → **Settings → Environment Variables** (Production e Preview):
 
-### C.2 (alternativa) rclone / script via API
-Se preferir, dá para usar `rclone` com o remote S3 de cada projeto, ou um script curto que
-lista e recopia via API de Storage. A CLI acima é o caminho mais simples.
+| Variável                                                     | Valor                           |
+| :----------------------------------------------------------- | :------------------------------ |
+| `SUPABASE_URL` e `VITE_SUPABASE_URL`                         | `https://DEST_REF.supabase.co`  |
+| `SUPABASE_PUBLISHABLE_KEY` e `VITE_SUPABASE_PUBLISHABLE_KEY` | anon/publishable key do destino |
+| `SUPABASE_SERVICE_ROLE_KEY`                                  | service_role do destino         |
 
----
+As variáveis `VITE_*` entram no **build** — depois de trocar, faça **Redeploy**. Repita no
+`ibaatos-antigo` se ele ainda for usado.
 
-## 6. PASSO D — Religar a aplicação ao novo banco
+### 6.2 Código (PR do Claude, quando você passar o `DEST_REF`)
 
-### 6.1 Variáveis na Vercel (produção)
-No projeto **`ibaatos`** na Vercel → **Settings → Environment Variables**, aponte para o destino:
+O ref da origem está fixo como fallback em `src/integrations/supabase/client.ts`,
+`client.server.ts`, `auth-middleware.ts`, em `supabase/config.toml` e no `.env` versionado.
+O PR troca tudo para o destino e só deve ser mergeado **depois** do Passo A conferido.
 
-| Variável | Valor |
-| :-- | :-- |
-| `SUPABASE_URL` | `https://DEST_REF.supabase.co` |
-| `SUPABASE_PUBLISHABLE_KEY` | *anon/publishable key do destino* (Settings → API) |
-| `SUPABASE_SERVICE_ROLE_KEY` | *service_role key do destino* (Settings → API) |
+### 6.3 Google OAuth e URLs de autenticação no destino
 
-> Faça o mesmo no projeto `ibaatos-antigo` se ele também for usado.
+- Google Cloud → URIs de redirecionamento → `https://DEST_REF.supabase.co/auth/v1/callback`
+- Supabase destino → **Authentication → Providers → Google** → Client ID/Secret
+- Supabase destino → **Authentication → URL Configuration** → Site URL `https://ibaatos.vercel.app`
+  e Redirect URLs (incluindo previews da Vercel, se usados)
+- Supabase destino → **Authentication → Emails/SMTP**: se a origem tinha SMTP próprio, refaça.
 
-### 6.2 Código (eu faço num PR quando você me passar o `DEST_REF`)
-Hoje o código tem o ref **da origem** chumbado como fallback em alguns arquivos
-(`src/integrations/supabase/client.ts`, `client.server.ts`, `auth-middleware.ts`) e em
-`supabase/config.toml`. Quando a migração estiver pronta, troco esses fallbacks para o destino
-e ajusto o `config.toml`, num PR próprio.
+### 6.4 Lovable
 
-### 6.3 Google OAuth no projeto DESTINO
-Refaça a configuração do login Google **apontando para o destino** (o callback muda de ref):
-- Google Cloud → URIs de redirecionamento autorizados → `https://DEST_REF.supabase.co/auth/v1/callback`
-- Supabase destino → Authentication → Providers → Google → Client ID/Secret
-- Supabase destino → Authentication → URL Configuration → Site URL e Redirect URLs
-  (ver `docs/` ou peça que eu gere o guia já com o `DEST_REF`).
+Depois da virada, o que a Lovable criar de banco (migrations, tabelas) **continua indo para o
+projeto antigo**. Se a Lovable permitir conectar um Supabase próprio, conecte o destino; senão,
+mudanças de banco passam a entrar **só** por migration em PR (aplicada no destino com a CLI).
 
 ---
 
-## 7. PASSO E — Verificação e virada
+## 7. PASSO D — Verificação e virada
 
-### 7.1 Conferir que os dados bateram
-Rode **na origem e no destino** e compare linha a linha:
-```sql
-SELECT relname AS tabela, n_live_tup AS linhas
-FROM pg_stat_user_tables
-WHERE schemaname = 'public'
-ORDER BY relname;
-```
-As contagens têm que ser iguais (ou explicáveis).
-
-### 7.2 Testes manuais
-- [ ] Login por **e-mail/senha** de um membro existente.
-- [ ] Login por **Google** (após seção 6.3).
-- [ ] Abrir uma tela que lê dados (membros, mesas) e ver o conteúdo.
-- [ ] Abrir algo que mostra **imagem** do Storage (Kids/produtos).
+- [ ] `./migrar.sh conferir` → `OK — todas as N tabelas batem.`
+- [ ] Login por **e-mail/senha** de um membro existente (mesma senha de antes).
+- [ ] Login por **Google** (após 6.3).
+- [ ] Telas que leem dados (membros, mesas, agenda) mostram o conteúdo.
+- [ ] Imagens do Storage aparecem (foto do Kids, produto da loja, arte de evento).
+- [ ] Criar um usuário de teste → o perfil dele é criado (trigger `handle_new_user` ativo).
 - [ ] Criar/editar um registro de teste e confirmar que grava.
 
-### 7.3 Virada (cutover)
-Só depois de tudo verde: a produção já está apontando para o destino (seção 6). Monitore por
-alguns dias antes de desativar/pausar a origem.
+Monitore por alguns dias antes de pausar a origem.
 
 ---
 
 ## 8. Segurança e rollback
 
-- **Rollback é simples:** se algo der errado, basta reverter as variáveis da Vercel para os
-  valores antigos (origem) e redeployar. Por isso **anote os valores atuais antes de trocar**.
-- **Nunca** comite chaves (`service_role`, senhas de banco) no repositório. Elas vivem só na
-  Vercel e nos seus painéis.
-- Faça a migração com a origem **em leitura** (sem alterações simultâneas) para os números baterem.
-- Guarde `dados_origem.sql` e `storage_backup/` num lugar seguro — é o seu backup completo.
+- **Rollback:** volte as variáveis da Vercel para os valores antigos e faça redeploy. Tudo o que
+  for gravado no destino nesse meio-tempo fica só lá — por isso faça a virada num horário calmo.
+- **Nunca** comite senhas, `service_role` ou a pasta `migracao-saida/`.
+- Use **sempre** um projeto destino novo: o script recusa destino com tabelas em `public`.
 
 ---
 
 ## 9. Checklist final
 
-- [ ] Projeto destino criado e `DEST_REF` anotado
-- [ ] Acesso ao banco de origem obtido (seção 2)
-- [ ] Schema aplicado no destino (Passo A)
-- [ ] Dados + contas carregados (Passo B) e sequences reancoradas
-- [ ] Arquivos do Storage copiados (Passo C)
-- [ ] Variáveis da Vercel apontando para o destino (Passo D)
-- [ ] Fallbacks do código + `config.toml` atualizados (PR)
-- [ ] Google OAuth reconfigurado no destino
-- [ ] Contagens conferidas e testes manuais ok (Passo E)
-- [ ] Valores antigos guardados para rollback
+- [ ] Acesso à origem obtido (senha do banco + `service_role`)
+- [ ] Projeto destino criado, vazio, `DEST_REF` anotado
+- [ ] `checar` → `exportar` → `importar` → `conferir` OK
+- [ ] `copiar-storage.mjs` com `Falhas: 0`
+- [ ] Variáveis da Vercel trocadas + redeploy (valores antigos guardados)
+- [ ] PR dos fallbacks/`config.toml`/`.env` mergeado
+- [ ] Google OAuth, URLs de auth e SMTP refeitos no destino
+- [ ] Testes manuais da seção 7 OK
+- [ ] Decisão sobre a Lovable (6.4)
 
 ---
 
-### O que eu (Claude) faço por você
-- Reconstruo/forneço o schema a partir do repositório.
-- Gero os comandos **já preenchidos** com o seu `DEST_REF` quando você me passar.
-- Faço o PR trocando os fallbacks de código e o `config.toml` para o destino.
-- Gero o guia do Google OAuth já com o ref novo.
-- Confiro contagens e te ajudo a depurar erros da carga.
+## 10. Como os scripts foram validados
 
-### O que só você pode fazer
-- Obter a credencial legítima da origem (painel/Lovable/suporte).
-- Rodar os `pg_dump`/`psql`/`storage cp` na sua máquina (as senhas ficam com você).
-- Definir as variáveis de ambiente na Vercel e as senhas nos painéis.
+Ensaio local, Postgres 16, com uma imitação mínima do Supabase (roles `anon`/`authenticated`/
+`service_role`, schemas `auth` e `storage`):
+
+- Origem montada a partir das migrations + 25 contas com senha (bcrypt), identidades,
+  5 buckets, sessão e `auth.schema_migrations` fictícios.
+- `exportar` → `importar` → `conferir`: **67 tabelas batem**; policies (171), functions (63),
+  triggers (35), tabelas com RLS (64), enums (13), grants e a flag `public` dos 5 buckets
+  **idênticos** entre origem e destino.
+- A senha original de um membro confere no destino; sessões e `auth.schema_migrations`
+  **não** foram copiadas (como esperado); o trigger `handle_new_user` cria o perfil de um
+  usuário novo depois da carga; e o `importar` recusa um destino que já tem tabelas.
+- `copiar-storage.mjs` contra uma API de Storage simulada: 4 arquivos (com subpastas)
+  copiados com conteúdo e tipo corretos, bucket ausente criado com a mesma flag `public`.
+
+**Não ensaiado** (só dá para provar no Supabase de verdade): permissões exatas do usuário
+`postgres` gerenciado e a API real do Storage. Se algo falhar ali, a transação é desfeita e o
+erro aparece na tela — traga a mensagem que eu ajusto.
