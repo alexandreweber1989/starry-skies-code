@@ -1713,6 +1713,13 @@ function FinalCTA({ cta }: { cta: { to: string; label: string } }) {
               </Link>
             </Button>
 
+            <Link
+              to="/instalar"
+              className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.25em] text-background/60 underline underline-offset-4 hover:text-background transition-colors"
+            >
+              📲 Instalar o app no celular
+            </Link>
+
             <div className="font-mono text-[9px] sm:text-[11px] uppercase tracking-[0.25em] text-background/40 max-w-xs sm:max-w-none">
               Parque N. S. das Graças · Ponta Grossa / PR · Todos são bem-vindos
             </div>
