@@ -79,7 +79,16 @@ function fromEvent(e: ChurchEvent): FormState {
     description: e.description ?? "",
     kind: e.kind,
     scope: e.scope,
-    target_id: e.ministry_id ?? e.rede_id ?? e.mesa_id ?? "",
+    target_id:
+      e.scope === "congregacao"
+        ? e.church_id ?? ""
+        : e.scope === "ministerio"
+          ? e.ministry_id ?? ""
+          : e.scope === "rede"
+            ? e.rede_id ?? ""
+            : e.scope === "mesa"
+              ? e.mesa_id ?? ""
+              : "",
     starts_at: toLocalInput(e.starts_at),
     ends_at: toLocalInput(e.ends_at),
     location: e.location ?? "",
@@ -116,12 +125,14 @@ export function EventForm({
   const { data: targets } = useQuery({
     queryKey: ["agenda-targets"],
     queryFn: async () => {
-      const [min, red, mes] = await Promise.all([
+      const [chu, min, red, mes] = await Promise.all([
+        supabase.from("churches").select("id, name").order("name"),
         supabase.from("ministries").select("id, name").eq("is_active", true).order("name"),
         supabase.from("redes").select("id, name").eq("is_active", true).order("name"),
         supabase.from("mesas").select("id, name").eq("is_active", true).order("name"),
       ]);
       return {
+        congregacao: chu.data ?? [],
         ministerio: min.data ?? [],
         rede: red.data ?? [],
         mesa: mes.data ?? [],
@@ -173,6 +184,7 @@ export function EventForm({
         description: form.description.trim() || null,
         kind: form.kind,
         scope: form.scope,
+        church_id: form.scope === "congregacao" ? form.target_id : null,
         ministry_id: form.scope === "ministerio" ? form.target_id : null,
         rede_id: form.scope === "rede" ? form.target_id : null,
         mesa_id: form.scope === "mesa" ? form.target_id : null,

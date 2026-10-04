@@ -1,6 +1,6 @@
 /** Tipos e utilitários do módulo de Eventos & Agenda. */
 
-export type EventScope = "igreja" | "ministerio" | "rede" | "mesa";
+export type EventScope = "igreja" | "congregacao" | "ministerio" | "rede" | "mesa";
 export type EventStatus = "rascunho" | "publicado" | "cancelado" | "concluido";
 export type EventKind =
   | "culto"
@@ -17,6 +17,7 @@ export interface ChurchEvent {
   description: string | null;
   kind: EventKind;
   scope: EventScope;
+  church_id: string | null;
   ministry_id: string | null;
   rede_id: string | null;
   mesa_id: string | null;
@@ -49,7 +50,8 @@ export const KIND_LABEL: Record<EventKind, string> = {
 };
 
 export const SCOPE_LABEL: Record<EventScope, string> = {
-  igreja: "Toda a igreja",
+  igreja: "Todas as igrejas",
+  congregacao: "Uma igreja específica",
   ministerio: "Ministério",
   rede: "Rede",
   mesa: "Mesa",
