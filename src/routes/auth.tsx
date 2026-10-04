@@ -93,21 +93,22 @@ function AuthPage() {
   async function handleGoogle() {
     try {
       setLoading(true);
-      
-      const callbackUrl = `${window.location.origin}/auth/callback`;
+
+      const callbackUrl = new URL("/auth/callback", window.location.origin).toString();
       console.log("Iniciando OAuth com Google. Callback:", callbackUrl);
 
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
-        options: { 
+        options: {
           redirectTo: callbackUrl,
+          skipBrowserRedirect: false,
           queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          }
+            access_type: "offline",
+            prompt: "consent",
+          },
         },
       });
-      
+
       if (error) {
         console.error("Erro no signInWithOAuth:", error);
         toast.error("Erro ao conectar com Google: " + error.message);
