@@ -14,6 +14,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { CepInput } from "@/components/ui/cep-input";
+import type { AddressParts } from "@/lib/cep";
 /** Respeita "prefers-reduced-motion"; hidratação-safe (começa falso no SSR). */
 function useMenosMovimento() {
   const [reduz, setReduz] = useState(false);
@@ -53,6 +55,8 @@ interface FormState {
   city: string;
   neighborhood: string;
   zip_code: string;
+  state: string;
+  address: string;
   age_range: string;
   notes: string;
 }
@@ -64,6 +68,8 @@ const EMPTY: FormState = {
   city: "",
   neighborhood: "",
   zip_code: "",
+  state: "",
+  address: "",
   age_range: "",
   notes: "",
 };
@@ -168,18 +174,37 @@ function QueroFazerParte() {
         hint: "Com isso, encontramos a pessoa mais próxima de você para te receber — e, quem sabe, uma mesa (grupo) pertinho da sua casa.",
         valid: (s) => s.city.trim().length >= 2,
         render: (s, set) => (
-          <div className="space-y-4">
+          <div className="space-y-5">
+            <div className="rounded-xl border border-primary/30 bg-primary/5 p-4">
+              <Label htmlFor="cep" className="text-sm font-medium">
+                Sabe seu CEP? Digite e a gente preenche o resto pra você 👇
+              </Label>
+              <div className="mt-2 max-w-[220px]">
+                <CepInput
+                  id="cep"
+                  value={s.zip_code}
+                  onChange={(v) => set("zip_code", v)}
+                  onResolved={(a: AddressParts) => {
+                    if (a.city) set("city", a.city);
+                    if (a.neighborhood) set("neighborhood", a.neighborhood);
+                    if (a.state) set("state", a.state);
+                    if (a.street) set("address", a.street);
+                  }}
+                />
+              </div>
+            </div>
+
             <div className="space-y-1.5">
-              <Label htmlFor="cidade">Cidade</Label>
-              <Input
-                id="cidade"
-                autoFocus
+              <Label>Cidade</Label>
+              <CityAutocomplete
                 value={s.city}
-                onChange={(e) => set("city", e.target.value)}
-                placeholder="Sua cidade"
-                autoComplete="address-level2"
+                onChange={(nome, uf) => {
+                  set("city", nome);
+                  if (uf) set("state", uf);
+                }}
               />
             </div>
+
             <div className="space-y-1.5">
               <Label htmlFor="bairro">Bairro</Label>
               <Input
@@ -188,17 +213,6 @@ function QueroFazerParte() {
                 onChange={(e) => set("neighborhood", e.target.value)}
                 placeholder="Seu bairro"
                 autoComplete="address-level3"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="cep">CEP (opcional)</Label>
-              <Input
-                id="cep"
-                inputMode="numeric"
-                value={s.zip_code}
-                onChange={(e) => set("zip_code", e.target.value)}
-                placeholder="00000-000"
-                autoComplete="postal-code"
               />
             </div>
           </div>
@@ -276,6 +290,8 @@ function QueroFazerParte() {
       city: form.city.trim().slice(0, 120) || null,
       neighborhood: form.neighborhood.trim().slice(0, 120) || null,
       zip_code: soDigitos(form.zip_code).slice(0, 8) || null,
+      state: form.state.trim().slice(0, 2).toUpperCase() || null,
+      address: form.address.trim().slice(0, 200) || null,
       age_range: form.age_range || null,
       notes: form.notes.trim().slice(0, 1000) || null,
       status: "pendente",
@@ -408,6 +424,93 @@ function QueroFazerParte() {
         </div>
       </div>
     </Shell>
+  );
+}
+
+/* ------- Autocomplete de cidade (IBGE, carregado uma vez por sessão) ------- */
+type Municipio = { nome: string; uf: string };
+let municipiosCache: Municipio[] | null = null;
+let municipiosPromise: Promise<Municipio[]> | null = null;
+
+function carregarMunicipios(): Promise<Municipio[]> {
+  if (municipiosCache) return Promise.resolve(municipiosCache);
+  if (!municipiosPromise) {
+    municipiosPromise = fetch(
+      "https://servicodados.ibge.gov.br/api/v1/localidades/municipios?orderBy=nome",
+    )
+      .then((r) => r.json())
+      .then((data: Array<Record<string, any>>) =>
+        data.map((m) => ({
+          nome: String(m.nome ?? ""),
+          uf: String(m?.microrregiao?.mesorregiao?.UF?.sigla ?? ""),
+        })),
+      )
+      .then((list) => {
+        municipiosCache = list;
+        return list;
+      })
+      .catch(() => {
+        municipiosPromise = null;
+        return [] as Municipio[];
+      });
+  }
+  return municipiosPromise;
+}
+
+function CityAutocomplete({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (nome: string, uf?: string) => void;
+}) {
+  const [all, setAll] = useState<Municipio[]>([]);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    void carregarMunicipios().then(setAll);
+  }, []);
+
+  const termo = value.trim().toLowerCase();
+  const sugestoes = useMemo(() => {
+    if (termo.length < 2) return [];
+    return all.filter((m) => m.nome.toLowerCase().includes(termo)).slice(0, 8);
+  }, [all, termo]);
+
+  return (
+    <div className="relative">
+      <Input
+        value={value}
+        onChange={(e) => {
+          onChange(e.target.value);
+          setOpen(true);
+        }}
+        onFocus={() => setOpen(true)}
+        onBlur={() => setTimeout(() => setOpen(false), 150)}
+        placeholder="Comece a digitar sua cidade…"
+        autoComplete="off"
+      />
+      {open && sugestoes.length > 0 && (
+        <ul className="absolute z-30 mt-1 max-h-56 w-full overflow-auto rounded-md border border-border bg-popover shadow-lg">
+          {sugestoes.map((m) => (
+            <li key={`${m.nome}-${m.uf}`}>
+              <button
+                type="button"
+                className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-muted"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  onChange(m.nome, m.uf);
+                  setOpen(false);
+                }}
+              >
+                <span>{m.nome}</span>
+                <span className="text-xs text-muted-foreground">{m.uf}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
 
