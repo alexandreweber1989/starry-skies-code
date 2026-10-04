@@ -13,6 +13,7 @@ import {
   User as UserIcon,
   ChevronRight,
   MapPin,
+  Smartphone,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
@@ -21,6 +22,7 @@ import { PageHeader, PageBody } from "@/components/app-shell";
 import { StatTile, PanelSection } from "@/components/painel/ui";
 import { StatTileSkeleton } from "@/components/ui/loading-states";
 import { BannerInstalarApp } from "@/components/pwa/instalar-app";
+import { estatisticasAdocao } from "@/lib/adocao.functions";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Painel Principal — IB Atos" }] }),
@@ -145,6 +147,45 @@ function ProximosEventos() {
   );
 }
 
+/** Faixa de adoção do app (somente admin): alcance das notificações num olhar. */
+function ResumoAdocao() {
+  const { data } = useQuery({
+    queryKey: ["dashboard-adocao"],
+    queryFn: () => estatisticasAdocao(),
+    retry: false,
+  });
+  if (!data) return null;
+
+  const pct = data.taxaAdocao;
+  return (
+    <Link
+      to="/adocao"
+      className="group flex flex-col gap-4 rounded-xl border border-border bg-card/50 p-5 transition-colors hover:border-primary/50 sm:flex-row sm:items-center"
+    >
+      <div className="flex items-center gap-3">
+        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
+          <Smartphone className="h-5 w-5" />
+        </div>
+        <div>
+          <p className="font-serif text-lg leading-tight">Adoção do app</p>
+          <p className="text-sm text-muted-foreground">
+            {data.comApp} de {data.totalMembros} membros recebem avisos no celular
+          </p>
+        </div>
+      </div>
+      <div className="flex-1 sm:px-4">
+        <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+          <div className="h-full rounded-full bg-primary transition-all duration-700" style={{ width: `${pct}%` }} />
+        </div>
+      </div>
+      <div className="flex items-center gap-2 shrink-0">
+        <span className="font-serif text-2xl leading-none tabular-nums">{pct}%</span>
+        <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+      </div>
+    </Link>
+  );
+}
+
 /** Atalho simples (usado pelo painel do membro). */
 function Atalho({ to, icon: Icon, label }: { to: string; icon: typeof Users; label: string }) {
   return (
@@ -205,6 +246,7 @@ function DashboardAdmin() {
           </>
         )}
       </div>
+      <ResumoAdocao />
       <div className="grid gap-8 lg:grid-cols-2">
         <AvisosRecentes />
         <ProximosEventos />
