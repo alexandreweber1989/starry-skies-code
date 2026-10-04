@@ -7,6 +7,7 @@ import { useProfileOptions } from "@/lib/use-profiles";
 import { ChurchSelect } from "./church-select";
 import { MemberPicker } from "./member-picker";
 import { AddressManager } from "./address-manager";
+import { AddressAutocomplete } from "@/components/ui/address-autocomplete";
 
 
 
@@ -73,6 +74,13 @@ export function MesaDialog({
   const [location, setLocation] = useState(mesa?.meeting_location ?? "");
   const [description, setDescription] = useState(mesa?.description ?? "");
   const [leaders, setLeaders] = useState<string[]>([]);
+  // Endereço da mesa (apenas na criação; na edição o AddressManager cuida disso).
+  const [street, setStreet] = useState("");
+  const [number, setNumber] = useState("");
+  const [neighborhood, setNeighborhood] = useState("");
+  const [city, setCity] = useState("");
+  const [uf, setUf] = useState("");
+  const [fullAddress, setFullAddress] = useState("");
   const { data: profiles } = useProfileOptions();
   const qc = useQueryClient();
 
@@ -115,6 +123,40 @@ export function MesaDialog({
     setLocation(mesa?.meeting_location ?? "");
     setDescription(mesa?.description ?? "");
     setLeaders(isEdit ? (currentLeaders ?? []) : []);
+    setStreet("");
+    setNumber("");
+    setNeighborhood("");
+    setCity("");
+    setUf("");
+    setFullAddress("");
+  }
+
+  /** Preenche os campos estruturados quando a pessoa escolhe uma rua na busca. */
+  function handleAddressSelect(addr: {
+    street: string;
+    number?: string;
+    neighborhood?: string;
+    city?: string;
+    state?: string;
+    full: string;
+  }) {
+    setStreet(addr.street);
+    setNeighborhood(addr.neighborhood ?? "");
+    setCity(addr.city ?? "");
+    setUf(addr.state ?? "");
+    if (addr.number) setNumber(addr.number);
+    setFullAddress(addr.full ?? "");
+  }
+
+  /** Resumo legível do endereço, salvo em meeting_location para as listagens e o mapa. */
+  function buildAddressSummary() {
+    if (!street.trim()) return "";
+    let s = street.trim();
+    if (number.trim()) s += `, ${number.trim()}`;
+    if (neighborhood.trim()) s += ` - ${neighborhood.trim()}`;
+    if (city.trim()) s += `, ${city.trim()}`;
+    if (uf.trim()) s += `-${uf.trim()}`;
+    return s;
   }
 
   const save = useMutation({
@@ -126,13 +168,17 @@ export function MesaDialog({
       const inherited = redes?.find((r) => r.id === redeFinal)?.church_id ?? null;
       const churchFinal = churchId || inherited;
       if (!churchFinal) throw new Error("Selecione a igreja desta mesa.");
+      // Na criação, o endereço buscado vira o resumo de meeting_location (usado nas
+      // listagens e no mapa). Na edição, preservamos o que já existe — o AddressManager
+      // abaixo cuida de atualizar o endereço.
+      const addressSummary = buildAddressSummary();
       const payload = {
         name: name.trim(),
         rede_id: redeFinal,
         church_id: churchFinal,
         meeting_day: day || null,
         meeting_time: time || null,
-        meeting_location: location.trim() || null,
+        meeting_location: isEdit ? location.trim() || null : addressSummary || null,
         description: description.trim() || null,
       };
 
@@ -146,6 +192,23 @@ export function MesaDialog({
         mesaId = data?.id;
       }
       if (!mesaId) return;
+
+      // Grava o endereço estruturado da mesa recém-criada como endereço principal,
+      // para aparecer onde o endereço da mesa for necessário (eventos, mapa, etc.).
+      if (!isEdit && street.trim()) {
+        const { error: addrError } = await supabase.from("mesa_addresses" as any).insert({
+          mesa_id: mesaId,
+          label: "Principal",
+          street: street.trim(),
+          number: number.trim() || null,
+          neighborhood: neighborhood.trim() || null,
+          city: city.trim() || null,
+          state: uf.trim() || null,
+          full_address: fullAddress || addressSummary,
+          is_main: true,
+        });
+        if (addrError) throw addrError;
+      }
 
       // Sincroniza responsáveis: remove quem saiu, insere quem entrou.
       const previous = isEdit ? (currentLeaders ?? []) : [];
@@ -183,7 +246,14 @@ export function MesaDialog({
         setLocation("");
         setDescription("");
         setLeaders([]);
+        setStreet("");
+        setNumber("");
+        setNeighborhood("");
+        setCity("");
+        setUf("");
+        setFullAddress("");
       }
+      void qc.invalidateQueries({ queryKey: ["mesa-addresses", mesa?.id] });
       void qc.invalidateQueries({ queryKey: ["mesas-full"] });
       void qc.invalidateQueries({ queryKey: ["mesas-by-rede"] });
       void qc.invalidateQueries({ queryKey: ["redes-full"] });
@@ -257,10 +327,31 @@ export function MesaDialog({
               <Input type="time" value={time} onChange={(e) => setTime(e.target.value)} />
             </div>
           </div>
-          <div className="space-y-2">
-            <Label>Ponto de referência ou descrição do local</Label>
-            <Input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Casa da família Silva" />
-          </div>
+          {!isEdit && (
+            <div className="space-y-2">
+              <Label>Endereço da mesa</Label>
+              <AddressAutocomplete
+                value={street}
+                onChange={setStreet}
+                onAddressSelect={handleAddressSelect}
+                placeholder="Comece a digitar a rua..."
+              />
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label className="text-xs text-muted-foreground">Número</Label>
+                  <Input value={number} onChange={(e) => setNumber(e.target.value)} placeholder="123" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs text-muted-foreground">Bairro</Label>
+                  <Input value={neighborhood} onChange={(e) => setNeighborhood(e.target.value)} placeholder="Centro" />
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Busque a rua e selecione; depois informe o número. O endereço fica salvo na mesa
+                e aparece onde for necessário. Você poderá adicionar outros locais depois de criar.
+              </p>
+            </div>
+          )}
           <div className="space-y-2">
             <Label>Descrição</Label>
             <Textarea rows={2} value={description} onChange={(e) => setDescription(e.target.value)} className="resize-none" />
