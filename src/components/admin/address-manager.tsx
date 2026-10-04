@@ -21,6 +21,14 @@ export function AddressManager({ mesaId }: { mesaId: string }) {
   const [isMain, setIsMain] = useState(false);
   const qc = useQueryClient();
 
+  /** Atualiza as listagens que exibem o endereço da mesa (meeting_location). */
+  const invalidateMesaLists = () => {
+    void qc.invalidateQueries({ queryKey: ["mesas-full"] });
+    void qc.invalidateQueries({ queryKey: ["mesas-by-rede"] });
+    void qc.invalidateQueries({ queryKey: ["redes-full"] });
+    void qc.invalidateQueries({ queryKey: ["mesas"] });
+  };
+
   const { data: addresses, isPending } = useQuery({
     queryKey: ["mesa-addresses", mesaId],
     queryFn: async () => {
@@ -36,6 +44,7 @@ export function AddressManager({ mesaId }: { mesaId: string }) {
   const add = useMutation({
     mutationFn: async () => {
       if (!street || !number) throw new Error("Rua e número são obrigatórios.");
+      const resumo = fullAddress || `${street}, ${number} - ${neighborhood}, ${city} - ${state}`;
       const { error } = await supabase.from("mesa_addresses" as any).insert({
         mesa_id: mesaId,
         label: label || "Reunião",
@@ -44,10 +53,19 @@ export function AddressManager({ mesaId }: { mesaId: string }) {
         neighborhood,
         city,
         state,
-        full_address: fullAddress || `${street}, ${number} - ${neighborhood}, ${city} - ${state}`,
+        full_address: resumo,
         is_main: isMain,
       });
       if (error) throw error;
+      // Se este vira o endereço principal (ou é o primeiro cadastrado), reflete no
+      // meeting_location da mesa — é o campo que as listagens e o mapa exibem.
+      const isFirst = (addresses?.length ?? 0) === 0;
+      if (isMain || isFirst) {
+        await supabase
+          .from("mesas")
+          .update({ meeting_location: `${street}, ${number} - ${neighborhood}`.trim() })
+          .eq("id", mesaId);
+      }
     },
     onSuccess: () => {
       toast.success("Endereço adicionado.");
@@ -61,6 +79,7 @@ export function AddressManager({ mesaId }: { mesaId: string }) {
       setFullAddress("");
       setIsMain(false);
       void qc.invalidateQueries({ queryKey: ["mesa-addresses", mesaId] });
+      invalidateMesaLists();
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -84,10 +103,22 @@ export function AddressManager({ mesaId }: { mesaId: string }) {
         .update({ is_main: true })
         .eq("id", id);
       if (error) throw error;
+      // Mantém meeting_location da mesa igual ao endereço principal escolhido.
+      const addr = addresses?.find((a) => a.id === id);
+      if (addr) {
+        await supabase
+          .from("mesas")
+          .update({
+            meeting_location:
+              addr.full_address || `${addr.street}, ${addr.number} - ${addr.neighborhood}`,
+          })
+          .eq("id", mesaId);
+      }
     },
     onSuccess: () => {
       toast.success("Endereço principal atualizado.");
       void qc.invalidateQueries({ queryKey: ["mesa-addresses", mesaId] });
+      invalidateMesaLists();
     },
     onError: (e: Error) => toast.error(e.message),
   });
