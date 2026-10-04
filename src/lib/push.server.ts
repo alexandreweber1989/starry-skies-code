@@ -1,7 +1,6 @@
 import crypto from "node:crypto";
 import webpush from "web-push";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { supabase } from "@/integrations/supabase/client";
 
 /** Conteúdo que chega no celular. */
 export interface PushPayload {
@@ -197,27 +196,20 @@ export async function enviarPush(
     );
   }
 
-  // select("*") de propósito: a tabela pode ou não ter as colunas endpoint/p256dh/
-  // auth, dependendo de a migração ter sido aplicada. Pedir colunas inexistentes
-  // faria a consulta falhar.
-  
-  // TENTATIVA 1: Tentar puxar dados com o supabase cliente (se RLS permitir pro role admin)
-  let assinaturas, error;
-  const clientRes = await supabase.from("user_push_tokens" as any).select("*").in("user_id", userIds);
-  
-  if (!clientRes.error) {
-    assinaturas = clientRes.data;
+  // Lê as inscrições com o cliente admin (service_role): o envio é server-to-server
+  // para vários usuários, então precisa ignorar o RLS (que restringe cada pessoa a
+  // ver só o próprio aparelho). select("*") de propósito, pois as colunas endpoint/
+  // p256dh/auth podem não existir em bases antigas.
+  let assinaturas: Record<string, any>[] | null = [];
+  const { data, error } = await supabaseAdmin
+    .from("user_push_tokens" as any)
+    .select("*")
+    .in("user_id", userIds);
+  if (error) {
+    console.warn(`[Push] Falha ao buscar inscrições dos aparelhos: ${error.message}`);
+    assinaturas = [];
   } else {
-    // TENTATIVA 2: Supabase Server/Admin quebre, cai direto pro backend RPC se possível
-    const adminRes = { data: null, error: new Error("Supabase Admin desativado - forçando fallback Client") };
-    assinaturas = adminRes.data;
-    error = adminRes.error;
-  }
-
-  if (error) { 
-    // Fallback Final: Simplesmente retornar array vazio caso as Keys secretas de servidor do Lovable estejam quebradas/corrompidas lá na Vercel (Não parar o código inteiro)
-    console.warn(`[Push Fallback] Não foi possivel usar a rota segura para buscar endpoints: ${error.message}. Continuando com Array vazio.`);
-    assinaturas = []; 
+    assinaturas = data as Record<string, any>[];
   }
 
   const lista = ((assinaturas ?? []) as Record<string, any>[])
