@@ -13,6 +13,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { useServerFn } from "@tanstack/react-start";
 import { updateUserPassword } from "@/lib/auth-admin.functions";
 
+// O Google valida o endereço de retorno que o SUPABASE envia, não o redirectTo
+// deste app. Deixamos essa URL visível na tela e no console para facilitar o
+// cadastro em "URIs de redirecionamento autorizados" no Google Cloud Console.
+const SUPABASE_OAUTH_CALLBACK = `${
+  (import.meta.env["VITE_SUPABASE_URL"] || "https://zrdzocdadiucrhvwvxhq.supabase.co").replace(/\/$/, "")
+}/auth/v1/callback`;
+
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -81,21 +88,28 @@ function AuthPage() {
   /**
    * Login com Google via Supabase (OAuth direto).
    *
-   * Antes usávamos o broker do Lovable (`lovable.auth.signInWithOAuth`), que
-   * envia o navegador para `/~oauth/initiate` — um caminho RELATIVO, servido
-   * apenas pela hospedagem do Lovable. Fora dela (Vercel) ninguém atende esse
-   * endereço e o app caía no 404. Ver #22.
+   * O `redirectTo` abaixo é o endereço DESTE app para onde o Supabase devolve o
+   * usuário já autenticado (a rota /auth/callback).
    *
-   * O Supabase devolve para `redirectTo` com o código na URL; o cliente tem
-   * `detectSessionInUrl` ligado (padrão) e conclui a sessão sozinho, por isso
-   * não é preciso uma rota de callback dedicada.
+   * O erro 400 `redirect_uri_mismatch` NÃO vem deste valor: o Google compara o
+   * endereço de retorno enviado pelo próprio Supabase
+   * (SUPABASE_OAUTH_CALLBACK, impresso no console e mostrado na ajuda abaixo do
+   * botão) com a lista de "URIs de redirecionamento autorizados" do OAuth Client
+   * dele. Se essa URL não estiver nessa lista — ou se o Client ID do Supabase for
+   * de outro projeto no Google — o Google bloqueia o acesso antes de voltar ao
+   * app, e nenhum código desta página é executado no retorno.
    */
   async function handleGoogle() {
     try {
       setLoading(true);
 
       const callbackUrl = new URL("/auth/callback", window.location.origin).toString();
-      console.log("Iniciando OAuth com Google. Callback:", callbackUrl);
+      console.log("Iniciando OAuth com Google.");
+      console.log("• redirectTo (volta para este app):", callbackUrl);
+      console.log(
+        "• URL que precisa estar autorizada no Google Cloud Console:",
+        SUPABASE_OAUTH_CALLBACK,
+      );
 
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
@@ -315,6 +329,26 @@ function AuthPage() {
               Continuar com Google
             </span>
           </Button>
+
+          <details className="mt-4 rounded-lg border border-border bg-muted/40 px-4 py-3 text-xs">
+            <summary className="cursor-pointer font-mono uppercase tracking-widest text-muted-foreground">
+              Erro 400: redirect_uri_mismatch?
+            </summary>
+            <p className="mt-3 text-muted-foreground">
+              Se aparecer a tela do Google com "Acesso bloqueado: a solicitação desse app é inválida
+              (Erro 400: redirect_uri_mismatch)", o endereço de retorno do Supabase ainda não está
+              autorizado no Google Cloud Console. Abra APIs e serviços, depois Credenciais, entre no
+              seu OAuth 2.0 Client ID e cole a URL abaixo em "URIs de redirecionamento autorizados":
+            </p>
+            <code className="mt-2 block break-all rounded bg-background px-2 py-1.5 font-mono text-[11px] text-foreground">
+              {SUPABASE_OAUTH_CALLBACK}
+            </code>
+            <p className="mt-2 text-muted-foreground">
+              Confira também que esse Client ID é o mesmo cadastrado no Supabase em Authentication,
+              Providers, Google, e que o endereço deste site está em Authentication, URL
+              Configuration, Redirect URLs, no formato https://SEU-DOMINIO/auth/callback.
+            </p>
+          </details>
 
           <p className="mt-6 text-xs text-muted-foreground text-center">
             O acesso é liberado por um administrador. O primeiro usuário a entrar se torna Admin
