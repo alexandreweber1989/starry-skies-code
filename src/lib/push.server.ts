@@ -302,6 +302,10 @@ export async function resolverPublico(
       .select("user_id")
       .eq("ministry_id", refId);
     add(data);
+  } else if (audience === "igreja" && refId) {
+    // Todos os perfis vinculados àquela igreja específica.
+    const { data } = await supabaseAdmin.from("profiles").select("id").eq("church_id", refId);
+    (data ?? []).forEach((p: { id: string }) => ids.add(p.id));
   } else if (audience === "lideranca") {
     const { data } = await supabaseAdmin
       .from("user_roles")

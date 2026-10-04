@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { notificarAviso } from "@/lib/avisos.functions";
 import { useAuth } from "@/lib/auth-context";
 import {
   CATEGORY_LABEL,
@@ -54,7 +56,9 @@ export function AvisoForm({ open, onOpenChange, aviso }: AvisoFormProps) {
   const [targetId, setTargetId] = useState("");
   const [isPinned, setIsPinned] = useState(false);
   const [isPublished, setIsPublished] = useState(true);
+  const [notificar, setNotificar] = useState(true);
   const [expiresAt, setExpiresAt] = useState("");
+  const notificarFn = useServerFn(notificarAviso);
 
   useEffect(() => {
     if (!open) return;
@@ -67,6 +71,7 @@ export function AvisoForm({ open, onOpenChange, aviso }: AvisoFormProps) {
     );
     setIsPinned(aviso?.is_pinned ?? false);
     setIsPublished(aviso?.is_published ?? true);
+    setNotificar(!aviso); // por padrão, notifica ao criar um aviso novo
     setExpiresAt(aviso?.expires_at ? aviso.expires_at.slice(0, 16) : "");
   }, [open, aviso]);
 
@@ -137,6 +142,24 @@ export function AvisoForm({ open, onOpenChange, aviso }: AvisoFormProps) {
           .from("announcements")
           .insert({ ...payload, created_by: user.id } as any);
         if (error) throw error;
+      }
+
+      // Ao publicar um aviso NOVO, dispara a notificação no celular de quem está
+      // no alcance. Não-fatal: uma falha de push não desfaz o aviso já salvo.
+      if (!aviso && isPublished && notificar) {
+        try {
+          await notificarFn({
+            data: {
+              title: payload.title,
+              body: payload.body,
+              scope,
+              targetId: targetId || null,
+              category,
+            },
+          });
+        } catch (e) {
+          console.warn("Falha ao enviar a notificação do aviso:", e);
+        }
       }
     },
     onSuccess: () => {
@@ -246,6 +269,12 @@ export function AvisoForm({ open, onOpenChange, aviso }: AvisoFormProps) {
               <Switch checked={isPublished} onCheckedChange={setIsPublished} />
               {isPublished ? "Publicar agora" : "Salvar como rascunho"}
             </label>
+            {!aviso && isPublished && (
+              <label className="flex items-center gap-3 text-sm">
+                <Switch checked={notificar} onCheckedChange={setNotificar} />
+                Notificar no celular
+              </label>
+            )}
           </div>
         </div>
 
