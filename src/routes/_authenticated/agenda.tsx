@@ -50,7 +50,8 @@ export const Route = createFileRoute("/_authenticated/agenda")({
 
 function AgendaPage() {
   const qc = useQueryClient();
-  const { user, isAdmin, isMinistryAdmin, isMesaLeader } = useAuth();
+  const { user, isAdmin, isMinistryAdmin, isMesaLeader, profile } = useAuth();
+  const myChurchId = (profile?.church_id ?? null) as string | null;
 
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<ChurchEvent | null>(null);
@@ -64,7 +65,7 @@ function AgendaPage() {
       const { data, error } = await supabase
         .from("events")
         .select(
-          "*, ministry:ministries(name, color), rede:redes(name, color), mesa:mesas(name)",
+          "*, church:churches(name), ministry:ministries(name, color), rede:redes(name, color), mesa:mesas(name)",
         )
         .order("starts_at", { ascending: true });
       if (error) throw error;
@@ -137,6 +138,12 @@ function AgendaPage() {
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
     return events.filter((e) => {
+      // Evento de uma igreja específica só aparece para membros daquela igreja
+      // (o admin geral vê todos). Eventos "todas as igrejas", ministério, rede e
+      // mesa continuam visíveis normalmente.
+      if (!isAdmin && e.scope === "congregacao" && e.church_id && e.church_id !== myChurchId) {
+        return false;
+      }
       if (scopeFilter !== "todos" && e.scope !== scopeFilter) return false;
       if (kindFilter !== "todos" && e.kind !== kindFilter) return false;
       if (!term) return true;
@@ -146,7 +153,7 @@ function AgendaPage() {
         (e.location ?? "").toLowerCase().includes(term)
       );
     });
-  }, [events, search, scopeFilter, kindFilter]);
+  }, [events, search, scopeFilter, kindFilter, isAdmin, myChurchId]);
 
   const now = Date.now();
   const upcoming = filtered.filter((e) => new Date(e.starts_at).getTime() >= now);
