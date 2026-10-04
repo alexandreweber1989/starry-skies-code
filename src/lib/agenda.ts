@@ -35,6 +35,7 @@ export interface ChurchEvent {
     type: "push" | "email" | "both";
   };
   created_by: string | null;
+  church?: { name: string } | null;
   ministry?: { name: string; color: string | null } | null;
   rede?: { name: string; color: string | null } | null;
   mesa?: { name: string } | null;
@@ -72,10 +73,11 @@ export const RSVP_LABEL: Record<RsvpStatus, string> = {
 
 /** Rótulo do público-alvo do evento, já resolvido. */
 export function audienceLabel(e: ChurchEvent): string {
+  if (e.scope === "congregacao") return e.church?.name ?? "Igreja";
   if (e.scope === "ministerio") return e.ministry?.name ?? "Ministério";
   if (e.scope === "rede") return e.rede?.name ?? "Rede";
   if (e.scope === "mesa") return e.mesa?.name ?? "Mesa";
-  return "Toda a igreja";
+  return "Todas as igrejas";
 }
 
 /** Data/hora completa em pt-BR a partir de um timestamptz. */
