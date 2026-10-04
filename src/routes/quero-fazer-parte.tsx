@@ -1,6 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, Check, Loader2, MapPin, HeartHandshake } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  Loader2,
+  MapPin,
+  HeartHandshake,
+  Sparkles,
+  UserPlus,
+  Compass,
+  Heart,
+  Home,
+  MoreHorizontal,
+} from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -58,6 +71,7 @@ interface FormState {
   state: string;
   address: string;
   age_range: string;
+  motivo: string;
   notes: string;
 }
 
@@ -71,8 +85,19 @@ const EMPTY: FormState = {
   state: "",
   address: "",
   age_range: "",
+  motivo: "",
   notes: "",
 };
+
+const MOTIVOS = [
+  { value: "curiosidade", label: "Curiosidade — quero conhecer", icon: Sparkles },
+  { value: "convite", label: "Fui convidado(a) por alguém", icon: UserPlus },
+  { value: "busca_espiritual", label: "Busca espiritual / me aproximar de Deus", icon: Compass },
+  { value: "momento_dificil", label: "Estou passando por um momento difícil", icon: Heart },
+  { value: "nova_regiao", label: "Procuro uma igreja na minha região", icon: Home },
+  { value: "participar_mesa", label: "Quero participar de uma mesa (grupo)", icon: HeartHandshake },
+  { value: "outro", label: "Outro motivo", icon: MoreHorizontal },
+] as const;
 
 const FAIXAS = [
   { value: "crianca", label: "Criança (até 11)" },
@@ -243,17 +268,45 @@ function QueroFazerParte() {
         id: "sobre",
         eyebrow: "Conte pra gente",
         question: "O que te traz até aqui?",
-        hint: "Pode ser qualquer coisa: curiosidade, um convite, uma busca, um momento difícil. Venha como você é.",
+        hint: "Escolha o que mais combina com o seu momento. Venha como você é.",
         valid: () => true,
         render: (s, set) => (
-          <Textarea
-            autoFocus
-            rows={4}
-            value={s.notes}
-            onChange={(e) => set("notes", e.target.value)}
-            placeholder="Escreva com suas palavras… (opcional)"
-            className="text-lg"
-          />
+          <div className="space-y-5">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {MOTIVOS.map((m) => {
+                const Icon = m.icon;
+                const sel = s.motivo === m.value;
+                return (
+                  <button
+                    key={m.value}
+                    type="button"
+                    onClick={() => set("motivo", sel ? "" : m.value)}
+                    aria-pressed={sel}
+                    className={
+                      "flex items-center gap-3 rounded-xl border-2 p-4 text-left text-sm transition-all " +
+                      (sel
+                        ? "border-primary bg-primary/10 text-foreground"
+                        : "border-border bg-card/40 text-muted-foreground hover:border-foreground/30 hover:text-foreground")
+                    }
+                  >
+                    <Icon className={"h-5 w-5 shrink-0 " + (sel ? "text-primary" : "")} aria-hidden="true" />
+                    <span className="flex-1">{m.label}</span>
+                    {sel && <Check className="h-4 w-4 shrink-0 text-primary" />}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="mais">Quer contar um pouco mais? (opcional)</Label>
+              <Textarea
+                id="mais"
+                rows={3}
+                value={s.notes}
+                onChange={(e) => set("notes", e.target.value)}
+                placeholder="Escreva com suas palavras…"
+              />
+            </div>
+          </div>
         ),
       },
     ],
@@ -283,6 +336,9 @@ function QueroFazerParte() {
 
   async function submit() {
     setSaving(true);
+    const motivoLabel = MOTIVOS.find((m) => m.value === form.motivo)?.label ?? "";
+    const notasFinais =
+      [motivoLabel, form.notes.trim()].filter(Boolean).join(" — ").slice(0, 1000) || null;
     const { error } = await supabase.from("membership_requests").insert({
       full_name: form.full_name.trim().slice(0, 120),
       email: form.email.trim().toLowerCase().slice(0, 255) || null,
@@ -293,7 +349,7 @@ function QueroFazerParte() {
       state: form.state.trim().slice(0, 2).toUpperCase() || null,
       address: form.address.trim().slice(0, 200) || null,
       age_range: form.age_range || null,
-      notes: form.notes.trim().slice(0, 1000) || null,
+      notes: notasFinais,
       status: "pendente",
     } as never);
     setSaving(false);
