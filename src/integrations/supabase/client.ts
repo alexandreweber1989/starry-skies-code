@@ -34,7 +34,7 @@ function createSupabaseClient() {
     (typeof process !== 'undefined' && process.env ? process.env['SUPABASE_URL'] : null) || 
     (typeof process !== 'undefined' && process.env ? process.env['VITE_SUPABASE_URL'] : null) ||
     import.meta.env['VITE_SUPABASE_URL'] ||
-    'https://zrdzocdadiucrhvwvxhq.supabase.co';
+    'https://dcuncwvmoreagkqivqox.supabase.co';
     
   const SUPABASE_PUBLISHABLE_KEY = 
     (typeof process !== 'undefined' && process.env ? process.env['SUPABASE_PUBLISHABLE_KEY'] : null) || 
@@ -42,7 +42,7 @@ function createSupabaseClient() {
     (typeof process !== 'undefined' && process.env ? process.env['VITE_SUPABASE_ANON_KEY'] : null) ||
     import.meta.env['VITE_SUPABASE_PUBLISHABLE_KEY'] ||
     import.meta.env['VITE_SUPABASE_ANON_KEY'] ||
-    'sb_publishable_kala5-0XrdNl2gqWAn8LLw_N9O2RXWT';
+    'sb_publishable_YvivbtXssIsWPM2Q8IXDJg_Lenvb2Ta';
 
   if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
     console.warn("[Supabase Client] Environment variables missing. Using hardcoded connection strings as ultimate fallback.");
