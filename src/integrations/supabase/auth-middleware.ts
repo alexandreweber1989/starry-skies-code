@@ -68,11 +68,11 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
     }
 
     const supabase = createClient<Database>(
-      SUPABASE_URL || 'https://zrdzocdadiucrhvwvxhq.supabase.co', // Use absolute fallback if needed
-      SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_kala5-0XrdNl2gqWAn8LLw_N9O2RXWT',
+      SUPABASE_URL || 'https://dcuncwvmoreagkqivqox.supabase.co', // Use absolute fallback if needed
+      SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_YvivbtXssIsWPM2Q8IXDJg_Lenvb2Ta',
       {
         global: {
-          fetch: createSupabaseFetch(SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_kala5-0XrdNl2gqWAn8LLw_N9O2RXWT'),
+          fetch: createSupabaseFetch(SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_YvivbtXssIsWPM2Q8IXDJg_Lenvb2Ta'),
           headers: {
             Authorization: `Bearer ${token}`,
           },

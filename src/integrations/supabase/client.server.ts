@@ -28,8 +28,8 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
 }
 
 function createSupabaseAdminClient() {
-  const SUPABASE_URL = process.env['SUPABASE_URL'] || import.meta.env.VITE_SUPABASE_URL || 'https://zrdzocdadiucrhvwvxhq.supabase.co';
-  const SUPABASE_SERVICE_ROLE_KEY = process.env['SUPABASE_SERVICE_ROLE_KEY'] || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_kala5-0XrdNl2gqWAn8LLw_N9O2RXWT';
+  const SUPABASE_URL = process.env['SUPABASE_URL'] || import.meta.env.VITE_SUPABASE_URL || 'https://dcuncwvmoreagkqivqox.supabase.co';
+  const SUPABASE_SERVICE_ROLE_KEY = process.env['SUPABASE_SERVICE_ROLE_KEY'] || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_YvivbtXssIsWPM2Q8IXDJg_Lenvb2Ta';
 
   if (!process.env['SUPABASE_URL'] || !process.env['SUPABASE_SERVICE_ROLE_KEY']) {
     console.warn("[Supabase Admin] Environment variables missing in server context. Using fallback connection strings.");
