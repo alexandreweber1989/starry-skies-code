@@ -591,6 +591,16 @@ function CadastroSection() {
         <div className="w-full">
           <CadastroLead />
         </div>
+
+        <p className="mt-10 text-center text-sm text-muted-foreground">
+          Prefere contar um pouco mais sobre você, no seu tempo?{" "}
+          <Link
+            to="/quero-fazer-parte"
+            className="font-medium text-primary underline underline-offset-4 hover:text-foreground"
+          >
+            Quero fazer parte →
+          </Link>
+        </p>
       </div>
     </section>
   );

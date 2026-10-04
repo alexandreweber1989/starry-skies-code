@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Check, X, Clock } from "lucide-react";
+import { Check, X, Clock, MapPin, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { approveMembershipRequest } from "@/lib/membership.functions";
 import { useAuth } from "@/lib/auth-context";
@@ -28,6 +28,31 @@ export interface MembershipRequest {
   requester_name: string | null;
   status: string;
   created_at: string;
+  city: string | null;
+  neighborhood: string | null;
+  zip_code: string | null;
+  age_range: string | null;
+}
+
+const FAIXA_LABEL: Record<string, string> = {
+  crianca: "Criança",
+  adolescente: "Adolescente",
+  jovem: "Jovem",
+  adulto: "Adulto",
+  melhor_idade: "Melhor idade",
+  prefiro_nao_dizer: "Idade não informada",
+};
+
+/** Monta um link wa.me a partir de um telefone brasileiro (adiciona 55 se faltar). */
+function linkWhatsApp(phone: string | null, nome: string): string | null {
+  if (!phone) return null;
+  let d = phone.replace(/\D/g, "");
+  if (!d) return null;
+  if (!d.startsWith("55")) d = "55" + d;
+  const msg = encodeURIComponent(
+    `Olá, ${nome.split(" ")[0]}! Aqui é da Igreja Batista Atos. Vimos que você quer fazer parte e queremos te dar as boas-vindas. 💛`,
+  );
+  return `https://wa.me/${d}?text=${msg}`;
 }
 
 /** Solicitações de cadastro pendentes (admin vê todas; demais veem as suas). */
@@ -37,7 +62,9 @@ export function usePendingRequests() {
     queryFn: async (): Promise<MembershipRequest[]> => {
       const { data, error } = await supabase
         .from("membership_requests")
-        .select("id, full_name, email, phone, notes, requester_name, status, created_at")
+        .select(
+          "id, full_name, email, phone, notes, requester_name, status, created_at, city, neighborhood, zip_code, age_range",
+        )
         .eq("status", "pendente")
         .order("created_at", { ascending: true });
       if (error) throw error;
@@ -121,14 +148,37 @@ export function MembershipRequestsPanel({ compact = false }: { compact?: boolean
               <div className="min-w-0 flex-1">
                 <p className="font-medium truncate">{r.full_name}</p>
                 <p className="text-xs text-muted-foreground truncate">
-                  {r.email}
+                  {r.email || "sem e-mail"}
                   {r.phone ? ` · ${r.phone}` : ""}
                   {r.requester_name ? ` · indicado por ${r.requester_name}` : ""}
                 </p>
-                {r.notes && <p className="text-xs text-muted-foreground mt-1">{r.notes}</p>}
+                {(r.city || r.neighborhood || r.age_range) && (
+                  <p className="mt-1 flex flex-wrap items-center gap-x-1 text-xs text-muted-foreground">
+                    {(r.city || r.neighborhood) && (
+                      <>
+                        <MapPin className="h-3 w-3 text-primary" />
+                        {[r.neighborhood, r.city].filter(Boolean).join(", ")}
+                      </>
+                    )}
+                    {r.age_range && (
+                      <span>
+                        {(r.city || r.neighborhood) ? " · " : ""}
+                        {FAIXA_LABEL[r.age_range] ?? r.age_range}
+                      </span>
+                    )}
+                  </p>
+                )}
+                {r.notes && <p className="text-xs text-muted-foreground mt-1 italic">“{r.notes}”</p>}
               </div>
               {isAdmin ? (
                 <div className="flex gap-2">
+                  {linkWhatsApp(r.phone, r.full_name) && (
+                    <Button size="sm" variant="outline" asChild>
+                      <a href={linkWhatsApp(r.phone, r.full_name)!} target="_blank" rel="noopener noreferrer">
+                        <MessageCircle className="h-4 w-4" /> WhatsApp
+                      </a>
+                    </Button>
+                  )}
                   <Button size="sm" onClick={() => setApproving(r)}>
                     <Check className="h-4 w-4" /> Aprovar
                   </Button>
