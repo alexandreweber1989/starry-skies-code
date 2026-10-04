@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Download, Share, Plus, Check, Smartphone, MoreVertical } from "lucide-react";
+import { Download, Share, Plus, Check, Smartphone, MoreVertical, X, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -150,5 +150,68 @@ export function InstalarApp({
         </DialogContent>
       </Dialog>
     </>
+  );
+}
+
+const DISMISS_KEY = "iba-install-banner-dismissed";
+
+/**
+ * Faixa de destaque para instalar o app, pensada para o topo do painel.
+ * Aparece para qualquer usuário que ainda não instalou; some quando o app já
+ * está em modo standalone ou quando a pessoa dispensa (lembrado por aparelho).
+ */
+export function BannerInstalarApp() {
+  const [mostrar, setMostrar] = useState(false);
+
+  useEffect(() => {
+    const { standalone } = detectar();
+    let dispensado = false;
+    try {
+      dispensado = localStorage.getItem(DISMISS_KEY) === "1";
+    } catch {
+      dispensado = false;
+    }
+    setMostrar(!standalone && !dispensado);
+  }, []);
+
+  if (!mostrar) return null;
+
+  function dispensar() {
+    try {
+      localStorage.setItem(DISMISS_KEY, "1");
+    } catch {
+      /* armazenamento indisponível: apenas esconde nesta sessão */
+    }
+    setMostrar(false);
+  }
+
+  return (
+    <div className="relative mb-6 flex flex-col gap-4 rounded-xl border border-primary/30 bg-primary/5 p-4 sm:flex-row sm:items-center">
+      <img
+        src="/icons/icon-192.png"
+        alt="Ícone do app"
+        width={48}
+        height={48}
+        className="h-12 w-12 shrink-0 rounded-[12px]"
+      />
+      <div className="min-w-0 flex-1 pr-6">
+        <p className="font-serif text-lg leading-tight">Instale o app no seu celular</p>
+        <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
+          <Bell className="h-3.5 w-3.5 text-primary shrink-0" />
+          Receba os avisos da igreja direto nas notificações, e abra em tela cheia.
+        </p>
+      </div>
+      <div className="shrink-0">
+        <InstalarApp label="Instalar agora" />
+      </div>
+      <button
+        type="button"
+        onClick={dispensar}
+        aria-label="Dispensar"
+        className="absolute right-2 top-2 rounded-md p-1 text-muted-foreground hover:text-foreground"
+      >
+        <X className="h-4 w-4" />
+      </button>
+    </div>
   );
 }

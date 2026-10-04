@@ -20,6 +20,7 @@ import { useAvisos, isVigente, formatData, CATEGORY_LABEL } from "@/lib/avisos";
 import { PageHeader, PageBody } from "@/components/app-shell";
 import { StatTile, PanelSection } from "@/components/painel/ui";
 import { StatTileSkeleton } from "@/components/ui/loading-states";
+import { BannerInstalarApp } from "@/components/pwa/instalar-app";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Painel Principal — IB Atos" }] }),
@@ -341,6 +342,7 @@ function DashboardPage() {
         description="O que está acontecendo na Igreja Batista Atos."
       />
       <PageBody>
+        <BannerInstalarApp />
         {isAdmin ? <DashboardAdmin /> : isLeadership ? <DashboardLideranca /> : <DashboardMembro />}
       </PageBody>
     </div>
