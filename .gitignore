@@ -17,6 +17,12 @@ dist-ssr
 .vercel
 *.local
 
+# Variáveis de ambiente — NUNCA comitar (contêm segredos).
+# Use .env.example como modelo; cada ambiente cria o seu .env local.
+.env
+.env.*
+!.env.example
+
 # Wrangler / Cloudflare
 .wrangler/
 .dev.vars
