@@ -476,7 +476,7 @@ function PhotoTabContent({ type, photos, onUpload, onDelete, canEdit }: {
               <Button 
                 variant="destructive" 
                 size="icon" 
-                className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute top-2 right-2 h-6 w-6 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity"
                 onClick={() => onDelete(photo.id)}
               >
                 <Trash2 className="h-3 w-3" />

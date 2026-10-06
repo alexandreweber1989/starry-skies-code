@@ -302,7 +302,7 @@ export function KidsCheckinDashboard() {
                     )}
                     
                     {isKidsAdmin && (
-                      <div className="mt-auto pt-4 flex opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="mt-auto pt-4 flex opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                         <EditChildButton child={child} />
                       </div>
                     )}

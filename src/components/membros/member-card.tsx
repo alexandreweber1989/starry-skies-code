@@ -130,7 +130,7 @@ export function MemberCard({
         <div
           className={cn(
             "absolute right-3 top-3 transition-opacity duration-200",
-            selected ? "opacity-100" : "opacity-0 group-hover:opacity-100",
+            selected ? "opacity-100" : "opacity-100 lg:opacity-0 lg:group-hover:opacity-100",
           )}
           onClick={(e) => e.stopPropagation()}
         >

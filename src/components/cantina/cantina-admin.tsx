@@ -103,7 +103,7 @@ function ItemDialog({ initial, trigger }: { initial: ItemDraft; trigger: React.R
                   <img src={draft.image_url} alt="Preview" className="w-full h-full object-cover" />
                   <button
                     onClick={() => setDraft({ ...draft, image_url: "" })}
-                    className="absolute top-2 right-2 p-1.5 bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute top-2 right-2 p-1.5 bg-black/50 text-white rounded-full opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -337,7 +337,7 @@ function MenuDialog() {
                   <img src={artUrl} alt="Preview" className="w-full h-full object-cover" />
                   <button
                     onClick={() => setArtUrl("")}
-                    className="absolute top-2 right-2 p-1.5 bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute top-2 right-2 p-1.5 bg-black/50 text-white rounded-full opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity"
                   >
                     <X className="h-4 w-4" />
                   </button>
