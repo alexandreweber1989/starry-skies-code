@@ -1,6 +1,7 @@
-import type { ReactNode } from "react";
+import { cloneElement, isValidElement, useId, type ReactNode } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { FieldLabelContext } from "@/components/ui/field-label-context";
 import {
   Select,
   SelectContent,
@@ -29,12 +30,21 @@ export function Field({
   children: ReactNode;
   full?: boolean;
 }) {
+  const gerado = useId();
+  const campo = isValidElement(children) ? children : null;
+  const id = (campo?.props as { id?: string } | undefined)?.id ?? gerado;
   return (
     <div className={full ? "sm:col-span-2 space-y-2" : "space-y-2"}>
-      <Label className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+      <Label
+        id={`${id}-rotulo`}
+        htmlFor={campo ? id : undefined}
+        className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground"
+      >
         {label}
       </Label>
-      {children}
+      <FieldLabelContext.Provider value={`${id}-rotulo`}>
+        {campo ? cloneElement(campo, { id } as never) : children}
+      </FieldLabelContext.Provider>
     </div>
   );
 }
