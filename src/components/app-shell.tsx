@@ -133,7 +133,12 @@ export function AppShell({ children }: { children: ReactNode }) {
                     <div className={`p-2 rounded-lg transition-all duration-300 ${active ? "bg-current/20 scale-110" : "bg-sidebar-foreground/5 group-hover:bg-current/20 group-hover:scale-110"}`}>
                       <Icon className={`h-4 w-4 ${active ? "text-current" : "opacity-70 group-hover:text-current group-hover:opacity-100"}`} />
                     </div>
-                    <span className="text-[10px] leading-tight font-bold break-words px-1 uppercase tracking-tight">
+                    {/*
+                      Nome do item de menu: e a navegacao inteira da plataforma,
+                      em 24 itens. A 10px em caixa-alta o membro mais velho
+                      precisa chegar o rosto na tela para escolher para onde ir.
+                    */}
+                    <span className="text-xs leading-tight font-bold break-words px-1 uppercase tracking-tight">
                       {item.label}
                     </span>
                   </Link>
