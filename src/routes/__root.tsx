@@ -154,7 +154,22 @@ function RootShell({ children }: { children: ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body className="antialiased">
+      <body
+        className={
+          import.meta.env.DEV && import.meta.env.VITE_ISOLATED_PREVIEW === "true"
+            ? "antialiased pb-24"
+            : "antialiased"
+        }
+      >
+        {import.meta.env.DEV && import.meta.env.VITE_ISOLATED_PREVIEW === "true" && (
+          <aside
+            aria-label="Ambiente de validação"
+            className="fixed inset-x-0 bottom-0 z-[110] border-t border-border bg-muted px-4 py-3 text-center text-sm text-foreground"
+          >
+            <strong>Prévia isolada.</strong> Sem conexão com os dados da igreja. Login e cadastros
+            indisponíveis neste ambiente.
+          </aside>
+        )}
         {children}
         <Scripts />
       </body>
