@@ -168,10 +168,10 @@ function Landing() {
       <FloatingNav cta={cta} />
       <Hero cta={cta} />
       <CadastroSection />
-      <Historia />
-      <Numeros />
-      <Pilares />
-      <Ministerios />
+      <div id="historia" className="scroll-mt-24"><Historia /></div>
+      <div id="numeros" className="scroll-mt-24"><Numeros /></div>
+      <div id="pilares" className="scroll-mt-24"><Pilares /></div>
+      <div id="ministerios" className="scroll-mt-24"><Ministerios /></div>
       <FinalCTA cta={cta} />
     </div>
   );
@@ -212,34 +212,81 @@ function ScrollProgress() {
  * Navegação flutuante
  * ------------------------------------------------------------------------- */
 
+/** Links do menu — âncoras para as seções da home. */
+const NAV_LINKS = [
+  { href: "#historia", label: "Gênese" },
+  { href: "#numeros", label: "Números" },
+  { href: "#pilares", label: "Pilares" },
+  { href: "#ministerios", label: "Ministérios" },
+] as const;
+
+/**
+ * Menu do topo: pílula flutuante em vidro, descolada da borda e centralizada.
+ * Acompanha todo o scroll (fixa) e, ao rolar, se estreita e o nome da igreja
+ * encolhe — assentando com naturalidade. Mantém as fontes e a paleta da casa.
+ */
 function FloatingNav({ cta }: { cta: { to: string; label: string } }) {
+  const [scrolled, setScrolled] = useState(false);
+  const { scrollY } = useScroll();
+  useMotionValueEvent(scrollY, "change", (v) => setScrolled(v > 24));
+
+  // No celular o rótulo longo não cabe ao lado dos demais itens.
+  const ctaCurto = cta.to === "/dashboard" ? "Painel" : "Acessar";
+
   return (
     <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed top-0 inset-x-0 z-50 px-6 lg:px-10 py-6 mix-blend-difference"
+      className={`fixed inset-x-0 top-0 z-50 px-4 lg:px-6 transition-[padding] duration-300 motion-reduce:transition-none ${
+        scrolled ? "py-2" : "py-4"
+      }`}
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-between text-background">
-        <div className="flex items-center gap-2.5">
-          <ChurchLogo className="h-8 w-8 bg-background text-foreground rounded-md p-1" />
-          <div className="hidden sm:block">
-            <div className="font-serif text-base leading-none font-semibold tracking-tight">
+      <div
+        className={`mx-auto flex items-center justify-between gap-3 rounded-full border border-border bg-background/70 py-2 pl-3 pr-2 shadow-lg shadow-foreground/5 backdrop-blur-xl backdrop-saturate-150 transition-[max-width,box-shadow] duration-300 motion-reduce:transition-none ${
+        scrolled ? "max-w-3xl shadow-xl" : "max-w-5xl"
+      }`}
+      >
+        {/* Marca — o nome encolhe ao rolar */}
+        <Link to="/" className="flex min-w-0 items-center gap-2.5">
+          <ChurchLogo className="h-8 w-8 shrink-0 rounded-lg bg-foreground p-1.5 text-background" />
+          <span className="min-w-0">
+            <span
+              className={`block font-serif font-semibold leading-none tracking-tight whitespace-nowrap transition-[font-size] duration-300 motion-reduce:transition-none ${
+                scrolled ? "text-sm" : "text-base"
+              }`}
+            >
               Igreja Batista Atos
-            </div>
-            <div className="font-mono text-[8px] uppercase tracking-[0.3em] opacity-60 mt-1">
+            </span>
+            <span
+              className={`block overflow-hidden font-mono uppercase tracking-[0.3em] text-muted-foreground transition-all duration-300 motion-reduce:transition-none ${
+                scrolled ? "mt-0 max-h-0 text-[0px] opacity-0" : "mt-1 max-h-3 text-[8px] opacity-60"
+              }`}
+            >
               PG · 2014
-            </div>
-          </div>
-        </div>
-        <Button
-          asChild
-          size="sm"
-          variant="outline"
-          className="rounded-full bg-transparent border-background text-background hover:bg-background hover:text-foreground"
-        >
+            </span>
+          </span>
+        </Link>
+
+        {/* Links de seção (centro) */}
+        <nav className="hidden items-center gap-7 lg:flex">
+          {NAV_LINKS.map((l) => (
+            <a
+              key={l.href}
+              href={l.href}
+              className="group relative py-1 text-xs font-semibold text-foreground/70 transition-colors hover:text-foreground"
+            >
+              {l.label}
+              <span className="pointer-events-none absolute inset-x-0 -bottom-0.5 h-px origin-left scale-x-0 bg-foreground transition-transform duration-300 group-hover:scale-x-100 motion-reduce:transition-none" />
+            </a>
+          ))}
+        </nav>
+
+        {/* Acesso — botão sólido */}
+        <Button asChild size="sm" className="shrink-0 rounded-full">
           <Link to={cta.to}>
-            <span>{cta.label}</span>
+            <span className="lg:hidden">{ctaCurto}</span>
+            <span className="hidden lg:inline">{cta.label}</span>
           </Link>
         </Button>
       </div>
