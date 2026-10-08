@@ -194,17 +194,22 @@ function NoiseOverlay() {
 
 function ScrollProgress() {
   const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, {
+  const progresso = useSpring(scrollYProgress, {
     stiffness: 120,
     damping: 30,
     mass: 0.2,
   });
   return (
-    <motion.div
+    <div
       aria-hidden
-      style={{ scaleX }}
-      className="fixed top-0 inset-x-0 z-[60] h-[3px] origin-left bg-primary"
-    />
+      className="fixed left-0 top-0 z-[60] h-screen w-1.5 bg-foreground/10 shadow-[1px_0_0_rgba(0,0,0,0.04)]"
+    >
+      {/* Preenchimento vertical que cresce de cima para baixo conforme o scroll. */}
+      <motion.div
+        style={{ scaleY: progresso }}
+        className="h-full w-full origin-top bg-primary"
+      />
+    </div>
   );
 }
 
