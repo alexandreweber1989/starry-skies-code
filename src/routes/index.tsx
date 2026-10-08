@@ -199,15 +199,28 @@ function ScrollProgress() {
     damping: 30,
     mass: 0.2,
   });
+  // Posição vertical do ponto indicador (0% no topo → 100% no fim).
+  const topo = useTransform(progresso, (v) => `${v * 100}%`);
+
+  // mix-blend-difference faz a barra inverter contra o fundo: fica clara sobre
+  // as seções escuras e escura sobre as claras — sempre visível, sem depender
+  // do tema. Por isso o preenchimento é branco puro.
   return (
     <div
       aria-hidden
-      className="fixed left-0 top-0 z-[60] h-screen w-1.5 bg-foreground/10 shadow-[1px_0_0_rgba(0,0,0,0.04)]"
+      className="pointer-events-none fixed left-0 top-0 z-[60] h-screen w-1.5 mix-blend-difference"
     >
-      {/* Preenchimento vertical que cresce de cima para baixo conforme o scroll. */}
+      {/* Trilha de fundo bem sutil. */}
+      <div className="absolute inset-0 bg-white/15" />
+      {/* Preenchimento que cresce de cima para baixo. */}
       <motion.div
         style={{ scaleY: progresso }}
-        className="h-full w-full origin-top bg-primary"
+        className="absolute inset-0 origin-top rounded-b-full bg-white"
+      />
+      {/* Ponto que desliza na posição atual do scroll. */}
+      <motion.div
+        style={{ top: topo }}
+        className="absolute left-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]"
       />
     </div>
   );
