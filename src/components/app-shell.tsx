@@ -24,6 +24,7 @@ import {
   FileText,
   HeartHandshake,
   Presentation,
+  Smartphone,
 } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { useAuth, type AppRole } from "@/lib/auth-context";
@@ -70,6 +71,7 @@ const navGroups: { label: string; items: (NavItem & { color: string })[] }[] = [
       { to: "/pregacoes", label: "Pregações", icon: Presentation, color: "bg-violet-500/15 text-violet-400 border-violet-500/30", requiredRoles: ["admin_geral"] },
       { to: "/visitantes", label: "Visitantes", icon: Users, color: "bg-sky-500/15 text-sky-400 border-sky-500/30", requiredRoles: ["admin_geral"] },
       { to: "/membros", label: "Membros", icon: Users, color: "bg-indigo-600/15 text-indigo-400 border-indigo-600/30", requiredRoles: ["admin_geral"] },
+      { to: "/adocao", label: "Adoção do app", icon: Smartphone, color: "bg-fuchsia-500/15 text-fuchsia-400 border-fuchsia-500/30", requiredRoles: ["admin_geral"] },
       { to: "/mapa", label: "Mapa", icon: MapPin, color: "bg-lime-500/15 text-lime-400 border-lime-500/30", requiredRoles: ["admin_geral"] },
       { to: "/onboarding", label: "Integração de novos membros", icon: Sprout, color: "bg-green-500/15 text-green-400 border-green-500/30", requiredRoles: ["admin_geral"] },
       { to: "/kids", label: "Kids", icon: Baby, color: "bg-pink-400/15 text-pink-300 border-pink-400/30", requiredRoles: ["admin_geral", "admin_kids"] },

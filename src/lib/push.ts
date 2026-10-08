@@ -112,6 +112,9 @@ export async function ativarPush(userId: string): Promise<PushStatus> {
       user_id: userId,
       token: assinatura,
       device_type: "web",
+      // Guardado para o painel de adoção classificar o aparelho (iPhone/Android/
+      // computador). A coluna já existe; não exige migração.
+      user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
       updated_at: new Date().toISOString(),
     },
     { onConflict: "user_id,token" },

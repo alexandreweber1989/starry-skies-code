@@ -168,10 +168,10 @@ function Landing() {
       <FloatingNav cta={cta} />
       <Hero cta={cta} />
       <CadastroSection />
-      <Historia />
-      <Numeros />
-      <Pilares />
-      <Ministerios />
+      <div id="historia" className="scroll-mt-24"><Historia /></div>
+      <div id="numeros" className="scroll-mt-24"><Numeros /></div>
+      <div id="pilares" className="scroll-mt-24"><Pilares /></div>
+      <div id="ministerios" className="scroll-mt-24"><Ministerios /></div>
       <FinalCTA cta={cta} />
     </div>
   );
@@ -194,17 +194,35 @@ function NoiseOverlay() {
 
 function ScrollProgress() {
   const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, {
+  const progresso = useSpring(scrollYProgress, {
     stiffness: 120,
     damping: 30,
     mass: 0.2,
   });
+  // Posição vertical do ponto indicador (0% no topo → 100% no fim).
+  const topo = useTransform(progresso, (v) => `${v * 100}%`);
+
+  // mix-blend-difference faz a barra inverter contra o fundo: fica clara sobre
+  // as seções escuras e escura sobre as claras — sempre visível, sem depender
+  // do tema. Por isso o preenchimento é branco puro.
   return (
-    <motion.div
+    <div
       aria-hidden
-      style={{ scaleX }}
-      className="fixed top-0 inset-x-0 z-[60] h-[3px] origin-left bg-primary"
-    />
+      className="pointer-events-none fixed left-0 top-0 z-[60] h-screen w-1.5 mix-blend-difference"
+    >
+      {/* Trilha de fundo bem sutil. */}
+      <div className="absolute inset-0 bg-white/15" />
+      {/* Preenchimento que cresce de cima para baixo. */}
+      <motion.div
+        style={{ scaleY: progresso }}
+        className="absolute inset-0 origin-top rounded-b-full bg-white"
+      />
+      {/* Ponto que desliza na posição atual do scroll. */}
+      <motion.div
+        style={{ top: topo }}
+        className="absolute left-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]"
+      />
+    </div>
   );
 }
 
@@ -212,37 +230,161 @@ function ScrollProgress() {
  * Navegação flutuante
  * ------------------------------------------------------------------------- */
 
+/** Links do menu — âncoras para as seções da home. */
+const NAV_LINKS = [
+  { href: "#historia", label: "Gênese" },
+  { href: "#numeros", label: "Números" },
+  { href: "#pilares", label: "Pilares" },
+  { href: "#ministerios", label: "Ministérios" },
+] as const;
+
+// Entrada em cascata dos itens do menu, depois que a pílula assenta.
+const navContainerVariants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08, delayChildren: 0.35 } },
+};
+const navItemVariants = {
+  hidden: { opacity: 0, y: -10 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+  },
+};
+
+/**
+ * Menu do topo: pílula flutuante em vidro, descolada da borda e centralizada.
+ * Acompanha todo o scroll (fixa) e, ao rolar, se estreita e o nome da igreja
+ * encolhe. Anima a entrada em cascata, destaca a seção ativa com um sublinhado
+ * que desliza entre os links e rola suave ao clicar. Respeita movimento
+ * reduzido e mantém as fontes e a paleta da casa.
+ */
 function FloatingNav({ cta }: { cta: { to: string; label: string } }) {
+  const reduce = useReducedMotion();
+  const [scrolled, setScrolled] = useState(false);
+  const [ativo, setAtivo] = useState<string>("");
+  const { scrollY } = useScroll();
+  useMotionValueEvent(scrollY, "change", (v) => setScrolled(v > 24));
+
+  // Scroll-spy: marca o link da seção que está no centro da tela.
+  useEffect(() => {
+    const alvos = NAV_LINKS.map((l) => document.getElementById(l.href.slice(1))).filter(
+      (el): el is HTMLElement => !!el,
+    );
+    if (alvos.length === 0) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) setAtivo(e.target.id);
+        });
+      },
+      { rootMargin: "-45% 0px -50% 0px" },
+    );
+    alvos.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
+  function irPara(e: React.MouseEvent<HTMLAnchorElement>, href: string) {
+    const el = document.querySelector(href);
+    if (!el) return;
+    e.preventDefault();
+    setAtivo(href.slice(1));
+    el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+    history.replaceState(null, "", href);
+  }
+
+  // No celular o rótulo longo não cabe ao lado dos demais itens.
+  const ctaCurto = cta.to === "/dashboard" ? "Painel" : "Acessar";
+
   return (
     <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed top-0 inset-x-0 z-50 px-6 lg:px-10 py-6 mix-blend-difference"
+      className={`fixed inset-x-0 top-0 z-50 px-4 lg:px-6 transition-[padding] duration-300 motion-reduce:transition-none ${
+        scrolled ? "py-2" : "py-4"
+      }`}
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-between text-background">
-        <div className="flex items-center gap-2.5">
-          <ChurchLogo className="h-8 w-8 bg-background text-foreground rounded-md p-1" />
-          <div className="hidden sm:block">
-            <div className="font-serif text-base leading-none font-semibold tracking-tight">
-              Igreja Batista Atos
-            </div>
-            <div className="font-mono text-[8px] uppercase tracking-[0.3em] opacity-60 mt-1">
-              PG · 2014
-            </div>
-          </div>
-        </div>
-        <Button
-          asChild
-          size="sm"
-          variant="outline"
-          className="rounded-full bg-transparent border-background text-background hover:bg-background hover:text-foreground"
-        >
-          <Link to={cta.to}>
-            <span>{cta.label}</span>
+      <motion.div
+        variants={reduce ? undefined : navContainerVariants}
+        initial={reduce ? undefined : "hidden"}
+        animate={reduce ? undefined : "show"}
+        className={`mx-auto flex items-center justify-between gap-3 rounded-full border border-border py-2 pl-3 pr-2 shadow-lg shadow-foreground/5 backdrop-blur-xl backdrop-saturate-150 transition-[max-width,box-shadow,background-color] duration-300 motion-reduce:transition-none ${
+        scrolled ? "max-w-3xl bg-background/80 shadow-xl" : "max-w-5xl bg-background/60"
+      }`}
+      >
+        {/* Marca — o nome encolhe ao rolar; o selo gira de leve no hover */}
+        <motion.div variants={reduce ? undefined : navItemVariants}>
+          <Link to="/" className="group/brand flex min-w-0 items-center gap-2.5">
+            <ChurchLogo className="h-8 w-8 shrink-0 rounded-lg bg-foreground p-1.5 text-background transition-transform duration-500 ease-out group-hover/brand:-rotate-6 group-hover/brand:scale-110 motion-reduce:transition-none" />
+            <span className="min-w-0">
+              <span
+                className={`block font-serif font-semibold leading-none tracking-tight whitespace-nowrap transition-[font-size] duration-300 motion-reduce:transition-none ${
+                  scrolled ? "text-sm" : "text-base"
+                }`}
+              >
+                Igreja Batista Atos
+              </span>
+              <span
+                className={`block overflow-hidden font-mono uppercase tracking-[0.3em] text-muted-foreground transition-all duration-300 motion-reduce:transition-none ${
+                  scrolled ? "mt-0 max-h-0 text-[0px] opacity-0" : "mt-1 max-h-3 text-[8px] opacity-60"
+                }`}
+              >
+                PG · 2014
+              </span>
+            </span>
           </Link>
-        </Button>
-      </div>
+        </motion.div>
+
+        {/* Links de seção — sublinhado desliza para a seção ativa */}
+        <motion.nav
+          variants={reduce ? undefined : navItemVariants}
+          className="hidden items-center gap-7 lg:flex"
+        >
+          {NAV_LINKS.map((l) => {
+            const atual = ativo === l.href.slice(1);
+            return (
+              <a
+                key={l.href}
+                href={l.href}
+                onClick={(e) => irPara(e, l.href)}
+                aria-current={atual ? "true" : undefined}
+                className={`group relative py-1 text-xs font-semibold transition-colors duration-300 ${
+                  atual ? "text-foreground" : "text-foreground/60 hover:text-foreground"
+                }`}
+              >
+                {l.label}
+                {/* sublinhado de hover (só quando não é o ativo) */}
+                {!atual && (
+                  <span className="pointer-events-none absolute inset-x-0 -bottom-0.5 h-px origin-left scale-x-0 bg-foreground/40 transition-transform duration-300 group-hover:scale-x-100 motion-reduce:transition-none" />
+                )}
+                {/* sublinhado ativo que desliza entre os links */}
+                {atual &&
+                  (reduce ? (
+                    <span className="pointer-events-none absolute inset-x-0 -bottom-0.5 h-0.5 rounded-full bg-foreground" />
+                  ) : (
+                    <motion.span
+                      layoutId="nav-ativo"
+                      className="pointer-events-none absolute inset-x-0 -bottom-0.5 h-0.5 rounded-full bg-foreground"
+                      transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                    />
+                  ))}
+              </a>
+            );
+          })}
+        </motion.nav>
+
+        {/* Acesso — botão sólido com seta que desliza no hover */}
+        <motion.div variants={reduce ? undefined : navItemVariants} className="shrink-0">
+          <Button asChild size="sm" className="rounded-full">
+            <Link to={cta.to} className="group/cta">
+              <span className="lg:hidden">{ctaCurto}</span>
+              <span className="hidden lg:inline">{cta.label}</span>
+              <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover/cta:translate-x-0.5 motion-reduce:transition-none" />
+            </Link>
+          </Button>
+        </motion.div>
+      </motion.div>
     </motion.header>
   );
 }
