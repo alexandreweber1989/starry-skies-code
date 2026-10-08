@@ -220,15 +220,60 @@ const NAV_LINKS = [
   { href: "#ministerios", label: "Ministérios" },
 ] as const;
 
+// Entrada em cascata dos itens do menu, depois que a pílula assenta.
+const navContainerVariants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08, delayChildren: 0.35 } },
+};
+const navItemVariants = {
+  hidden: { opacity: 0, y: -10 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+  },
+};
+
 /**
  * Menu do topo: pílula flutuante em vidro, descolada da borda e centralizada.
  * Acompanha todo o scroll (fixa) e, ao rolar, se estreita e o nome da igreja
- * encolhe — assentando com naturalidade. Mantém as fontes e a paleta da casa.
+ * encolhe. Anima a entrada em cascata, destaca a seção ativa com um sublinhado
+ * que desliza entre os links e rola suave ao clicar. Respeita movimento
+ * reduzido e mantém as fontes e a paleta da casa.
  */
 function FloatingNav({ cta }: { cta: { to: string; label: string } }) {
+  const reduce = useReducedMotion();
   const [scrolled, setScrolled] = useState(false);
+  const [ativo, setAtivo] = useState<string>("");
   const { scrollY } = useScroll();
   useMotionValueEvent(scrollY, "change", (v) => setScrolled(v > 24));
+
+  // Scroll-spy: marca o link da seção que está no centro da tela.
+  useEffect(() => {
+    const alvos = NAV_LINKS.map((l) => document.getElementById(l.href.slice(1))).filter(
+      (el): el is HTMLElement => !!el,
+    );
+    if (alvos.length === 0) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) setAtivo(e.target.id);
+        });
+      },
+      { rootMargin: "-45% 0px -50% 0px" },
+    );
+    alvos.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
+  function irPara(e: React.MouseEvent<HTMLAnchorElement>, href: string) {
+    const el = document.querySelector(href);
+    if (!el) return;
+    e.preventDefault();
+    setAtivo(href.slice(1));
+    el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+    history.replaceState(null, "", href);
+  }
 
   // No celular o rótulo longo não cabe ao lado dos demais itens.
   const ctaCurto = cta.to === "/dashboard" ? "Painel" : "Acessar";
@@ -242,54 +287,86 @@ function FloatingNav({ cta }: { cta: { to: string; label: string } }) {
         scrolled ? "py-2" : "py-4"
       }`}
     >
-      <div
-        className={`mx-auto flex items-center justify-between gap-3 rounded-full border border-border bg-background/70 py-2 pl-3 pr-2 shadow-lg shadow-foreground/5 backdrop-blur-xl backdrop-saturate-150 transition-[max-width,box-shadow] duration-300 motion-reduce:transition-none ${
-        scrolled ? "max-w-3xl shadow-xl" : "max-w-5xl"
+      <motion.div
+        variants={reduce ? undefined : navContainerVariants}
+        initial={reduce ? undefined : "hidden"}
+        animate={reduce ? undefined : "show"}
+        className={`mx-auto flex items-center justify-between gap-3 rounded-full border border-border py-2 pl-3 pr-2 shadow-lg shadow-foreground/5 backdrop-blur-xl backdrop-saturate-150 transition-[max-width,box-shadow,background-color] duration-300 motion-reduce:transition-none ${
+        scrolled ? "max-w-3xl bg-background/80 shadow-xl" : "max-w-5xl bg-background/60"
       }`}
       >
-        {/* Marca — o nome encolhe ao rolar */}
-        <Link to="/" className="flex min-w-0 items-center gap-2.5">
-          <ChurchLogo className="h-8 w-8 shrink-0 rounded-lg bg-foreground p-1.5 text-background" />
-          <span className="min-w-0">
-            <span
-              className={`block font-serif font-semibold leading-none tracking-tight whitespace-nowrap transition-[font-size] duration-300 motion-reduce:transition-none ${
-                scrolled ? "text-sm" : "text-base"
-              }`}
-            >
-              Igreja Batista Atos
+        {/* Marca — o nome encolhe ao rolar; o selo gira de leve no hover */}
+        <motion.div variants={reduce ? undefined : navItemVariants}>
+          <Link to="/" className="group/brand flex min-w-0 items-center gap-2.5">
+            <ChurchLogo className="h-8 w-8 shrink-0 rounded-lg bg-foreground p-1.5 text-background transition-transform duration-500 ease-out group-hover/brand:-rotate-6 group-hover/brand:scale-110 motion-reduce:transition-none" />
+            <span className="min-w-0">
+              <span
+                className={`block font-serif font-semibold leading-none tracking-tight whitespace-nowrap transition-[font-size] duration-300 motion-reduce:transition-none ${
+                  scrolled ? "text-sm" : "text-base"
+                }`}
+              >
+                Igreja Batista Atos
+              </span>
+              <span
+                className={`block overflow-hidden font-mono uppercase tracking-[0.3em] text-muted-foreground transition-all duration-300 motion-reduce:transition-none ${
+                  scrolled ? "mt-0 max-h-0 text-[0px] opacity-0" : "mt-1 max-h-3 text-[8px] opacity-60"
+                }`}
+              >
+                PG · 2014
+              </span>
             </span>
-            <span
-              className={`block overflow-hidden font-mono uppercase tracking-[0.3em] text-muted-foreground transition-all duration-300 motion-reduce:transition-none ${
-                scrolled ? "mt-0 max-h-0 text-[0px] opacity-0" : "mt-1 max-h-3 text-[8px] opacity-60"
-              }`}
-            >
-              PG · 2014
-            </span>
-          </span>
-        </Link>
-
-        {/* Links de seção (centro) */}
-        <nav className="hidden items-center gap-7 lg:flex">
-          {NAV_LINKS.map((l) => (
-            <a
-              key={l.href}
-              href={l.href}
-              className="group relative py-1 text-xs font-semibold text-foreground/70 transition-colors hover:text-foreground"
-            >
-              {l.label}
-              <span className="pointer-events-none absolute inset-x-0 -bottom-0.5 h-px origin-left scale-x-0 bg-foreground transition-transform duration-300 group-hover:scale-x-100 motion-reduce:transition-none" />
-            </a>
-          ))}
-        </nav>
-
-        {/* Acesso — botão sólido */}
-        <Button asChild size="sm" className="shrink-0 rounded-full">
-          <Link to={cta.to}>
-            <span className="lg:hidden">{ctaCurto}</span>
-            <span className="hidden lg:inline">{cta.label}</span>
           </Link>
-        </Button>
-      </div>
+        </motion.div>
+
+        {/* Links de seção — sublinhado desliza para a seção ativa */}
+        <motion.nav
+          variants={reduce ? undefined : navItemVariants}
+          className="hidden items-center gap-7 lg:flex"
+        >
+          {NAV_LINKS.map((l) => {
+            const atual = ativo === l.href.slice(1);
+            return (
+              <a
+                key={l.href}
+                href={l.href}
+                onClick={(e) => irPara(e, l.href)}
+                aria-current={atual ? "true" : undefined}
+                className={`group relative py-1 text-xs font-semibold transition-colors duration-300 ${
+                  atual ? "text-foreground" : "text-foreground/60 hover:text-foreground"
+                }`}
+              >
+                {l.label}
+                {/* sublinhado de hover (só quando não é o ativo) */}
+                {!atual && (
+                  <span className="pointer-events-none absolute inset-x-0 -bottom-0.5 h-px origin-left scale-x-0 bg-foreground/40 transition-transform duration-300 group-hover:scale-x-100 motion-reduce:transition-none" />
+                )}
+                {/* sublinhado ativo que desliza entre os links */}
+                {atual &&
+                  (reduce ? (
+                    <span className="pointer-events-none absolute inset-x-0 -bottom-0.5 h-0.5 rounded-full bg-foreground" />
+                  ) : (
+                    <motion.span
+                      layoutId="nav-ativo"
+                      className="pointer-events-none absolute inset-x-0 -bottom-0.5 h-0.5 rounded-full bg-foreground"
+                      transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                    />
+                  ))}
+              </a>
+            );
+          })}
+        </motion.nav>
+
+        {/* Acesso — botão sólido com seta que desliza no hover */}
+        <motion.div variants={reduce ? undefined : navItemVariants} className="shrink-0">
+          <Button asChild size="sm" className="rounded-full">
+            <Link to={cta.to} className="group/cta">
+              <span className="lg:hidden">{ctaCurto}</span>
+              <span className="hidden lg:inline">{cta.label}</span>
+              <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover/cta:translate-x-0.5 motion-reduce:transition-none" />
+            </Link>
+          </Button>
+        </motion.div>
+      </motion.div>
     </motion.header>
   );
 }
