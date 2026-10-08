@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Church, ArrowLeft, Key } from "lucide-react";
+import { Church, ArrowLeft, Key, Eye, EyeOff } from "lucide-react";
 import { VersiculoAnimado } from "@/components/auth/VersiculoAnimado";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
@@ -18,6 +18,21 @@ const SUPABASE_OAUTH_CALLBACK = `${
   (import.meta.env["VITE_SUPABASE_URL"] || "https://zrdzocdadiucrhvwvxhq.supabase.co").replace(/\/$/, "")
 }/auth/v1/callback`;
 
+
+/**
+ * Traduz as mensagens de erro mais comuns do Supabase Auth para algo claro em
+ * português. Só troca o texto exibido ao usuário — nenhuma lógica de login muda.
+ */
+function mensagemLoginAmigavel(mensagem: string): string {
+  const m = mensagem.toLowerCase();
+  if (m.includes("invalid login credentials"))
+    return "E-mail ou senha incorretos. Confira os dados e tente de novo.";
+  if (m.includes("email not confirmed"))
+    return "Seu e-mail ainda não foi confirmado. Verifique sua caixa de entrada (e o spam).";
+  if (m.includes("rate limit"))
+    return "Muitas tentativas em sequência. Aguarde alguns minutos e tente novamente.";
+  return mensagem;
+}
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -38,6 +53,7 @@ function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [notes, setNotes] = useState("");
@@ -52,7 +68,7 @@ function AuthPage() {
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(mensagemLoginAmigavel(error.message));
     toast.success("Bem-vindo(a)!");
     navigate({ to: "/dashboard", replace: true });
   }
@@ -172,11 +188,23 @@ function AuthPage() {
 
       <div className="flex items-center justify-center p-4 sm:p-6 lg:p-12">
         <div className="w-full max-w-md">
+          {/* No mobile a coluna lateral (marca + link de voltar) some; trazemos o essencial pra cá. */}
+          <div className="mb-8 lg:hidden">
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+            >
+              <ArrowLeft className="h-4 w-4" /> Voltar ao início
+            </Link>
+          </div>
           <div className="mb-8">
+            <Church className="mb-4 h-7 w-7 text-primary lg:hidden" aria-hidden="true" />
             <div className="font-mono text-[11px] uppercase tracking-[0.25em] text-primary mb-2">
               Acesso à plataforma
             </div>
-            <h1 className="font-serif text-3xl">Bem-vindo(a) de volta</h1>
+            <h1 className="font-serif text-3xl font-semibold">
+              {mode === "signin" ? "Bem-vindo(a) de volta" : "Solicitar acesso"}
+            </h1>
           </div>
 
           <Tabs value={mode} onValueChange={(v) => setMode(v as any)}>
@@ -194,6 +222,12 @@ function AuthPage() {
                     id="email"
                     type="email"
                     required
+                    autoFocus
+                    autoComplete="email"
+                    inputMode="email"
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    spellCheck={false}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
@@ -210,13 +244,30 @@ function AuthPage() {
                       Esqueci minha senha
                     </button>
                   </div>
-                  <Input
-                    id="password"
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      required
+                      autoComplete="current-password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((v) => !v)}
+                      aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                      aria-pressed={showPassword}
+                      className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-3 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" aria-hidden="true" />
+                      ) : (
+                        <Eye className="h-4 w-4" aria-hidden="true" />
+                      )}
+                    </button>
+                  </div>
                 </div>
                 <Button type="submit" className="w-full" loading={loading}>
                   {loading ? "Entrando..." : "Entrar"}
@@ -235,6 +286,7 @@ function AuthPage() {
                   <Input
                     id="fn"
                     required
+                    autoComplete="name"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                   />
@@ -245,13 +297,25 @@ function AuthPage() {
                     id="email2"
                     type="email"
                     required
+                    autoComplete="email"
+                    inputMode="email"
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    spellCheck={false}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="phone2">Telefone</Label>
-                  <Input id="phone2" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                  <Input
+                    id="phone2"
+                    type="tel"
+                    autoComplete="tel"
+                    inputMode="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                  />
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="notes2">Seu vínculo com a igreja</Label>
