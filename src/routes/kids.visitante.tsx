@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { cloneElement, isValidElement, useEffect, useId, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
 import { Baby, Check, Download, Loader2, ShieldCheck, X } from "lucide-react";
@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { FieldLabelContext } from "@/components/ui/field-label-context";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -273,7 +274,7 @@ function VisitorPage() {
           <section className="space-y-4">
             <h2 className="text-xl font-bold">3. Documento e Termos</h2>
             <div className="space-y-2">
-              <Label>Documento da Criança (Foto ou PDF)</Label>
+              <Label htmlFor="doc-upload">Documento da Criança (Foto ou PDF)</Label>
               <Input id="doc-upload" type="file" accept="image/*,.pdf" />
             </div>
 
@@ -297,11 +298,27 @@ function VisitorPage() {
   );
 }
 
+/**
+ * Liga o rotulo ao campo automaticamente.
+ *
+ * Sem `htmlFor`/`id` o leitor de tela anuncia "campo de edicao" sem dizer de
+ * que, e tocar no rotulo nao foca o campo -- o que ajuda qualquer pessoa, e
+ * especialmente quem tem menos firmeza na mao. O id sai de `useId`, entao
+ * nenhum ponto de uso precisa mudar.
+ */
 function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
+  const gerado = useId();
+  const campo = isValidElement(children) ? children : null;
+  const id = (campo?.props as { id?: string } | undefined)?.id ?? gerado;
+  const idDoRotulo = `${id}-rotulo`;
   return (
     <div className="space-y-2">
-      <Label>{label}</Label>
-      {children}
+      <Label id={idDoRotulo} htmlFor={campo ? id : undefined}>
+        {label}
+      </Label>
+      <FieldLabelContext.Provider value={idDoRotulo}>
+        {campo ? cloneElement(campo, { id } as never) : children}
+      </FieldLabelContext.Provider>
       {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
     </div>
   );

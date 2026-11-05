@@ -1,9 +1,10 @@
-import { useMemo, useState } from "react";
+import { cloneElement, isValidElement, useId, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { ArrowLeft, ArrowRight, Check, Sparkles, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { FieldLabelContext } from "@/components/ui/field-label-context";
 import { createMemberAccount } from "@/lib/members.functions";
 import {
   CHURCH_FUNCTIONS,
@@ -182,12 +183,21 @@ function ChoiceGrid({
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  const gerado = useId();
+  const campo = isValidElement(children) ? children : null;
+  const id = (campo?.props as { id?: string } | undefined)?.id ?? gerado;
   return (
     <div className="space-y-2">
-      <Label className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+      <Label
+        id={`${id}-rotulo`}
+        htmlFor={campo ? id : undefined}
+        className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground"
+      >
         {label}
       </Label>
-      {children}
+      <FieldLabelContext.Provider value={`${id}-rotulo`}>
+        {campo ? cloneElement(campo, { id } as never) : children}
+      </FieldLabelContext.Provider>
     </div>
   );
 }
