@@ -273,7 +273,7 @@ export function LivrariaAdminProducts() {
                       {p.stock} un
                     </span>
                   ) : (
-                    <span className="text-muted-foreground/40 font-mono text-[10px]">ILIMITADO</span>
+                    <span className="text-muted-foreground font-mono text-xs">ILIMITADO</span>
                   )}
                 </td>
                 <td className="px-6 py-4">

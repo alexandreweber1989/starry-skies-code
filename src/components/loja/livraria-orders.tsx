@@ -169,7 +169,7 @@ export function LivrariaOrders() {
                       <span>Confirmação manual pela equipe</span>
                     </div>
                     <button
-                      className="text-[10px] text-muted-foreground/40 hover:text-destructive transition-colors underline underline-offset-4"
+                      className="text-sm text-muted-foreground hover:text-destructive transition-colors underline underline-offset-4"
                       onClick={() => cancel.mutate(o.id)}
                     >
                       Cancelar Pedido
