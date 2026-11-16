@@ -8,6 +8,7 @@ import {
   ativarPush,
   desativarPush,
   precisaInstalarNoIOS,
+  sincronizarPush,
   statusPush,
   type PushStatus,
 } from "@/lib/push";
@@ -70,12 +71,25 @@ export function AtivarPush({ compact = false }: { compact?: boolean }) {
 
   /** Dispara uma notificação real para o próprio aparelho — confirma que tudo funciona. */
   async function testar() {
+    if (!user) return;
     setTestando(true);
     try {
+      // Garante que a assinatura deste aparelho é a atual antes de testar:
+      // corrige sozinho o caso do iPhone com assinatura antiga.
+      await sincronizarPush(user.id);
       const r: any = await enviarNotificacaoTeste();
-      if (r?.enviados > 0) toast.success("Enviada! O aviso deve aparecer em instantes.");
-      else if (r?.semAparelho > 0) toast.error("Nenhum aparelho ativo encontrado. Ative acima e tente de novo.");
-      else toast.error("Não foi possível entregar. Confira as chaves VAPID no ambiente.");
+      const motivo: string | undefined = r?.motivos?.[0];
+      if (r?.enviados > 0) {
+        toast.success("Enviada! O aviso deve aparecer em instantes.");
+      } else if (r?.semAparelho > 0) {
+        toast.error("Nenhum aparelho ativo encontrado. Toque em Ativar e tente de novo.");
+      } else if (r?.expiradas > 0) {
+        toast.error(
+          "Este aparelho estava com uma assinatura antiga e ela foi descartada. Toque em Desativar e depois em Ativar, e teste de novo.",
+        );
+      } else {
+        toast.error(motivo ? `O serviço de notificações recusou: ${motivo}` : "Não foi possível entregar o aviso.");
+      }
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Falha ao enviar o teste.");
     } finally {

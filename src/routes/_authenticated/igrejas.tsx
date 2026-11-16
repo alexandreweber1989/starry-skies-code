@@ -1,3 +1,4 @@
+import { AcessoRestrito } from "@/components/acesso-restrito";
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader, PageBody } from "@/components/app-shell";
 import { useQuery } from "@tanstack/react-query";
@@ -10,7 +11,11 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 
 export const Route = createFileRoute("/_authenticated/igrejas")({
-  component: SocialActionPage,
+  component: () => (
+    <AcessoRestrito titulo="Social">
+      <SocialActionPage />
+    </AcessoRestrito>
+  ),
 });
 
 function SocialActionPage() {

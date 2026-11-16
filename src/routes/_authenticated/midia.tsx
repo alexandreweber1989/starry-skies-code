@@ -1,3 +1,4 @@
+import { AcessoRestrito } from "@/components/acesso-restrito";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader, PageBody } from "@/components/app-shell";
@@ -47,7 +48,11 @@ import {
 
 
 export const Route = createFileRoute("/_authenticated/midia")({
-  component: MediaModule,
+  component: () => (
+    <AcessoRestrito titulo="Mídia">
+      <MediaModule />
+    </AcessoRestrito>
+  ),
 });
 
 function MediaModule() {

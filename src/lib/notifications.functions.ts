@@ -4,43 +4,56 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export const sendUrgentNotification = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((data) => z.object({
-    type: z.enum(["prayer", "social"]),
-    content: z.string(),
-    userName: z.string(),
-    mesaId: z.string().optional(),
-    urgent: z.boolean().default(true)
-  }).parse(data))
-  .handler(async ({ data }) => {
-    const { getLeaderContactsForMesa, getSocialAdmins } = await import("./notifications.server");
-    const { sendWhatsAppNotification } = await import("./whatsapp.functions");
-    
-    const { type, content, userName, mesaId, urgent } = data;
-    
-    let targets: { full_name: string; phone: string | null }[] = [];
-    
-    if (type === 'prayer' && mesaId) {
-      targets = await getLeaderContactsForMesa(mesaId);
-    } else {
-      targets = await getSocialAdmins();
+  .validator((data) =>
+    z
+      .object({
+        type: z.enum(["prayer", "social"]),
+        content: z.string().trim().min(1).max(2000),
+        // Mantido por compatibilidade com o formulário, mas IGNORADO: o nome
+        // vem do perfil de quem está logado, nunca do que o navegador envia.
+        userName: z.string().optional(),
+        mesaId: z.string().uuid().optional().nullable(),
+        urgent: z.boolean().default(true),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    const { getLeaderContactsForMesa, getSocialAdmins, enviarWhatsAppSimulado } = await import(
+      "./notifications.server"
+    );
+
+    // Nome real de quem pede (perfil do usuário logado).
+    const { data: perfil } = await context.supabase
+      .from("profiles")
+      .select("full_name")
+      .eq("id", context.userId)
+      .maybeSingle();
+    const solicitante = (perfil?.full_name ?? "").trim() || "Membro";
+
+    // Só avisa os líderes de uma mesa da qual a pessoa realmente participa;
+    // sem isso, qualquer membro poderia disparar mensagens para qualquer líder.
+    let mesaId: string | null = null;
+    if (data.type === "prayer" && data.mesaId) {
+      const { data: vinculo } = await context.supabase
+        .from("mesa_members")
+        .select("id")
+        .eq("mesa_id", data.mesaId)
+        .eq("user_id", context.userId)
+        .maybeSingle();
+      if (vinculo) mesaId = data.mesaId;
     }
 
-    const results = await Promise.all(targets.map(leader => {
-      if (!leader.phone) return Promise.resolve(null);
-      
-      const message = `Olá ${leader.full_name}, um novo pedido URGENTE foi recebido!\n\nSolicitante: ${userName}\nTipo: ${type === 'prayer' ? 'Oração' : 'Assistência Social'}\n\nConteúdo: ${content}\n\nPor favor, acesse a plataforma para mais detalhes.`;
-      
-      return sendWhatsAppNotification({
-        data: {
-          phone: leader.phone,
-          message,
-          childName: userName,
-          type: 'checkin'
-        }
-      });
+    const targets = mesaId ? await getLeaderContactsForMesa(mesaId) : await getSocialAdmins();
+    const tipo = data.type === "prayer" ? "Oração" : "Assistência Social";
 
-    }));
-    
+    await Promise.all(
+      targets.map((leader) => {
+        if (!leader.phone) return null;
+        const message = `Olá ${leader.full_name}, um novo pedido URGENTE foi recebido!\n\nSolicitante: ${solicitante}\nTipo: ${tipo}\n\nConteúdo: ${data.content}\n\nPor favor, acesse a plataforma para mais detalhes.`;
+        return enviarWhatsAppSimulado(leader.phone, message);
+      }),
+    );
+
     return { success: true, targetsNotified: targets.length };
   });
 

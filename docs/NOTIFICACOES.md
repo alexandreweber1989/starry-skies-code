@@ -48,3 +48,19 @@ não ativou as notificações (com status `sem_aparelho`).
 
 Assinaturas expiradas (app desinstalado, navegador limpo) retornam 404/410 e são
 **removidas automaticamente** a cada envio — a base se mantém limpa sozinha.
+
+## iPhone (iOS) — checklist quando "não chega"
+
+O iPhone só recebe avisos do app **instalado na tela de início** (iOS 16.4 ou mais novo). Pelo Safari comum, não funciona.
+
+1. **Versão do iOS**: Ajustes › Geral › Sobre — precisa ser 16.4+.
+2. **Instalar pelo Safari**: Compartilhar › Adicionar à Tela de Início (Chrome no iPhone não serve para isso).
+3. **Abrir sempre pelo ícone** — o app instalado tem login separado do Safari. Entrar com **e-mail e senha** (o login com Google abre fora do app e volta deslogado).
+4. **Ativar**: Meu perfil › Ativar › **Permitir**. Depois, **Testar**.
+5. **Ajustes › Notificações › IB Atos**: permitir notificações; conferir se algum **modo Foco** não está silenciando.
+6. Se "Testar" disser que a assinatura era antiga: Desativar › Ativar › Testar.
+
+### Por que já falhou antes (e o que mudou)
+- As chaves VAPID eram derivadas da `service_role`. Quando ela foi trocada, a chave mudou e as assinaturas já feitas pararam de ser aceitas pela Apple. Agora o par é **gravado em `push_config` na primeira vez** e não muda mais.
+- O app agora **ressincroniza a assinatura a cada abertura** (e quando o navegador a troca), e o envio registra o **motivo** de cada falha em `notifications_history.metadata` (ex.: `Apple (iPhone): 403 …`).
+- Assinaturas recusadas por chave divergente são removidas; o aparelho se reassina sozinho ao abrir o app.
