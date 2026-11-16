@@ -1,3 +1,4 @@
+import { AcessoRestrito } from "@/components/acesso-restrito";
 import { createFileRoute } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -199,7 +200,11 @@ const MODULES = [
 ];
 
 export const Route = createFileRoute("/_authenticated/manual")({
-  component: PlatformManual,
+  component: () => (
+    <AcessoRestrito titulo="Manual Operacional">
+      <PlatformManual />
+    </AcessoRestrito>
+  ),
 });
 
 function PlatformManual() {

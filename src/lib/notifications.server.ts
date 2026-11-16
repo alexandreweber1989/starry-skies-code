@@ -49,3 +49,14 @@ export async function getAllMemberProfiles() {
   if (error) throw error;
   return profiles || [];
 }
+
+/**
+ * Envio de WhatsApp — ainda SIMULADO (só registra no log do servidor).
+ * Fica neste arquivo de servidor, e não como server function, para não virar
+ * um endpoint público que qualquer um poderia chamar. Quando houver um provedor
+ * real (Z-API, Twilio...), a integração entra aqui.
+ */
+export async function enviarWhatsAppSimulado(phone: string, message: string) {
+  console.log(`[WhatsApp simulado] Para ${phone}: ${message.slice(0, 120)}…`);
+  return { success: true, simulado: true, timestamp: new Date().toISOString() };
+}

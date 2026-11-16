@@ -1,3 +1,4 @@
+import { AcessoRestrito } from "@/components/acesso-restrito";
 import { createFileRoute } from '@tanstack/react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -14,7 +15,11 @@ import type { Database } from '@/integrations/supabase/types';
 type Visitor = Database['public']['Tables']['visitor_checkins']['Row'];
 
 export const Route = createFileRoute('/_authenticated/visitantes')({
-  component: VisitorsAdminPage,
+  component: () => (
+    <AcessoRestrito titulo="Visitantes">
+      <VisitorsAdminPage />
+    </AcessoRestrito>
+  ),
 });
 
 function VisitorsAdminPage() {

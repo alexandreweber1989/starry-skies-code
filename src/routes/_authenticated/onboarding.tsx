@@ -1,3 +1,4 @@
+import { AcessoRestrito } from "@/components/acesso-restrito";
 import { createFileRoute } from "@tanstack/react-router";
 import { 
   Sprout, 
@@ -40,7 +41,11 @@ export const Route = createFileRoute("/_authenticated/onboarding")({
       { name: "description", content: "Gerenciamento da trilha de novos membros." }
     ]
   }),
-  component: OnboardingLayout
+  component: () => (
+    <AcessoRestrito titulo="Integração de novos membros">
+      <OnboardingLayout />
+    </AcessoRestrito>
+  )
 });
 
 function OnboardingLayout() {

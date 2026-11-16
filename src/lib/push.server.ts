@@ -16,6 +16,8 @@ export interface ResultadoEnvio {
   falhas: number;
   semAparelho: number;
   expiradas: number;
+  /** Motivos das falhas, por serviço de push (para diagnóstico na tela). */
+  motivos?: string[];
 }
 
 export interface VapidKeys {
@@ -56,8 +58,30 @@ export async function obterVapid(): Promise<VapidKeys | null> {
     // Tabela ausente ou indisponível: seguimos para a derivação automática.
   }
 
-  // 3) Derivação automática — funciona sem nenhuma configuração.
-  return derivarVapid();
+  // 3) Derivação automática — funciona sem nenhuma configuração. As chaves
+  // derivadas dependem do segredo do servidor: se a service_role for trocada,
+  // mudariam e TODAS as assinaturas dos celulares parariam de receber (foi o
+  // que aconteceu com os iPhones). Por isso, na primeira vez, gravamos o par no
+  // banco: daí em diante o passo 2 devolve sempre as mesmas chaves.
+  const derivadas = derivarVapid();
+  if (derivadas) {
+    try {
+      await (supabaseAdmin.from("push_config" as any) as any).upsert(
+        {
+          id: true,
+          public_key: derivadas.publicKey,
+          private_key: derivadas.privateKey,
+          subject: derivadas.subject,
+          updated_at: new Date().toISOString(),
+        },
+        // Nunca sobrescreve chaves já gravadas (corrida entre requisições).
+        { onConflict: "id", ignoreDuplicates: true },
+      );
+    } catch {
+      // Sem tabela: seguimos com as derivadas, como antes.
+    }
+  }
+  return derivadas;
 }
 
 const ASSUNTO_PADRAO = "mailto:contato@igrejabatistaatos.com.br";
@@ -177,10 +201,27 @@ async function configurarVapid(): Promise<boolean> {
   return true;
 }
 
+/** Resposta do serviço de push dizendo que a chave VAPID não é a da assinatura. */
+const CHAVE_DIVERGENTE = /VapidPkHashMismatch|does not correspond|key mismatch/i;
+
+/** Nome legível do serviço de push a partir do endpoint da assinatura. */
+function servicoDePush(endpoint: string): string {
+  try {
+    const host = new URL(endpoint).host;
+    if (host.includes("push.apple.com")) return "Apple (iPhone)";
+    if (host.includes("googleapis.com") || host.includes("fcm")) return "Google (Android/Chrome)";
+    if (host.includes("mozilla")) return "Mozilla (Firefox)";
+    if (host.includes("windows") || host.includes("microsoft")) return "Microsoft (Edge)";
+    return host;
+  } catch {
+    return "desconhecido";
+  }
+}
+
 /**
  * Entrega a notificação em todos os aparelhos das pessoas indicadas e registra
- * o histórico. Assinaturas expiradas (404/410) são removidas automaticamente,
- * mantendo a base limpa sem intervenção manual.
+ * o histórico. Assinaturas expiradas (404/410) ou feitas com outra chave VAPID
+ * são removidas — o aparelho se reassina sozinho na próxima abertura do app.
  */
 export async function enviarPush(
   userIds: string[],
@@ -221,6 +262,9 @@ export async function enviarPush(
 
   const corpo = JSON.stringify(payload);
   const expiradas: string[] = [];
+  const entregues = new Set<string>();
+  const falhasPorPessoa = new Map<string, { status: number | null; servico: string; motivo: string }[]>();
+  const motivos = new Set<string>();
 
   await Promise.all(
     lista.map(async (a) => {
@@ -231,15 +275,27 @@ export async function enviarPush(
           { TTL: 60 * 60 * 24, urgency: payload.type === "emergency" ? "high" : "normal" },
         );
         resultado.enviados += 1;
+        entregues.add(a.user_id);
       } catch (err) {
-        const status = (err as { statusCode?: number }).statusCode;
-        // 404/410 = o navegador descartou a assinatura (app desinstalado, etc.).
-        if (status === 404 || status === 410) {
+        const e = err as { statusCode?: number; body?: string; message?: string };
+        const status = e.statusCode ?? null;
+        const servico = servicoDePush(a.sub.endpoint);
+        const motivo = String(e.body || e.message || "erro desconhecido").slice(0, 200);
+        // 404/410 = o navegador descartou a assinatura (app desinstalado etc.).
+        // 403 com "chave não confere" = assinatura feita com outra chave VAPID:
+        // nunca mais será aceita; o aparelho se reassina sozinho ao abrir o app.
+        const chaveTrocada = status === 403 && CHAVE_DIVERGENTE.test(motivo);
+        if (status === 404 || status === 410 || chaveTrocada) {
           expiradas.push(a.id);
           resultado.expiradas += 1;
         } else {
           resultado.falhas += 1;
         }
+        motivos.add(`${servico}: ${status ?? "sem resposta"} ${chaveTrocada ? "(chave antiga)" : motivo}`.trim());
+        const registro = falhasPorPessoa.get(a.user_id) ?? [];
+        registro.push({ status, servico, motivo });
+        falhasPorPessoa.set(a.user_id, registro);
+        console.warn(`[Push] Falha ao entregar (${servico}, ${status}): ${motivo}`);
       }
     }),
   );
@@ -247,16 +303,18 @@ export async function enviarPush(
   if (expiradas.length > 0) {
     await (supabaseAdmin.from("user_push_tokens" as any) as any).delete().in("id", expiradas);
   }
+  resultado.motivos = [...motivos].slice(0, 5);
 
   // Histórico: alimenta o painel de envios e o registro do que foi comunicado.
-  // As colunas url/audience/sent_by podem não existir ainda; se a inserção
-  // completa falhar, grava o essencial em vez de derrubar um envio bem-sucedido.
+  // "enviado" só quando ao menos um aparelho da pessoa aceitou a notificação.
+  // As colunas url/audience/sent_by/metadata podem não existir ainda; se a
+  // inserção completa falhar, grava o essencial em vez de derrubar o envio.
   const baseHistorico = userIds.map((uid) => ({
     user_id: uid,
     title: payload.title,
     body: payload.body,
     type: payload.type ?? "announcement",
-    status: comAparelho.has(uid) ? "enviado" : "sem_aparelho",
+    status: entregues.has(uid) ? "enviado" : comAparelho.has(uid) ? "falhou" : "sem_aparelho",
   }));
   const historico = await (supabaseAdmin.from("notifications_history" as any) as any).insert(
     baseHistorico.map((h) => ({
@@ -264,6 +322,7 @@ export async function enviarPush(
       url: payload.url ?? null,
       audience: meta.audience ?? null,
       sent_by: meta.sentBy ?? null,
+      metadata: falhasPorPessoa.has(h.user_id) ? { falhas: falhasPorPessoa.get(h.user_id) } : null,
     })),
   );
   if (historico?.error) {

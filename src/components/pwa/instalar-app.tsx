@@ -48,6 +48,14 @@ export function PassosInstalacao({ ios }: { ios: boolean }) {
             Escolha <Plus className="inline h-4 w-4" /> <strong>Adicionar à Tela de Início</strong> e confirme.
           </span>
         </li>
+        <li className="flex gap-3">
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 font-mono text-xs text-primary">4</span>
+          <span>
+            Abra o app <strong>pelo ícone na tela de início</strong>, entre com <strong>e-mail e senha</strong> e
+            toque em <strong>Meu perfil → Ativar</strong> e depois em <strong>Permitir</strong>. No iPhone, os avisos
+            só chegam por dentro do app instalado (iOS 16.4 ou mais novo).
+          </span>
+        </li>
       </ol>
     );
   }

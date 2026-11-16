@@ -41,6 +41,16 @@ function AuthPage() {
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [notes, setNotes] = useState("");
+  // App aberto pelo ícone da tela de início do iPhone (detectado após montar,
+  // para o HTML do servidor e o do navegador começarem iguais).
+  const [appInstaladoNoIPhone, setAppInstaladoNoIPhone] = useState(false);
+  useEffect(() => {
+    const ios = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const standalone =
+      window.matchMedia?.("(display-mode: standalone)").matches ||
+      (navigator as unknown as { standalone?: boolean }).standalone === true;
+    setAppInstaladoNoIPhone(ios && standalone);
+  }, []);
 
 
   useEffect(() => {
@@ -307,6 +317,13 @@ function AuthPage() {
               Continuar com Google
             </span>
           </Button>
+
+          {appInstaladoNoIPhone && (
+            <p className="mt-3 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-xs text-foreground">
+              No app instalado no iPhone, entre com <strong>e-mail e senha</strong>. O login com Google abre fora do
+              app e você voltaria deslogado — sem login aqui, as notificações não podem ser ativadas.
+            </p>
+          )}
 
           <details className="mt-4 rounded-lg border border-border bg-muted/40 px-4 py-3 text-xs">
             <summary className="cursor-pointer font-mono uppercase tracking-widest text-muted-foreground">

@@ -1,3 +1,4 @@
+import { AcessoRestrito } from "@/components/acesso-restrito";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { 
@@ -46,7 +47,11 @@ export const Route = createFileRoute("/_authenticated/kids/relatorios")({
       { name: "description", content: "Histórico de presença e relatórios do ministério infantil." },
     ],
   }),
-  component: KidsReportsPage,
+  component: () => (
+    <AcessoRestrito titulo="Relatórios do Kids" permitido={(a) => a.isKidsAdmin}>
+      <KidsReportsPage />
+    </AcessoRestrito>
+  ),
 });
 
 function KidsReportsPage() {

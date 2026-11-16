@@ -1,3 +1,4 @@
+import { AcessoRestrito } from "@/components/acesso-restrito";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -32,7 +33,11 @@ export const Route = createFileRoute("/_authenticated/mapa")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: MapaPage,
+  component: () => (
+    <AcessoRestrito titulo="Mapa">
+      <MapaPage />
+    </AcessoRestrito>
+  ),
 });
 
 interface Pessoa {
